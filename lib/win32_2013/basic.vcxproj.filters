@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="mem">
+      <UniqueIdentifier>{d61ac1d3-8382-4787-9023-55fa7aa3b024}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thread">
+      <UniqueIdentifier>{b229354e-b197-4aa7-9037-bd3f1b46e0aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="inc">
+      <UniqueIdentifier>{8cfd60a0-1c2f-4d35-9e36-d6bdb1846969}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="types">
+      <UniqueIdentifier>{16c9ef8f-1aa4-41dd-932a-c6d106dae981}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="exception">
+      <UniqueIdentifier>{e9d9c77e-71ae-4d44-b021-1ee060b386a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{b61d0a6e-87a9-40ef-8426-5a00c68134ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="datastruct">
+      <UniqueIdentifier>{19b0dd7a-921e-4309-9c0f-628707f7c315}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{094d72b9-a23d-461a-a297-848dcb748f7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\strutil">
+      <UniqueIdentifier>{d7fdb649-19f1-478c-9172-7724abb9ef9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="debug">
+      <UniqueIdentifier>{cff53221-b41e-4ba1-a0b1-65d9cd8d7673}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="time">
+      <UniqueIdentifier>{3febd14e-6308-49ec-9429-77a1586ff59a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="file">
+      <UniqueIdentifier>{4ea1cf4d-5158-4f89-b111-ad2a0313e06c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc">
+      <UniqueIdentifier>{3b5c7022-896a-4a28-b5ed-c61b2d707b70}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\inc\basic_def.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\inc\error.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\inc\basic.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mem\mem.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\exception\stack_exception.hpp">
+      <Filter>exception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\exception\StackWalker.h">
+      <Filter>exception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\exception\call_stack.hpp">
+      <Filter>exception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\log\log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\thread\mt.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\thread\mt_linux.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\types\basicobj.h">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\types\linux.h">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\types\types.h">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\thread\thread.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\datastruct\basic_string.h">
+      <Filter>datastruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\strutil\charset\charset_def.h">
+      <Filter>util\strutil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\strutil\charset\charset_win.h">
+      <Filter>util\strutil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\strutil\charset.h">
+      <Filter>util\strutil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\strutil\cppstring.h">
+      <Filter>util\strutil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\strutil\maa.h">
+      <Filter>util\strutil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\strutil\strutil.h">
+      <Filter>util\strutil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\private.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\container.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\debug\debug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mem\basicallocator.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mem\smartbuffer.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\time\tltime.h">
+      <Filter>time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\datastruct\extern.h">
+      <Filter>datastruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\datastruct\map.h">
+      <Filter>datastruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\datastruct\array.h">
+      <Filter>datastruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\datastruct\list.h">
+      <Filter>datastruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\functor.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\auto_cast.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\file\fileman.h">
+      <Filter>file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\file\filedefine.h">
+      <Filter>file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\misc\singleton.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mem\tlstaticbuffer.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\mem\mem.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\exception\call_stack_msvc.cpp">
+      <Filter>exception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\exception\StackWalker.cpp">
+      <Filter>exception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\exception\call_stack_gcc.cpp">
+      <Filter>exception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\log\log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\thread\mt_linux.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\thread\mt.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\types\basicobj.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\thread\thread_linux.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\thread\thread_win.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\datastruct\basic_string.cpp">
+      <Filter>datastruct</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\strutil\charset\charset_iconv.cpp">
+      <Filter>util\strutil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\strutil\charset\charset_win.cpp">
+      <Filter>util\strutil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\strutil\charset.cpp">
+      <Filter>util\strutil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\strutil\cppstring.cpp">
+      <Filter>util\strutil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\strutil\maa.cpp">
+      <Filter>util\strutil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\strutil\strmisc.cpp">
+      <Filter>util\strutil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\strutil\strutil.cpp">
+      <Filter>util\strutil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\debug\debug_linux.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\debug\debug_mac.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\debug\debug_win.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\debug\debug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\debug\debug_android.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mem\smartbuffer.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\time\tltime.cpp">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\file\fileman.cpp">
+      <Filter>file</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mem\tlstaticbuffer.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\file\filefind.cpp">
+      <Filter>file</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_Dll|Win32">
+      <Configuration>Debug_Dll</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Dll|Win32">
+      <Configuration>Release_Dll</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\datastruct\array.h" />
+    <ClInclude Include="..\..\src\datastruct\basic_string.h" />
+    <ClInclude Include="..\..\src\datastruct\extern.h" />
+    <ClInclude Include="..\..\src\datastruct\list.h" />
+    <ClInclude Include="..\..\src\datastruct\map.h" />
+    <ClInclude Include="..\..\src\debug\debug.h" />
+    <ClInclude Include="..\..\src\exception\call_stack.hpp" />
+    <ClInclude Include="..\..\src\exception\StackWalker.h" />
+    <ClInclude Include="..\..\src\exception\stack_exception.hpp" />
+    <ClInclude Include="..\..\src\file\filedefine.h" />
+    <ClInclude Include="..\..\src\file\fileman.h" />
+    <ClInclude Include="..\..\src\inc\basic.h" />
+    <ClInclude Include="..\..\src\inc\basic_def.h" />
+    <ClInclude Include="..\..\src\inc\error.h" />
+    <ClInclude Include="..\..\src\log\log.h" />
+    <ClInclude Include="..\..\src\mem\basicallocator.h" />
+    <ClInclude Include="..\..\src\mem\mem.h" />
+    <ClInclude Include="..\..\src\mem\smartbuffer.h" />
+    <ClInclude Include="..\..\src\mem\tlstaticbuffer.h" />
+    <ClInclude Include="..\..\src\misc\singleton.h" />
+    <ClInclude Include="..\..\src\thread\mt.h" />
+    <ClInclude Include="..\..\src\thread\mt_linux.h" />
+    <ClInclude Include="..\..\src\thread\thread.h" />
+    <ClInclude Include="..\..\src\time\tltime.h" />
+    <ClInclude Include="..\..\src\types\basicobj.h" />
+    <ClInclude Include="..\..\src\types\linux.h" />
+    <ClInclude Include="..\..\src\types\types.h" />
+    <ClInclude Include="..\..\src\util\auto_cast.h" />
+    <ClInclude Include="..\..\src\util\container.h" />
+    <ClInclude Include="..\..\src\util\functor.h" />
+    <ClInclude Include="..\..\src\util\private.h" />
+    <ClInclude Include="..\..\src\util\strutil\charset.h" />
+    <ClInclude Include="..\..\src\util\strutil\charset\charset_def.h" />
+    <ClInclude Include="..\..\src\util\strutil\charset\charset_win.h" />
+    <ClInclude Include="..\..\src\util\strutil\cppstring.h" />
+    <ClInclude Include="..\..\src\util\strutil\maa.h" />
+    <ClInclude Include="..\..\src\util\strutil\strutil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\datastruct\basic_string.cpp" />
+    <ClCompile Include="..\..\src\debug\debug.cpp" />
+    <ClCompile Include="..\..\src\debug\debug_android.cpp" />
+    <ClCompile Include="..\..\src\debug\debug_linux.cpp" />
+    <ClCompile Include="..\..\src\debug\debug_mac.cpp" />
+    <ClCompile Include="..\..\src\debug\debug_win.cpp" />
+    <ClCompile Include="..\..\src\exception\call_stack_gcc.cpp" />
+    <ClCompile Include="..\..\src\exception\call_stack_msvc.cpp" />
+    <ClCompile Include="..\..\src\exception\StackWalker.cpp" />
+    <ClCompile Include="..\..\src\file\filefind.cpp" />
+    <ClCompile Include="..\..\src\file\fileman.cpp" />
+    <ClCompile Include="..\..\src\log\log.cpp" />
+    <ClCompile Include="..\..\src\mem\mem.cpp" />
+    <ClCompile Include="..\..\src\mem\smartbuffer.cpp" />
+    <ClCompile Include="..\..\src\mem\tlstaticbuffer.cpp" />
+    <ClCompile Include="..\..\src\thread\mt.cpp" />
+    <ClCompile Include="..\..\src\thread\mt_linux.cpp" />
+    <ClCompile Include="..\..\src\thread\thread_linux.cpp" />
+    <ClCompile Include="..\..\src\thread\thread_win.cpp" />
+    <ClCompile Include="..\..\src\time\tltime.cpp" />
+    <ClCompile Include="..\..\src\types\basicobj.cpp" />
+    <ClCompile Include="..\..\src\util\strutil\charset.cpp" />
+    <ClCompile Include="..\..\src\util\strutil\charset\charset_iconv.cpp" />
+    <ClCompile Include="..\..\src\util\strutil\charset\charset_win.cpp" />
+    <ClCompile Include="..\..\src\util\strutil\cppstring.cpp" />
+    <ClCompile Include="..\..\src\util\strutil\maa.cpp" />
+    <ClCompile Include="..\..\src\util\strutil\strmisc.cpp" />
+    <ClCompile Include="..\..\src\util\strutil\strutil.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A917DA06-FD13-4B2E-A981-7883BBC8F4F4}</ProjectGuid>
+    <RootNamespace>basic</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dll|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dll|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dll|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dll|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.21005.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dll|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dll|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__BASICWINDOWS;NDEBUG;_BASIC_TRACE;_LIB;XML_STATIC;_USE_SYS_MALLOC;SQLITE_HAS_CODEC=1;SQLITE_SECURE_DELETE;SQLITE_SOUNDEX;SQLITE_ENABLE_COLUMN_METADATA;CODEC_TYPE=CODEC_TYPE_AES256;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>..\$(ProjectName)13.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__BASICWINDOWS;_DEBUG;_LIB;XML_STATIC;SQLITE_HAS_CODEC=1;SQLITE_SECURE_DELETE;SQLITE_SOUNDEX;SQLITE_ENABLE_COLUMN_METADATA;CODEC_TYPE=CODEC_TYPE_AES256;_USE_SYS_MALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <Lib>
+      <OutputFile>..\$(ProjectName)D13.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dll|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__BASICWINDOWS;_DEBUG;_LIB;XML_STATIC;SQLITE_HAS_CODEC=1;SQLITE_SECURE_DELETE;SQLITE_SOUNDEX;SQLITE_ENABLE_COLUMN_METADATA;CODEC_TYPE=CODEC_TYPE_AES256;_USE_SYS_MALLOC;BASIC_DLL_EXPORTS;BASIC_DLL_EXPORTS_C;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\$(ProjectName)D13.dll</OutputFile>
+      <AdditionalLibraryDirectories>..\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>..\$(ProjectName)D13_DLL.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dll|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__BASICWINDOWS;NDEBUG;_BASIC_TRACE;_LIB;XML_STATIC;_USE_SYS_MALLOC;SQLITE_HAS_CODEC=1;SQLITE_SECURE_DELETE;SQLITE_SOUNDEX;SQLITE_ENABLE_COLUMN_METADATA;CODEC_TYPE=CODEC_TYPE_AES256;BASIC_DLL_EXPORTS;BASIC_DLL_EXPORTS_C;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\$(ProjectName)13.dll</OutputFile>
+      <AdditionalLibraryDirectories>..\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\$(ProjectName)13_DLL.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
