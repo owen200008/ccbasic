@@ -1,6 +1,3 @@
 [submodule "3rd/jemalloc"]
 	path = 3rd/jemalloc
 	url = https://github.com/jemalloc/jemalloc.git
-[submodule "3rd/stacktrace"]
-	path = 3rd/stacktrace
-	url = https://github.com/cripplet/stacktrace.git

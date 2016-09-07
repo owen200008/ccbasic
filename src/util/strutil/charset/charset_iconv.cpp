@@ -1,9 +1,9 @@
 #include "../../../inc/basic.h"
 #ifndef __BASICWINDOWS
-#include "../../../../def/util/strutil/charset.h"
-#include "../../../../def/util/strutil/charset/charset_def.h"
-#include "../../../../def/mem/mem.h"
-#include "../../../../def/util/strutil/strutil.h"
+#include "../../../util/strutil/charset.h"
+#include "../../../util/strutil/charset/charset_def.h"
+#include "../../../mem/mem.h"
+#include "../../../util/strutil/strutil.h"
 #include <iconv.h>
 
 __NS_BASIC_START

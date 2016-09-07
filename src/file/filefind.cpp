@@ -6,7 +6,7 @@
 #else
 #include <dirent.h>
 
-#include "../../def/file/file_linux.h"
+#include "file_linux.h"
 #ifndef LPWIN32_FIND_DATAA
 #define LPWIN32_FIND_DATAA LPWIN32_FIND_DATA
 #endif

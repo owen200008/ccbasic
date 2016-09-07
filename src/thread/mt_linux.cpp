@@ -1,4 +1,5 @@
 #include "../inc/basic.h"
+#include "../thread/mt_linux.h"
 #ifndef __ANDROID
 #include <sys/timeb.h>
 #endif
@@ -113,7 +114,7 @@ BasicInterlockedExchangeAdd(
 #endif
 }
 
-LONG BasicInterlockedExchangeSub(LONG volatile *Addend, LONG Value)
+LONG BasicInterlockedExchangeSub(LONG volatile *Addend, LONG Increment)
 {
 #ifdef __MAC
 	return OSAtomicAdd32((int32_t)-Increment, (volatile int32_t*)Addend);

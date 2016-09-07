@@ -19,6 +19,7 @@
 #include "../../types/types.h"
 #include "../../mem/mem.h"
 #include "../../mem/basicallocator.h"
+#include "../../mem/tlstaticbuffer.h"
 #include "../container.h"
 #include "cppstring.h"
 #include "../../debug/debug.h"

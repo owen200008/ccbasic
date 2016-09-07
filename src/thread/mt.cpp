@@ -11,7 +11,7 @@
 #include "../inc/basic.h"
 #if (defined(__LINUX)|| defined(__MAC) || defined(__ANDROID))
 #include <pthread.h>
-#include "../../def/thread/mt_linux.h"
+#include "mt_linux.h"
 #endif
 
 __NS_BASIC_START

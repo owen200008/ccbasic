@@ -5,9 +5,9 @@
 #±‡“Îrelease∞Ê£∫make -e DEBUG=0
 
 
-ROOTDIR := ../..
+ROOTDIR := ../../src
 SRCDIRS :=$(ROOTDIR)/algorithm $(ROOTDIR)/algorithm/rc5 $(ROOTDIR)/algorithm/aes $(ROOTDIR)/algorithm/sha1 $(ROOTDIR)/algorithm/zip $(ROOTDIR)/util 
-SRCDIRS :=$(SRCDIRS) $(ROOTDIR)/datastruct $(ROOTDIR)/debug $(ROOTDIR)/exception $(ROOTDIR)/file
+SRCDIRS :=$(SRCDIRS) $(ROOTDIR)/datastruct $(ROOTDIR)/debug $(ROOTDIR)/file
 SRCDIRS :=$(SRCDIRS) $(ROOTDIR)/graphics $(ROOTDIR)/i18n $(ROOTDIR)/log $(ROOTDIR)/mem
 SRCDIRS :=$(SRCDIRS) $(ROOTDIR)/net $(ROOTDIR)/net/socket $(ROOTDIR)/sys $(ROOTDIR)/thread
 SRCDIRS :=$(SRCDIRS) $(ROOTDIR)/dll $(ROOTDIR)/file/ini $(ROOTDIR)/util/strutil
@@ -18,27 +18,22 @@ OUTDIR :=.
 DEBUG_DIR :=$(OUTDIR)/debug/
 RELEASE_DIR :=$(OUTDIR)/release/
 
-DEBUG=0
+DEBUG=1
 
 ifeq ($(DEBUG),1)
-PROGRAMDIR := ../../../def/lib
+PROGRAMDIR := ..
 OBJDIR :=$(DEBUG_DIR)
 CPPFLAGS :=-g -D_DEBUG -shared -fPIC
 PROGRAM :=$(PROGRAMDIR)/basiclibD.a
 else
-PROGRAMDIR := ../../../def/lib
+PROGRAMDIR := ..
 OBJDIR :=$(RELEASE_DIR)
-CPPFLAGS :=-g -D_USE_SYS_MALLOC -O2 -shared -fPIC
+CPPFLAGS :=-g -O2 -shared -fPIC
 #CPPFLAGS :=-g -DLINUX -D_USE_SYS_MALLOC 
 PROGRAM :=$(PROGRAMDIR)/basiclib.a
 endif
 
 INLIBS  :=
-
-CPPFLAGS := $(CPPFLAGS) -DLINUX -D__LINUX -I../../../def/inc -fshort-wchar -D_LARGEFILE_SOURCE -D_LARGEFILE_SOURCE64 -D_FILE_OFFSET_BITS=64 -Wno-deprecated
-LDFLAGS := -lgcc_s -lpthread -levent -ldl -lexpat  -lbfd -liberty
-CFLAGS :=
-CXXFLAGS := 
 
 CC  = gcc
 CXX = g++
@@ -47,11 +42,32 @@ AR=ar
 RM = rm -f
 
 SHELL = /bin/sh
+
+all : config $(JEMALLOC_STATICLIB) $(PROGRAM)
+
+JEMALLOC_PATH := ../../3rd/jemalloc
+JEMALLOC_STATICLIB := $(JEMALLOC_PATH)/lib/libjemalloc_pic.a
+JEMALLOC_INC := $(JEMALLOC_PATH)/include/jemalloc
+$(JEMALLOC_STATICLIB) : $(JEMALLOC_PATH)/Makefile
+	cd $(JEMALLOC_PATH) && $(MAKE) CC=$(CC)
+$(JEMALLOC_PATH)/Makefile :
+	cd $(JEMALLOC_PATH) && ./autogen.sh --with-jemalloc-prefix=je_ --disable-valgrind
+
+CPPFLAGS := $(CPPFLAGS) -DLINUX -D__LINUX -I$(JEMALLOC_INC) -fshort-wchar -D_LARGEFILE_SOURCE -D_LARGEFILE_SOURCE64 -D_FILE_OFFSET_BITS=64 -Wno-deprecated
+LDFLAGS := -lgcc_s -lpthread -levent -ldl -lexpat  -lbfd -liberty $(JEMALLOC_STATICLIB)
+CFLAGS :=
+CXXFLAGS := 
+
+
+
 FULLSOURCES = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(SRCEXTS))))
 SOURCES = $(notdir $(FULLSOURCES))
+SOURCES := $(SOURCES) call_stack_gcc.cpp
 OBJS = $(foreach x,$(SRCEXTS), $(patsubst %$(x),%.o,$(filter %$(x),$(SOURCES))))
 FULLOBJS = $(addprefix $(OBJDIR),$(OBJS))
 DEPS    = $(patsubst %.o,%.d,$(OBJS))
+
+SRCDIRS := $(SRCDIRS) $(ROOTDIR)/exception
 
 vpath %.c $(SRCDIRS)
 vpath %.cpp $(SRCDIRS)
@@ -59,7 +75,8 @@ vpath %.o $(OBJDIR)
 
 .PHONY : all objs clean cleanall rebuild link cleanout
 
-all : config $(PROGRAM)
+UpdateSubModule :
+	cd ../../ && git submodule update --init
 
 # Rules for producing the objects.
 #---------------------------------------------------
@@ -92,7 +109,7 @@ test:
 	@echo -e "objs: $(OBJS)"
 	@echo -e "all objs: $(FULLOBJS)"
 
-config: dir
+config: dir UpdateSubModule
 dir:
 	@echo -e "making dir..."
 	mkdir -p $(OUTDIR)
