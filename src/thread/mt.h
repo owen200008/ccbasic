@@ -221,6 +221,32 @@ protected:
 	BOOL			m_bAcquired;	//!< 是否被占用标记
 };
 
+//////////////////////////////////////////////////////////////////////////
+//自旋锁
+struct SpinLock
+{
+	int m_nLock;
+	SpinLock()
+	{
+		m_nLock = 0;
+	}
+};
+
+class CSpinLockFunc
+{
+public:
+	CSpinLockFunc(SpinLock& lock);
+	virtual ~CSpinLockFunc();
+
+	void Lock();
+	void LockAndSleep(unsigned short usSleep = 100);
+	void UnLock();
+	bool IsLock();
+protected:
+	SpinLock* 	m_pLock;
+};
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //! 原子操作，变量递增
