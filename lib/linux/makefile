@@ -24,12 +24,11 @@ ifeq ($(DEBUG),1)
 PROGRAMDIR := ..
 OBJDIR :=$(DEBUG_DIR)
 CPPFLAGS :=-g -D_DEBUG -shared -fPIC
-PROGRAM :=$(PROGRAMDIR)/basiclibD.a
+PROGRAM :=$(PROGRAMDIR)/basiclib.a
 else
 PROGRAMDIR := ..
 OBJDIR :=$(RELEASE_DIR)
 CPPFLAGS :=-g -O2 -shared -fPIC
-#CPPFLAGS :=-g -DLINUX -D_USE_SYS_MALLOC 
 PROGRAM :=$(PROGRAMDIR)/basiclib.a
 endif
 
@@ -43,7 +42,7 @@ RM = rm -f
 
 SHELL = /bin/sh
 
-all : config $(JEMALLOC_STATICLIB) $(PROGRAM)
+all : config $(PROGRAM)
 
 JEMALLOC_PATH := ../../3rd/jemalloc
 JEMALLOC_STATICLIB := $(JEMALLOC_PATH)/lib/libjemalloc_pic.a
@@ -57,8 +56,6 @@ CPPFLAGS := $(CPPFLAGS) -DLINUX -D__LINUX -I$(JEMALLOC_INC) -fshort-wchar -D_LAR
 LDFLAGS := -lgcc_s -lpthread -levent -ldl -lexpat  -lbfd -liberty $(JEMALLOC_STATICLIB)
 CFLAGS :=
 CXXFLAGS := 
-
-
 
 FULLSOURCES = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(SRCEXTS))))
 SOURCES = $(notdir $(FULLSOURCES))
@@ -109,7 +106,7 @@ test:
 	@echo -e "objs: $(OBJS)"
 	@echo -e "all objs: $(FULLOBJS)"
 
-config: dir UpdateSubModule
+config: dir UpdateSubModule $(JEMALLOC_STATICLIB)
 dir:
 	@echo -e "making dir..."
 	mkdir -p $(OUTDIR)
