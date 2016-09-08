@@ -32,7 +32,6 @@ CPPFLAGS :=-g -O2 -shared -fPIC
 PROGRAM :=$(PROGRAMDIR)/basiclib.a
 endif
 
-INLIBS  :=
 
 CC  = gcc
 CXX = g++
@@ -54,7 +53,8 @@ $(JEMALLOC_PATH)/Makefile :
 	cd $(JEMALLOC_PATH) && ./autogen.sh --with-jemalloc-prefix=je_ --disable-valgrind
 
 CPPFLAGS := $(CPPFLAGS) -DLINUX -D__LINUX -I$(JEMALLOC_INC) -fshort-wchar -D_LARGEFILE_SOURCE -D_LARGEFILE_SOURCE64 -D_FILE_OFFSET_BITS=64 -Wno-deprecated
-LDFLAGS := -lgcc_s -lpthread -levent -ldl -lexpat  -lbfd -liberty $(JEMALLOC_STATICLIB)
+INLIBS := $(JEMALLOC_STATICLIB)
+LDFLAGS := -lgcc_s -lpthread -levent -ldl -lexpat  -lbfd -liberty
 CFLAGS :=
 CXXFLAGS := 
 
@@ -92,7 +92,7 @@ objs : $(OBJS)
 #----------------------------------------------
 $(PROGRAM) : $(OBJS)
 ifeq ($(findstring .a, $(PROGRAM)), .a)
-	$(AR) -rc $(PROGRAM) $(FULLOBJS)
+	$(AR) -rc $(PROGRAM) $(FULLOBJS) $(INLIBS)
 else
 ifeq ($(strip $(SRCEXTS)), .c) # C file
 	$(CC) -o $(PROGRAM) $(FULLOBJS) $(INLIBS) $(LDFLAGS)
@@ -126,6 +126,9 @@ clean :
 	@$(RM) $(DEPS) 
 
 cleanall: clean cleanout
+ifneq (,$(wildcard $(JEMALLOC_PATH)/Makefile))
+	cd $(JEMALLOC_PATH) && $(MAKE) clean
+endif
 
 
 
