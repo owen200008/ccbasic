@@ -126,6 +126,9 @@ clean :
 	@$(RM) $(DEPS) 
 
 cleanall: clean cleanout
+ifneq (,$(wildcard $(JEMALLOC_PATH)/Makefile))
+	cd $(JEMALLOC_PATH) && $(MAKE) clean
+endif
 
 
 
