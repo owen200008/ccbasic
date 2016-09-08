@@ -107,7 +107,8 @@ test:
 	@echo -e "objs: $(OBJS)"
 	@echo -e "all objs: $(FULLOBJS)"
 
-config: dir UpdateSubModule $(JEMALLOC_STATICLIB)
+config: dir UpdateSubModule 
+	$(JEMALLOC_STATICLIB)
 dir:
 	@echo -e "making dir..."
 	mkdir -p $(OUTDIR)
