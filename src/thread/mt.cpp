@@ -248,9 +248,39 @@ BOOL CCriticalSection::Unlock()
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+CSpinLockFunc::CSpinLockFunc(SpinLock& lock)
+{
+	m_pLock = &lock;
+}
 
+CSpinLockFunc::~CSpinLockFunc()
+{
+	UnLock();
+}
 
+void CSpinLockFunc::Lock()
+{
+	while (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1)) {}
+}
 
+void CSpinLockFunc::LockAndSleep(unsigned short usSleep)
+{
+	while (BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1))
+	{
+		BasicSleep(usSleep);
+	}
+}
+
+void CSpinLockFunc::UnLock()
+{
+	basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 0);
+}
+
+bool CSpinLockFunc::IsLock()
+{
+	return basiclib::BasicInterlockedExchangeAdd((LONG*)&(m_pLock->m_nLock), 0);
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef __BASICWINDOWS
 
