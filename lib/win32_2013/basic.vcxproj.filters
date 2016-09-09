@@ -40,6 +40,9 @@
     <Filter Include="misc">
       <UniqueIdentifier>{3b5c7022-896a-4a28-b5ed-c61b2d707b70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sys">
+      <UniqueIdentifier>{5928e3d3-574c-46e1-be5e-ce95805210d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\inc\basic_def.h">
@@ -141,17 +144,26 @@
     <ClInclude Include="..\..\src\util\auto_cast.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\file\fileman.h">
-      <Filter>file</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\file\filedefine.h">
-      <Filter>file</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\misc\singleton.h">
       <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mem\tlstaticbuffer.h">
       <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\file\fileman.h">
+      <Filter>file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\file\file_linux.h">
+      <Filter>file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\file\filedefine.h">
+      <Filter>file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\sys\syserror.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\sys\sysinfo.h">
+      <Filter>sys</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -230,14 +242,32 @@
     <ClCompile Include="..\..\src\time\tltime.cpp">
       <Filter>time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\file\fileman.cpp">
-      <Filter>file</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\mem\tlstaticbuffer.cpp">
       <Filter>mem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\file\filefind.cpp">
       <Filter>file</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\file\fileman.cpp">
+      <Filter>file</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\file\file_linux.cpp">
+      <Filter>file</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sys\sysinfo.cpp">
+      <Filter>sys</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sys\sysinfo_android.cpp">
+      <Filter>sys</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sys\sysinfo_linux.cpp">
+      <Filter>sys</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sys\sysinfo_mac.cpp">
+      <Filter>sys</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sys\sysinfo_win.cpp">
+      <Filter>sys</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

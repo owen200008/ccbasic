@@ -73,9 +73,6 @@ vpath %.o $(OBJDIR)
 
 .PHONY : all objs clean cleanall rebuild link cleanout
 
-UpdateSubModule :
-	cd ../../ && git submodule update --init
-
 # Rules for producing the objects.
 #---------------------------------------------------
 objs : $(OBJS)
@@ -107,7 +104,7 @@ test:
 	@echo -e "objs: $(OBJS)"
 	@echo -e "all objs: $(FULLOBJS)"
 
-config: dir UpdateSubModule $(JEMALLOC_STATICLIB)
+config: dir $(JEMALLOC_STATICLIB)
 dir:
 	@echo -e "making dir..."
 	mkdir -p $(OUTDIR)

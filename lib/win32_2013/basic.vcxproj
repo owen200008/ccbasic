@@ -30,6 +30,7 @@
     <ClInclude Include="..\..\src\exception\stack_exception.hpp" />
     <ClInclude Include="..\..\src\file\filedefine.h" />
     <ClInclude Include="..\..\src\file\fileman.h" />
+    <ClInclude Include="..\..\src\file\file_linux.h" />
     <ClInclude Include="..\..\src\inc\basic.h" />
     <ClInclude Include="..\..\src\inc\basic_def.h" />
     <ClInclude Include="..\..\src\inc\error.h" />
@@ -39,6 +40,8 @@
     <ClInclude Include="..\..\src\mem\smartbuffer.h" />
     <ClInclude Include="..\..\src\mem\tlstaticbuffer.h" />
     <ClInclude Include="..\..\src\misc\singleton.h" />
+    <ClInclude Include="..\..\src\sys\syserror.h" />
+    <ClInclude Include="..\..\src\sys\sysinfo.h" />
     <ClInclude Include="..\..\src\thread\mt.h" />
     <ClInclude Include="..\..\src\thread\mt_linux.h" />
     <ClInclude Include="..\..\src\thread\thread.h" />
@@ -69,10 +72,16 @@
     <ClCompile Include="..\..\src\exception\StackWalker.cpp" />
     <ClCompile Include="..\..\src\file\filefind.cpp" />
     <ClCompile Include="..\..\src\file\fileman.cpp" />
+    <ClCompile Include="..\..\src\file\file_linux.cpp" />
     <ClCompile Include="..\..\src\log\log.cpp" />
     <ClCompile Include="..\..\src\mem\mem.cpp" />
     <ClCompile Include="..\..\src\mem\smartbuffer.cpp" />
     <ClCompile Include="..\..\src\mem\tlstaticbuffer.cpp" />
+    <ClCompile Include="..\..\src\sys\sysinfo.cpp" />
+    <ClCompile Include="..\..\src\sys\sysinfo_android.cpp" />
+    <ClCompile Include="..\..\src\sys\sysinfo_linux.cpp" />
+    <ClCompile Include="..\..\src\sys\sysinfo_mac.cpp" />
+    <ClCompile Include="..\..\src\sys\sysinfo_win.cpp" />
     <ClCompile Include="..\..\src\thread\mt.cpp" />
     <ClCompile Include="..\..\src\thread\mt_linux.cpp" />
     <ClCompile Include="..\..\src\thread\thread_linux.cpp" />
