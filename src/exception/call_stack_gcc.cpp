@@ -44,11 +44,8 @@ _Unwind_Reason_Code android_unwind_callback(struct _Unwind_Context* context, voi
     }
     return _URC_NO_REASON;
 }
-#else
+#endif
 call_stack::call_stack (const size_t num_discard /*= 0*/) {
-	_Unwind_Reason_Code android_unwind_callback(struct _Unwind_Context* context, 
-                                            void* arg)
-{
     // retrieve call-stack
     void * trace[MAX_DEPTH];
 #ifdef __ANDROID
@@ -92,7 +89,6 @@ call_stack::call_stack (const size_t num_discard /*= 0*/) {
             free(demangled);
     }
 }
-#endif
 
 call_stack::~call_stack () throw() {
     // automatic cleanup
