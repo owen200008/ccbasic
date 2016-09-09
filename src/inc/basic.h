@@ -91,8 +91,8 @@
 //#include "../util/container.h"
 //
 //系统信息
-//#include "../sys/syserror.h"
-//#include "../sys/sysinfo.h"
+#include "../sys/syserror.h"
+#include "../sys/sysinfo.h"
 //
 //
 //文件处理

@@ -66,12 +66,6 @@ HANDLE Basic_GetCurrentThread();
 */
 DWORD Basic_GetCurrentProcessId();
 
-//! 取父进程ID 传入0时取当前进程父进程
-/*!
-* 
-*/
-DWORD Basic_GetParentProcessID(DWORD dwProcessID = 0);
-
 
 /*!
 * 休眠
