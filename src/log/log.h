@@ -26,7 +26,7 @@ _BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventErrorV(const char* pszLog, ..
 *\remarks 日志文件默认路径可通过BasicSetLogEventMode设置
 */
 _BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEvent(const char* pszLog);
-_BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventError(const char* pszLog, ...);
+_BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventError(const char* pszLog);
 //////////////////////////////////////////////////////////////////////////////////////////////
 //
 //BasicSetLogEventMode选项
