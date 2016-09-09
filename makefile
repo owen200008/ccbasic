@@ -13,5 +13,6 @@ MakeLinux : UpdateSubModuleLinux
 	cd lib/linux && $(MAKE)
 
 
-
+clean : 
+	cd lib/linux && $(MAKE) clean
 
