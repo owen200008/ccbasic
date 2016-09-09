@@ -44,6 +44,7 @@ _BASIC_DLL_API_C  _BASIC_DLL_API void* BasicReallocate(void* p, size_t size);
 	*\sa BasicAllocate()
 	*/
 _BASIC_DLL_API_C  _BASIC_DLL_API void BasicDeallocate(void* p, size_t size = 0);
+_BASIC_DLL_API_C  _BASIC_DLL_API char* BasicStrdup(const char* p);
 
 //!取内存分配操作信息,此操作速度快
 	/*!

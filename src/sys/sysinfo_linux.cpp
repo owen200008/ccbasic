@@ -495,10 +495,10 @@ struct mount_entry* ReadFilesystemlist()
 
 		while((mnt = getmntent(fp)))
 		{
-			me = (mount_entry *)xmalloc(sizeof *me);
-			me->me_devname = xstrdup(mnt->mnt_fsname);
-			me->me_mountdir = xstrdup(mnt->mnt_dir);
-			me->me_type = xstrdup(mnt->mnt_type);
+			me = (mount_entry *)BasicAllocate(sizeof *me);
+			me->me_devname = BasicStrdup(mnt->mnt_fsname);
+			me->me_mountdir = BasicStrdup(mnt->mnt_dir);
+			me->me_type = BasicStrdup(mnt->mnt_type);
 			me->me_type_malloced = 1;
 			me->me_dummy = ME_DUMMY(me->me_devname,me->me_type);
 			me->me_remote = ME_REMOTE(me->me_devname,me->me_type);
@@ -548,13 +548,13 @@ static void FreeList(struct mount_entry *& mount_list)
 	while(mount_list)
 	{
 		me = mount_list->me_next;
-		free(mount_list->me_devname);
-		free(mount_list->me_mountdir);
+		BasicDeallocate(mount_list->me_devname);
+		BasicDeallocate(mount_list->me_mountdir);
 		if(mount_list->me_type_malloced)
 		{
-			free(mount_list->me_type);
+			BasicDeallocate(mount_list->me_type);
 		}
-		free(mount_list); 
+		BasicDeallocate(mount_list); 
 		mount_list = me;
 	}	
 }

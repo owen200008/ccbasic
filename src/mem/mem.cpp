@@ -262,4 +262,12 @@ long BasicGetHandleIDMemInfo(uint32_t nHandleID)
 	return -1;
 }
 
+char* BasicStrdup(const char* p)
+{
+	int sz = strlen(p);
+	char* ret = (char*)BasicAllocate(sz+1);
+	memcpy(ret, p, sz+1);
+	return ret;
+}
+
 __NS_BASIC_END
