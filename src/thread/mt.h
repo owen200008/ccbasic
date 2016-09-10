@@ -243,7 +243,8 @@ public:
 	void UnLock();
 	bool IsLock();
 protected:
-	SpinLock* 	m_pLock;
+	SpinLock* 		m_pLock;
+	bool			m_bAcquired;
 };
 
 

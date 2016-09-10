@@ -25,7 +25,8 @@ public:
 	long FreeLibrary();
 	void* GetProcAddress(const char* lpszProcName);
 protected:
-	void*	m_hModule;
+	basiclib::CBasicString	m_strLoadFileName;
+	void*					m_hModule;
 };
 ////////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_END

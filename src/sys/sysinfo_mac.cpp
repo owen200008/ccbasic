@@ -473,13 +473,17 @@ int GetMacInfo(int& nAdapterIndex, char* pMac, int nLength)
  */
 _BASIC_DLL_API void*	BasicLoadLibrary(const char* lpszLibFileName)
 {
-    void* hDll = dlopen(lpszLibFileName, RTLD_LAZY|RTLD_GLOBAL);
+	void* hDll = dlopen(lpszLibFileName, RTLD_NOW|RTLD_GLOBAL);
     if(hDll == NULL)
     {
         char* pError = dlerror();
         if(pError != NULL)
-            TRACE("linking (%s) error occurred: (%s) \n", lpszLibFileName, pError);
+			basiclib::BasicLogEventErrorV("linking (%s) error occurred: (%s) \n", lpszLibFileName, pError);
     }
+	else
+	{
+		m_strLoadFileName = lpszLibFileName;
+	}
     return hDll;
 }
 

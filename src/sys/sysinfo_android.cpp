@@ -664,13 +664,17 @@ int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer)
 //��̬����õĺ���
 void* BasicLoadLibrary(const char* lpszLibFileName)
 {
-    void* hDll = dlopen(lpszLibFileName, RTLD_LAZY|RTLD_GLOBAL);
+	void* hDll = dlopen(lpszLibFileName, RTLD_NOW|RTLD_GLOBAL);
     if(hDll == NULL)
     {
         const char* pError = dlerror();
         if(pError != NULL)
-            TRACE("linking (%s) error occurred: (%s) \n", lpszLibFileName, pError);
+			basiclib::BasicLogEventErrorV("linking (%s) error occurred: (%s) \n", lpszLibFileName, pError);
     }
+	else
+	{
+		m_strLoadFileName = lpszLibFileName;
+	}
     return hDll;
 }
 

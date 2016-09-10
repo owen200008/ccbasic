@@ -252,6 +252,7 @@ BOOL CCriticalSection::Unlock()
 CSpinLockFunc::CSpinLockFunc(SpinLock& lock)
 {
 	m_pLock = &lock;
+	m_bAcquired = false;
 }
 
 CSpinLockFunc::~CSpinLockFunc()
@@ -261,20 +262,32 @@ CSpinLockFunc::~CSpinLockFunc()
 
 void CSpinLockFunc::Lock()
 {
-	while (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1)) {}
+	if (!m_bAcquired)
+	{
+		while (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1)) {}
+		m_bAcquired = true;
+	}
 }
 
 void CSpinLockFunc::LockAndSleep(unsigned short usSleep)
 {
-	while (BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1))
+	if (!m_bAcquired)
 	{
-		BasicSleep(usSleep);
+		while (BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1))
+		{
+			BasicSleep(usSleep);
+		}
+		m_bAcquired = true;
 	}
 }
 
 void CSpinLockFunc::UnLock()
 {
-	basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 0);
+	if (m_bAcquired)
+	{
+		basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 0);
+		m_bAcquired = false;
+	}
 }
 
 bool CSpinLockFunc::IsLock()

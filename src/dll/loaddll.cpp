@@ -28,6 +28,7 @@ long CBasicLoadDll::LoadLibrary(const char* lpszLibFileName)
 	{
 		return -1;
 	}
+	m_strLoadFileName = lpszLibFileName;
 	return 0;
 }
 
