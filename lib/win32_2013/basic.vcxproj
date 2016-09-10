@@ -25,6 +25,7 @@
     <ClInclude Include="..\..\src\datastruct\list.h" />
     <ClInclude Include="..\..\src\datastruct\map.h" />
     <ClInclude Include="..\..\src\debug\debug.h" />
+    <ClInclude Include="..\..\src\dll\loaddll.h" />
     <ClInclude Include="..\..\src\exception\call_stack.hpp" />
     <ClInclude Include="..\..\src\exception\StackWalker.h" />
     <ClInclude Include="..\..\src\exception\stack_exception.hpp" />
@@ -67,6 +68,7 @@
     <ClCompile Include="..\..\src\debug\debug_linux.cpp" />
     <ClCompile Include="..\..\src\debug\debug_mac.cpp" />
     <ClCompile Include="..\..\src\debug\debug_win.cpp" />
+    <ClCompile Include="..\..\src\dll\loaddll.cpp" />
     <ClCompile Include="..\..\src\exception\call_stack_gcc.cpp" />
     <ClCompile Include="..\..\src\exception\call_stack_msvc.cpp" />
     <ClCompile Include="..\..\src\exception\StackWalker.cpp" />

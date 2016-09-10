@@ -43,6 +43,9 @@
     <Filter Include="sys">
       <UniqueIdentifier>{5928e3d3-574c-46e1-be5e-ce95805210d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dll">
+      <UniqueIdentifier>{4ed64d16-399f-4a8f-8f5b-253816a87fa0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\inc\basic_def.h">
@@ -165,6 +168,9 @@
     <ClInclude Include="..\..\src\sys\sysinfo.h">
       <Filter>sys</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\dll\loaddll.h">
+      <Filter>dll</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mem\mem.cpp">
@@ -268,6 +274,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\sys\sysinfo_win.cpp">
       <Filter>sys</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dll\loaddll.cpp">
+      <Filter>dll</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
