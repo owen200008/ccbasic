@@ -952,7 +952,7 @@ long Basic_FileOperation(UINT wFunc, const char* pFrom, const char* pTo)
 	if(_basic_system(szCmd) != 0)
 	{
 		lRet = GetFileErrorID();
-		WBasicTrace("file command fail : %s = %d \n", szCmd, lRet);
+		BasicTrace("file command fail : %s = %d \n", szCmd, lRet);
 	}
 	else
 	{

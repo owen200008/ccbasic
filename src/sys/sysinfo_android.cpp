@@ -671,10 +671,6 @@ void* BasicLoadLibrary(const char* lpszLibFileName)
         if(pError != NULL)
 			basiclib::BasicLogEventErrorV("linking (%s) error occurred: (%s) \n", lpszLibFileName, pError);
     }
-	else
-	{
-		m_strLoadFileName = lpszLibFileName;
-	}
     return hDll;
 }
 
