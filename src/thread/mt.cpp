@@ -249,9 +249,9 @@ BOOL CCriticalSection::Unlock()
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-CSpinLockFunc::CSpinLockFunc(SpinLock& lock)
+CSpinLockFunc::CSpinLockFunc(SpinLock* pLock)
 {
-	m_pLock = &lock;
+	m_pLock = pLock;
 	m_bAcquired = false;
 }
 

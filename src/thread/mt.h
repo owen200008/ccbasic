@@ -235,7 +235,7 @@ struct SpinLock
 class CSpinLockFunc
 {
 public:
-	CSpinLockFunc(SpinLock& lock);
+	CSpinLockFunc(SpinLock* pLock);
 	virtual ~CSpinLockFunc();
 
 	void Lock();

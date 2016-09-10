@@ -24,6 +24,7 @@ public:
 	long LoadLibrary(const char* lpszLibFileName);
 	long FreeLibrary();
 	void* GetProcAddress(const char* lpszProcName);
+	basiclib::CBasicString& GetLibName(){return m_strLoadFileName;}
 protected:
 	basiclib::CBasicString	m_strLoadFileName;
 	void*					m_hModule;
