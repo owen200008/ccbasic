@@ -671,7 +671,7 @@ BOOL FindNextFile(HANDLE hFindFile,LPWIN32_FIND_DATA lpFindFileData)
 
 		TCHAR szFilePath[MAX_PATH];
 		_tcscpy(szFilePath, pHandle->m_pszPath);
-		_tcscat(szFilePath, WPATHSPLITSTRING);
+		_tcscat(szFilePath, PATHSPLITSTRING_S);
 		_tcscat(szFilePath, pHandle->dp->d_name);
 
 		lpFindFileData->dwFileAttributes = INVALID_FILE_ATTRIBUTES;
