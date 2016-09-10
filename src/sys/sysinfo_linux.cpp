@@ -791,9 +791,9 @@ int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //动态库调用的函数
-void* BasicLoadLibrary(LPCTSTR lpszLibFileName)
+void* BasicLoadLibrary(const char* lpszLibFileName)
 {
-    void* hDll = dlopen(lpszLibFileName, RTLD_LAZY|RTLD_GLOBAL);
+	void* hDll = dlopen(lpszLibFileName, RTLD_NOW|RTLD_GLOBAL);
     if(hDll == NULL)
     {
         const char* pError = dlerror();

@@ -320,24 +320,6 @@ BOOL Basic_StringMatchSpec(const char* pszFile, const char* pszSpec)
 	return PathMatchSpecA(pszFile, pszSpec);
 }
 
-LONG64 __atoi64W(const TCHAR* str, int nLen/* = -1*/)
-{
-	TCHAR Buff[32];
-	if (nLen == -1)
-	{
-		nLen = _tcslen(str);
-	}
-	memset(Buff, 0, sizeof(Buff));
-
-	__tcscpyn(Buff, sizeof(Buff)-1, str, nLen);
-	Basic_LTrim(Buff);
-#ifdef __BASICWINDOWS
-	return _ttoi64(Buff);
-#else
-	TCHAR* pEnd;
-	return _tcstol(Buff, &pEnd, 10);
-#endif
-}
 LONG64 __atoi64_s(const char* str, int nLen/* = -1*/)
 {
 	char Buff[32];

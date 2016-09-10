@@ -47,7 +47,7 @@ _BASIC_DLL_API int BasicGetOSystemV(CBasicString& strOSVer)
 {	
 	struct utsname osbuf;
     	uname(&osbuf);
- 	strOSVer.Format(_T("%s %s"), osbuf.sysname, osbuf.release);
+ 	strOSVer.Format("%s %s", osbuf.sysname, osbuf.release);
 	return 0;
 }
 //
@@ -222,7 +222,7 @@ _BASIC_DLL_API DWORD BasicGetDiskInfo(TCHAR* pszDiskBuffer, int nBufferLen)
 	int nLen = nBufferLen;
 	for(int i=0; i<nDiskCount; i++)
 	{
-		int n = _stprintf_s(p, nLen, _T("%s %d/%d|"),
+		int n = _stprintf_s(p, nLen, "%s %d/%d|",
 			s[i].f_mntonname,
 			(s[i].f_bavail * s[i].f_bsize) / (1024 * 1024),
 			(s[i].f_blocks * s[i].f_bsize) / (1024 * 1024)
@@ -343,7 +343,7 @@ _BASIC_DLL_API BOOL BasicProcessIsTerminated(DWORD dwProcessID)
 {
 	CBasicString strFile;
 	CBasicString strCmd;
-	strCmd.Format(_T("ps -p %d"), dwProcessID);
+	strCmd.Format("ps -p %d", dwProcessID);
 	FILE* pTmp = popen(strCmd.c_str(), "r");
 	if (pTmp != NULL)
 	{
@@ -471,14 +471,14 @@ int GetMacInfo(int& nAdapterIndex, char* pMac, int nLength)
  *\param lpszLibFileName	动态库文件名
  *\return 成功返回非零动态库句柄，失败返回NULL
  */
-_BASIC_DLL_API void*	BasicLoadLibrary(LPCTSTR lpszLibFileName)
+_BASIC_DLL_API void*	BasicLoadLibrary(const char* lpszLibFileName)
 {
     void* hDll = dlopen(lpszLibFileName, RTLD_LAZY|RTLD_GLOBAL);
     if(hDll == NULL)
     {
         char* pError = dlerror();
         if(pError != NULL)
-            TRACE(_T("linking (%s) error occurred: (%s) \n"), lpszLibFileName, pError);
+            TRACE("linking (%s) error occurred: (%s) \n", lpszLibFileName, pError);
     }
     return hDll;
 }

@@ -49,32 +49,32 @@ int __tcsncmp(const WCHAR *string1, const WCHAR *string2, size_t maxcount)
 }
 
 
-double __atof(const TCHAR* str,int nLen/* = -1*/)
+double __atof(const char* str, int nLen/* = -1*/)
 {
-	TCHAR* pEnd;
+	char* pEnd;
 	if(nLen <= -1)
 	{
-		nLen = _tcslen(str);
+		nLen = __tcslen(str);
 	}
-	TCHAR Buff[32];
+	char Buff[32];
 	memset(Buff, 0, sizeof(Buff));
 	__tcscpyn(Buff, sizeof(Buff) - 1, str, nLen);
 	Basic_LTrim(Buff);
-	return _tcstod(Buff, &pEnd);
+	return strtod(Buff, &pEnd);
 }
 
-long __atol(const TCHAR* str,int nLen/* = -1*/)
+long __atol(const char* str,int nLen/* = -1*/)
 {
-	TCHAR Buff[32];
-	TCHAR* pEnd;
+	char Buff[32];
+	char* pEnd;
 	if(nLen == -1)
 	{
-		nLen = _tcslen(str);
+		nLen = __tcslen(str);
 	}
 	memset(Buff, 0, sizeof(Buff));
 	__tcscpyn(Buff, sizeof(Buff) - 1, str, nLen);
 	Basic_LTrim(Buff);
-	return _tcstol(Buff, &pEnd, 10);
+	return strtol(Buff, &pEnd, 10);
 }
 
 const TCHAR* __bedigit(const TCHAR* psz, int nLen)

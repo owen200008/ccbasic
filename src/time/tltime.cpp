@@ -439,13 +439,13 @@ CTime::CTime(const FILETIME& fileTime, int nDST)
 #endif
 
 //解析格式MMMM-MM-MM MM:MM:MM 例如 2014-04-02 17:42:13  
-BOOL CTime::ParseString(LPCTSTR lpszTimeFormat)
+BOOL CTime::ParseString(const char* lpszTimeFormat)
 {
 	BOOL nResult = FALSE;
-	if (_tcslen(lpszTimeFormat) == 14)
+	if (__tcslen(lpszTimeFormat) == 14)
 	{
 		struct tm atm;
-		_stscanf(lpszTimeFormat, _T("%4d%2d%2d%2d%2d%2d"), &atm.tm_year, &atm.tm_mon, &atm.tm_mday, &atm.tm_hour, &atm.tm_min, &atm.tm_sec);
+		sscanf(lpszTimeFormat, "%4d%2d%2d%2d%2d%2d", &atm.tm_year, &atm.tm_mon, &atm.tm_mday, &atm.tm_hour, &atm.tm_min, &atm.tm_sec);
 		
 		ASSERT(atm.tm_mday >= 1 && atm.tm_mday <= 31);
 		ASSERT(atm.tm_mon >= 1 && atm.tm_mon <= 12);

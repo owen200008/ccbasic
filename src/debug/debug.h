@@ -20,7 +20,7 @@
 #define ASSERT(f) \
 	do \
 	{ \
-	if (!(f) && basiclib::BasicAssertFailedLine(_T(__FILE__), __LINE__)) \
+	if (!(f) && basiclib::BasicAssertFailedLine(__FILE__, __LINE__)) \
 	basiclib::BasicDebugBreak(); \
 	} while (0) \
 
@@ -87,17 +87,15 @@ __NS_BASIC_START
 #endif////__ANDROID
 
 //!定位断言代码行
-BOOL BasicAssertFailedLine(LPCTSTR lpszFileName, int nLine);
+BOOL BasicAssertFailedLine(const char* lpszFileName, int nLine);
 
 //!中断
 void BasicDebugBreak();
 
 //!输出跟踪信息
-void WBasicTrace(LPCTSTR lpszFormat, ...);
 void BasicTrace(const char* lpszFormat, ...);
 
 //!输出跟踪信息到调试器
-void WBasicTraceDebugView(LPCTSTR lpszString);
 void BasicTraceDebugView(const char* lpszString);
 
 ///////////////////////////////////////////////////////////////////////////////////////

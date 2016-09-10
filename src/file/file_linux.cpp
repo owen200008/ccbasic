@@ -164,13 +164,13 @@ int _basic_system(LPCTSTR lpCmd)
 	BOOL bIn = FALSE;
 	while(*pS)
 	{
-		if(*pS == _T('\''))
+		if(*pS == '\'')
 		{
 			bIn = !bIn;
 		}
-		else if(bIn && (*pS == _T(' ') || *pS == _T('(') || *pS == _T(')')))		//转义空格等
+		else if(bIn && (*pS == ' ' || *pS == '(' || *pS == ')'))		//转义空格等
 		{
-			*pD++ = _T('\\');
+			*pD++ = '\\';
 			*pD++ = *pS;
 		}
 		else
@@ -199,18 +199,18 @@ HANDLE	CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, 
 		}
 		case CREATE_ALWAYS:
 		{
-			szOpenFlag[0] = _T('w');
+			szOpenFlag[0] = 'w';
 			break;
 		}
 		case OPEN_ALWAYS:
 		{
 			if (_taccess(lpFileName, F_OK) == 0)	//文件存在，打开
 			{
-				szOpenFlag[0] = _T('r');
+				szOpenFlag[0] = 'r';
 			}
 			else	//创建
 			{
-				szOpenFlag[0] = _T('w');
+				szOpenFlag[0] = 'w';
 			}
 			break;
 		}
@@ -221,20 +221,20 @@ HANDLE	CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, 
 				SetLastError(ENOENT);
 				return INVALID_HANDLE_VALUE;
 			}
-			szOpenFlag[0] = _T('w');
+			szOpenFlag[0] = 'w';
 			break;
 		}
 		default:
 		case OPEN_EXISTING:
 		{
-			szOpenFlag[0] = _T('r');
+			szOpenFlag[0] = 'r';
 			break;
 		}
 	}
-	szOpenFlag[1] = _T('b');
+	szOpenFlag[1] = 'b';
 	if(dwDesiredAccess & GENERIC_WRITE)
 	{
-		szOpenFlag[2] = _T('+');
+		szOpenFlag[2] = '+';
 	}
 	FILE* fp = _tfopen(lpFileName, szOpenFlag);
 	if(fp == NULL)
@@ -323,15 +323,15 @@ BOOL MoveFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName)
 }
 BOOL CopyFile(LPCTSTR lpExistingFileName,LPCTSTR lpNewFileName,BOOL bFailIfExists)
 {
-	TCHAR szCmd[1024];
-	_stprintf(szCmd, _T("\\cp '%s' '%s' "), lpExistingFileName, lpNewFileName);
+	char szCmd[1024];
+	_stprintf(szCmd, "\\cp '%s' '%s' ", lpExistingFileName, lpNewFileName);
 	if(bFailIfExists)
 	{
-		_tcscat(szCmd, _T(" --reply=no "));
+		_tcscat(szCmd, " --reply=no ");
 	}
 	else
 	{
-		_tcscat(szCmd, _T(" -f "));
+		_tcscat(szCmd, " -f ");
 	}
 	return _basic_system(szCmd) == 0;
 }
@@ -364,7 +364,7 @@ DWORD GetFullPathName(LPCTSTR lpFileName,DWORD nBufferLength,LPTSTR lpBuffer,LPT
 	}
 
 	long lAbsLen = _tcslen(lpBuffer);
-	if(lpFileName != NULL && lpFileName[0] != _T('\0'))
+	if(lpFileName != NULL && lpFileName[0] != '\0')
 	{
 		if(*lpFileName == PATHSPLIT)
 		{
@@ -387,9 +387,9 @@ DWORD GetFullPathName(LPCTSTR lpFileName,DWORD nBufferLength,LPTSTR lpBuffer,LPT
 			TCHAR* pRelHead = (TCHAR*)lpFileName;
 			while(*pRelHead)
 			{
-				if(*pRelHead == _T('.'))
+				if(*pRelHead == '.')
 				{
-					if(pRelHead[1] == _T('.'))
+					if(pRelHead[1] == '.')
 					{
 						if(pRelHead[2] != PATHSPLIT)
 						{
@@ -401,7 +401,7 @@ DWORD GetFullPathName(LPCTSTR lpFileName,DWORD nBufferLength,LPTSTR lpBuffer,LPT
 							{
 								for(;;)
 								{
-									*pAbsTail = _T('\0');
+									*pAbsTail = '\0';
 									pAbsTail--;
 									lAbsLen--;
 									if(*pAbsTail == PATHSPLIT)
@@ -581,7 +581,7 @@ DWORD GetFileAttributes(LPCTSTR lpFileName)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //文件查找
-const TCHAR CURR_PATH[] = _T("./");
+const TCHAR CURR_PATH[] = "./";
 class CFileFindHandle
 {
 public:
@@ -620,7 +620,7 @@ void CFileFindHandle::SetSearchFileSpec(LPCTSTR lpFileName)
 	TCHAR* pSplit = _tcsrchr(m_szFullSearch, PATHSPLIT);
 	if (pSplit)
 	{
-		*pSplit++ = _T('\0');
+		*pSplit++ = '\0';
 		m_pszSpec = pSplit;
 		m_pszPath = m_szFullSearch;
 	}
@@ -714,7 +714,7 @@ static LPCTSTR StepSpec(LPCTSTR pszFileParam, LPCTSTR pszSpec)
 	while(nParamIndex < nParamLen && nSpecIndex < nSpecLen)
 	{
 		if (pszFileParam[nParamIndex] == pszSpec[nSpecIndex]
-		|| pszSpec[nSpecIndex] == _T('?'))
+		|| pszSpec[nSpecIndex] == '?')
 		{
 			++ nParamIndex; ++ nSpecIndex;
 		}
@@ -733,7 +733,7 @@ static LPCTSTR StepSpec(LPCTSTR pszFileParam, LPCTSTR pszSpec)
 
 static BOOL MatchLast(LPCTSTR pszFileParam, LPCTSTR pszSpec)
 {
-	if ( _T('\0') == *pszSpec)
+	if ( '\0' == *pszSpec)
 		return TRUE;
 
 	int nSpecLen = _tcslen(pszSpec); 
@@ -758,10 +758,10 @@ BOOL PathMatchSpec(LPCTSTR pszFileParam, LPCTSTR pszSpec)
 	TCHAR* e = p;
 	do
 	{
-		e = _tcschr(p, _T('*'));
+		e = _tcschr(p, '*');
 		if (e != NULL)
 		{
-			*e++ =_T('\0');
+			*e++ ='\0';
 		}
 		else
 		{

@@ -57,7 +57,7 @@ int BasicGetOSystemV(CBasicString& strOSVer)
 {
     struct utsname osbuf;
     uname(&osbuf);
-    strOSVer.Format(_T("%s %s"), osbuf.sysname, osbuf.release);
+    strOSVer.Format("%s %s", osbuf.sysname, osbuf.release);
 	return 0;
 }
 
@@ -420,7 +420,7 @@ static bool ShowDev(const char *disk, const char *mount_point,const char *fstype
 		return false;
 	}
 
-	int nLen = _stprintf_s(buf, nBufLen, _T("%s %d/%d| "), mount_point,
+	int nLen = _stprintf_s(buf, nBufLen, "%s %d/%d| ", mount_point,
 		int((fsu.fsu_bfree) * fsu.fsu_blocksize / 1024 /1024),
 		int(fsu.fsu_blocks * fsu.fsu_blocksize / 1024 / 1024)
 		);
@@ -596,7 +596,7 @@ BOOL BasicProcessIsTerminated(DWORD dwProcessID)
 {
 	CBasicString strFile;
 	CBasicString strCmd;
-	strCmd.Format(_T("ps -p %d"), dwProcessID);
+	strCmd.Format("ps -p %d", dwProcessID);
 	FILE* pTmp = popen(strCmd.c_str(), "r");
 	if (pTmp != NULL)
 	{
@@ -662,14 +662,14 @@ int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //��̬����õĺ���
-void* BasicLoadLibrary(LPCTSTR lpszLibFileName)
+void* BasicLoadLibrary(const char* lpszLibFileName)
 {
     void* hDll = dlopen(lpszLibFileName, RTLD_LAZY|RTLD_GLOBAL);
     if(hDll == NULL)
     {
         const char* pError = dlerror();
         if(pError != NULL)
-            TRACE(_T("linking (%s) error occurred: (%s) \n"), lpszLibFileName, pError);
+            TRACE("linking (%s) error occurred: (%s) \n", lpszLibFileName, pError);
     }
     return hDll;
 }

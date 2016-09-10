@@ -39,9 +39,7 @@ using namespace std;
 __NS_BASIC_START
 
 const size_t NullLen = (size_t)-1;
-const char NullAString[] = "";
-const WCHAR NullWString[] = { 0 };
-const LPCTSTR Null_String = _T("");
+const char NullAString[] = { 0 };
 #define Null_String_S		""
 
 //! 字符串、字符串流的定义。
@@ -767,7 +765,7 @@ void __GetParamString(CharType* lpszSrc, CharType* lpszFormat, const CharType to
 	pEnd = pKey = pSep = NULL;
 	size_t len = 0;
 	while(lpszFormat && lpszSrc && 
-		*lpszFormat != _T('\0') && *lpszSrc != _T('\0'))
+		*lpszFormat != '\0' && *lpszSrc != '\0')
 	{
 		if (*lpszFormat == *lpszSrc)
 		{
@@ -1603,20 +1601,7 @@ typename __BasicString<CharType>::StringType Basic_DecodeString(const CharType* 
 	return str;
 }
 
-template<class CharType>
-const CharType*	Basic_LTrim(const CharType* str)
-{
-	FORWARD_SPACE(str, Null_String, 0);
-	return str;
-}
 const char* Basic_LTrim(const char* str);
-
-template<class CharType>
-CharType*	Basic_LTrim(CharType* str)
-{
-	FORWARD_SPACE(str, Null_String, 0);
-	return str;
-}
 char* Basic_LTrim(char* str);
 
 template<class CharType>
@@ -1640,48 +1625,6 @@ CharType* Basic_Trim(CharType* str)
 {
 	return Basic_RTrim(Basic_LTrim((CharType*)str));
 }
-
-template<class CharType>
-void Basic_InsertNumberSpace(typename __BasicString<CharType>::StringType& str, CharType tok)
-{
-	const CharType* ps = str.c_str();
-	size_t len = str.size();
-	size_t pos = len;
-	const CharType* p = __tcschr(ps, (CharType)'.');
-	if (p)
-		pos = p - ps;
-
-	do 
-	{
-		int count = pos / 3;
-		if (count == 0)
-			break;
-
-		pos = pos % 3;
-		CBasicStaticBuffer buf;
-		buf.Assign(2*(len + 1) * sizeof(CharType), 0);
-		CharType* p = (CharType*)buf.GetBuffer();
-
-		if (pos > 0)
-		{
-			p = __tcsncpy(p, ps, pos);
-			p += pos;
-			*p++ = _T(',');
-			ps += pos;
-
-		}
-		for (int i = 0; i < count - 1; ++ i)
-		{
-			__tcsncpy(p, ps, 3);
-			p += 3;
-			*p ++ = _T(',');
-			ps += 3;
-		}
-		__tcscpy(p, ps);
-		str = buf.GetString();
-	} while (false);
-}
-
 
 template<typename CharType>
 CharType* __tcscpyn(CharType* strDest, size_t nDest, const CharType* strSource, size_t nSource = NullLen, bool bTrim = false)
@@ -1721,7 +1664,6 @@ CharType* __tcscpyn(CharType* strDest, size_t nDest, const CharType* strSource, 
 *\param nLen 默认值 -1
 *\return  
 */
-LONG64 __atoi64W(const TCHAR* str, int nLen/* = -1*/);
 LONG64 __atoi64_s(const char* str, int nLen/* = -1*/);
 
 

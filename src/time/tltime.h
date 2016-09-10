@@ -94,7 +94,7 @@ public:
 	int GetDayOfWeek() const;   // 1=Sun, 2=Mon, ..., 7=Sat
 
 	//解析格式MMMMMMMMMMMMMM 例如 20140402174213,必须14位
-	BOOL ParseString(LPCTSTR lpszTimeFormat);
+	BOOL ParseString(const char* lpszTimeFormat);
 	
 // Operations
 	// time math

@@ -12,12 +12,12 @@ public:
 	BOOL		Assign(unsigned short len, unsigned char c);
 	void		Release();
 	void*		AppendBuffer(const void* buf, unsigned short len);
-	void*		AppendString(LPCTSTR str, unsigned short len);
+	void*		AppendString(const char* str, unsigned short len);
 	void		Clone(const BasicStaticBuffer& buffer);
 
 	void*		GetBuffer() const;
 	size_t		GetLength() const;
-	LPCTSTR		GetString() const;
+	const char*	GetString() const;
 
 	void*		SetLength(unsigned short len);
 protected:

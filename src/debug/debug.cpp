@@ -7,9 +7,9 @@ __NS_BASIC_START
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
-BOOL BasicAssertFailedLine(LPCTSTR lpszFileName, int nLine)
+BOOL BasicAssertFailedLine(const char* lpszFileName, int nLine)
 {
-	WBasicTrace(_T("ASSERT @%s:%d\n"), lpszFileName, nLine);
+	BasicTrace("ASSERT @%s:%d\n", lpszFileName, nLine);
 	return TRUE;
 }
 
@@ -19,16 +19,6 @@ void BasicDebugBreak()
 	assert(FALSE);
 }
 
-//
-void WBasicTraceV(LPCTSTR lpszFormat, va_list argList)
-{
-	TCHAR szTraceBuff[256];
-	memset(szTraceBuff, 0, sizeof(szTraceBuff));
-	_vsntprintf(szTraceBuff, sizeof(szTraceBuff) / sizeof(TCHAR) - 1, lpszFormat, argList);
-
-	//OutputDebugString(szTraceBuff);
-	WBasicTraceDebugView(szTraceBuff);
-}
 void BasicTraceV(const char* lpszFormat, va_list argList)
 {
 	char szTraceBuff[256];
@@ -37,15 +27,6 @@ void BasicTraceV(const char* lpszFormat, va_list argList)
 
 	//OutputDebugString(szTraceBuff);
 	BasicTraceDebugView(szTraceBuff);
-}
-
-
-void WBasicTrace(LPCTSTR lpszFormat, ...)
-{
-	va_list argList;
-	va_start(argList, lpszFormat);
-	WBasicTraceV((LPCTSTR)lpszFormat, argList);
-	va_end(argList);
 }
 
 void BasicTrace(const char* lpszFormat, ...)

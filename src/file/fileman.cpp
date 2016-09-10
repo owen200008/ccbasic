@@ -459,21 +459,6 @@ long Basic_GetFileStatus(const char* lpszFileName, TLFileStatus& rStatus)
 	}
 }
 
-long WBasic_GetFileName(LPCTSTR lpszPathName, LPTSTR lpszName, int nMax)
-{
-	assert(lpszPathName != NULL);
-
-	LPTSTR lpszTemp = WBasic_FindFileName(lpszPathName);
-
-	long lLen = _tcslen(lpszTemp) + 1;			//I know this
-	if (lpszName == NULL || nMax < lLen)
-	{
-		return lLen;
-	}
-	_tcscpy(lpszName, lpszTemp);
-	return BASIC_FILE_OK;
-}
-
 long Basic_GetFileName(const char* lpszPathName, char* lpszName, int nMax)
 {
 	assert(lpszPathName != NULL);
@@ -487,22 +472,6 @@ long Basic_GetFileName(const char* lpszPathName, char* lpszName, int nMax)
 	}
 	strcpy(lpszName, lpszTemp);
 	return BASIC_FILE_OK;
-}
-
-long WBasic_GetFileTitle(LPCTSTR lpszPathName, LPTSTR lpszTitle, int nMax)
-{
-	assert(lpszPathName != NULL);
-
-	long lRet = WBasic_GetFileName(lpszPathName, lpszTitle, nMax);
-	if(lRet == BASIC_FILE_OK)
-	{
-		TCHAR* p = _tcsrchr(lpszTitle, _T('.'));
-		if(p != NULL)
-		{
-			*p = _T('\0');
-		}
-	}
-	return lRet;
 }
 
 long Basic_GetFileTitle(const char* lpszPathName, char* lpszTitle, int nMax)
@@ -521,18 +490,6 @@ long Basic_GetFileTitle(const char* lpszPathName, char* lpszTitle, int nMax)
 	return lRet;
 }
 
-long WBasic_GetFileDirPath(LPCTSTR lpszPathName, LPTSTR lpszDirPath, int nMax)
-{
-	if (lpszDirPath == NULL || nMax < _MAX_PATH)
-	{
-		return _MAX_PATH;
-	}
-	_tcscpy(lpszDirPath, lpszPathName);	
-	LPTSTR lpszTemp = WBasic_FindFileName(lpszDirPath);
-	*lpszTemp = _T('\0');
-	return BASIC_FILE_OK;
-
-}
 long Basic_GetFileDirPath(const char* lpszPathName, char* lpszDirPath, int nMax)
 {
 	if (lpszDirPath == NULL || nMax < _MAX_PATH)
@@ -771,19 +728,6 @@ BOOL Basic_PathMatchSpec(const char* pszFile, const char* pszSpec)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-LPTSTR WBasic_FindFileName(LPCTSTR lpszPathName)
-{
-	LPTSTR lpszTemp = (LPTSTR)lpszPathName;
-	for (LPCTSTR lpsz = lpszPathName; *lpsz != _T('\0'); lpsz = _tcsinc(lpsz))
-	{
-		// remember last directory/drive separator
-		if (*lpsz == _T('\\') || *lpsz == _T('/') || *lpsz == _T(':'))
-		{
-			lpszTemp = (LPTSTR)_tcsinc(lpsz);
-		}
-	}
-	return lpszTemp;
-}
 #ifdef __BASICWINDOWS
 #include <mbstring.h>
 #endif
@@ -954,49 +898,49 @@ long Basic_FileOperation(UINT wFunc, const char* pFrom, const char* pTo)
 	}
 #else
 	TCHAR szCmd[1024];
-	TCHAR* pFileName = WBasic_FindFileName(szCPath);
+	TCHAR* pFileName = Basic_FindFileName(szCPath);
 	switch(wFunc)
 	{
 		case BASIC_FO_COPY:
 		{
-			//_stprintf(szCmd, _T("cp -f '%s' '%s' "), szCPath, szSPath);
+			//_stprintf(szCmd, "cp -f '%s' '%s' ", szCPath, szSPath);
 			if(pFileName != NULL && pFileName > szCPath)
 			{
-				*(pFileName-1) = _T('\0');	
-				_stprintf(szCmd, _T("find '%s' -maxdepth 1 -mindepth 1 -name \"%s\"|xargs -i cp -rf {} '%s' "), szCPath, pFileName, szSPath);
+				*(pFileName-1) = '\0';	
+				_stprintf(szCmd, "find '%s' -maxdepth 1 -mindepth 1 -name \"%s\"|xargs -i cp -rf {} '%s' ", szCPath, pFileName, szSPath);
 			}
 			else
 			{
-				_stprintf(szCmd, _T("find '%s' -maxdepth 0 |xargs -i cp -rf {} '%s' "), szCPath, szSPath);
+				_stprintf(szCmd, "find '%s' -maxdepth 0 |xargs -i cp -rf {} '%s' ", szCPath, szSPath);
 			}
 			break;
 		}
 		case BASIC_FO_DELETE:
 		{
-			//_stprintf(szCmd, _T("rm -rf '%s' "), szCPath);
+			//_stprintf(szCmd, "rm -rf '%s' ", szCPath);
 			if(pFileName != NULL && pFileName > szCPath)
 			{
-				*(pFileName-1) = _T('\0');	
-				_stprintf(szCmd, _T("find '%s' -maxdepth 1 -mindepth 1 -name \"%s\" -print0|xargs -0 rm -rf -- "), szCPath, pFileName);
+				*(pFileName-1) = '\0';	
+				_stprintf(szCmd, "find '%s' -maxdepth 1 -mindepth 1 -name \"%s\" -print0|xargs -0 rm -rf -- ", szCPath, pFileName);
 			}
 			else
 			{
-				_stprintf(szCmd, _T("find '%s' -print0|xargs -0 rm -rf -- "), szCPath);
+				_stprintf(szCmd, "find '%s' -print0|xargs -0 rm -rf -- ", szCPath);
 			}
 			break;
 		}
 		case BASIC_FO_MOVE:
 		case BASIC_FO_RENAME:
 		{
-			//_stprintf(szCmd, _T("mv -f '%s' '%s' "), szCPath, szSPath);
+			//_stprintf(szCmd, "mv -f '%s' '%s' ", szCPath, szSPath);
 			if(pFileName != NULL && pFileName > szCPath)
 			{
-				*(pFileName-1) = _T('\0');	
-				_stprintf(szCmd, _T("find '%s' -maxdepth 1 -mindepth 1 -name \"%s\"|xargs -i mv -f {} '%s' "), szCPath, pFileName, szSPath);
+				*(pFileName-1) = '\0';	
+				_stprintf(szCmd, "find '%s' -maxdepth 1 -mindepth 1 -name \"%s\"|xargs -i mv -f {} '%s' ", szCPath, pFileName, szSPath);
 			}
 			else
 			{
-				_stprintf(szCmd, _T("find '%s' -maxdepth 1 -mindepth 1 |xargs -i mv -f {} '%s' "), szCPath, szSPath);
+				_stprintf(szCmd, "find '%s' -maxdepth 1 -mindepth 1 |xargs -i mv -f {} '%s' ", szCPath, szSPath);
 			}
 			break;
 		}
@@ -1061,7 +1005,7 @@ static long _FindAllFileInPath(const char* lpszFilePath, const char* lpszFileNam
 			}
 			if((dwFindMode & BASIC_FIND_SUBDIR) && !tlFinder.IsDots())
 			{
-				strFileName += WIDEPATHSPLIT;
+				strFileName += PATHSPLIT_S;
 				lResult += _FindAllFileInPath(strFileName.c_str(), lpszFileName, lpszFilterFileName, f, dwFindMode);
 			}
 		}

@@ -86,17 +86,17 @@ void BasicStaticBuffer::Clone(const BasicStaticBuffer& buffer)
 	}
 }
 
-void* BasicStaticBuffer::AppendString(LPCTSTR str, unsigned short len)
+void* BasicStaticBuffer::AppendString(const char* str, unsigned short len)
 {
-	if(str != NULL && str[0] != _T('\0'))
+	if(str != NULL && str[0] != '\0')
 	{
 		if (len == (unsigned short)-1)
 		{
 			len = __tcslen(str);
 		}
-		unsigned short nLength = (len + 1)* sizeof(TCHAR);
+		unsigned short nLength = (len + 1)* sizeof(char);
 		AppendBuffer(str, nLength);
-		m_nLength -= sizeof(TCHAR);
+		m_nLength -= sizeof(char);
 	}
 	return m_pBuffer;
 }
@@ -111,9 +111,9 @@ size_t BasicStaticBuffer::GetLength() const
 	return m_nLength;
 }
 
-LPCTSTR	 BasicStaticBuffer::GetString() const
+const char* BasicStaticBuffer::GetString() const
 {
-	return (NULL == m_pBuffer)  ? Null_String : (LPCTSTR)m_pBuffer;
+	return (NULL == m_pBuffer) ? Null_String_S : (const char*)m_pBuffer;
 }
 
 void* BasicStaticBuffer::SetLength(unsigned short len)

@@ -54,8 +54,7 @@ long Basic_GetFileStatus(const char* lpszFileName, TLFileStatus& rStatus);
 *\remarks 
 *\warning 第二个参数不能为NULL
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
-*/
-long WBasic_GetFileName(LPCTSTR lpszPathName, LPTSTR lpszName, int nMax);	
+*/	
 long Basic_GetFileName(const char* lpszPathName, char* lpszName, int nMax);
 
 //! 获得不带扩展名的文件名
@@ -68,7 +67,6 @@ long Basic_GetFileName(const char* lpszPathName, char* lpszName, int nMax);
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long WBasic_GetFileTitle(LPCTSTR lpszPathName, LPTSTR lpszTitle, int nMax);	
 long Basic_GetFileTitle(const char* lpszPathName, char* lpszTitle, int nMax);
 //! 从全路径文件名中，取得路径
 /*! 
@@ -80,7 +78,6 @@ long Basic_GetFileTitle(const char* lpszPathName, char* lpszTitle, int nMax);
 *\warning 第二个参数不能为NULL
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long WBasic_GetFileDirPath(LPCTSTR lpszPathName, LPTSTR lpszDirPath, int nMax);	
 long Basic_GetFileDirPath(const char* lpszPathName, char* lpszDirPath, int nMax);
 //! 取文件属性
 /*! 
@@ -156,8 +153,7 @@ BOOL Basic_PathMatchSpec(const char* pszFile, const char* pszSpec);
 *\remarks 返回的文件名指针只是在输入参数 lpszPathName 中的偏移，同时支持 '/' '\\'
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
-*/
-LPTSTR WBasic_FindFileName(LPCTSTR lpszPathName);	
+*/	
 char* Basic_FindFileName(const char* lpszPathName);
 
 //! 创建目录
@@ -446,20 +442,14 @@ protected:
 
 //路径分隔符定义
 #ifdef __BASICWINDOWS
-#define WIDEPATHSPLIT 				_T('\\')		//单个字符
 #define PATHSPLIT_S					'\\'
-#define WPATHSPLITSTRING			_T("\\")		//字符串
 #define PATHSPLITSTRING_S			"\\"			//字符串
-#define PATHSPLIT_OTHER				_T('/')			//单个字符
-#define PATHSPLITSTRING_OTHER		_T("/")			//字符串
 #else
-#define WIDEPATHSPLIT 				_T('/')			//单个字符
-#define PATHSPLIT_S 				_T('/')			//单个字符
+#define PATHSPLIT_S 				'/'			//单个字符
 #define PATHSPLIT					PATHSPLIT_S
-#define WPATHSPLITSTRING			_T("/")			//字符串
 #define PATHSPLITSTRING_S			"/"				//字符串
-#define PATHSPLIT_OTHER				_T('\\')		//单个字符
-#define PATHSPLITSTRING_OTHER		_T("\\")		//字符串
+#define PATHSPLIT_OTHER				'\\'		//单个字符
+#define PATHSPLITSTRING_OTHER		"\\"		//字符串
 #endif
 
 //! 格式化路径

@@ -169,7 +169,7 @@ CSystemInfo::CSystemInfo()
 {
 	m_bSupport = FALSE;
 	NtQuerySystemInformation = (PROCNTQSI)GetProcAddress(
-		GetModuleHandle(_T("ntdll")),
+		GetModuleHandleA("ntdll"),
 		"NtQuerySystemInformation"
 		);
 
@@ -289,7 +289,7 @@ void CSystemInfo::GetMemoryInfo(DWORD &dwTotal, DWORD &dwTotalUse, DWORD &dwAvai
 	MEMORYSTATUSEX statex = { 0 };
 	statex.dwLength = sizeof (statex);
 
-	HMODULE hKernel32 =	GetModuleHandle(_T("kernel32.dll"));
+	HMODULE hKernel32 =	GetModuleHandleA("kernel32.dll");
 	GMS_EX pfuncGlobalMemoryStatusEx = (GMS_EX)GetProcAddress(hKernel32,"GlobalMemoryStatusEx");
 	if(pfuncGlobalMemoryStatusEx != NULL)
 	{
@@ -380,7 +380,7 @@ DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
 	}
 	if(sGetMemInfo == NULL)
 	{
-		sPSModule = LoadLibrary(_T("psapi.dll"));
+		sPSModule = LoadLibraryA("psapi.dll");
 		if(sPSModule)
 		{
 			sGetMemInfo = (GETPROCESSMEMORYINFO_FUNC)GetProcAddress(sPSModule, "GetProcessMemoryInfo");
@@ -518,7 +518,7 @@ long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBufLen)
 CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
 {
 	CBasicString strModule = BasicGetModuleName(hModule);
-	int nPos = strModule.ReverseFind(WIDEPATHSPLIT);
+	int nPos = strModule.ReverseFind(PATHSPLIT_S);
 	if (nPos >= 0)
 		strModule = strModule.Mid(nPos + 1);
 	if (!bExt)
@@ -585,7 +585,7 @@ long BasicCheckProcess(DWORD dwProcessID)
 	if(pfnGetProcessId == (PGetProcessId)-1)
 	{
 		pfnGetProcessId = NULL;
-		HMODULE hDllLib = GetModuleHandle(_T("Kernel32.dll"));
+		HMODULE hDllLib = GetModuleHandleA("Kernel32.dll");
 		if(hDllLib)
 		{
 			pfnGetProcessId = (PGetProcessId)::GetProcAddress(hDllLib, "GetProcessId");

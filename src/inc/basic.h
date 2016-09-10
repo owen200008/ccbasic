@@ -158,7 +158,7 @@
 #endif
 
 //dllº”‘ÿ
-//#include "../dll/loaddll.h"
+#include "../dll/loaddll.h"
 //fl
 //#include "../flcommu/basicclient.h"
 //#include "../flcommu/servertemplate.h"

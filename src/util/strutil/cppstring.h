@@ -150,7 +150,7 @@ int __tcsncmp(const char *string1, const char *string2, size_t maxcount);
 int __tcsncmp(const WCHAR *string1, const WCHAR *string2, size_t maxcount);
 
 
-double __atof(const TCHAR* str,int nLen = -1);
+double __atof(const char* str,int nLen = -1);
 long __atol(const TCHAR* str,int nLen = -1);
 
 const TCHAR* __bedigit(const TCHAR* psz, int nLen);
