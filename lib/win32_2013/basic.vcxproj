@@ -41,6 +41,7 @@
     <ClInclude Include="..\..\src\mem\smartbuffer.h" />
     <ClInclude Include="..\..\src\mem\tlstaticbuffer.h" />
     <ClInclude Include="..\..\src\misc\singleton.h" />
+    <ClInclude Include="..\..\src\misc\tlrefptr.h" />
     <ClInclude Include="..\..\src\sys\syserror.h" />
     <ClInclude Include="..\..\src\sys\sysinfo.h" />
     <ClInclude Include="..\..\src\thread\mt.h" />

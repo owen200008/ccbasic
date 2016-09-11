@@ -171,6 +171,9 @@
     <ClInclude Include="..\..\src\dll\loaddll.h">
       <Filter>dll</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\misc\tlrefptr.h">
+      <Filter>misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mem\mem.cpp">

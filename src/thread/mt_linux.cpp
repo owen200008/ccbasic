@@ -1,5 +1,4 @@
 #include "../inc/basic.h"
-#include "../thread/mt_linux.h"
 #ifndef __ANDROID
 #include <sys/timeb.h>
 #endif
@@ -7,6 +6,7 @@
 #include <libkern/OSAtomic.h>
 #endif
 #if	(defined(__LINUX) || defined(__MAC) || defined(__ANDROID))
+#include "../thread/mt_linux.h"
 #include <pthread.h>
 #include <errno.h>
 __NS_BASIC_START
