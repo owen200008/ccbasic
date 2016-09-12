@@ -3,4 +3,4 @@
 	url = https://github.com/jemalloc/jemalloc.git
 [submodule "3rd/libevent"]
 	path = 3rd/libevent
-	url = https://github.com/nmathewson/Libevent.git
+	url = https://github.com/libevent/libevent.git
