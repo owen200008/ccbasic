@@ -4,6 +4,8 @@ __NS_BASIC_START
 
 #ifdef __BASICWINDOWS
 #pragma comment(lib, "ws2_32.lib")
+#elif defined(__LINUX)
+#include <signal.h>
 #endif
 
 basiclib::CBasicString DefaultParamFuc(const char* pParam)
@@ -149,7 +151,11 @@ static void LogLibeventDNS(int is_warn, const char *msg)
 void CBasicSessionNet::Initialize(pGetConfFunc func)
 {
 	g_bTimeToKill = FALSE;
-#ifndef __BASICWINDOWS
+#ifdef __LINUX
+	struct sigaction sa;
+	sa.sa_handler = SIG_IGN;
+	sigaction(SIGPIPE, &sa, 0);
+#elif defined(__MAC)
 	signal(SIGPIPE, SIG_IGN);
 #endif
 
@@ -368,7 +374,7 @@ Net_Int CBasicSessionNetServer::Listen(const char* lpszAddress, bool bWaitSucces
 	do
 	{
 		sockaddr_storage addr;
-		socklen_t addrlen = sizeof(addr);
+		int addrlen = sizeof(addr);
 		if(evutil_parse_sockaddr_port(lpszAddress, (sockaddr*)&addr, &addrlen) != 0)
 		{
 			lReturn = BASIC_NET_ADDRESS_ERROR;
@@ -726,7 +732,7 @@ Net_Int CBasicSessionNetClient::DoConnect()
 	do
 	{
 		sockaddr_storage addr;
-		socklen_t addrlen = sizeof(addr);
+		int addrlen = sizeof(addr);
 		if (evutil_parse_sockaddr_port(m_strConnectAddr.c_str(), (sockaddr*)&addr, &addrlen) != 0)
 		{
 			lReturn = BASIC_NET_ADDRESS_ERROR;
