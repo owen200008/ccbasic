@@ -40,12 +40,6 @@
 //错误定义
 #include "error.h"
 //
-
-//
-//绑定,用std::function替换
-//#include "../misc/fastdelegate.h"
-//#include "../misc/fastdelegatebind.h"
-//
 //
 //线程定义
 #include "../thread/thread.h"
@@ -134,7 +128,8 @@
 //#include "../misc/lazy_init.h"
 
 //通讯定义
-//#include "../net/net.h"
+#include "../net/sendbuffer.h"
+#include "../net/net.h"
 //#include "../net/networkprotocal.h"
 //
 //CRC16

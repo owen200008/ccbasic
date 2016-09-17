@@ -19,6 +19,25 @@ __NS_BASIC_START
 /*!
 *  
 */
+struct SmartBufferExportOutData
+{
+	char*	m_pExport;
+	int		m_nLength;
+	SmartBufferExportOutData()
+	{
+		m_pExport = nullptr;
+		m_nLength = 0;
+	}
+	void ReleaseData()
+	{
+		if (m_pExport)
+		{
+			basiclib::BasicDeallocate(m_pExport);
+			m_pExport = nullptr;
+			m_nLength = 0;
+		}
+	}
+};
 class _BASIC_DLL_API CBasicSmartBuffer : public CBasicObject
 {
 public:
@@ -28,6 +47,7 @@ public:
 public:
 	//binddatatosmartbuffer,绑定的数据外部就不能使用了，里面的数据会被改变
 	void BindOutData(char* pData, int nLength);
+	bool ExportOutData(SmartBufferExportOutData& data);
 
 	BOOL IsEmpty() const { return m_pszBuffer == NULL; }
 	void Free();

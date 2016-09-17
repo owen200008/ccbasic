@@ -61,6 +61,18 @@ void CBasicSmartBuffer::Free()
 	EmptyBuffer();
 }
 
+bool CBasicSmartBuffer::ExportOutData(SmartBufferExportOutData& data)
+{
+	if (m_bSelfBuf)
+	{
+		data.ReleaseData();
+		data.m_pExport = m_pszBuffer;
+		data.m_nLength = m_cbBuffer;
+		return true;
+	}
+	return false;
+}
+
 void CBasicSmartBuffer::SetDataLength(long lLength)
 {
 	if (lLength < 0)

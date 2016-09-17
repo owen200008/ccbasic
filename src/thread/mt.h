@@ -235,11 +235,12 @@ struct SpinLock
 class CSpinLockFunc
 {
 public:
-	CSpinLockFunc(SpinLock* pLock);
+	CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock = FALSE);
 	virtual ~CSpinLockFunc();
 
 	void Lock();
 	void LockAndSleep(unsigned short usSleep = 100);
+	bool LockNoWait();
 	void UnLock();
 	bool IsLock();
 protected:
