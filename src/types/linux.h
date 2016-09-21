@@ -105,8 +105,6 @@ typedef LONGLONG __time64_t;     /* 64-bit time value */
 
 #include <stdarg.h>
 #include <stdlib.h>
-#include <arpa/inet.h>
-#include <netdb.h>
 
 #ifdef __GNUC__
 #include <functional>

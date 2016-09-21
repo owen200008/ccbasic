@@ -12,6 +12,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdint.h>
 #ifdef _UNICODE
 #define Basicsscanf			swscanf;
 #define _tcsinc_s			_mbsinc

@@ -54,7 +54,7 @@ $(JEMALLOC_PATH)/Makefile :
 
 CPPFLAGS := $(CPPFLAGS) -DLINUX -D__LINUX -I$(JEMALLOC_INC) -fshort-wchar -D_LARGEFILE_SOURCE -D_LARGEFILE_SOURCE64 -D_FILE_OFFSET_BITS=64 -Wno-deprecated
 INLIBS := $(JEMALLOC_STATICLIB)
-LDFLAGS := -lgcc_s -lpthread -levent -ldl -lexpat  -lbfd -liberty
+LDFLAGS := -lgcc_s -lpthread -ldl -lexpat  -lbfd -liberty -levent
 CFLAGS :=
 CXXFLAGS := 
 
