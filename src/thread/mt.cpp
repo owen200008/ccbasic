@@ -130,13 +130,15 @@ CEvent::CEvent(BOOL bInitiallyOwn, BOOL bManualReset, LPCTSTR pstrName)
 
 CEvent::~CEvent()
 {
-#if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
 	if (m_hObject != NULL)
 	{
+#if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
 		BasicDestoryEvent(m_hObject);
+#else
+		BasicCloseHandle(m_hObject);
+#endif
 		m_hObject = NULL;
 	}
-#endif
 }
 
 BOOL CEvent::Unlock()

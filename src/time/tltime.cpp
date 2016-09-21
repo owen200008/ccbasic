@@ -636,7 +636,7 @@ CTimeSpan::CTimeSpan()
 #endif
 
 //get the current time
-void GetCurrentTimeYMDHMS(char* pBuffer, int nLength, time_t tmNow)
+void GetTimeYMDHMS(char* pBuffer, int nLength, time_t tmNow)
 {
 	if (nLength < 16)
 		return;
