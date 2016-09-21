@@ -325,6 +325,9 @@ inline BOOL CTime::operator<=(CTime time) const
 inline BOOL CTime::operator>=(CTime time) const
 { return m_time >= time.m_time; }
 
+//get the current time
+void GetTimeYMDHMS(char* pBuffer, int nLength, time_t tmNow = 0);
+
 __NS_BASIC_END
 
 #endif 

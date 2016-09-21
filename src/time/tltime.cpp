@@ -635,7 +635,16 @@ CTimeSpan::CTimeSpan()
 #endif
 #endif
 
-
+//get the current time
+void GetCurrentTimeYMDHMS(char* pBuffer, int nLength, time_t tmNow)
+{
+	if (nLength < 16)
+		return;
+	if (tmNow == 0)
+		tmNow = time(NULL);
+	CTime cur(tmNow);
+	sprintf(pBuffer, "%d%02d%02d %02d%02d%02d", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute(), cur.GetSecond());
+}
 
 __NS_BASIC_END
 /////////////////////////////////////////////////////////////////////////////
