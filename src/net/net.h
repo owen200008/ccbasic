@@ -285,6 +285,8 @@ public:
 		return lRet;
 	}
 public:
+	//1s
+	virtual void OnTimer() = 0;
 	//release the object
 	void Release();
 	//close net
@@ -294,7 +296,7 @@ public:
 	
 	const char* GetLibeventMethod();
 protected:
-	CBasicSessionNet(Net_UInt nSessionID);
+	CBasicSessionNet(Net_UInt nSessionID, bool bAddOnTimer = true);
 	virtual ~CBasicSessionNet();
 
 	virtual void InitMember();
@@ -310,6 +312,7 @@ protected:
 	void ReleaseCallback();
 	virtual void CloseCallback(BOOL bRemote);
 protected:
+	bool					m_bAddOnTimer;
 	CRefBasicSessionNet		m_refSelf;
 	HandleReceive			m_funcReceive;
 	HandleSend				m_funcSend;
@@ -344,10 +347,10 @@ struct SendBuffer
 class CBasicSessionNetClient : public CBasicSessionNet
 {
 public:
-	static CBasicSessionNetClient* CreateClient(Net_UInt nSessionID){ return new CBasicSessionNetClient(nSessionID); }
+	static CBasicSessionNetClient* CreateClient(Net_UInt nSessionID, bool bAddOnTimer = true){ return new CBasicSessionNetClient(nSessionID, bAddOnTimer); }
 protected:
 	//must be new object
-	CBasicSessionNetClient(Net_UInt nSessionID);
+	CBasicSessionNetClient(Net_UInt nSessionID, bool bAddOnTimer);
 	virtual ~CBasicSessionNetClient();
 
 public:
@@ -366,7 +369,7 @@ public:
 	
 	void GetNetAddress(basiclib::CBasicString& strAddr){ strAddr = m_szPeerAddr; }
 	UINT GetNetAddressPort(){ return m_nPeerPort; }
-	//out timer 1s
+
 	virtual void OnTimer();
 protected:
 	virtual Net_Int OnConnect(Net_UInt dwNetCode);
@@ -438,8 +441,15 @@ public:
 	*/
 	Net_Int Listen(const char* lpszAddress = NULL, bool bWaitSuccess = false);
 
-	//外部ontimer驱动1s
-	virtual void OnTimer(int nTick);
+	virtual void OnTimer();
+	virtual void OnTimerWithAllClient(Net_UInt nTick, VTClientSession& vtClients);
+public:
+	//获取用户在线数
+	long GetOnlineSessionCount()
+	{
+		return m_mapClientSession.size();
+	}
+	CRefBasicSessionNetClient GetClientBySessionID(Net_UInt nSessionID);
 protected:
 	void InitListenEvent(evutil_socket_t socketfd);
 	void OnListenReadEvent();
@@ -450,10 +460,13 @@ protected:
 	CBasicSessionNetClient* CreateServerClientSession(Net_UInt nSessionID);
 	virtual CBasicSessionNetClient* ConstructSession(Net_UInt nSessionID);
 protected:
+	Net_UInt							m_nOnTimerTick;
 	Net_UInt							m_sessionIDMgr;
 	
 	CMutex								m_mtxCSession;
 	MapClientSession					m_mapClientSession;
+
+	basiclib::CBasicString				m_strListenAddr;
 };
 
 __NS_BASIC_END

@@ -18,26 +18,6 @@ void SetNetInitializeGetParamFunc(pGetConfFunc func)
 	g_GetParamFunc = func;
 }
 
-/////////////////////////////////////////////////////////////////////////////
-//net mgr
-class CBasicNetMgv : public CBasicObject
-{
-public:
-	CBasicNetMgv()
-	{
-		//create net
-		CBasicSessionNet::Initialize(g_GetParamFunc);
-	}
-	virtual ~CBasicNetMgv()
-	{
-		//release net
-		CBasicSessionNet::CloseSocket();
-	}
-};
-
-//定义单态
-typedef CBasicSingleton<CBasicNetMgv>	CBasicSingletonNetMgv;
-
 ///////////////////////////////////////////////////////////////////////////////
 #define REG_EVENT_READ	0x0001
 #define REG_EVENT_WRITE	0x0002
@@ -51,13 +31,17 @@ typedef CBasicSingleton<CBasicNetMgv>	CBasicSingletonNetMgv;
 #define EVF_INIT	0x004000
 #define EVF_REMOTE  0x010000
 
+#pragma	pack(1)
 struct CEventQueueItem
 {
 	CBasicSessionNet*								m_pRefNetSession;
 	CBasicSessionNet::pCallSameRefNetSessionFunc	m_pCallFunc;
 	Net_PtrInt										m_lRevert;
 };
+#pragma	pack()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+typedef void(*pCallFuncForThread)(Net_PtrInt lRevert);
+
 static BOOL			g_bTimeToKill = TRUE;
 
 class CNetThread;
@@ -99,10 +83,7 @@ public:
 	}
 	void SetSameThreadEvent(CBasicSessionNet* pSession, CBasicSessionNet::pCallSameRefNetSessionFunc pCallFunc, Net_PtrInt lRevert)
 	{
-		if (pCallFunc)
-		{
-			pCallFunc(pSession, lRevert);
-		}
+		pCallFunc(pSession, lRevert);
 	}
 
 public:
@@ -111,6 +92,39 @@ public:
 	struct event_base*	m_base;
 	struct event		notify_event;
 };
+
+/////////////////////////////////////////////////////////////////////////////
+//net mgr
+class CBasicNetMgv;
+CBasicNetMgv* m_gNetMgrPoint = nullptr;
+class CBasicNetMgv : public CBasicObject
+{
+public:
+	CBasicNetMgv()
+	{
+		m_bCloseTimer = false;
+		m_gNetMgrPoint = this;
+		//create net
+		CBasicSessionNet::Initialize(g_GetParamFunc);
+	}
+	virtual ~CBasicNetMgv()
+	{
+		//release net
+		CBasicSessionNet::CloseSocket();
+	}
+public:
+	event	m_clocktimer;
+	bool	m_bCloseTimer;
+
+	//operator in thread 0
+	typedef basiclib::basic_vector<CBasicSessionNet*>::type	VTOnTimerSessionList;
+	typedef VTOnTimerSessionList::iterator					VTOnTimerSessionListIterator;
+	VTOnTimerSessionList	m_vtOnTimerList;
+};
+
+//定义单态
+typedef CBasicSingleton<CBasicNetMgv>	CBasicSingletonNetMgv;
+////////////////////////////////////////////////////////////////////////
 
 void ReadSelfOrder(int fd, short event, void *arg)
 {
@@ -127,7 +141,7 @@ void ReadSelfOrder(int fd, short event, void *arg)
 			CBasicSessionNet::CRefBasicSessionNet pSession(eventQueue.m_pRefNetSession);
 			//sign can delete ref
 			eventQueue.m_pRefNetSession->DelRef();
-			
+
 			thr->SetSameThreadEvent(eventQueue.m_pRefNetSession, eventQueue.m_pCallFunc, eventQueue.m_lRevert);
 		}
 	}
@@ -146,6 +160,24 @@ THREAD_RETURN WorkerThread(void *arg)
 static void LogLibeventDNS(int is_warn, const char *msg) 
 {
 	basiclib::BasicLogEventV("%s: %s", is_warn ? "WARN" : "INFO", msg);
+}
+
+void NetOnTimer(evutil_socket_t fd, short event, void *arg)
+{
+	if (g_bTimeToKill)
+	{
+		//delete timer
+		evtimer_del(&m_gNetMgrPoint->m_clocktimer);
+		m_gNetMgrPoint->m_bCloseTimer = true;
+		TRACE("delete net clocktimer!");
+		return;
+	}
+	for (auto& session : m_gNetMgrPoint->m_vtOnTimerList)
+	{
+		session->OnTimer();
+	}
+
+	return;
 }
 
 void CBasicSessionNet::Initialize(pGetConfFunc func)
@@ -201,6 +233,18 @@ void CBasicSessionNet::Initialize(pGetConfFunc func)
 			basiclib::BasicLogEventError("libevent eventadd error");
 			exit(1);
 		}
+		//create timer for 0 thread, all session shedule
+		if (i == 0)
+		{
+			event_set(&m_gNetMgrPoint->m_clocktimer, -1, EV_PERSIST, NetOnTimer, 0);
+			event_base_set(pThread->m_base, &m_gNetMgrPoint->m_clocktimer);
+
+			timeval tv;
+			tv.tv_sec = 1;
+			tv.tv_usec = 0;
+			evtimer_add(&m_gNetMgrPoint->m_clocktimer, &tv);
+		}
+		
 		BasicCreateThread(WorkerThread, pThread, &(pThread->m_dwThreadID));
 	}
 	
@@ -214,6 +258,7 @@ void CBasicSessionNet::Initialize(pGetConfFunc func)
 
 void CBasicSessionNet::CloseSocket()
 {
+	TRACE("Start CloseSocket!");
 	g_bTimeToKill = TRUE;
 	if (g_nEventThreadCount > 0 && g_pEventThreads != nullptr)
 	{
@@ -232,6 +277,17 @@ void CBasicSessionNet::CloseSocket()
 				break;
 			}
 		}
+		nTimes = 0;
+		while (!m_gNetMgrPoint->m_bCloseTimer)
+		{
+			nTimes++;
+			basiclib::BasicSleep(100);
+			if (nTimes > 100)
+			{
+				break;
+			}
+		}
+
 		for (int i = 0; i < g_nEventThreadCount; i++)
 		{
 			CNetThread* pThread = &g_pEventThreads[i];
@@ -243,16 +299,34 @@ void CBasicSessionNet::CloseSocket()
 #ifdef __BASICWINDOWS
 	WSACleanup();
 #endif
+	TRACE("End CloseSocket!");
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-CBasicSessionNet::CBasicSessionNet(Net_UInt nSessionID)
+CBasicSessionNet::CBasicSessionNet(Net_UInt nSessionID, bool bAddOnTimer)
 {
 	//init net
 	CBasicSingletonNetMgv::Instance();
 	m_refSelf = this;
 	m_pThread = &g_pEventThreads[nSessionID % g_nEventThreadCount];
 	m_pPreSend = nullptr;
+	m_bAddOnTimer = bAddOnTimer;
 	InitMember();
+	if (m_bAddOnTimer)
+	{
+		g_pEventThreads[0].SetEvent(this, [](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+			m_gNetMgrPoint->m_vtOnTimerList.push_back(pSession);
+		}, 0);
+	}
+}
+
+CBasicSessionNet::~CBasicSessionNet()
+{
+
+	ASSERT(m_refSelf.GetResFunc() == nullptr);
+	if (m_pPreSend != NULL)
+	{
+		delete m_pPreSend;
+	}
 }
 
 void CBasicSessionNet::InitMember()
@@ -261,14 +335,7 @@ void CBasicSessionNet::InitMember()
 	m_unSessionStatus = 0;
 }
 
-CBasicSessionNet::~CBasicSessionNet()
-{
-	ASSERT(m_refSelf.GetResFunc() == nullptr);
-	if (m_pPreSend != NULL)
-	{
-		delete m_pPreSend;
-	}
-}
+
 
 void CBasicSessionNet::Release()
 {
@@ -279,6 +346,18 @@ void CBasicSessionNet::Release()
 
 void CBasicSessionNet::ReleaseCallback()
 {
+	if (m_bAddOnTimer)
+	{
+		m_bAddOnTimer = false;
+		g_pEventThreads[0].SetEvent(this, [](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+			CBasicNetMgv::VTOnTimerSessionListIterator iter = find(m_gNetMgrPoint->m_vtOnTimerList.begin(), m_gNetMgrPoint->m_vtOnTimerList.end(), pSession);
+			if (iter != m_gNetMgrPoint->m_vtOnTimerList.end())
+			{
+				m_gNetMgrPoint->m_vtOnTimerList.erase(iter);
+			}
+		}, 0);
+	}
+
 	if (m_refSelf == nullptr)
 		return;
 	CloseCallback(FALSE);
@@ -350,6 +429,7 @@ void OnLinkListenRead(int fd, short event, void *arg)
 CBasicSessionNetServer::CBasicSessionNetServer(Net_UInt nSessionID) : CBasicSessionNet(nSessionID)
 {
 	m_sessionIDMgr = 0;
+	m_nOnTimerTick = 0;
 }
 
 CBasicSessionNetServer::~CBasicSessionNetServer()
@@ -368,6 +448,8 @@ Net_Int CBasicSessionNetServer::Listen(const char* lpszAddress, bool bWaitSucces
 		return BASIC_NET_ALREADY_LISTEN;
 	if (IsToClose())
 		return BASIC_NET_TOCLOSE_ERROR;
+
+	m_strListenAddr = lpszAddress;
 
 	Net_Int lReturn = BASIC_NET_OK;
 	evutil_socket_t socketfd = -1;
@@ -496,20 +578,54 @@ CBasicSessionNetClient* CBasicSessionNetServer::CreateServerClientSession(Net_UI
 
 CBasicSessionNetClient* CBasicSessionNetServer::ConstructSession(Net_UInt nSessionID)
 {
-	return CBasicSessionNetClient::CreateClient(nSessionID);
+	return CBasicSessionNetClient::CreateClient(nSessionID, false);
 }
 
-
 //外部ontimer驱动1s
-void CBasicSessionNetServer::OnTimer(int nTick)
+void CBasicSessionNetServer::OnTimer()
 {
+	m_nOnTimerTick++;
+	if (m_nOnTimerTick % 10 == 0)
+	{
+		if (!m_strListenAddr.IsEmpty() && !IsListen())
+		{
+			Net_Int lRet = Listen(m_strListenAddr.c_str());
+			if (BASIC_NET_OK == lRet)
+			{
+				basiclib::BasicLogEventV("ListenPort [%s] OK", m_strListenAddr.c_str());
+			}
+			else if (BASIC_NET_ALREADY_LISTEN != lRet)
+			{
+				Close();
+			}
+		}
+	}
+
 	VTClientSession vtClient;
 	CopyClientSession(vtClient);
 	for (auto& client : vtClient)
 	{
 		client->OnTimer();
 	}
+	OnTimerWithAllClient(m_nOnTimerTick, vtClient);
 }
+void CBasicSessionNetServer::OnTimerWithAllClient(Net_UInt nTick, VTClientSession& vtClients)
+{
+	
+}
+
+CRefBasicSessionNetClient CBasicSessionNetServer::GetClientBySessionID(Net_UInt nSessionID)
+{
+	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
+	MapClientSession::iterator iter = m_mapClientSession.find(nSessionID);
+	if (iter != m_mapClientSession.end())
+	{
+		return iter->second;
+	}
+	return nullptr;
+}
+
+
 
 void CBasicSessionNetServer::CopyClientSession(VTClientSession& vtClient)
 {
@@ -542,7 +658,7 @@ void OnLinkWrite(int fd, short event, void *arg)
 }
 
 
-CBasicSessionNetClient::CBasicSessionNetClient(Net_UInt nSessionID) : CBasicSessionNet(nSessionID)
+CBasicSessionNetClient::CBasicSessionNetClient(Net_UInt nSessionID, bool bAddOnTimer) : CBasicSessionNet(nSessionID, bAddOnTimer)
 {
 	m_nSessionID = nSessionID;
 	m_usTimeoutShakeHandle = 10;
