@@ -13,7 +13,7 @@ SRCDIRS :=$(SRCDIRS) $(ROOTDIR)/net $(ROOTDIR)/net/socket $(ROOTDIR)/sys $(ROOTD
 SRCDIRS :=$(SRCDIRS) $(ROOTDIR)/dll $(ROOTDIR)/file/ini $(ROOTDIR)/util/strutil
 SRCDIRS :=$(SRCDIRS) $(ROOTDIR)/misc
 SRCDIRS :=$(SRCDIRS) $(ROOTDIR)/time $(ROOTDIR)/time/timelib $(ROOTDIR)/types $(ROOTDIR)/util/regex ${ROOTDIR}/util/strutil/charset
-SRCEXTS :=.cpp .c
+SRCEXTS :=.cpp .c .S
 OUTDIR :=.
 DEBUG_DIR :=$(OUTDIR)/debug/
 RELEASE_DIR :=$(OUTDIR)/release/
@@ -60,15 +60,16 @@ CXXFLAGS :=
 
 FULLSOURCES = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(SRCEXTS))))
 SOURCES = $(notdir $(FULLSOURCES))
-SOURCES := $(SOURCES) call_stack_gcc.cpp
+SOURCES := $(SOURCES) call_stack_gcc.cpp coroutineplus.cpp libco_coroutine.cpp coctx_swap.S
 OBJS = $(foreach x,$(SRCEXTS), $(patsubst %$(x),%.o,$(filter %$(x),$(SOURCES))))
 FULLOBJS = $(addprefix $(OBJDIR),$(OBJS))
 DEPS    = $(patsubst %.o,%.d,$(OBJS))
 
-SRCDIRS := $(SRCDIRS) $(ROOTDIR)/exception
+SRCDIRS := $(SRCDIRS) $(ROOTDIR)/exception $(ROOTDIR)/coroutine
 
 vpath %.c $(SRCDIRS)
 vpath %.cpp $(SRCDIRS)
+vpath %.S $(ROOTDIR)/coroutine
 vpath %.o $(OBJDIR)
 
 .PHONY : all objs clean cleanall rebuild link cleanout
@@ -84,6 +85,8 @@ objs : $(OBJS)
 	@echo -e "building: $(notdir $@) \t please wait ..."
 	$(CXX) -c -std=c++11 $(CPPFLAGS) $(CXXFLAGS) $< -o $(OBJDIR)$(notdir $@)
 
+%.o : %.S
+	$(CC) -c $< -o $(OBJDIR)$(notdir $@)
 
 # Rules for producing the executable.
 #----------------------------------------------
