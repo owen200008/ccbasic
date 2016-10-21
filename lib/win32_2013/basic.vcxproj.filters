@@ -46,6 +46,12 @@
     <Filter Include="dll">
       <UniqueIdentifier>{4ed64d16-399f-4a8f-8f5b-253816a87fa0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{d6919781-73bd-4e63-a271-e74f6159cff1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="coroutine">
+      <UniqueIdentifier>{fff91388-b4fe-43d7-b546-6fd33f38aa9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\inc\basic_def.h">
@@ -174,6 +180,24 @@
     <ClInclude Include="..\..\src\misc\tlrefptr.h">
       <Filter>misc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\net\net.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\net\sendbuffer.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\datastruct\key_value.h">
+      <Filter>datastruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\time\ontimer.h">
+      <Filter>time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\coroutine\coroutineplus.h">
+      <Filter>coroutine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\coroutine\libco_coroutine.h">
+      <Filter>coroutine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mem\mem.cpp">
@@ -281,5 +305,28 @@
     <ClCompile Include="..\..\src\dll\loaddll.cpp">
       <Filter>dll</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\net\net.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\net\sendbuffer.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\datastruct\key_value.cpp">
+      <Filter>datastruct</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\time\ontimer.cpp">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\coroutine\libco_coroutine.cpp">
+      <Filter>coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\coroutine\coroutineplus.cpp">
+      <Filter>coroutine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="..\..\src\coroutine\coctx_swap_win.asm">
+      <Filter>coroutine</Filter>
+    </MASM>
   </ItemGroup>
 </Project>
