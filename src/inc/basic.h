@@ -76,7 +76,7 @@
 //智能指针
 #include "../misc/tlrefptr.h"
 //扩展的数据类型
-//#include "../datastruct/key_value.h"
+#include "../datastruct/key_value.h"
 //#include "../datastruct/tlcoll.h"
 //屏蔽字库实现
 //#include "../datastruct/pbzk.h"
@@ -111,6 +111,7 @@
 //#include "../algorithm/sha1/sha1.h"
 //Time
 #include "../time/tltime.h"
+#include "../time/ontimer.h"
 //#include "../time/timeutil.h"
 //#include "../time/scheduletime.h"
 //#include "../time/basicTimeDWord.h"
@@ -127,6 +128,7 @@
 //贪婪加载
 //#include "../misc/lazy_init.h"
 
+#include "../coroutine/coroutineplus.h"
 //通讯定义
 #include "../net/sendbuffer.h"
 #include "../net/net.h"

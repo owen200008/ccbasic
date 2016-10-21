@@ -774,6 +774,10 @@ Net_Int CBasicSessionNetClient::OnConnect(Net_UInt dwNetCode)
 	{
 		SetSessionStatus(TIL_SS_SHAKEHANDLE_TRANSMIT, TIL_SS_SHAKEHANDLE_MASK);
 	}
+	else if (lRet == BASIC_NET_GENERIC_ERROR)
+	{
+		Close(FALSE);
+	}
 	return lRet;
 }
 
