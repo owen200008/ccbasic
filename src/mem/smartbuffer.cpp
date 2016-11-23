@@ -55,7 +55,7 @@ void CBasicSmartBuffer::Free()
 	{
 		if (m_pszBuffer)
 		{
-			BasicDeallocate(m_pszBuffer, m_cbAlloc);
+			BasicDeallocate(m_pszBuffer);
 		}
 	}
 	EmptyBuffer();
@@ -167,7 +167,7 @@ char* CBasicSmartBuffer::AllocBuffer(long lLength, long lGrowLength)
 			memcpy(pTemp, m_pszBuffer, m_cbBuffer);
 			if (m_bSelfBuf)
 			{
-				BasicDeallocate(m_pszBuffer, m_cbAlloc);
+				BasicDeallocate(m_pszBuffer);
 			}
 		}
 		m_cbAlloc = lNewSize;

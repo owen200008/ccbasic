@@ -584,38 +584,29 @@ CBasicString CTimeSpan::FormatMultiByte(const char* pFormat) const
 	return szBuffer;
 }
 
-#ifdef __BASICWINDOWS
-
 CBasicString CTime::Format_S(const char* pFormat) const
 {
 	char szBuffer[maxTimeBufferSize];
-
-	struct tm* ptmTemp = _localtime64(&m_time);
-	if (ptmTemp == NULL ||
-		!strftime(szBuffer, _countof(szBuffer), pFormat, ptmTemp))
-		szBuffer[0] = '\0';
+	FormatToBuffer(pFormat, szBuffer, maxTimeBufferSize);
 	return szBuffer;
 }
-
-#else
-
-CBasicString CTime::Format_S(const char* pFormat) const
+void CTime::FormatToBuffer(const char* pFormat, char* pBuffer, int nLength) const
 {
-	char szBuffer[maxTimeBufferSize];
-
-	//struct tm* ptmTemp = localtime(&m_time);
+	if (pBuffer == nullptr || nLength <= 0)
+		return;
+#ifdef __BASICWINDOWS
+	struct tm* ptmTemp = _localtime64(&m_time);
+#else
 	struct tm ti;
 	time_t tm = m_time;
 	localtime_r(&tm, &ti);
 	struct tm* ptmTemp = &ti;
+#endif
 	if (ptmTemp == NULL ||
-		!strftime(szBuffer, _countof(szBuffer), pFormat, ptmTemp))
-		szBuffer[0] = '\0';
-	return szBuffer;
+		!strftime(pBuffer, nLength, pFormat, ptmTemp))
+		pBuffer[0] = '\0';
 }
 
-
-#endif
 
 ////////////////////////////////////////////////////////////////////////////
 // out-of-line inlines for binary compatibility

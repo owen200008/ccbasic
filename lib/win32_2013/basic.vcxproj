@@ -35,6 +35,7 @@
     <ClInclude Include="..\..\src\file\filedefine.h" />
     <ClInclude Include="..\..\src\file\fileman.h" />
     <ClInclude Include="..\..\src\file\file_linux.h" />
+    <ClInclude Include="..\..\src\file\inifile.h" />
     <ClInclude Include="..\..\src\inc\basic.h" />
     <ClInclude Include="..\..\src\inc\basic_def.h" />
     <ClInclude Include="..\..\src\inc\error.h" />
@@ -43,24 +44,52 @@
     <ClInclude Include="..\..\src\mem\mem.h" />
     <ClInclude Include="..\..\src\mem\smartbuffer.h" />
     <ClInclude Include="..\..\src\mem\tlstaticbuffer.h" />
+    <ClInclude Include="..\..\src\misc\fastdelegate.h" />
+    <ClInclude Include="..\..\src\misc\fastdelegatebind.h" />
     <ClInclude Include="..\..\src\misc\singleton.h" />
     <ClInclude Include="..\..\src\misc\tlrefptr.h" />
     <ClInclude Include="..\..\src\net\net.h" />
     <ClInclude Include="..\..\src\net\sendbuffer.h" />
+    <ClInclude Include="..\..\src\scbasic\cache\cachemgr.h" />
+    <ClInclude Include="..\..\src\scbasic\commu\basicclient.h" />
+    <ClInclude Include="..\..\src\scbasic\commu\ipverify.h" />
+    <ClInclude Include="..\..\src\scbasic\commu\servertemplate.h" />
+    <ClInclude Include="..\..\src\scbasic\newhttp\httpdefine.h" />
+    <ClInclude Include="..\..\src\scbasic\newhttp\httpparser.h" />
+    <ClInclude Include="..\..\src\scbasic\newhttp\httprequest.h" />
+    <ClInclude Include="..\..\src\scbasic\newhttp\httpresponse.h" />
+    <ClInclude Include="..\..\src\scbasic\newhttp\httpsession.h" />
     <ClInclude Include="..\..\src\sys\syserror.h" />
     <ClInclude Include="..\..\src\sys\sysinfo.h" />
     <ClInclude Include="..\..\src\thread\mt.h" />
     <ClInclude Include="..\..\src\thread\mt_linux.h" />
     <ClInclude Include="..\..\src\thread\thread.h" />
     <ClInclude Include="..\..\src\time\ontimer.h" />
+    <ClInclude Include="..\..\src\time\timelib\astro.h" />
+    <ClInclude Include="..\..\src\time\timelib\config.w32.h" />
+    <ClInclude Include="..\..\src\time\timelib\fallbackmap.h" />
+    <ClInclude Include="..\..\src\time\timelib\timelib.h" />
+    <ClInclude Include="..\..\src\time\timelib\timelib_config.h" />
+    <ClInclude Include="..\..\src\time\timelib\timelib_structs.h" />
+    <ClInclude Include="..\..\src\time\timelib\timezonedb.h" />
+    <ClInclude Include="..\..\src\time\timelib\timezonemap.h" />
+    <ClInclude Include="..\..\src\time\timeutil.h" />
     <ClInclude Include="..\..\src\time\tltime.h" />
     <ClInclude Include="..\..\src\types\basicobj.h" />
     <ClInclude Include="..\..\src\types\linux.h" />
     <ClInclude Include="..\..\src\types\types.h" />
     <ClInclude Include="..\..\src\util\auto_cast.h" />
     <ClInclude Include="..\..\src\util\container.h" />
+    <ClInclude Include="..\..\src\util\containerext.h" />
     <ClInclude Include="..\..\src\util\functor.h" />
     <ClInclude Include="..\..\src\util\private.h" />
+    <ClInclude Include="..\..\src\util\regex\cclass.h" />
+    <ClInclude Include="..\..\src\util\regex\cgnuregexp.h" />
+    <ClInclude Include="..\..\src\util\regex\cname.h" />
+    <ClInclude Include="..\..\src\util\regex\regex.h" />
+    <ClInclude Include="..\..\src\util\regex\regex2.h" />
+    <ClInclude Include="..\..\src\util\regex\regex_extra.h" />
+    <ClInclude Include="..\..\src\util\regex\utils.h" />
     <ClInclude Include="..\..\src\util\strutil\charset.h" />
     <ClInclude Include="..\..\src\util\strutil\charset\charset_def.h" />
     <ClInclude Include="..\..\src\util\strutil\charset\charset_win.h" />
@@ -85,12 +114,20 @@
     <ClCompile Include="..\..\src\file\filefind.cpp" />
     <ClCompile Include="..\..\src\file\fileman.cpp" />
     <ClCompile Include="..\..\src\file\file_linux.cpp" />
+    <ClCompile Include="..\..\src\file\inifile.cpp" />
     <ClCompile Include="..\..\src\log\log.cpp" />
     <ClCompile Include="..\..\src\mem\mem.cpp" />
     <ClCompile Include="..\..\src\mem\smartbuffer.cpp" />
     <ClCompile Include="..\..\src\mem\tlstaticbuffer.cpp" />
     <ClCompile Include="..\..\src\net\net.cpp" />
     <ClCompile Include="..\..\src\net\sendbuffer.cpp" />
+    <ClCompile Include="..\..\src\scbasic\commu\basicclient.cpp" />
+    <ClCompile Include="..\..\src\scbasic\commu\ipverify.cpp" />
+    <ClCompile Include="..\..\src\scbasic\commu\servertemplate.cpp" />
+    <ClCompile Include="..\..\src\scbasic\newhttp\httpparser.cpp" />
+    <ClCompile Include="..\..\src\scbasic\newhttp\httprequest.cpp" />
+    <ClCompile Include="..\..\src\scbasic\newhttp\httpresponse.cpp" />
+    <ClCompile Include="..\..\src\scbasic\newhttp\httpsession.cpp" />
     <ClCompile Include="..\..\src\sys\sysinfo.cpp" />
     <ClCompile Include="..\..\src\sys\sysinfo_android.cpp" />
     <ClCompile Include="..\..\src\sys\sysinfo_linux.cpp" />
@@ -101,8 +138,20 @@
     <ClCompile Include="..\..\src\thread\thread_linux.cpp" />
     <ClCompile Include="..\..\src\thread\thread_win.cpp" />
     <ClCompile Include="..\..\src\time\ontimer.cpp" />
+    <ClCompile Include="..\..\src\time\timelib\astro.c" />
+    <ClCompile Include="..\..\src\time\timelib\dow.c" />
+    <ClCompile Include="..\..\src\time\timelib\parse_date.c" />
+    <ClCompile Include="..\..\src\time\timelib\parse_tz.c" />
+    <ClCompile Include="..\..\src\time\timelib\timelib.c" />
+    <ClCompile Include="..\..\src\time\timelib\tm2unixtime.c" />
+    <ClCompile Include="..\..\src\time\timelib\unixtime2tm.c" />
+    <ClCompile Include="..\..\src\time\timeutil.cpp" />
     <ClCompile Include="..\..\src\time\tltime.cpp" />
     <ClCompile Include="..\..\src\types\basicobj.cpp" />
+    <ClCompile Include="..\..\src\util\regex\regcomp.c" />
+    <ClCompile Include="..\..\src\util\regex\regerror.c" />
+    <ClCompile Include="..\..\src\util\regex\regexec.c" />
+    <ClCompile Include="..\..\src\util\regex\regfree.c" />
     <ClCompile Include="..\..\src\util\strutil\charset.cpp" />
     <ClCompile Include="..\..\src\util\strutil\charset\charset_iconv.cpp" />
     <ClCompile Include="..\..\src\util\strutil\charset\charset_win.cpp" />
@@ -115,6 +164,17 @@
     <MASM Include="..\..\src\coroutine\coctx_swap_win.asm">
       <FileType>Document</FileType>
     </MASM>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\time\timelib\parse_date.c.orig" />
+    <None Include="..\..\src\time\timelib\parse_date.re" />
+    <None Include="..\..\src\time\timelib\README" />
+    <None Include="..\..\src\time\timelib\timelib.m4" />
+    <None Include="..\..\src\time\timelib\timelib_config.h.win32" />
+    <None Include="..\..\src\util\regex\engine.ic" />
+    <None Include="..\..\src\util\regex\engine.ih" />
+    <None Include="..\..\src\util\regex\regcomp.ih" />
+    <None Include="..\..\src\util\regex\regerror.ih" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A917DA06-FD13-4B2E-A981-7883BBC8F4F4}</ProjectGuid>
@@ -206,7 +266,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../../3rd/libevent/include;../../3rd/libevent/WIN32-Code/nmake;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__BASICWINDOWS;_DEBUG;_LIB;XML_STATIC;SQLITE_HAS_CODEC=1;SQLITE_SECURE_DELETE;SQLITE_SOUNDEX;SQLITE_ENABLE_COLUMN_METADATA;CODEC_TYPE=CODEC_TYPE_AES256;_USE_SYS_MALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -214,6 +274,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
       <OutputFile>..\$(ProjectName)D13.lib</OutputFile>

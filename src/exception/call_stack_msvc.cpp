@@ -34,16 +34,16 @@ protected:
             stack.push_back(e);
         }
     }
-    virtual void OnOutput (LPCSTR /*szText*/) {
+	virtual void OnOutput(const char* /*szText*/) {
         // discard (should never be called)
     }
-    virtual void OnSymInit (LPCSTR /*szSearchPath*/, DWORD /*symOptions*/, LPCSTR /*szUserName*/) {
+	virtual void OnSymInit(const char* /*szSearchPath*/, DWORD /*symOptions*/, const char* /*szUserName*/) {
         // discard
     }
-    virtual void OnLoadModule (LPCSTR /*img*/, LPCSTR /*mod*/, DWORD64 /*baseAddr*/, DWORD /*size*/, DWORD /*result*/, LPCSTR /*symType*/, LPCSTR /*pdbName*/, ULONGLONG /*fileVersion*/) {
-        // discard
+	virtual void OnLoadModule(const char* img, const char* mod, DWORD64 baseAddr, DWORD size, DWORD result, const char* symType, const char* pdbName, ULONGLONG fileVersion){
+	    // discard
     }
-    virtual void OnDbgHelpErr (LPCSTR /*szFuncName*/, DWORD /*gle*/, DWORD64 /*addr*/) {
+	virtual void OnDbgHelpErr(const char* /*szFuncName*/, DWORD /*gle*/, DWORD64 /*addr*/) {
         // discard
     }
 
@@ -60,7 +60,7 @@ namespace stacktrace {
 call_stack::call_stack (const size_t num_discard /*= 0*/) {
     StackWalkerAdapter sw(num_discard);
     sw.ShowCallstack();
-    stack = sw.stack;
+	swap(stack, sw.stack);
 }
 
 call_stack::~call_stack () throw() {

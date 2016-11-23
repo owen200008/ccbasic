@@ -23,7 +23,7 @@ void BasicTraceV(const char* lpszFormat, va_list argList)
 {
 	char szTraceBuff[256];
 	memset(szTraceBuff, 0, sizeof(szTraceBuff));
-	vsnprintf(szTraceBuff, sizeof(szTraceBuff) / sizeof(TCHAR)-1, lpszFormat, argList);
+	vsnprintf(szTraceBuff, sizeof(szTraceBuff) / sizeof(char)-1, lpszFormat, argList);
 
 	//OutputDebugString(szTraceBuff);
 	BasicTraceDebugView(szTraceBuff);

@@ -33,7 +33,7 @@ void* BasicStaticBuffer::AllocBuffer(unsigned short len)
 		if(m_pBuffer != NULL)
 		{
 			memcpy(pTemp, m_pBuffer, m_nLength);
-			BasicDeallocate(m_pBuffer, m_nAlloc);
+			BasicDeallocate(m_pBuffer);
 		}
 		m_nAlloc = (unsigned short)lNewSize;
 		m_pBuffer = pTemp; 

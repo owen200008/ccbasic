@@ -41,6 +41,9 @@
 #include "error.h"
 //
 //
+//绑定
+#include "../misc/fastdelegate.h"
+#include "../misc/fastdelegatebind.h"
 //线程定义
 #include "../thread/thread.h"
 //
@@ -55,6 +58,7 @@
 #include "../debug/debug.h"
 //
 //异常保护,使用开元stacktrace
+#include "../exception/call_stack.hpp"
 //#include "../exception/exception.h"
 //
 #include "../util/functor.h"
@@ -82,7 +86,8 @@
 //#include "../datastruct/pbzk.h"
 
 // 容器
-//#include "../util/container.h"
+#include "../util/container.h"
+#include "../util/containerext.h"
 //
 //系统信息
 #include "../sys/syserror.h"
@@ -94,7 +99,7 @@
 //#include "../file/filenotify.h"
 //#include "../file/fileobj.h"
 #include "../file/fileman.h"
-//#include "../file/ini/inifile.h"
+#include "../file/inifile.h"
 
 //xtra
 //#include "../algorithm/xtra.h"
@@ -112,7 +117,7 @@
 //Time
 #include "../time/tltime.h"
 #include "../time/ontimer.h"
-//#include "../time/timeutil.h"
+#include "../time/timeutil.h"
 //#include "../time/scheduletime.h"
 //#include "../time/basicTimeDWord.h"
 //日志
@@ -150,9 +155,9 @@
 //#include "../util/xml/xmloutput.h"
 
 //正则表达式
-#if !defined(__MAC) //regex not implement
-//#include "../util/regex/cgnuregexp.h"
-#endif
+//#if !defined(__MAC) //regex not implement
+#include "../util/regex/cgnuregexp.h"
+//#endif
 
 //dll加载
 #include "../dll/loaddll.h"
@@ -165,5 +170,6 @@
 //#include "../sqlite/sqlite3db.h"
 
 //#include "../mem/bitstream.h"
+
 
 #endif 

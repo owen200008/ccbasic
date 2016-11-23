@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="basic_Test.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="dll\basictesthead.cpp">
+      <Filter>dll</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="net\nettest.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="coroutine\coroutinetest.h">
+      <Filter>coroutine</Filter>
+    </ClInclude>
+    <ClInclude Include="dll\dlltest.h">
+      <Filter>dll</Filter>
+    </ClInclude>
+    <ClInclude Include="dll\basictesthead.h">
+      <Filter>dll</Filter>
+    </ClInclude>
+    <ClInclude Include="comm\functionxiaolvtest.h">
+      <Filter>comm</Filter>
+    </ClInclude>
+    <ClInclude Include="time\ontimertest.h">
+      <Filter>time</Filter>
+    </ClInclude>
+    <ClInclude Include="misc\fastdelegatetest.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="exception\stackwalkcheck.h">
+      <Filter>exception</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="net">
+      <UniqueIdentifier>{81b9aa18-d654-4339-b530-121206ac27bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="coroutine">
+      <UniqueIdentifier>{4ee9c733-971f-446c-a02b-be0d821cfcfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dll">
+      <UniqueIdentifier>{1fff6e8c-1293-4913-b0e0-3317e120729e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="comm">
+      <UniqueIdentifier>{36781af9-29e1-432c-afde-ceb0d7086942}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="time">
+      <UniqueIdentifier>{da6c3495-b113-4987-be00-d1a417e6c394}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc">
+      <UniqueIdentifier>{747bed5e-eb6b-409f-a747-1747a012e4ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="exception">
+      <UniqueIdentifier>{a89a7574-ff11-418e-90e8-d90a2a4633d9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

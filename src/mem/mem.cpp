@@ -2,10 +2,19 @@
 //
 
 #include "../inc/basic.h"
-#include "../exception/call_stack.hpp"
-
 __NS_BASIC_START
 
+basiclib::SpinLock g_lockCheck;
+std::map<void*, stacktrace::call_stack> g_mapCheck;
+#ifdef _DEBUG
+Net_UInt g_nCheckMemMode = MemRunMemCheck_RunSizeCheck | MemRunMemCheck_RunTongJi;
+#else
+Net_UInt g_nCheckMemMode = 0;
+#endif
+int	m_nCheckMin = 0;
+int m_nCheckMax = 0;
+
+//////////////////////////////////////////////////////////////////////////////
 uint32_t GetHandleID_Default()
 {
 	return 0;
@@ -14,6 +23,8 @@ static gethandleid_func g_func = GetHandleID_Default;
 static LONG _used_memory = 0;
 static LONG _memory_malloc = 0;
 static LONG _memory_free = 0;
+static LONG _memory_malloc_size = 0;
+static LONG _memory_free_size = 0;
 typedef struct _mem_data
 {
 	uint32_t handle;
@@ -56,16 +67,19 @@ static uint32_t* get_allocated_field(uint32_t handle)
 void UpdateMallocState_Alloc(uint32_t handleid, size_t size)
 {
 	BasicInterlockedExchangeAdd(&_used_memory, size);
+	BasicInterlockedExchangeAdd(&_memory_malloc_size, size);
 	BasicInterlockedIncrement(&_memory_malloc);
 	uint32_t* allocated = get_allocated_field(handleid);
 	if (allocated)
 	{
 		BasicInterlockedExchangeAdd((LONG*)allocated, size);
 	}
+	
 }
 void UpdateMallocState_Free(uint32_t handleid, size_t size)
 {
 	BasicInterlockedExchangeSub(&_used_memory, size);
+	BasicInterlockedExchangeAdd(&_memory_free_size, size);
 	BasicInterlockedIncrement(&_memory_free);
 	uint32_t* allocated = get_allocated_field(handleid);
 	if (allocated)
@@ -89,7 +103,6 @@ struct HeadFillFix
 	uint32_t	m_handleID;
 };
 #define MallocFixSize	sizeof(HeadFillFix)
-
 inline void* Fill_prefix(char* ptr, size_t size)
 {
 	uint32_t handleid = g_func();
@@ -103,130 +116,107 @@ inline void* Fill_prefix(char* ptr, size_t size)
 #endif
 	pFix->m_handleID = handleid;
 	ptr += MallocFixSize;
-	UpdateMallocState_Alloc(handleid, size);
+	if (g_nCheckMemMode & MemRunMemCheck_RunTongJi)
+	{
+		UpdateMallocState_Alloc(handleid, size);
+	}
+	if (g_nCheckMemMode & MemRunMemCheck_RunCheckMem)
+	{
+		if (m_nCheckMin <= size && size <= m_nCheckMax){
+			basiclib::CSpinLockFunc lock(&g_lockCheck, TRUE);
+			stacktrace::call_stack dtStack(0);
+			g_mapCheck[ptr].SwapStack(dtStack);
+		}
+	}
 	return ptr;
 }
 inline void* Clean_prefix(char* ptr)
 {
 	ptr -= MallocFixSize;
 	HeadFillFix* pFix = (HeadFillFix*)ptr;
+	if (g_nCheckMemMode & MemRunMemCheck_RunCheckMem)
+	{
+		if (pFix->m_size >= m_nCheckMin && pFix->m_size <= m_nCheckMax){
+			basiclib::CSpinLockFunc lock(&g_lockCheck, TRUE);
+			g_mapCheck.erase(ptr + MallocFixSize);
+			lock.UnLock();
+		}
+	}
+	
 #ifdef _DEBUG
 	if(pFix->m_bBegin != 1 || pFix->m_bEnd != 1)
 	{
 		//调用堆栈
-		stacktrace::call_stack st;
+		stacktrace::call_stack st(0);
 		BasicLogEventErrorV("Free prefix error");
 		BasicLogEventErrorV(st.to_string().c_str());
 		exit(0);
 	}
 #endif
-	UpdateMallocState_Free(pFix->m_handleID, pFix->m_size);
+	if (g_nCheckMemMode & MemRunMemCheck_RunTongJi)
+	{
+		UpdateMallocState_Free(pFix->m_handleID, pFix->m_size);
+	}
 	return ptr;
 }
 
+
 #ifdef _USE_SYS_MALLOC
-void* BasicAllocate(size_t size)
-{
-	void* p = malloc(size + MallocFixSize);
-	if(p == NULL)
-		return NULL;
-	return Fill_prefix((char*)p, size);
-}
-
-void* BasicReallocate(void* p, size_t size)
-{
-	if (p == nullptr)
-		return BasicAllocate(size);
-	p = Clean_prefix((char*)p);
-	if (p == nullptr)
-		return BasicAllocate(size);
-
-	p = realloc(p, size + MallocFixSize);
-	if (p == NULL)
-		return NULL;
-	return Fill_prefix((char*)p, size);
-}
-
-void BasicDeallocate(void* p, size_t size)
-{
-	if(p == NULL)
-		return;
-	p = Clean_prefix((char*)p);
-	HeadFillFix* pFix = (HeadFillFix*)p;
-	if (size != 0 && size != pFix->m_size)
-	{
-#ifdef _DEBUG
-		//调用堆栈
-		stacktrace::call_stack st;
-		BasicLogEventErrorV("BasicDeallocate size error");
-		BasicLogEventErrorV(st.to_string().c_str());
-		exit(0);
-#else
-		BasicLogEventErrorV("BasicDeallocate size error");
-#endif
-	}
-	free(p);
-}
-
+#define Fast_allocate malloc
+#define Fast_reallocate realloc
+#define Fast_deallocate free
 #else	//_USE_SYS_MALLOC
 extern "C"{
 	#include "jemalloc.h"
 }
-void* BasicAllocate(size_t size)
-{	
-	void* p = je_malloc(size + MallocFixSize);
-	if (p == NULL)
+#define Fast_allocate je_malloc
+#define Fast_reallocate je_realloc
+#define Fast_deallocate je_free
+#endif //_USE_SYS_MALLOC
+void* CheckFunc_allocate(size_t size)
+{
+	void* p = Fast_allocate(size + MallocFixSize);
+	if(p == NULL)
 		return NULL;
 	return Fill_prefix((char*)p, size);
 }
 
-void* BasicReallocate(void* p, size_t size)
+void* CheckFunc_reallocate(void* p, size_t size)
 {
 	if (p == nullptr)
-		return BasicAllocate(size);
+		return CheckFunc_allocate(size);
 	p = Clean_prefix((char*)p);
 	if (p == nullptr)
-		return BasicAllocate(size);
+		return CheckFunc_allocate(size);
 
-	p = je_realloc(p, size + MallocFixSize);
+	p = Fast_reallocate(p, size + MallocFixSize);
 	if (p == NULL)
 		return NULL;
 	return Fill_prefix((char*)p, size);
 }
 
-void BasicDeallocate(void* p, size_t size)
+void CheckFunc_deallocate(void* p)
 {
 	if(p == NULL)
 		return;
 	p = Clean_prefix((char*)p);
-	HeadFillFix* pFix = (HeadFillFix*)p;
-	if (size != 0 && size != pFix->m_size)
-	{
-#ifdef _DEBUG
-		//调用堆栈
-		stacktrace::call_stack st;
-		BasicLogEventErrorV("BasicDeallocate size error");
-		BasicLogEventErrorV(st.to_string().c_str());
-		exit(0);
-#else
-		BasicLogEventErrorV("BasicDeallocate size error");
-#endif
-	}
-	je_free(p);
+	Fast_deallocate(p);
 }
-
-#endif //_USE_SYS_MALLOC
 
 ///取内存分配信息
 void BasicGetOperationInfo(
 			size_t& nAllocateCount, 
 			size_t& nDeallocateCount,
-			size_t& nUseMemory
+			size_t& nUseMemory,
+			size_t& nAllocateSize,
+			size_t& nDeAllocateSize
 						 )
 {
 	nAllocateCount = _memory_malloc;
 	nDeallocateCount = _memory_free;
 	nUseMemory = _used_memory;
+	nAllocateSize = _memory_malloc_size;
+	nDeAllocateSize = _memory_free_size;
 }
 
 void BasicShowCurrentMemInfo()
@@ -268,6 +258,57 @@ char* BasicStrdup(const char* p)
 	char* ret = (char*)BasicAllocate(sz+1);
 	memcpy(ret, p, sz+1);
 	return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+typedef void*(*pallocateFunc)(size_t size);
+typedef void*(*pReallocateFunc)(void* p, size_t size);
+typedef void(*pDeallocateFunc)(void* p);
+#ifdef _DEBUG
+pallocateFunc g_pallocateFunc = CheckFunc_allocate;
+pReallocateFunc g_pReallocateFunc = CheckFunc_reallocate;
+pDeallocateFunc g_pDeallocateFunc = CheckFunc_deallocate;
+#else
+pallocateFunc g_pallocateFunc = Fast_allocate;
+pReallocateFunc g_pReallocateFunc = Fast_reallocate;
+pDeallocateFunc g_pDeallocateFunc = Fast_deallocate;
+#endif
+
+void BasicSetMemRunMemCheck(Net_UInt nMode, int nMin, int nMax)
+{
+	if (nMode == 0)
+	{
+		g_pallocateFunc = Fast_allocate;
+		g_pReallocateFunc = Fast_reallocate;
+		g_pDeallocateFunc = Fast_deallocate;
+	}
+	else
+	{
+		g_pallocateFunc = CheckFunc_allocate;
+		g_pReallocateFunc = CheckFunc_reallocate;
+		g_pDeallocateFunc = CheckFunc_deallocate;
+	}
+	g_nCheckMemMode = nMode;
+	m_nCheckMin = nMin;
+	m_nCheckMax = nMax;
+
+}
+void DumpRunMemCheck()
+{
+	g_nCheckMemMode = 0;
+	basiclib::CSpinLockFunc lock(&g_lockCheck, TRUE);
+	for (auto& checkData : g_mapCheck){
+		basiclib::BasicLogEvent(checkData.second.to_string().c_str());
+	}
+}
+void* BasicAllocate(size_t size){
+	return g_pallocateFunc(size);
+}
+void* BasicReallocate(void* p, size_t size){
+	return g_pReallocateFunc(p, size);
+}
+void BasicDeallocate(void* p){
+	return g_pDeallocateFunc(p);
 }
 
 __NS_BASIC_END

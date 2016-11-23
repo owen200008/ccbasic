@@ -21,7 +21,7 @@ struct entry {
     /** Serialize entry into a text string. */
     std::string to_string () const {
         std::ostringstream os;
-        os << file << " (" << line << "): " << function;
+		os << file << " (" << line << "): " << function << "\r\n";
         return os.str();
     }
 };
@@ -29,9 +29,11 @@ struct entry {
 /** Stack-trace base class, for retrieving the current call-stack. */
 class call_stack {
 public:
+	call_stack(){
+	}
     /** Stack-trace consructor.
      \param num_discard - number of stack entries to discard at the top. */
-    call_stack (const size_t num_discard = 0);
+    call_stack (const size_t num_discard);
 
     virtual ~call_stack () throw();
 
@@ -39,10 +41,12 @@ public:
     std::string to_string () const {
         std::ostringstream os;
         for (size_t i = 0; i < stack.size(); i++)
-            os << stack[i].to_string() << std::endl;
+            os << stack[i].to_string();
         return os.str();
     }
-
+	void SwapStack(call_stack& dtStack){
+		swap(stack, dtStack.stack);
+	}
     /** Call stack. */
     std::vector<entry> stack;
 };

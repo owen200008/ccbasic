@@ -43,7 +43,7 @@ _BASIC_DLL_API_C  _BASIC_DLL_API void* BasicReallocate(void* p, size_t size);
 	*\remarks 当提供内存指针大小的时候，可以加速释放的速度
 	*\sa BasicAllocate()
 	*/
-_BASIC_DLL_API_C  _BASIC_DLL_API void BasicDeallocate(void* p, size_t size = 0);
+_BASIC_DLL_API_C  _BASIC_DLL_API void BasicDeallocate(void* p);
 _BASIC_DLL_API_C  _BASIC_DLL_API char* BasicStrdup(const char* p);
 
 //!取内存分配操作信息,此操作速度快
@@ -57,14 +57,18 @@ _BASIC_DLL_API_C  _BASIC_DLL_API char* BasicStrdup(const char* p);
 _BASIC_DLL_API_C  _BASIC_DLL_API void  BasicGetOperationInfo(
 			size_t& nAllocateCount, 
 			size_t& nDeallocateCount,
-			size_t& nUseMemory
+			size_t& nUseMemory,
+			size_t& nAllocateSize,
+			size_t& nDeAllocateSize
 			);
 
-#define MEM_RUN_NORMAL		0x00000000	//正常模式，无任何输出
-#define MEM_RUN_LEAK_CHECK  0x00000001	//内存泄漏检查方式，程序正常退出时生成内存泄漏报告
-
-//!设置内存运行模式
-_BASIC_DLL_API_C  void _BASIC_DLL_API BasicSetMemRunMode(int nMode = 0);
+//!设置内存运行模式,必须在启动时候初始化
+#define MemRunMemCheck_RunFast				0x00000000
+#define MemRunMemCheck_RunSizeCheck			0x00000001
+#define MemRunMemCheck_RunTongJi			0x00000002
+#define MemRunMemCheck_RunCheckMem			0x00000004		
+_BASIC_DLL_API_C  void _BASIC_DLL_API BasicSetMemRunMemCheck(Net_UInt nMode = 0, int nMin = 0, int nMax = 0);
+_BASIC_DLL_API_C  void _BASIC_DLL_API DumpRunMemCheck();
 
 //!清空之前的内存分配记录
 _BASIC_DLL_API_C  void _BASIC_DLL_API BasicEmptyMemAll();

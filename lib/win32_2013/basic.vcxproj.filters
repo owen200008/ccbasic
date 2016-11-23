@@ -52,6 +52,24 @@
     <Filter Include="coroutine">
       <UniqueIdentifier>{fff91388-b4fe-43d7-b546-6fd33f38aa9c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="scbasic">
+      <UniqueIdentifier>{9a8bd4bf-730d-48be-99cd-ed9e2873475b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scbasic\cache">
+      <UniqueIdentifier>{a1f748ba-e9ea-4710-81a5-d2c7d8076203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\regex">
+      <UniqueIdentifier>{0bdaa64e-6280-4743-b3ad-66294e5df05f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="time\timelib">
+      <UniqueIdentifier>{ea76020c-d552-4fc3-9d06-7d580ded7ee3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scbasic\newhttp">
+      <UniqueIdentifier>{71774eae-08af-4d1a-929f-795eeb1b5b40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scbasic\commu">
+      <UniqueIdentifier>{d45d2f8b-4598-4e84-88a8-0ca4ac00c726}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\inc\basic_def.h">
@@ -198,6 +216,93 @@
     <ClInclude Include="..\..\src\coroutine\libco_coroutine.h">
       <Filter>coroutine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\file\inifile.h">
+      <Filter>file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scbasic\cache\cachemgr.h">
+      <Filter>scbasic\cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\regex\regex.h">
+      <Filter>util\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\regex\regex_extra.h">
+      <Filter>util\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\regex\regex2.h">
+      <Filter>util\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\regex\utils.h">
+      <Filter>util\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\regex\cclass.h">
+      <Filter>util\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\regex\cgnuregexp.h">
+      <Filter>util\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\regex\cname.h">
+      <Filter>util\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\time\timeutil.h">
+      <Filter>time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\time\timelib\timelib.h">
+      <Filter>time\timelib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\time\timelib\timelib_config.h">
+      <Filter>time\timelib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\time\timelib\timelib_structs.h">
+      <Filter>time\timelib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\time\timelib\timezonedb.h">
+      <Filter>time\timelib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\time\timelib\timezonemap.h">
+      <Filter>time\timelib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\time\timelib\astro.h">
+      <Filter>time\timelib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\time\timelib\config.w32.h">
+      <Filter>time\timelib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\time\timelib\fallbackmap.h">
+      <Filter>time\timelib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scbasic\newhttp\httpsession.h">
+      <Filter>scbasic\newhttp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scbasic\newhttp\httprequest.h">
+      <Filter>scbasic\newhttp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scbasic\newhttp\httpparser.h">
+      <Filter>scbasic\newhttp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\containerext.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scbasic\newhttp\httpdefine.h">
+      <Filter>scbasic\newhttp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scbasic\commu\basicclient.h">
+      <Filter>scbasic\commu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scbasic\commu\ipverify.h">
+      <Filter>scbasic\commu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scbasic\commu\servertemplate.h">
+      <Filter>scbasic\commu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scbasic\newhttp\httpresponse.h">
+      <Filter>scbasic\newhttp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\misc\fastdelegatebind.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\misc\fastdelegate.h">
+      <Filter>misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mem\mem.cpp">
@@ -323,10 +428,99 @@
     <ClCompile Include="..\..\src\coroutine\coroutineplus.cpp">
       <Filter>coroutine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\file\inifile.cpp">
+      <Filter>file</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\regex\regcomp.c">
+      <Filter>util\regex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\regex\regerror.c">
+      <Filter>util\regex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\regex\regexec.c">
+      <Filter>util\regex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\regex\regfree.c">
+      <Filter>util\regex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\time\timeutil.cpp">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\time\timelib\parse_tz.c">
+      <Filter>time\timelib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\time\timelib\timelib.c">
+      <Filter>time\timelib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\time\timelib\tm2unixtime.c">
+      <Filter>time\timelib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\time\timelib\unixtime2tm.c">
+      <Filter>time\timelib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\time\timelib\astro.c">
+      <Filter>time\timelib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\time\timelib\dow.c">
+      <Filter>time\timelib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\time\timelib\parse_date.c">
+      <Filter>time\timelib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scbasic\newhttp\httpsession.cpp">
+      <Filter>scbasic\newhttp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scbasic\newhttp\httprequest.cpp">
+      <Filter>scbasic\newhttp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scbasic\newhttp\httpparser.cpp">
+      <Filter>scbasic\newhttp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scbasic\commu\basicclient.cpp">
+      <Filter>scbasic\commu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scbasic\commu\ipverify.cpp">
+      <Filter>scbasic\commu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scbasic\commu\servertemplate.cpp">
+      <Filter>scbasic\commu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scbasic\newhttp\httpresponse.cpp">
+      <Filter>scbasic\newhttp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="..\..\src\coroutine\coctx_swap_win.asm">
       <Filter>coroutine</Filter>
     </MASM>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\util\regex\regcomp.ih">
+      <Filter>util\regex</Filter>
+    </None>
+    <None Include="..\..\src\util\regex\regerror.ih">
+      <Filter>util\regex</Filter>
+    </None>
+    <None Include="..\..\src\util\regex\engine.ic">
+      <Filter>util\regex</Filter>
+    </None>
+    <None Include="..\..\src\util\regex\engine.ih">
+      <Filter>util\regex</Filter>
+    </None>
+    <None Include="..\..\src\time\timelib\README">
+      <Filter>time\timelib</Filter>
+    </None>
+    <None Include="..\..\src\time\timelib\timelib.m4">
+      <Filter>time\timelib</Filter>
+    </None>
+    <None Include="..\..\src\time\timelib\timelib_config.h.win32">
+      <Filter>time\timelib</Filter>
+    </None>
+    <None Include="..\..\src\time\timelib\parse_date.c.orig">
+      <Filter>time\timelib</Filter>
+    </None>
+    <None Include="..\..\src\time\timelib\parse_date.re">
+      <Filter>time\timelib</Filter>
+    </None>
   </ItemGroup>
 </Project>

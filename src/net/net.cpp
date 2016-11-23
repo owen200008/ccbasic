@@ -60,9 +60,9 @@ public:
 	virtual ~CNetThread()
 	{
 	}
-	void SetEvent(CBasicSessionNet* pSession, CBasicSessionNet::pCallSameRefNetSessionFunc pCallFunc, Net_PtrInt lRevert, bool bWait = false)
+	void SetEvent(CBasicSessionNet* pSession, CBasicSessionNet::pCallSameRefNetSessionFunc pCallFunc, Net_PtrInt lRevert)
 	{
-		if (!bWait && IsEventThread())
+		if (IsEventThread())
 		{
 			SetSameThreadEvent(pSession, pCallFunc, lRevert);
 			return;
@@ -119,7 +119,10 @@ public:
 	//operator in thread 0
 	typedef basiclib::basic_vector<CBasicSessionNet*>::type	VTOnTimerSessionList;
 	typedef VTOnTimerSessionList::iterator					VTOnTimerSessionListIterator;
+	
 	VTOnTimerSessionList	m_vtOnTimerList;
+	VTOnTimerSessionList	m_vtAddList;
+	VTOnTimerSessionList	m_vtDelList;
 };
 
 //定义单态
@@ -150,6 +153,7 @@ void ReadSelfOrder(int fd, short event, void *arg)
 
 THREAD_RETURN WorkerThread(void *arg)
 {
+	srand(time(NULL) + basiclib::BasicGetTickTime() + basiclib::BasicGetCurrentThreadId());
 	CNetThread *thr = (CNetThread*)arg;
 	basiclib::BasicInterlockedIncrement((LONG*)&g_nIntThreadCount);
 	event_base_loop(thr->m_base, 0);
@@ -172,9 +176,20 @@ void NetOnTimer(evutil_socket_t fd, short event, void *arg)
 		TRACE("delete net clocktimer!");
 		return;
 	}
-	for (auto& session : m_gNetMgrPoint->m_vtOnTimerList)
-	{
-		session->OnTimer();
+	for (auto&session : m_gNetMgrPoint->m_vtAddList){
+		m_gNetMgrPoint->m_vtOnTimerList.push_back(session);
+	}
+	m_gNetMgrPoint->m_vtAddList.clear();
+	for (auto&session : m_gNetMgrPoint->m_vtDelList){
+		CBasicNetMgv::VTOnTimerSessionList::iterator iter = find(m_gNetMgrPoint->m_vtOnTimerList.begin(), m_gNetMgrPoint->m_vtOnTimerList.end(), session);
+		if (iter != m_gNetMgrPoint->m_vtOnTimerList.end())
+		{
+			m_gNetMgrPoint->m_vtOnTimerList.erase(iter);
+		}
+	}
+	m_gNetMgrPoint->m_vtDelList.clear();
+	for (auto&session : m_gNetMgrPoint->m_vtOnTimerList){
+		session->OnTimer(0);
 	}
 
 	return;
@@ -310,19 +325,19 @@ CBasicSessionNet::CBasicSessionNet(Net_UInt nSessionID, bool bAddOnTimer)
 	m_pThread = &g_pEventThreads[nSessionID % g_nEventThreadCount];
 	m_pPreSend = nullptr;
 	m_bAddOnTimer = bAddOnTimer;
-	InitMember();
+	m_socketfd = -1;
+	m_unSessionStatus = 0;
 	if (m_bAddOnTimer)
 	{
 		g_pEventThreads[0].SetEvent(this, [](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
-			m_gNetMgrPoint->m_vtOnTimerList.push_back(pSession);
+			m_gNetMgrPoint->m_vtAddList.push_back(pSession);
 		}, 0);
 	}
 }
 
 CBasicSessionNet::~CBasicSessionNet()
 {
-
-	ASSERT(m_refSelf.GetResFunc() == nullptr);
+	ASSERT(m_refSelf == nullptr || m_refSelf->GetRef() == 0);
 	if (m_pPreSend != NULL)
 	{
 		delete m_pPreSend;
@@ -332,16 +347,26 @@ CBasicSessionNet::~CBasicSessionNet()
 void CBasicSessionNet::InitMember()
 {
 	m_socketfd = -1;
-	m_unSessionStatus = 0;
+	if (IsRelease())
+	{
+		Release();
+	}
+	else
+	{
+		m_unSessionStatus = 0;
+	}	
 }
-
-
 
 void CBasicSessionNet::Release()
 {
+	if (m_refSelf == nullptr)
+		return;
+	SetToRelease();
+	Close(FALSE);
 	SetLibEvent([](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
-		pSession->ReleaseCallback();
-	}, 0, true);	
+		if (pSession->GetSocketFD() == -1)
+			pSession->ReleaseCallback();
+	}, 0);	
 }
 
 void CBasicSessionNet::ReleaseCallback()
@@ -350,28 +375,49 @@ void CBasicSessionNet::ReleaseCallback()
 	{
 		m_bAddOnTimer = false;
 		g_pEventThreads[0].SetEvent(this, [](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
-			CBasicNetMgv::VTOnTimerSessionListIterator iter = find(m_gNetMgrPoint->m_vtOnTimerList.begin(), m_gNetMgrPoint->m_vtOnTimerList.end(), pSession);
-			if (iter != m_gNetMgrPoint->m_vtOnTimerList.end())
-			{
-				m_gNetMgrPoint->m_vtOnTimerList.erase(iter);
-			}
+			m_gNetMgrPoint->m_vtDelList.push_back(pSession);
 		}, 0);
 	}
 
 	if (m_refSelf == nullptr)
 		return;
-	CloseCallback(FALSE);
 	m_refSelf = nullptr;
+}
+
+BOOL CBasicSessionNet::CanClose()
+{
+	if (GetSessionStatus(TIL_SS_LINK) == TIL_SS_CONNECTING)
+	{
+		return FALSE;
+	}
+	return TRUE;
+}
+
+BOOL CBasicSessionNetClient::CanClose()
+{
+	BOOL bRet = CBasicSessionNet::CanClose();
+	if (bRet)
+	{
+		if (m_outBuffer.len <= 0 && m_msgQueue.GetMQLength() == 0)
+			return TRUE;
+	}
+	return !IsConnected();
 }
 
 void CBasicSessionNet::Close(BOOL bRemote)
 {
+	if (m_socketfd == -1)
+		return;
+
 	SetToClose();
-	//must be wait, may be loop
+	//may be loop, take care
 	SetLibEvent([](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
-		BOOL bRemote = lRevert;
-		pSession->CloseCallback(bRemote);
-	}, bRemote, true);
+		if (pSession->CanClose())
+		{
+			BOOL bRemote = lRevert;
+			pSession->CloseCallback(bRemote);
+		}
+	}, bRemote);
 }
 
 int CBasicSessionNet::RegistePreSend(CBasicPreSend* pFilter, Net_UInt dwRegOptions)
@@ -391,12 +437,12 @@ int CBasicSessionNet::RegistePreSend(CBasicPreSend* pFilter, Net_UInt dwRegOptio
 	return 1;
 }
 
-void CBasicSessionNet::SetLibEvent(pCallSameRefNetSessionFunc pCallback, Net_PtrInt lRevert, bool bWait)
+void CBasicSessionNet::SetLibEvent(pCallSameRefNetSessionFunc pCallback, Net_PtrInt lRevert)
 {
-	m_pThread->SetEvent(this, pCallback, lRevert, bWait);
+	m_pThread->SetEvent(this, pCallback, lRevert);
 }
 
-void CBasicSessionNet::CloseCallback(BOOL bRemote)
+void CBasicSessionNet::CloseCallback(BOOL bRemote, DWORD dwNetCode)
 {
 	if (m_socketfd != -1)
 	{
@@ -428,13 +474,23 @@ void OnLinkListenRead(int fd, short event, void *arg)
 
 CBasicSessionNetServer::CBasicSessionNetServer(Net_UInt nSessionID) : CBasicSessionNet(nSessionID)
 {
-	m_sessionIDMgr = 0;
 	m_nOnTimerTick = 0;
+	m_sessionIDMgr = nSessionID;
+	m_sessionIDQueue.SetOverLoadLength(0x0FFFFFFF);
+	m_usRecTimeout = 0;
 }
 
 CBasicSessionNetServer::~CBasicSessionNetServer()
 {
 
+}
+
+Net_UInt CBasicSessionNetServer::GetNewSessionID()
+{
+	Net_UInt nSessionID = 0;
+	if (m_sessionIDQueue.MQPop(&nSessionID) == 0)
+		return nSessionID;
+	return basiclib::BasicInterlockedIncrement((LONG*)&m_sessionIDMgr);
 }
 
 BOOL CBasicSessionNetServer::IsListen()
@@ -541,11 +597,30 @@ void CBasicSessionNetServer::AcceptClient()
 	{
 		return;
 	}
-	CBasicSessionNetClient* pAcceptSession = CreateServerClientSession(basiclib::BasicInterlockedIncrement((LONG*)&m_sessionIDMgr));
+	CBasicSessionNetClient* pAcceptSession = CreateServerClientSession(GetNewSessionID());
 	AcceptToSelf(pAcceptSession, s, addr);
 
 	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
 	m_mapClientSession[pAcceptSession->GetSessionID()] = pAcceptSession;
+}
+
+Net_Int CBasicSessionNetServer::ClientDisconnectCallback(CBasicSessionNetClient* pClient, Net_UInt p2)
+{
+	//disconnect
+	Net_Int lRet = m_funcDisconnect ? m_funcDisconnect(pClient, p2) : BASIC_NET_OK;
+
+	//delete
+	Net_UInt nSessionID = pClient->GetSessionID();
+	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
+	m_mapClientSession.erase(nSessionID);
+	lock.Unlock();
+	//release
+	pClient->Release();
+
+	//回收sessionid
+	m_sessionIDQueue.MQPush(&nSessionID);
+
+	return lRet;
 }
 
 CBasicSessionNetClient* CBasicSessionNetServer::CreateServerClientSession(Net_UInt nSessionID)
@@ -554,19 +629,7 @@ CBasicSessionNetClient* CBasicSessionNetServer::CreateServerClientSession(Net_UI
 	pNotify->bind_rece(m_funcReceive);
 	pNotify->bind_send(m_funcSend);
 	pNotify->bind_connect(m_funcConnect);
-	pNotify->bind_disconnect([&](CBasicSessionNet* p1, Net_UInt p2)->Net_Int{
-		//disconnect
-		Net_Int lRet = m_funcDisconnect ? m_funcDisconnect(p1, p2) : BASIC_NET_OK;
-
-		CBasicSessionNetClient* pClient = (CBasicSessionNetClient*)p1;
-		//delete
-		basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
-		m_mapClientSession.erase(pClient->GetSessionID());
-		lock.Unlock();
-		//release
-		pClient->Release();
-		return lRet;
-	});
+	pNotify->bind_disconnect(MakeFastFunction(this, &CBasicSessionNetServer::ClientDisconnectCallback));
 	pNotify->bind_idle(m_funcIdle);
 	pNotify->bind_error(m_funcError);
 	if (m_pPreSend != NULL)
@@ -582,8 +645,13 @@ CBasicSessionNetClient* CBasicSessionNetServer::ConstructSession(Net_UInt nSessi
 }
 
 //外部ontimer驱动1s
-void CBasicSessionNetServer::OnTimer()
+void CBasicSessionNetServer::OnTimer(Net_UInt nTick)
 {
+	if (IsRelease())
+	{
+		Release();
+		return;
+	}
 	m_nOnTimerTick++;
 	if (m_nOnTimerTick % 10 == 0)
 	{
@@ -601,12 +669,25 @@ void CBasicSessionNetServer::OnTimer()
 		}
 	}
 
+	bool bCheckTimeOut = (m_nOnTimerTick % 10 == 9);
+	time_t tmNow = time(NULL);
 	VTClientSession vtClient;
 	CopyClientSession(vtClient);
-	for (auto& client : vtClient)
-	{
-		client->OnTimer();
+	//10s检查一次timeout
+	if (m_nOnTimerTick % 10 == 9){
+		for (auto& client : vtClient){
+			client->OnTimer(m_nOnTimerTick);
+			if (client->IsRecTimeout(tmNow, m_usRecTimeout)){
+				client->Close(FALSE);
+			}
+		}
 	}
+	else{
+		for (auto& client : vtClient){
+			client->OnTimer(m_nOnTimerTick);
+		}
+	}
+
 	OnTimerWithAllClient(m_nOnTimerTick, vtClient);
 }
 void CBasicSessionNetServer::OnTimerWithAllClient(Net_UInt nTick, VTClientSession& vtClients)
@@ -637,12 +718,69 @@ void CBasicSessionNetServer::CopyClientSession(VTClientSession& vtClient)
 		vtClient.push_back(client.second);
 	}
 }
+
+//断开所有连接,断开前的回调
+void CBasicSessionNetServer::CloseAllSession(const std::function<void(CBasicSessionNetClient* pSession)>& func)
+{
+	VTClientSession vtUser;
+	CopyClientSession(vtUser);
+
+	for (auto& client : vtUser)
+	{
+		func(client.GetResFunc());
+		client->Close();
+	}
+}
+void CBasicSessionNetServer::SendToAll(void * pData, int nLength, DWORD dwFlag, bool bTrasmit)
+{
+	VTClientSession vtUser;
+	CopyClientSession(vtUser);
+	if (bTrasmit){
+		for (auto& client : vtUser){
+			if (client->IsConnected() && client->IsTransmit()){
+				client->Send(pData, nLength, dwFlag);
+			}
+		}
+	}
+	else{
+		for (auto& client : vtUser){
+			if (client->IsConnected()){
+				client->Send(pData, nLength, dwFlag);
+			}
+		}
+	}
+}
+//! 获取状态信息
+void CBasicSessionNetServer::GetNetStatus(CBasicString& strStatus)
+{
+	VTClientSession vtUser;
+	CopyClientSession(vtUser);
+
+	basiclib::CBasicString strVal;
+	strVal.Format("监听: %s  连接队列如下：\r\n", m_strListenAddr.c_str());
+	for (auto& client : vtUser)
+	{
+		client->GetNetStatus(strVal);
+	}
+	strStatus += strVal;
+}
+
+void CBasicSessionNetServer::ReleaseCallback()
+{
+	//如果还有用户
+	if (GetOnlineSessionCount() > 0){
+		CloseAllSession([](...)->void{
+		});
+		return;
+	}
+	CBasicSessionNet::ReleaseCallback();
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void OnLinkRead(int fd, short event, void *arg)
 {
-	CBasicSessionNetClient* pLink = (CBasicSessionNetClient*)arg;
-	if (pLink && pLink->m_socketfd == fd)
+	CRefBasicSessionNetClient pLink = (CBasicSessionNetClient*)arg;
+	if (pLink != nullptr && pLink->m_socketfd == fd)
 	{
 		pLink->OnReadEvent();
 	}
@@ -650,8 +788,8 @@ void OnLinkRead(int fd, short event, void *arg)
 
 void OnLinkWrite(int fd, short event, void *arg)
 {
-	CBasicSessionNetClient *pLink = (CBasicSessionNetClient *)arg;
-	if (pLink && pLink->m_socketfd == fd)
+	CRefBasicSessionNetClient pLink = (CBasicSessionNetClient*)arg;
+	if (pLink != nullptr && pLink->m_socketfd == fd)
 	{
 		pLink->OnWriteEvent();
 	}
@@ -662,7 +800,11 @@ CBasicSessionNetClient::CBasicSessionNetClient(Net_UInt nSessionID, bool bAddOnT
 {
 	m_nSessionID = nSessionID;
 	m_usTimeoutShakeHandle = 10;
+	m_threadSafeSendData = nullptr;
+	memset(m_szPeerAddr, 0, sizeof(m_szPeerAddr));
+	m_nPeerPort = 0;
 	m_unIdleCount = 0;
+	m_usRecTimeout = 0;
 }
 
 CBasicSessionNetClient::~CBasicSessionNetClient()
@@ -676,20 +818,24 @@ void CBasicSessionNetClient::InitMember()
 	memset(m_szPeerAddr, 0, sizeof(m_szPeerAddr));
 	m_nPeerPort = 0;
 	m_unIdleCount = 0;
+	
+	m_outBuffer.len = 0;
+	m_msgQueue.Drop_Queue([](SendDataToSendThread* pBuffer, void*)->void{
+		pBuffer->ReleaseData();
+	}, nullptr);
 }
 
-void CBasicSessionNetClient::CloseCallback(BOOL bRemote)
+void CBasicSessionNetClient::CloseCallback(BOOL bRemote, DWORD dwNetCode)
 {
 	if (m_socketfd != -1)
 	{
-		event_del(&m_wevent);
-		CBasicSessionNet::CloseCallback(bRemote);
-
-		Net_UInt dwNetCode = 0;
 		if (bRemote)
 		{
 			dwNetCode |= BASIC_NETCODE_CLOSE_REMOTE;
 		}
+		event_del(&m_wevent);
+		CBasicSessionNet::CloseCallback(bRemote);
+
 		OnDisconnect(dwNetCode);
 	}
 }
@@ -750,19 +896,21 @@ void CBasicSessionNetClient::InitClientEvent(evutil_socket_t socketfd, bool bAdd
 }
 void CBasicSessionNetClient::AddWriteEvent()
 {
-	event_add(&m_revent, NULL);
+	event_add(&m_wevent, NULL);
 }
 
 Net_Int CBasicSessionNetClient::OnConnect(Net_UInt dwNetCode)
 {
 	if (dwNetCode & BASIC_NETCODE_SUCC)
 	{
+		//设置最后收到的时间
+		m_stNet.OnReceiveData(0);
 		SetSessionStatus(TIL_SS_CONNECTED, TIL_SS_LINK);
 		m_stNet.Empty();
 	}
 	else
 	{
-		Close(TRUE);
+		CloseCallback(TRUE, BASIC_NETCODE_CONNET_FAIL);
 		return BASIC_NET_GENERIC_ERROR;
 	}
 
@@ -770,7 +918,7 @@ Net_Int CBasicSessionNetClient::OnConnect(Net_UInt dwNetCode)
 
 	Net_Int lRet = _handle_connect(dwNetCode);
 	//如果函数返回 BASIC_NET_HC_RET_HANDSHAKE，表示该连接需要进行握手。否则认为握手成功。
-	if (!(lRet & BASIC_NET_HC_RET_HANDSHAKE))
+	if (lRet == BASIC_NET_OK)
 	{
 		SetSessionStatus(TIL_SS_SHAKEHANDLE_TRANSMIT, TIL_SS_SHAKEHANDLE_MASK);
 	}
@@ -782,9 +930,85 @@ Net_Int CBasicSessionNetClient::OnConnect(Net_UInt dwNetCode)
 }
 
 //out timer
-void CBasicSessionNetClient::OnTimer()
+void CBasicSessionNetClient::OnTimer(Net_UInt nTick)
 {
-	_OnIdle();
+	if (GetSessionStatus(TIL_SS_CLOSE) == TIL_SS_TOCLOSE)
+	{
+		Close(FALSE);
+	}
+	else if (IsConnected())
+	{
+		//每次发送会重置idlecount
+		_OnIdle();
+		//10s检查超时
+		if (nTick % 10 == 9){
+			time_t tmNow = time(NULL);
+			if (IsRecTimeout(tmNow, m_usRecTimeout)){
+				Close(FALSE);
+			}
+		}
+	}
+}
+
+BOOL CBasicSessionNetClient::IsRecTimeout(time_t tmNow, Net_UShort nTimeoutSecond)
+{
+	if (tmNow - m_stNet.m_tmLastRecTime >= nTimeoutSecond && nTimeoutSecond != 0)
+		return TRUE;
+	return FALSE;
+}
+
+void CBasicSessionNetClient::GetReceiveTime(char* pBuffer, int nLength)
+{
+	if (m_stNet.m_tmLastRecTime > 0)
+	{
+		basiclib::CTime tm(m_stNet.m_tmLastRecTime);
+		tm.FormatToBuffer("%H:%M:%S", pBuffer, nLength);
+	}
+}
+//! 获取状态信息
+void CBasicSessionNetClient::GetNetStatus(CBasicString& strStatus)
+{
+	BasicNetStat stNet;
+	GetNetStatInfo(stNet);
+	Net_UInt dwLinkNetStatus = GetSessionStatus(TIL_SS_LINK);
+	Net_UInt dwCloseNetStatus = GetSessionStatus(TIL_SS_CLOSE);
+	char szBuf[32] = { 0 };
+	if (dwCloseNetStatus != TIL_SS_NORMAL){
+		switch (dwCloseNetStatus){
+		case TIL_SS_TOCLOSE:{
+				strcpy(szBuf, "TOCLOSE");
+			}
+			break;
+		}
+	}
+	else{
+		switch (dwLinkNetStatus){
+		case TIL_SS_IDLE:
+			strcpy(szBuf, "IDLE");
+			break;
+		case TIL_SS_CONNECTING:
+			strcpy(szBuf, "CONNECTING");
+			break;
+		case TIL_SS_CONNECTED:{
+				if (GetSessionStatus(TIL_SS_SHAKEHANDLE_MASK) != TIL_SS_SHAKEHANDLE_TRANSMIT)
+					strcpy(szBuf, "CONNECTED");
+				else
+					strcpy(szBuf, "OK");
+			}
+			break;
+		}
+	}
+	char szBufTime[32] = { 0 };
+	GetReceiveTime(szBufTime, 32);
+
+	double dSendRate = 0;
+	double dRecvRate = 0;
+	stNet.GetTransRate(m_lastNet, dSendRate, dRecvRate);
+	CBasicString strTemp;
+	strTemp.Format("Link: %s LastReceive: %s Timeout: %d \r\nStatus: %s R%uK S%uK R:%.2fKB/s S:%.2fKB/s\t\r\n", 
+		m_strConnectAddr.IsEmpty() ? m_szPeerAddr : m_strConnectAddr.c_str(), szBufTime, m_usRecTimeout, szBuf, stNet.m_dwReceBytes / 1024, stNet.m_dwSendBytes / 1024, dRecvRate, dSendRate);
+
+	strStatus += strTemp;
 }
 
 Net_Int CBasicSessionNetClient::OnDisconnect(Net_UInt dwNetCode)
@@ -795,22 +1019,24 @@ Net_Int CBasicSessionNetClient::OnDisconnect(Net_UInt dwNetCode)
 
 void CBasicSessionNetClient::_OnIdle()
 {
-	if (GetSessionStatus(TIL_SS_LINK) == TIL_SS_CONNECTED)
+	m_unIdleCount++;
+	if (GetSessionStatus(TIL_SS_SHAKEHANDLE_MASK) != TIL_SS_SHAKEHANDLE_TRANSMIT && m_unIdleCount > m_usTimeoutShakeHandle)
 	{
-		m_unIdleCount++;
-		if (GetSessionStatus(TIL_SS_SHAKEHANDLE_MASK) != TIL_SS_SHAKEHANDLE_TRANSMIT && m_unIdleCount > m_usTimeoutShakeHandle)
-		{
-			Close();
-			return;
-		}
-		OnIdle(m_unIdleCount);
+		Close();
+		return;
 	}
+	OnIdle(m_unIdleCount);
 }
 
 Net_Int CBasicSessionNetClient::DoConnect()
 {
+	Net_UInt dwRelease = GetSessionStatus(TIL_SS_RELEASE_MASK);
 	Net_UInt dwLinkNetStatus = GetSessionStatus(TIL_SS_LINK);
 	Net_UInt dwCloseNetStatus = GetSessionStatus(TIL_SS_CLOSE);
+	if (dwRelease != 0)
+	{
+		return BASIC_NET_RELEASE_ERROR;
+	}
 	if (dwCloseNetStatus != TIL_SS_NORMAL)
 	{
 		Net_Int lRet = BASIC_NET_GENERIC_ERROR;
@@ -878,7 +1104,11 @@ Net_Int CBasicSessionNetClient::DoConnect()
 				((CBasicSessionNetClient*)pSession)->OnConnect(BASIC_NETCODE_SUCC);
 			}, socketfd);
 		}
+#ifdef __BASICWINDOWS
+		else if (errno == EINPROGRESS || WSAGetLastError() == WSAEWOULDBLOCK)
+#else
 		else if (errno == EINPROGRESS)
+#endif
 		{
 			SetSessionStatus(TIL_SS_CONNECTING, TIL_SS_LINK);
 			//wait for write onconnect
@@ -892,6 +1122,7 @@ Net_Int CBasicSessionNetClient::DoConnect()
 			//int nRetErrorNo = errno;
 			lReturn = BASIC_NET_GENERIC_ERROR;
 		}
+		
 	} while (0);
 
 	if (lReturn != BASIC_NET_OK)
@@ -955,66 +1186,81 @@ BOOL CBasicSessionNetClient::ReadBuffer(Net_Int lSend)
 	}
 	else
 	{
-		m_outBuffer.len = m_quSend.ReadBuffer(m_outBuffer.buf, MAX_BUFFER);
+		m_outBuffer.len = m_msgQueue.ReadBuffer(m_outBuffer.buf, MAX_BUFFER);
 	}
 	return m_outBuffer.len > 0;
 }
 
-BOOL CBasicSessionNetClient::SendDataFromQueue()
+//保证是libevent线程处理
+void CBasicSessionNetClient::SendDataFromQueue()
 {
-	basiclib::CSpinLockFunc lock(&m_lockSend);
-	if (lock.LockNoWait())
+	if (!IsConnected())
 	{
-		if (!IsConnected())
+		return;
+	}
+	BOOL bError = FALSE;
+	int nTotalSend = 0;
+	Net_Int lSend = 0;
+	while (ReadBuffer(lSend))
+	{
+		lSend = send(m_socketfd, m_outBuffer.buf, m_outBuffer.len, 0);
+		if (lSend >= 0)
 		{
-			return FALSE;
-		}
-		BOOL bError = FALSE;
-		BOOL bFull = FALSE;
-		int nTotalSend = 0;
-		Net_Int lSend = 0;
-		while (ReadBuffer(lSend))
-		{
-			lSend = send(m_socketfd, m_outBuffer.buf, m_outBuffer.len, 0);
-			if (lSend >= 0)
-			{
-				nTotalSend += lSend;
-			}
-			else
-			{
-				int nNumber = errno;
-				if (nNumber == EAGAIN)
-				{
-					SetLibEvent([](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
-						((CBasicSessionNetClient*)pSession)->AddWriteEvent();
-					});
-					bFull = TRUE;
-					break;
-				}
-				else if (nNumber == EINTR)
-				{
-					lSend = 0;
-					continue;
-				}
-				else
-				{
-					bError = TRUE;
-					break;
-				}
-			}
-		}
-		lock.UnLock();
-		if (bError)
-		{
-			Close(TRUE);
+			nTotalSend += lSend;
 		}
 		else
 		{
-			OnSendData(nTotalSend);
-			return !bFull;
+			int nNumber = errno;
+			if (nNumber == EAGAIN)
+			{
+				AddWriteEvent();
+				break;
+			}
+			else if (nNumber == EINTR)
+			{
+				lSend = 0;
+				continue;
+			}
+			else
+			{
+#ifdef __BASICWINDOWS
+				if (lSend == SOCKET_ERROR)
+				{
+					DWORD dwLastError = WSAGetLastError();   //I know this
+					if (dwLastError == WSAEWOULDBLOCK)
+					{
+						AddWriteEvent();
+					}
+					else if (dwLastError != WSA_IO_PENDING)
+					{
+						bError = TRUE;
+					}
+				}
+#else
+				bError = TRUE;
+#endif
+				break;
+			}
 		}
 	}
-	return FALSE;
+	if (bError)
+	{
+		//有错误清空缓存
+		m_outBuffer.len = 0;
+		m_msgQueue.Drop_Queue([](SendDataToSendThread* pBuffer, void*)->void{
+			pBuffer->ReleaseData();
+		}, nullptr);
+		Close(TRUE);
+	}
+	else
+	{
+		OnSendData(nTotalSend);
+	}
+}
+
+void CBasicSessionNetClient::LibEventThreadSendData()
+{
+	SendDataFromQueue();
 }
 
 Net_Int CBasicSessionNetClient::SendData(void *pData, Net_Int cbData, Net_UInt dwFlag)
@@ -1031,12 +1277,15 @@ Net_Int CBasicSessionNetClient::SendData(void *pData, Net_Int cbData, Net_UInt d
 	{
 		return 0;
 	}
-	Net_Int lRet = m_quSend.AddSendBuffer((const char*)pData, cbData);
-	if (lRet > 0)
-	{
-		while (SendDataFromQueue()){}
-	}
-	return lRet;
+	SendDataToSendThread sendThreadData((char*)pData, cbData); 
+	m_msgQueue.MQPush(&sendThreadData);
+
+	SetLibEvent([](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+		CBasicSessionNetClient* pClientSession = (CBasicSessionNetClient*)pSession;
+		pClientSession->LibEventThreadSendData();
+	});
+
+	return cbData;
 }
 
 void CBasicSessionNetClient::OnSendData(Net_UInt dwIoSize)
@@ -1045,6 +1294,8 @@ void CBasicSessionNetClient::OnSendData(Net_UInt dwIoSize)
 		return;
 	m_stNet.OnSendData(dwIoSize);
 	_handle_send(BASIC_NETCODE_SUCC, dwIoSize);
+	//每次发送重置idle
+	m_unIdleCount = 0;
 }
 
 Net_Int CBasicSessionNetClient::OnReceive(Net_UInt dwNetCode, const char *pszData, Net_Int cbData)
@@ -1093,16 +1344,16 @@ Net_Int CBasicSessionNetClient::PreReceiveData(Net_UInt dwNetCode, const char *p
 	const char* pPack = pszData;
 	long lPackLen = cbData;
 	int rRet = PACK_FILTER_SEARCH;
-	CBasicSmartBuffer bufTmp;
-	rRet = m_pPreSend->OnPreReceive(pPack, lPackLen, bufTmp, this);
+	m_bufCacheTmp.SetDataLength(0);
+	rRet = m_pPreSend->OnPreReceive(pPack, lPackLen, m_bufCacheTmp, this);
 	while (rRet == PACK_FILTER_NEXT)
 	{
 		//同一次接收，响应多次消息
-		Net_Int lRecRet = OnReceive(dwNetCode | BASIC_NETCODE_FILTER_HANDLE, bufTmp.GetDataBuffer(), bufTmp.GetDataLength());
+		Net_Int lRecRet = OnReceive(dwNetCode | BASIC_NETCODE_FILTER_HANDLE, m_bufCacheTmp.GetDataBuffer(), m_bufCacheTmp.GetDataLength());
 		if (lRecRet < BASIC_NET_OK)	//收到错误包后可能被断开
 			return lRecRet;
-		bufTmp.Free();
-		rRet = m_pPreSend->OnPreReceive(NULL, 0, bufTmp, this);
+		m_bufCacheTmp.SetDataLength(0);
+		rRet = m_pPreSend->OnPreReceive(NULL, 0, m_bufCacheTmp, this);
 	}
 	if (rRet == PACK_FILTER_SKIP)
 	{
@@ -1114,7 +1365,7 @@ Net_Int CBasicSessionNetClient::PreReceiveData(Net_UInt dwNetCode, const char *p
 	}
 	else if (rRet == PACK_FILTER_SEARCH)
 	{
-		pPack = bufTmp.GetDataBuffer(lPackLen);
+		pPack = m_bufCacheTmp.GetDataBuffer(lPackLen);
 		dwNetCode |= BASIC_NETCODE_FILTER_HANDLE;
 		return OnReceive(dwNetCode, pPack, lPackLen);
 	}
@@ -1150,6 +1401,41 @@ void CBasicSessionNetClient::OnReadEvent(void)
 			Close(TRUE);
 			return;
 		}
+		else if (nReceived < 0)
+		{
+			int nNumber = errno;
+			if (nNumber == EAGAIN || nNumber == EINTR || errno == EWOULDBLOCK)
+			{
+				//加readevent
+				event_add(&m_revent, NULL);
+				return;
+			}
+			else
+			{
+				BOOL bError = FALSE;
+#ifdef __BASICWINDOWS
+				if (nReceived == SOCKET_ERROR)
+				{
+					DWORD dwLastError = WSAGetLastError();   //I know this
+					if (dwLastError == WSAEWOULDBLOCK)
+					{
+						//加readevent
+						event_add(&m_revent, NULL);
+					}
+					else if (dwLastError != WSA_IO_PENDING)
+					{
+						bError = TRUE;
+					}
+				}
+#else
+				bError = TRUE;
+#endif
+				if (bError){
+					Close(TRUE);
+					return;
+				}
+			}
+		}
 	}
 }
 
@@ -1170,8 +1456,70 @@ void CBasicSessionNetClient::OnWriteEvent()
 	}
 	else
 	{
-		while (SendDataFromQueue()){}
+		SendDataFromQueue();
 	}
+}
+
+Net_Int CBasicSessionNetClient::_handle_connect(Net_UInt dwNetCode)
+{
+	Net_Int lRet = BASIC_NET_OK;
+	if (m_funcConnect)
+	{
+		CRefBasicSessionNet pRef = m_refSelf;
+		lRet = m_funcConnect(this, dwNetCode);
+	}
+	return lRet;
+}
+Net_Int CBasicSessionNetClient::_handle_disconnect(Net_UInt dwNetCode)
+{
+	Net_Int lRet = BASIC_NET_OK;
+	if (m_funcDisconnect)
+	{
+		CRefBasicSessionNet pRef = m_refSelf;
+		lRet = m_funcDisconnect(this, dwNetCode);
+	}
+	return lRet;
+}
+
+Net_Int CBasicSessionNetClient::_handle_idle(Net_UInt dwNetCode)
+{
+	Net_Int lRet = BASIC_NET_OK;
+	if (m_funcIdle)
+	{
+		CRefBasicSessionNet pRef = m_refSelf;
+		lRet = m_funcIdle(this, dwNetCode);
+	}
+	return lRet;
+}
+Net_Int CBasicSessionNetClient::_handle_error(Net_UInt dwNetCode, Net_Int lRetCode)
+{
+	Net_Int lRet = BASIC_NET_OK;
+	if (m_funcError)
+	{
+		CRefBasicSessionNet pRef = m_refSelf;
+		lRet = m_funcError(this, dwNetCode, lRetCode);
+	}
+	return lRet;
+}
+Net_Int CBasicSessionNetClient::_handle_rece(Net_UInt dwNetCode, const char *pszData, Net_Int cbData)
+{
+	Net_Int lRet = BASIC_NET_OK;
+	if (m_funcReceive)
+	{
+		CRefBasicSessionNet pRef = m_refSelf;
+		lRet = m_funcReceive(this, dwNetCode, cbData, pszData);
+	}
+	return lRet;
+}
+Net_Int CBasicSessionNetClient::_handle_send(Net_UInt dwNetCode, Net_Int cbSend)
+{
+	Net_Int lRet = BASIC_NET_OK;
+	if (m_funcSend)
+	{
+		CRefBasicSessionNet pRef = m_refSelf;
+		lRet = m_funcSend(this, dwNetCode, cbSend);
+	}
+	return lRet;
 }
 
 __NS_BASIC_END

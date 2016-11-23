@@ -14,7 +14,7 @@ __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
 //声明
 ////////////////////////////////////////////////////////////////////////////////////////
-class CBasicLoadDll : public CBasicObject
+class _BASIC_DLL_API CBasicLoadDll : public CBasicObject
 {
 public:
 	CBasicLoadDll();
@@ -25,6 +25,9 @@ public:
 	long FreeLibrary();
 	void* GetProcAddress(const char* lpszProcName);
 	basiclib::CBasicString& GetLibName(){return m_strLoadFileName;}
+
+	//相同动态库替换
+	bool ReplaceDll(CBasicLoadDll& dll, const std::function<void(const char* pLog)>& logFunc);
 protected:
 	basiclib::CBasicString	m_strLoadFileName;
 	void*					m_hModule;

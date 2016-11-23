@@ -112,6 +112,7 @@ public:
 
 	// formatting using "C" strftime
 	CBasicString Format_S(const char* pFormat) const;
+	void FormatToBuffer(const char* pFormat, char* pBuffer, int nLength) const;
 private:
 	__time64_t m_time;              //这边使用64位保证不会溢出
 };

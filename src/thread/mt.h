@@ -225,10 +225,12 @@ protected:
 //自旋锁
 struct SpinLock
 {
-	int m_nLock;
+	int		m_nLock;
+	DWORD	m_lockThreadID;
 	SpinLock()
 	{
 		m_nLock = 0;
+		m_lockThreadID = 0;
 	}
 };
 
@@ -246,6 +248,96 @@ public:
 protected:
 	SpinLock* 		m_pLock;
 	bool			m_bAcquired;
+};
+
+#ifdef __BASICWINDOWS
+//适用于vista以及server 2008及以上系统
+#define RWLOCK_VAR					SRWLOCK
+#define INIT_RWLOCK_VAR(v)			InitializeSRWLock(&(v))
+#define ENTER_READ_LOCK_VAR(v)		AcquireSRWLockShared(&(v))
+#define LEAVE_READ_LOCK_VAR(v)		ReleaseSRWLockShared(&(v))
+#define ENTER_WRITE_LOCK_VAR(v)		AcquireSRWLockExclusive(&(v))
+#define LEAVE_WRITE_LOCK_VAR(v)		ReleaseSRWLockExclusive(&(v))
+#define DELETE_RWLOCK_VAR(v)  
+#else
+#define RWLOCK_VAR					pthread_rwlock_t
+#define INIT_RWLOCK_VAR(v)			pthread_rwlock_init(&(v), NULL)
+#define ENTER_READ_LOCK_VAR(v)		pthread_rwlock_rdlock(&(v))
+#define LEAVE_READ_LOCK_VAR(v)		pthread_rwlock_unlock(&(v))
+#define ENTER_WRITE_LOCK_VAR(v)		pthread_rwlock_wrlock(&(v))
+#define LEAVE_WRITE_LOCK_VAR(v)		pthread_rwlock_unlock(&(v))
+#define DELETE_RWLOCK_VAR(v)		pthread_rwlock_destroy(&(v))
+#endif 
+
+struct RWLock
+{
+	RWLOCK_VAR	lock;
+	RWLock()
+	{
+		INIT_RWLOCK_VAR(lock);
+	}
+	~RWLock()
+	{
+		DELETE_RWLOCK_VAR(lock);
+	}
+};
+//RWLock
+class CRWLockFunc
+{
+public:
+	CRWLockFunc(RWLock* lock, bool bInitialWLock = false, bool bInitialRLock = false)
+	{
+		m_pLock = lock;
+		m_bAcquiredRead = false;
+		m_bAcquiredWrite = false;
+		if (bInitialWLock)
+			LockWrite();
+		if (bInitialRLock)
+			LockRead();
+	}
+	virtual ~CRWLockFunc()
+	{
+		UnLockRead();
+		UnLockWrite();
+	}
+
+	void LockRead()
+	{
+		if (!m_bAcquiredRead)
+		{
+			ENTER_READ_LOCK_VAR(m_pLock->lock);
+			m_bAcquiredRead = true;
+		}
+	}
+	void UnLockRead()
+	{
+		if (m_bAcquiredRead)
+		{
+			LEAVE_READ_LOCK_VAR(m_pLock->lock);
+			m_bAcquiredRead = false;
+		}
+	}
+	void LockWrite()
+	{
+		if (!m_bAcquiredWrite)
+		{
+			ENTER_WRITE_LOCK_VAR(m_pLock->lock);
+			m_bAcquiredWrite = true;
+		}
+	}
+	void UnLockWrite()
+	{
+		if (m_bAcquiredWrite)
+		{
+			LEAVE_WRITE_LOCK_VAR(m_pLock->lock);
+			m_bAcquiredWrite = false;
+		}
+	}
+
+protected:
+	RWLock* 		m_pLock;
+	bool			m_bAcquiredRead;
+	bool			m_bAcquiredWrite;
 };
 
 

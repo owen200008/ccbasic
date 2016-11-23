@@ -88,6 +88,60 @@ protected:
 	Net_Int				m_lSendLimit;	//发送的带宽限制  字节/秒
 };
 
+///////////////////////////////////////////////////////////////////////////////
+//发送的buffer
+#pragma	pack(1)
+struct SendDataToSendThread
+{
+	Net_Int		m_cbData;
+	char*		m_pData;
+	Net_Int		m_nIndex;
+	SendDataToSendThread(){
+		m_cbData = 0;
+		m_nIndex = 0;
+		m_pData = nullptr;
+	}
+	SendDataToSendThread(const char* pBuffer, Net_Int cbData){
+		m_cbData = cbData;
+		m_nIndex = 0;
+		m_pData = (char*)basiclib::BasicAllocate(cbData);
+		memcpy(m_pData, pBuffer, cbData);
+	}
+	void ReleaseData(){
+		if (m_pData)
+			basiclib::BasicDeallocate(m_pData);
+		m_pData = nullptr;
+		m_cbData = 0;
+	}
+	Net_Int ReadBuffer(char* pBuffer, Net_Int nLength){
+		Net_Int lLeft = m_cbData - m_nIndex;
+		if (lLeft > 0)
+		{
+			long lCopy = lLeft > nLength ? nLength : lLeft;
+			if (pBuffer != NULL && nLength > 0)
+			{
+				memcpy(pBuffer, m_pData + m_nIndex, lCopy);
+				m_nIndex += lCopy;
+				return lCopy;
+			}
+		}
+		return 0;
+	}
+	BOOL IsEmpty(){
+		return m_nIndex >= m_cbData && m_pData != nullptr;
+	}
+};
+#pragma	pack()
+
+class CMsgSendBufferQueue : public CMessageQueueLock<SendDataToSendThread>
+{
+public:
+	CMsgSendBufferQueue();
+	virtual ~CMsgSendBufferQueue();
+
+	Net_UInt ReadBuffer(char* pBuffer, Net_UInt nLength);
+};
+
 __NS_BASIC_END
 //////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma pack()

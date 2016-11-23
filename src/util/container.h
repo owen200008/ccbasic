@@ -163,6 +163,7 @@ struct basic_basic_stringstream
 	typedef basic_stringstream<_Elem, std::char_traits<_Elem>, DEFAULT_ALLOCATOR<_Elem> >	type;
 };
 
+
 __NS_BASIC_END
 
 #endif // BASIC_CONTAINER_H__

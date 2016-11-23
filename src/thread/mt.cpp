@@ -268,19 +268,31 @@ void CSpinLockFunc::Lock()
 {
 	if (!m_bAcquired)
 	{
-		while (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1)) {}
+		DWORD dwThreadID = BasicGetCurrentThreadId();
+		if (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1))
+		{
+			if (dwThreadID == m_pLock->m_lockThreadID && IsLock())
+				return;
+
+			while (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1)) {}
+		}
 		m_bAcquired = true;
+		m_pLock->m_lockThreadID = dwThreadID;
 	}
 }
 bool CSpinLockFunc::LockNoWait()
 {
 	if (!m_bAcquired)
 	{
-		while (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1)) 
+		DWORD dwThreadID = BasicGetCurrentThreadId();
+		if (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1))
 		{
+			if (dwThreadID == m_pLock->m_lockThreadID && IsLock())
+				return true;
 			return false;
 		}
 		m_bAcquired = true;
+		m_pLock->m_lockThreadID = dwThreadID;
 	}
 	return true;
 }
@@ -289,11 +301,18 @@ void CSpinLockFunc::LockAndSleep(unsigned short usSleep)
 {
 	if (!m_bAcquired)
 	{
-		while (BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1))
+		DWORD dwThreadID = BasicGetCurrentThreadId();
+		if (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1))
 		{
-			BasicSleep(usSleep);
+			if (dwThreadID == m_pLock->m_lockThreadID && IsLock())
+				return;
+			while (BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1))
+			{
+				BasicSleep(usSleep);
+			}
 		}
 		m_bAcquired = true;
+		m_pLock->m_lockThreadID = BasicGetCurrentThreadId();
 	}
 }
 
@@ -301,6 +320,7 @@ void CSpinLockFunc::UnLock()
 {
 	if (m_bAcquired)
 	{
+		m_pLock->m_lockThreadID = 0;
 		basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 0);
 		m_bAcquired = false;
 	}
