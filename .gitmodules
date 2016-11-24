@@ -4,3 +4,6 @@
 [submodule "3rd/libevent"]
 	path = 3rd/libevent
 	url = https://github.com/libevent/libevent.git
+[submodule "3rd/rapidjson"]
+	path = 3rd/rapidjson
+	url = https://github.com/miloyip/rapidjson.git

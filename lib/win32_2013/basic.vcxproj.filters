@@ -70,6 +70,9 @@
     <Filter Include="scbasic\commu">
       <UniqueIdentifier>{d45d2f8b-4598-4e84-88a8-0ca4ac00c726}</UniqueIdentifier>
     </Filter>
+    <Filter Include="scbasic\json">
+      <UniqueIdentifier>{d4cea587-3e20-4efa-aed0-91ced6ba0cb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\inc\basic_def.h">
@@ -303,6 +306,9 @@
     <ClInclude Include="..\..\src\misc\fastdelegate.h">
       <Filter>misc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\scbasic\json\scbasicjson.h">
+      <Filter>scbasic\json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mem\mem.cpp">
@@ -487,6 +493,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\scbasic\newhttp\httpresponse.cpp">
       <Filter>scbasic\newhttp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scbasic\json\scbasicjson.cpp">
+      <Filter>scbasic\json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

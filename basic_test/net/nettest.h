@@ -233,7 +233,7 @@ THREAD_RETURN WorkerClientThread(void* arg){
 	LONG m_uniValue = basiclib::BasicInterlockedIncrement(&g_StartNetCount);
 	AddStack(m_uniValue);
 	srand(time(NULL) + basiclib::BasicGetTickTime());
-	CClient* pSession = new CClient(rand());
+	CClient* pSession = new CClient(m_uniValue);
 	if (pSession->Connect(ADDRESS_C) != BASIC_NET_OK)
 	{
 		TRACE("%x connect error:%s\n", pSession, ADDRESS_C);

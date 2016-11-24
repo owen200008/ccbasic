@@ -64,7 +64,9 @@ public:
 	{
 		if (IsEventThread())
 		{
+			pSession->AddRef();
 			SetSameThreadEvent(pSession, pCallFunc, lRevert);
+			pSession->DelRef();
 			return;
 		}
 		CEventQueueItem eventQueue;
@@ -123,6 +125,9 @@ public:
 	VTOnTimerSessionList	m_vtOnTimerList;
 	VTOnTimerSessionList	m_vtAddList;
 	VTOnTimerSessionList	m_vtDelList;
+
+	typedef basiclib::basic_vector<CBasicSessionNet::CRefBasicSessionNet>::type	VTDeathSessionList;
+	VTDeathSessionList		m_vtDeathSession;
 };
 
 //¶¨Òåµ¥Ì¬
@@ -146,6 +151,9 @@ void ReadSelfOrder(int fd, short event, void *arg)
 			eventQueue.m_pRefNetSession->DelRef();
 
 			thr->SetSameThreadEvent(eventQueue.m_pRefNetSession, eventQueue.m_pCallFunc, eventQueue.m_lRevert);
+		}
+		else if (nReadLength < 0){
+			break;
 		}
 	}
 	while (nReadLength != sizeof(CEventQueueItem));
@@ -191,6 +199,8 @@ void NetOnTimer(evutil_socket_t fd, short event, void *arg)
 	for (auto&session : m_gNetMgrPoint->m_vtOnTimerList){
 		session->OnTimer(0);
 	}
+	//ÑÓ³ÙÉ¾³ý
+	m_gNetMgrPoint->m_vtDeathSession.clear();
 
 	return;
 }
@@ -277,13 +287,8 @@ void CBasicSessionNet::CloseSocket()
 	g_bTimeToKill = TRUE;
 	if (g_nEventThreadCount > 0 && g_pEventThreads != nullptr)
 	{
-		for (int i = 0; i < g_nEventThreadCount; i++)
-		{
-			CNetThread* pThread = &g_pEventThreads[i];
-			event_base_loopexit(pThread->m_base, nullptr);
-		}
 		int nTimes = 0;
-		while (g_nIntThreadCount != 0)
+		while (!m_gNetMgrPoint->m_bCloseTimer)
 		{
 			nTimes++;
 			basiclib::BasicSleep(100);
@@ -292,8 +297,18 @@ void CBasicSessionNet::CloseSocket()
 				break;
 			}
 		}
+
+		for (int i = 0; i < g_nEventThreadCount; i++)
+		{
+			CNetThread* pThread = &g_pEventThreads[i];
+			event_base_loopbreak(pThread->m_base);
+			//event_base_dispatch(pThread->m_base);
+		}
+#ifdef __BASICWINDOWS
+		WSACleanup();
+#endif
 		nTimes = 0;
-		while (!m_gNetMgrPoint->m_bCloseTimer)
+		while (g_nIntThreadCount != 0)
 		{
 			nTimes++;
 			basiclib::BasicSleep(100);
@@ -311,9 +326,7 @@ void CBasicSessionNet::CloseSocket()
 		delete[] g_pEventThreads;
 		g_pEventThreads = nullptr;
 	}
-#ifdef __BASICWINDOWS
-	WSACleanup();
-#endif
+
 	TRACE("End CloseSocket!");
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -371,13 +384,13 @@ void CBasicSessionNet::Release()
 
 void CBasicSessionNet::ReleaseCallback()
 {
-	if (m_bAddOnTimer)
-	{
-		m_bAddOnTimer = false;
-		g_pEventThreads[0].SetEvent(this, [](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+	g_pEventThreads[0].SetEvent(this, [](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+		bool bAddOnTimer = lRevert;
+		m_gNetMgrPoint->m_vtDeathSession.push_back(pSession);
+		if (bAddOnTimer)
 			m_gNetMgrPoint->m_vtDelList.push_back(pSession);
-		}, 0);
-	}
+	}, m_bAddOnTimer);
+	m_bAddOnTimer = false;
 
 	if (m_refSelf == nullptr)
 		return;

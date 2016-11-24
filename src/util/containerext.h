@@ -28,9 +28,13 @@ public:
 		m_queue = (StructData*)basiclib::BasicAllocate(m_cap * sizeof(StructData));
 	}
 	virtual ~CMessageQueue(){
-		if (m_defaultReleaseFunc != nullptr)
-			Drop_Queue(m_defaultReleaseFunc, nullptr);
-		basiclib::BasicDeallocate(m_queue);
+		if(m_queue)
+		{
+			if (m_defaultReleaseFunc != nullptr)
+				Drop_Queue(m_defaultReleaseFunc, nullptr);
+			basiclib::BasicDeallocate(m_queue);
+			m_queue = nullptr;
+		}
 	}
 	void SetOverLoadLength(int nOverLoadLength){
 		m_overload_threshold = nOverLoadLength;

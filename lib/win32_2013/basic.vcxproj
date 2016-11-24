@@ -54,6 +54,7 @@
     <ClInclude Include="..\..\src\scbasic\commu\basicclient.h" />
     <ClInclude Include="..\..\src\scbasic\commu\ipverify.h" />
     <ClInclude Include="..\..\src\scbasic\commu\servertemplate.h" />
+    <ClInclude Include="..\..\src\scbasic\json\scbasicjson.h" />
     <ClInclude Include="..\..\src\scbasic\newhttp\httpdefine.h" />
     <ClInclude Include="..\..\src\scbasic\newhttp\httpparser.h" />
     <ClInclude Include="..\..\src\scbasic\newhttp\httprequest.h" />
@@ -124,6 +125,7 @@
     <ClCompile Include="..\..\src\scbasic\commu\basicclient.cpp" />
     <ClCompile Include="..\..\src\scbasic\commu\ipverify.cpp" />
     <ClCompile Include="..\..\src\scbasic\commu\servertemplate.cpp" />
+    <ClCompile Include="..\..\src\scbasic\json\scbasicjson.cpp" />
     <ClCompile Include="..\..\src\scbasic\newhttp\httpparser.cpp" />
     <ClCompile Include="..\..\src\scbasic\newhttp\httprequest.cpp" />
     <ClCompile Include="..\..\src\scbasic\newhttp\httpresponse.cpp" />
