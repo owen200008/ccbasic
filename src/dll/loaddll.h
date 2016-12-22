@@ -26,7 +26,11 @@ public:
 	void* GetProcAddress(const char* lpszProcName);
 	basiclib::CBasicString& GetLibName(){return m_strLoadFileName;}
 
-	//相同动态库替换
+	/*相同动态库替换，使用规则,支持win32
+	1.两个动态库都不能free不然会崩溃
+	2.只替换导出的函数，包括全局函数，成员函数，静态成员函数
+	3.尽量不要使用全局变量，静态成员变量，这些都无法继承，从默认值开始
+	*/
 	bool ReplaceDll(CBasicLoadDll& dll, const std::function<void(const char* pLog)>& logFunc);
 protected:
 	basiclib::CBasicString	m_strLoadFileName;

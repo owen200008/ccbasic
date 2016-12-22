@@ -3,7 +3,7 @@
 // 创建者:     蔡振球
 // Email:      zqcai@w.cn
 // 创建时间:   2012/2/17 9:16:27
-// 内容描述:   实现hash_map的MFC like接口。仅用于兼容，不建议使用。
+// 内容描述:   实现map的MFC like接口。仅用于兼容，不建议使用。
 // 版本信息:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_MAP_H
@@ -16,34 +16,9 @@
 #include <utility>
 #include <functional>
 #include "../util/container.h"
-/*
-#ifdef __GNUC__
-#include <ext/hash_map>
-using namespace __gnu_cxx;
-#elif defined (__SGI_SBASIC_PORT)
-#include <hash_map>
-#else
-#include <hash_map>
-using namespace stdext;
-#endif*/
 
 #include "../types/types.h"
 using namespace std;
-
-#ifdef __GNUC__
-#include <ext/hash_map>
-namespace __gnu_cxx
-{
-	using namespace ::basiclib;
-
-	template<> struct hash<void*>
-	{
-		size_t operator()(const void* p) const
-		{ return (size_t)p; }
-	};
-}
-
-#endif
 
 __NS_BASIC_START
 
@@ -51,15 +26,7 @@ __NS_BASIC_START
 
 /////////////////////////////////////////////////////////////////////////////
 // CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>
-/*#ifdef __SGI_SBASIC_PORT
-#define base_class hash_map<KEY, VALUE, hash<KEY>, equal_to<KEY>, DEFAULT_ALLOCATOR<VALUE> >
-#elif defined(__MSVC)
-#define base_class hash_map<KEY, VALUE, hash_compare<KEY, less<KEY> >, DEFAULT_ALLOCATOR<pair<const KEY, VALUE> > >
-#else
-#define base_class hash_map<KEY, VALUE, hash<KEY>, equal_to<KEY>, DEFAULT_ALLOCATOR<VALUE> >
-#endif
-*/
-#define base_class basic_hash_map<KEY, VALUE>::type
+#define base_class basic_map<KEY, VALUE>::type
 
 #pragma warning (push)
 #pragma warning (disable: 4251)

@@ -169,7 +169,7 @@
 //#include "../sqlite/sqlite3.h"
 //#include "../sqlite/sqlite3db.h"
 
-//#include "../mem/bitstream.h"
+#include "../mem/bitstream.h"
 
 
 #endif 

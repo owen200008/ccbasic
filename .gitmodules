@@ -7,3 +7,6 @@
 [submodule "3rd/rapidjson"]
 	path = 3rd/rapidjson
 	url = https://github.com/miloyip/rapidjson.git
+[submodule "3rd/lua"]
+	path = 3rd/lua
+	url = https://github.com/ejoy/lua.git

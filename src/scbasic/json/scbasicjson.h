@@ -24,7 +24,7 @@ public:
 	static void Free(void *ptr) { basiclib::BasicDeallocate(ptr); }
 };
 
-typedef rapidjson::GenericDocument<rapidjson::UTF8<>, rapidjson::MemoryPoolAllocator<CSCBasicAllocateForJson>, CSCBasicAllocateForJson> SCBasicDocument;
+typedef rapidjson::GenericDocument<rapidjson::UTF8<>, rapidjson::MemoryPoolAllocator<>, CSCBasicAllocateForJson> SCBasicDocument;
 
 #endif //_INC_HTTPSESSION_H
 

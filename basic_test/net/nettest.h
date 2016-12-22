@@ -302,7 +302,7 @@ THREAD_RETURN WorkerServerThread(void *arg)
 
 void NetServerTest()
 {
-	basiclib::BasicSetMemRunMemCheck(0x00000002, 9, 0x0FFFFFFF);
+	basiclib::BasicSetMemRunMemCheck(MemRunMemCheck_RunTongJi | MemRunMemCheck_RunCheckMem, 9, 0x0FFFFFFF);
 	srand(time(NULL) + basiclib::BasicGetTickTime());
 	TRACE("StartServer\n");
 	DWORD dwThreadServerID = 0;
@@ -311,6 +311,7 @@ void NetServerTest()
 	getchar();
 	TRACE("SetClose\n");
 	bClose = true;
+	basiclib::DumpRunMemCheck();
 	while (g_StartNetCount != 0){
 		bool bFalse = false;
 		if (bFalse)

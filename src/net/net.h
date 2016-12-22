@@ -19,7 +19,7 @@ struct Net_Vector
 template <typename KEY, typename VAL>
 struct Net_Map
 {
-	typedef typename basiclib::basic_hash_map<KEY, VAL>::type ContainForNet;
+	typedef typename basiclib::basic_map<KEY, VAL>::type ContainForNet;
 };
 template <typename T>
 struct Net_Set

@@ -175,8 +175,8 @@ protected:
 \date 2008-03-15
 \code
 string ps = "a=b&c=d&e=f";
-hash_map<string, string> ms;
-ParseParamString(ps.c_str(), "=&", WIntoMapContainer<hash_map<tstring, tstring> >(ms));
+map<string, string> ms;
+ParseParamString(ps.c_str(), "=&", WIntoMapContainer<map<tstring, tstring> >(ms));
 \endcode
 */
 template<class Container>

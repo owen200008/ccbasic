@@ -21,8 +21,8 @@ protected:
 class HttpRequest : public IHttpParseHandler
 {
 public:
-	typedef basiclib::basic_hash_map<basiclib::char_string, basiclib::char_string>::type	HeaderContainer;
-	typedef basiclib::basic_hash_map<basiclib::char_string, CContextHandle*>::type			ContextHandleContainer;
+	typedef basiclib::basic_map<basiclib::char_string, basiclib::char_string>::type		HeaderContainer;
+	typedef basiclib::basic_map<basiclib::char_string, CContextHandle*>::type			ContextHandleContainer;
 public:
 	HttpRequest(void);
 	~HttpRequest(void);

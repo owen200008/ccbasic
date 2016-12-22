@@ -16,7 +16,6 @@
 #ifndef BASIC_INIFILE_H
 #define BASIC_INIFILE_H 
 
-#include <map>
 #include <string>
 #include <algorithm>
 #include <stdio.h>

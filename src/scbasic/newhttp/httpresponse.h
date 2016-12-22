@@ -8,7 +8,7 @@ struct HttpStatus;
 class HttpResponse : public basiclib::CBasicObject
 {
 public:
-	typedef basiclib::basic_hash_map<basiclib::char_string, basiclib::char_string>::type	HeaderContainer;
+	typedef basiclib::basic_map<basiclib::char_string, basiclib::char_string>::type	HeaderContainer;
 public:
 	HttpResponse(void);
 	~HttpResponse(void);

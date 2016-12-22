@@ -106,6 +106,41 @@ long GetOldIndexBinerySearch(DWORD dwIndex, PCSTR pstrFunctionName, void* pModul
 #endif
 
 #include <stdint.h>
+
+#define LOGMAXSIZE 1024
+
+#ifdef __BASICWINDOWS
+bool ReplaceAddressForJump(PBYTE pOld, PBYTE pNew, char* pBuffer, const std::function<void(const char* pLog)>& logFunc){
+#ifndef _WIN64
+#pragma pack(push, 1)
+	struct ImportTrunkDefine
+	{
+		unsigned char	m_cZhiLing;
+		DWORD			m_dwAddress;
+		bool IsJmp(){
+			return m_cZhiLing == 0xe9;
+		}
+	};
+#pragma pack()
+	ImportTrunkDefine* pOldZhiLing = (ImportTrunkDefine*)(pOld);
+	ImportTrunkDefine* pNewZhiLing = (ImportTrunkDefine*)(pNew);
+	if (pOldZhiLing->IsJmp() && pNewZhiLing->IsJmp()){
+		DWORD dwDis = (DWORD)pNewZhiLing - (DWORD)pOldZhiLing;
+		dwDis += pNewZhiLing->m_dwAddress;
+		pOldZhiLing->m_dwAddress = dwDis;
+	}
+	else{
+		_snprintf(pBuffer, LOGMAXSIZE, "ReplaceDllFuncError:not jmp(%x)(%x)", pOldZhiLing->m_cZhiLing, pNewZhiLing->m_cZhiLing);
+		logFunc(pBuffer);
+		return false;
+	}
+#else
+	logFunc("目前不知道win64");
+	return false;
+#endif
+	return true;
+}
+#endif
 //相同动态库替换接口
 bool CBasicLoadDll::ReplaceDll(CBasicLoadDll& dll, const std::function<void(const char* pLog)>& logFunc)
 {
@@ -113,7 +148,7 @@ bool CBasicLoadDll::ReplaceDll(CBasicLoadDll& dll, const std::function<void(cons
 	if (dll.m_hModule == nullptr || m_hModule == nullptr)
 		return false;
 
-	char szBuf[256] = { 0 };
+	char szBuf[LOGMAXSIZE] = { 0 };
 	PIMAGE_EXPORT_DIRECTORY pOldExportDirectory = GetExportDirectoryByDllModule(m_hModule);
 	PIMAGE_EXPORT_DIRECTORY pExportDirectory = GetExportDirectoryByDllModule(dll.m_hModule);
 	if (pOldExportDirectory == nullptr || pExportDirectory == nullptr)
@@ -137,20 +172,34 @@ bool CBasicLoadDll::ReplaceDll(CBasicLoadDll& dll, const std::function<void(cons
 		if (lOldIndex < 0)
 		{
 			//找不到
-			sprintf(szBuf, "找不到接口%s", pstrFunctionName);
+			_snprintf(szBuf, LOGMAXSIZE, "找不到接口%s", pstrFunctionName);
 			logFunc(szBuf);
 			continue;
 		}
+		//basiclib::BasicLogEventV("Replace:%s", pstrFunctionName);
 		if (IsBadWritePtr((PBYTE)m_hModule + aryOldAddressOfFunctions[aryOldAddressOfNameOrdinals[lOldIndex]], sizeof(intptr_t)))
 		{
 			bVirtualProtectRet = VirtualProtect((PBYTE)m_hModule + aryOldAddressOfFunctions[aryOldAddressOfNameOrdinals[lOldIndex]], sizeof(intptr_t), PAGE_EXECUTE_READWRITE, &dwOld);
-			*((PBYTE)m_hModule + aryOldAddressOfFunctions[aryOldAddressOfNameOrdinals[lOldIndex]]) = *(DWORD*)((PBYTE)dll.m_hModule + aryAddressOfFunctions[aryAddressOfNameOrdinals[dwIndex]]);
-
+			if (!ReplaceAddressForJump(((PBYTE)m_hModule + aryOldAddressOfFunctions[aryOldAddressOfNameOrdinals[lOldIndex]]), (PBYTE)dll.m_hModule + aryAddressOfFunctions[aryAddressOfNameOrdinals[dwIndex]], szBuf, logFunc)){
+				_snprintf(szBuf, LOGMAXSIZE, "ReplaceDllFuncError:%s", pstrFunctionName);
+				logFunc(szBuf);
+			}
+			else{
+				_snprintf(szBuf, LOGMAXSIZE, "ReplaceDllFuncSuccess:%s", pstrFunctionName);
+				logFunc(szBuf);
+			}
 			bVirtualProtectRet = VirtualProtect((PBYTE)m_hModule + aryOldAddressOfFunctions[aryOldAddressOfNameOrdinals[lOldIndex]], sizeof(intptr_t), dwOld, &dw);
 		}
 		else
 		{
-			*((PBYTE)m_hModule + aryOldAddressOfFunctions[aryOldAddressOfNameOrdinals[lOldIndex]]) = *(DWORD*)((PBYTE)dll.m_hModule + aryAddressOfFunctions[aryAddressOfNameOrdinals[dwIndex]]);
+			if (!ReplaceAddressForJump(((PBYTE)m_hModule + aryOldAddressOfFunctions[aryOldAddressOfNameOrdinals[lOldIndex]]), (PBYTE)dll.m_hModule + aryAddressOfFunctions[aryAddressOfNameOrdinals[dwIndex]], szBuf, logFunc)){
+				_snprintf(szBuf, LOGMAXSIZE, "ReplaceDllFuncError:%s", pstrFunctionName);
+				logFunc(szBuf);
+			}
+			else{
+				_snprintf(szBuf, LOGMAXSIZE, "ReplaceDllFuncSuccess:%s", pstrFunctionName);
+				logFunc(szBuf);
+			}
 		}
 	}
 	

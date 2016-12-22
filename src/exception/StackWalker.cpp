@@ -270,7 +270,6 @@ public:
     pSW = NULL;
     pUDSN = NULL;
     pSGSP = NULL;
-
   }
   ~StackWalkerInternal()
   {

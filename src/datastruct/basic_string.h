@@ -162,29 +162,20 @@ inline bool	operator == (const char* lhs, const CBasicString& rhs)
 
 __NS_BASIC_END
 
-#if defined(__MSVC)
-namespace stdext
-{
-	inline
-		size_t hash_value(const basiclib::CBasicString& str)
-	{	// hash _Keyval to size_t value one-to-one
-			return (hash_value(str.c_str()));
-	}
-}
-#else
-#include <ext/hash_map>
-namespace __gnu_cxx
-{
-	template<> struct hash<basiclib::CBasicString>
-	{
-		size_t operator()(const basiclib::CBasicString& __s) const
-		{
-            hash<const char*> hash_fn;
-            return hash_fn(__s.c_str());
-        }
+namespace std{
+	template<>
+	struct hash<basiclib::CBasicString> : public std::unary_function<basiclib::CBasicString, std::size_t>{
+		std::size_t operator()(const basiclib::CBasicString &key) const{
+			return _Hash_seq((const unsigned char*)key.c_str(), key.length());
+		}
+	};
+	template <>
+	struct equal_to<basiclib::CBasicString> : public binary_function<basiclib::CBasicString, basiclib::CBasicString, bool>{
+		bool operator()(const basiclib::CBasicString& __x, const basiclib::CBasicString& __y) const{
+			return __x == __y;
+		}
 	};
 }
-#endif
 
 #endif 
 

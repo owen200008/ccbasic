@@ -41,6 +41,7 @@
     <ClInclude Include="..\..\src\inc\error.h" />
     <ClInclude Include="..\..\src\log\log.h" />
     <ClInclude Include="..\..\src\mem\basicallocator.h" />
+    <ClInclude Include="..\..\src\mem\bitstream.h" />
     <ClInclude Include="..\..\src\mem\mem.h" />
     <ClInclude Include="..\..\src\mem\smartbuffer.h" />
     <ClInclude Include="..\..\src\mem\tlstaticbuffer.h" />
@@ -60,6 +61,8 @@
     <ClInclude Include="..\..\src\scbasic\newhttp\httprequest.h" />
     <ClInclude Include="..\..\src\scbasic\newhttp\httpresponse.h" />
     <ClInclude Include="..\..\src\scbasic\newhttp\httpsession.h" />
+    <ClInclude Include="..\..\src\scbasic\sproto\msvcint.h" />
+    <ClInclude Include="..\..\src\scbasic\sproto\sproto.h" />
     <ClInclude Include="..\..\src\sys\syserror.h" />
     <ClInclude Include="..\..\src\sys\sysinfo.h" />
     <ClInclude Include="..\..\src\thread\mt.h" />
@@ -117,6 +120,7 @@
     <ClCompile Include="..\..\src\file\file_linux.cpp" />
     <ClCompile Include="..\..\src\file\inifile.cpp" />
     <ClCompile Include="..\..\src\log\log.cpp" />
+    <ClCompile Include="..\..\src\mem\bitstream.cpp" />
     <ClCompile Include="..\..\src\mem\mem.cpp" />
     <ClCompile Include="..\..\src\mem\smartbuffer.cpp" />
     <ClCompile Include="..\..\src\mem\tlstaticbuffer.cpp" />
@@ -130,6 +134,7 @@
     <ClCompile Include="..\..\src\scbasic\newhttp\httprequest.cpp" />
     <ClCompile Include="..\..\src\scbasic\newhttp\httpresponse.cpp" />
     <ClCompile Include="..\..\src\scbasic\newhttp\httpsession.cpp" />
+    <ClCompile Include="..\..\src\scbasic\sproto\sproto.cpp" />
     <ClCompile Include="..\..\src\sys\sysinfo.cpp" />
     <ClCompile Include="..\..\src\sys\sysinfo_android.cpp" />
     <ClCompile Include="..\..\src\sys\sysinfo_linux.cpp" />

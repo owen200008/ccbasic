@@ -250,6 +250,18 @@ protected:
 	bool			m_bAcquired;
 };
 
+//spinlock和mutex结合的lock
+class CSpinLockAndMutex : public basiclib::CBasicObject
+{
+public:
+	CSpinLockAndMutex();
+	virtual ~CSpinLockAndMutex();
+
+protected:
+	SpinLock	m_spinLock;
+	CMutex		m_synLock;
+};
+
 #ifdef __BASICWINDOWS
 //适用于vista以及server 2008及以上系统
 #define RWLOCK_VAR					SRWLOCK

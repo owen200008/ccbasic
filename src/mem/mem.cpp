@@ -4,7 +4,8 @@
 #include "../inc/basic.h"
 __NS_BASIC_START
 
-basiclib::SpinLock g_lockCheck;
+//这里不能用自旋锁，会恶化
+basiclib::CMutex g_lockCheck;
 std::map<void*, stacktrace::call_stack> g_mapCheck;
 #ifdef _DEBUG
 Net_UInt g_nCheckMemMode = MemRunMemCheck_RunSizeCheck | MemRunMemCheck_RunTongJi;
@@ -123,7 +124,7 @@ inline void* Fill_prefix(char* ptr, size_t size)
 	if (g_nCheckMemMode & MemRunMemCheck_RunCheckMem)
 	{
 		if (m_nCheckMin <= size && size <= m_nCheckMax){
-			basiclib::CSpinLockFunc lock(&g_lockCheck, TRUE);
+			basiclib::CSingleLock lock(&g_lockCheck, TRUE);
 			stacktrace::call_stack dtStack(0);
 			g_mapCheck[ptr].SwapStack(dtStack);
 		}
@@ -137,9 +138,9 @@ inline void* Clean_prefix(char* ptr)
 	if (g_nCheckMemMode & MemRunMemCheck_RunCheckMem)
 	{
 		if (pFix->m_size >= m_nCheckMin && pFix->m_size <= m_nCheckMax){
-			basiclib::CSpinLockFunc lock(&g_lockCheck, TRUE);
+			basiclib::CSingleLock lock(&g_lockCheck, TRUE);
 			g_mapCheck.erase(ptr + MallocFixSize);
-			lock.UnLock();
+			lock.Unlock();
 		}
 	}
 	
@@ -296,7 +297,7 @@ void BasicSetMemRunMemCheck(Net_UInt nMode, int nMin, int nMax)
 void DumpRunMemCheck()
 {
 	g_nCheckMemMode = 0;
-	basiclib::CSpinLockFunc lock(&g_lockCheck, TRUE);
+	basiclib::CSingleLock lock(&g_lockCheck, TRUE);
 	for (auto& checkData : g_mapCheck){
 		basiclib::BasicLogEvent(checkData.second.to_string().c_str());
 	}

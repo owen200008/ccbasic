@@ -40,8 +40,8 @@ public:
 		m_overload_threshold = nOverLoadLength;
 		m_defaultoverload = nOverLoadLength;
 	}
-	bool SetOverLoadCallbackFunc(OverLoadLengthCallback& func){m_overloadCallback = func;}
-	bool SetDefaultStructReleaseFunc(const std::function<void(StructData *, void *)>& func){m_defaultReleaseFunc = func;}
+	void SetOverLoadCallbackFunc(OverLoadLengthCallback& func){ m_overloadCallback = func; }
+	void SetDefaultStructReleaseFunc(DefaultReleaseFunc& func){ m_defaultReleaseFunc = func; }
 	//²åÈë°ü
 	virtual void MQPush(StructData* message){
 		m_queue[m_tail] = *message;
@@ -115,7 +115,7 @@ public:
 		else
 		{
 			m_head = 0;
-			tail = 0;
+			m_tail = 0;
 		}
 	}
 protected:

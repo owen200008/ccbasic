@@ -725,10 +725,13 @@ void CBasicSessionNetServer::CopyClientSession(VTClientSession& vtClient)
 {
 	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
 	int nSize = m_mapClientSession.size();
-	vtClient.reserve(nSize);
-	for (auto& client : m_mapClientSession)
+	if (nSize > 0)
 	{
-		vtClient.push_back(client.second);
+		vtClient.reserve(nSize);
+		for (auto& client : m_mapClientSession)
+		{
+			vtClient.push_back(client.second);
+		}
 	}
 }
 
