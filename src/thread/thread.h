@@ -31,7 +31,7 @@ typedef PBASIC_THREAD_START_ROUTINE LPBASIC_THREAD_START_ROUTINE;
 * \param 工作函数指针、工作函数参数
 * \return 返回 线程ID
 */
-HANDLE BasicCreateThread(LPBASIC_THREAD_START_ROUTINE lpStartAddress,  void* lpParameter, LPDWORD lpThreadId);
+_BASIC_DLL_API HANDLE BasicCreateThread(LPBASIC_THREAD_START_ROUTINE lpStartAddress, void* lpParameter, LPDWORD lpThreadId);
 
 /*!
 * 等待线程退出
@@ -39,32 +39,32 @@ HANDLE BasicCreateThread(LPBASIC_THREAD_START_ROUTINE lpStartAddress,  void* lpP
 * \param dwWaitTime 等待退出的时间(毫秒)
 * \return 句柄无效或者成功退出返回true，超时返回false
 */
-BOOL BasicWaitThread(HANDLE hThread,	DWORD  dwWaitTime = INFINITE);
+_BASIC_DLL_API BOOL BasicWaitThread(HANDLE hThread, DWORD  dwWaitTime = INFINITE);
 
 /*!
 * 强行结束线程
 * \param hThread 线程句柄
 * \return 无
 */
-void BasicTerminateThread(HANDLE hThread);
+_BASIC_DLL_API void BasicTerminateThread(HANDLE hThread);
 
 /*!
 * 取得线程ID
 * \return 线程ID
 */
-DWORD BasicGetCurrentThreadId();
+_BASIC_DLL_API DWORD BasicGetCurrentThreadId();
 
 /*!
 * 取得线程
 * \return 线程
 */
-HANDLE Basic_GetCurrentThread();
+_BASIC_DLL_API HANDLE Basic_GetCurrentThread();
 
 /*!
 * 取得进程ID
 * \return 进程ID
 */
-DWORD Basic_GetCurrentProcessId();
+_BASIC_DLL_API DWORD Basic_GetCurrentProcessId();
 
 
 /*!
@@ -139,6 +139,25 @@ private:
 #endif
 #endif
 
+};
+
+#ifdef __BASICWINDOWS
+#define BasicTLS_Key	DWORD
+#else
+#define BasicTLS_Key	pthread_key_t
+#endif
+class _BASIC_DLL_API CBasicThreadTLS : basiclib::CBasicObject
+{
+public:
+	CBasicThreadTLS();
+	virtual ~CBasicThreadTLS();
+
+	bool CreateTLS();
+	void* GetValue();
+	BOOL SetValue(void* pValue);
+protected:
+	bool			m_bCreate;
+	BasicTLS_Key	m_key;
 };
 
 __NS_BASIC_END

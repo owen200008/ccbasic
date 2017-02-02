@@ -785,6 +785,47 @@ long Basic_mkdir(const char* lpszPath)
 	return BASIC_FILE_OK;
 }
 
+
+long WBasic_mkdir(LPCTSTR lpszPath)
+{
+	if (WSTR_INVALID(lpszPath))
+	{
+		return BASIC_FILE_BAD_PATH;
+	}
+
+	TCHAR sz[MAX_PATH + 2];
+	memset(sz, 0, sizeof(sz));
+	_tcsncpy(sz, lpszPath, MAX_PATH);
+
+	TCHAR* pBuffer = sz + 1;
+	while (*pBuffer)
+	{
+		if (*pBuffer == _T('\\') || *pBuffer == _T('/'))
+		{
+			TCHAR cChar = *pBuffer;
+			*pBuffer = _T('\0');
+			if (_taccess(sz, 0) != 0)
+			{
+#ifdef __BASICWINDOWS
+				if (_tmkdir(sz) != 0)
+				{
+					return BASIC_FILE_MKDIR_ERROR;
+				}
+#else				 
+				if (_tmkdir(sz, 777))
+				{
+					return BASIC_FILE_MKDIR_ERROR;
+				}
+				chmod(sz, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+#endif
+			}
+			*pBuffer = cChar;
+		}
+		pBuffer++;
+	}
+	return BASIC_FILE_OK;
+}
+
 char* Basic_TempFileName(const char* lpszDir, const char* lpszHead, const char* lpszExt, char* lpszBuffer, int nMax)
 {
 	static long g_tempnum = 0;

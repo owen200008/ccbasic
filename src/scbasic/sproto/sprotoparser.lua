@@ -68,7 +68,7 @@ local alnum = alpha + R"09"
 local word = alpha * alnum ^ 0
 local name = C(word)
 local typename = C(word * ("." * word) ^ 0)
-local typedefword = C(word * ("<" * word * (blank0 * "," * blank0 * word) ^ 0 * ">::" * word) ^ 0)
+local typedefword = C(word * ("<" * word * (blank0 * "," * blank0 * word) ^ 0 * ">") ^ 0)
 local tag = S'-'^-1 * R"09" ^ 1 / tonumber
 local mainkey = "(" * blank0 * typename * blank0 * ")"
 
@@ -84,7 +84,7 @@ local typedef = P {
 	"ALL",
     COMMENTSTAR = namedpat("commentstar", P"/*" * (1 - P"*/") ^0 * P"*/"),
     COMMENTDEFINE = namedpat("commentdefine", P"#" * (1 - newline) ^0 * (newline + eof)),
-    FIELD = namedpat("field", (typename * blanks * name * blank0 * ";" * (C"*")^-1 * mainkey^0)),
+    FIELD = namedpat("field", (typename * blank0 * (C"*")^-1 * blank0 * name * blank0 * ";")),
     TYPEDEFFIELD = namedpat("typedeffield", (P"typedef" * blanks * typedefword * blanks * typename * blank0 * ";")),
     DEFAULTVALUE = namedpat("defaultvalue", (name * blank0 * "=" * blank0 * tag * blank0 * ";")),
     DEFAULTSTRUCT = P"{" * multipat(V"DEFAULTVALUE") * P"}",
@@ -96,8 +96,8 @@ local typedef = P {
 
 local arrayormap = P {
     "ALL",
-    ARRAY = namedpat("array", P"Net_Vector<" * blank0 * typename * blank0 * P">::ContainForNet"),
-    MAP = namedpat("map", P"Net_Map<" * blank0 * typename * blank0 * P"," * blank0 * typename * blank0 * P">::ContainForNet"),
+    ARRAY = namedpat("array", P"Net_Vector<" * blank0 * typename * blank0 * P">"),
+    MAP = namedpat("map", P"Net_Map<" * blank0 * typename * blank0 * P"," * blank0 * typename * blank0 * P">"),
     ALL = V"ARRAY" + V"MAP",
 }
 
@@ -109,17 +109,22 @@ local convert = {}
 function convert.type(all, obj, set)
 	local result = {}
 	local typename = obj[1]
-	local tags = {}
 	local names = {}
 	for _, f in ipairs(obj[2]) do
 		if f.type == "field" then
             local fieldtype = f[1]
+            local bStar = 0
             local name = f[2]
+            if f[2] == "*" then
+                name = f[3]
+                bStar = 1
+            end
+            
             if names[name] then
 				error(string.format("redefine %s in type %s", name, typename))
 			end
 			names[name] = true
-            local field = { name = name, tag = 0, array = 0, keytype = 0, typename = fieldtype, defaultvalue = 0}
+            local field = { name = name, star = bStar, array = 0, keytype = 0, typename = fieldtype, defaultvalue = 0}
 			table.insert(result, field)
         elseif f.type == "commentstar" then
             --do nothing
@@ -152,7 +157,6 @@ function convert.type(all, obj, set)
             assert(bFind == true, "no find default value " .. defaultvalue[1])
         end
     end
-	--table.sort(result, function(a,b) return a.tag < b.tag end)
 	return result
 end
 
@@ -209,6 +213,7 @@ local buildin_types = {
     Net_CBasicString = 18,
     --外置的类型
     CNetBasicValue = 100,
+    Net_CNetBasicValue = 100,
 }
 
 local function checktype(types, ptype, t)
@@ -279,19 +284,19 @@ local function packfield(f)
 	local strtbl = {}
     table.insert(strtbl, "\7\0")  -- 7 fields
 
-    table.insert(strtbl, "\0\0")	-- name	(tag = 0, ref an object)
+    table.insert(strtbl, "\0\0")	-- name	(index = 0, ref an object)
     if f.buildin then
-		table.insert(strtbl, packvalue(f.buildin))	-- buildin (tag = 1)
-		table.insert(strtbl, "\1\0")	-- skip (tag = 2)
-		table.insert(strtbl, packvalue(f.tag))		-- tag (tag = 3)
+		table.insert(strtbl, packvalue(f.buildin))	-- buildin (index = 1)
+		table.insert(strtbl, "\1\0")	-- skip (index = 2)
+		table.insert(strtbl, packvalue(f.star))		-- star (index = 3)
 	else
-		table.insert(strtbl, "\1\0")	-- skip (tag = 1)
-		table.insert(strtbl, packvalue(f.type))		-- type (tag = 2)
-		table.insert(strtbl, packvalue(f.tag))		-- tag (tag = 3)
+		table.insert(strtbl, "\1\0")	-- skip (index = 1)
+		table.insert(strtbl, packvalue(f.type))		-- type (index = 2)
+		table.insert(strtbl, packvalue(f.star))		-- star (index = 3)
 	end
-    table.insert(strtbl, packvalue(f.array))	-- array = true (tag = 4)
-    table.insert(strtbl, packvalue(f.keytype)) -- key tag (tag = 5)
-    table.insert(strtbl, packvalue(f.defaultvalue)) -- key tag (tag = 6)
+    table.insert(strtbl, packvalue(f.array))	-- array = true (index = 4)
+    table.insert(strtbl, packvalue(f.keytype)) -- key (index = 5)
+    table.insert(strtbl, packvalue(f.defaultvalue)) -- default (index = 6)
     
 	table.insert(strtbl, packbytes(f.name)) -- external object (name)
 	return packbytes(table.concat(strtbl))
@@ -303,7 +308,7 @@ local function packtype(name, t, alltypes)
 	for _, f in ipairs(t) do
 		tmp.array = f.array
 		tmp.name = f.name
-		tmp.tag = f.tag
+		tmp.star = f.star
         tmp.defaultvalue = f.defaultvalue
         tmp.keytype = buildin_types[f.keytype] or 0
 
@@ -328,8 +333,8 @@ local function packtype(name, t, alltypes)
 	else
 		data = {
 			"\2\0",	-- 2 fields
-			"\0\0",	-- name	(tag = 0, ref = 0)
-			"\0\0", -- field[]	(tag = 1, ref = 1)
+			"\0\0",	-- name	(ref = 0)
+			"\0\0", -- field[]	(ref = 1)
 			packbytes(name),
 			packbytes(table.concat(fields)),
 		}
@@ -347,15 +352,9 @@ local function packgroup(t)
 	for name in pairs(t) do
 		table.insert(alltypes, name)
 	end
-	table.sort(alltypes)	-- make result stable
+	--table.sort(alltypes)	-- make result stable
 	for idx, name in ipairs(alltypes) do
-		local fields = {}
-		for _, type_fields in ipairs(t[name]) do
-			if buildin_types[type_fields.typename] then
-				fields[type_fields.name] = type_fields.tag
-			end
-		end
-		alltypes[name] = { id = idx - 1, fields = fields }
+		alltypes[name] = { id = idx - 1 }
 	end
 	tt = {}
 	for _,name in ipairs(alltypes) do
@@ -400,10 +399,44 @@ function sparser.parse(text, name)
 end
 
 local function encodetocpp(r, filename)
-    local headfileformat = "#ifndef AUTO_SPROTOPROTOCAL_H\n#define AUTO_SPROTOPROTOCAL_H\n#include \"%s\"\n\n%s\n#endif";
-    local cppfileformat = "#include \"%s\"\n%s\n"
-    local xlhformathead = "basiclib::CBasicBitstream& operator<<(basiclib::CBasicBitstream& ins, const %s& data);\nbasiclib::CBasicBitstream& operator>>(basiclib::CBasicBitstream& os, %s& data);\n\n"
-    local xlhformatcpp = "basiclib::CBasicBitstream& operator<<(basiclib::CBasicBitstream& ins, const %s& data){\n%s\treturn ins;\n}\n\nbasiclib::CBasicBitstream& operator>>(basiclib::CBasicBitstream& os, %s& data){\n%s\treturn os;\n}\n\n"
+    local headfileformat = [[
+#ifndef AUTO_SPROTOPROTOCAL_H
+#define AUTO_SPROTOPROTOCAL_H
+
+#include "%s"
+
+%s
+#endif
+]];
+    local cppfileformat = [[
+#include "%s"
+
+%s
+]]
+    local xlhformathead = [[
+basiclib::CBasicBitstream& operator<<(basiclib::CBasicBitstream& ins, const %s& data);
+basiclib::CBasicBitstream& operator>>(basiclib::CBasicBitstream& os, %s& data);
+
+]]
+    local xlhformatcpp = [[
+basiclib::CBasicBitstream& operator<<(basiclib::CBasicBitstream& ins, const %s& data){
+    %sreturn ins;
+}
+basiclib::CBasicBitstream& operator>>(basiclib::CBasicBitstream& os, %s& data){
+    %sreturn os;
+}
+
+]]
+    local fieldstarformat_in = [[data.%s ? ins << (Net_Char)1 << *data.%s : ins << (Net_Char)0;
+    ]]
+    local fieldstarformat_out = [[os >> cStar;cStar ? os >> *data.%s : os;
+    ]]
+    local fieldstarformat_out_ext=[[Net_Char cStar = 0;
+    ]]
+    local fieldformat_in = [[ins << data.%s;
+    ]]
+    local fieldformat_out = [[os >> data.%s;
+    ]]
 
     local _,_,strPath, strFileName, strHouZhui = filename:find("(.*)[/]([^/]+)([.][^.]*)")
     local writefilenamehead = strPath.."/"..strFileName.."_auto.h"
@@ -417,9 +450,19 @@ local function encodetocpp(r, filename)
         headwritedata = headwritedata..string.format(xlhformathead, name, name)
         local fieldsin = ""
         local fieldsout = ""
+        local bStar = false
         for _, type_fields in ipairs(structtype) do
-			fieldsin = fieldsin.."\tins << data."..type_fields.name..";\n"
-            fieldsout = fieldsout.."\tos >> data."..type_fields.name..";\n"
+            if type_fields.star > 0 then
+                if bStar == false then
+                    fieldsout = fieldstarformat_out_ext..fieldsout
+                    bStar = true
+                end 
+                fieldsin = fieldsin.. string.format(fieldstarformat_in, type_fields.name, type_fields.name)
+                fieldsout = fieldsout.. string.format(fieldstarformat_out, type_fields.name)
+            else
+                fieldsin = fieldsin.. string.format(fieldformat_in, type_fields.name)
+                fieldsout = fieldsout.. string.format(fieldformat_out, type_fields.name)
+            end
 		end
         cppwritedata = cppwritedata..string.format(xlhformatcpp, name, fieldsin, name, fieldsout)
     end

@@ -120,6 +120,35 @@ void CBasic_Thread::Join()
 	CloseHandle(hnd_);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+CBasicThreadTLS::CBasicThreadTLS()
+{
+	m_bCreate = false;
+	m_key = TLS_OUT_OF_INDEXES;
+}
+
+CBasicThreadTLS::~CBasicThreadTLS()
+{
+	if (m_bCreate){
+		TlsFree(m_key);
+	}
+}
+
+bool CBasicThreadTLS::CreateTLS()
+{
+	m_key = TlsAlloc();
+	m_bCreate = m_key != TLS_OUT_OF_INDEXES;
+	return m_bCreate;
+}
+
+void* CBasicThreadTLS::GetValue()
+{
+	return TlsGetValue(m_key);
+}
+BOOL CBasicThreadTLS::SetValue(void* pValue)
+{
+	return TlsSetValue(m_key, pValue);
+}
 
 __NS_BASIC_END
 #endif //__BASICWINDOWS

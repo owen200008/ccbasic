@@ -3,45 +3,11 @@
 // 创建者:     蔡振球
 // Email:      zqcai@w.cn
 // 创建时间:   2016-9-12 11:50:18
-// 内容描述:   定义TCP(UDP)通信的基本类
+// 内容描述:   定义TCP通信的基本类
 // 版本信息:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_NET_H
 #define BASIC_NET_H
-
-typedef basiclib::CBasicString		Net_CBasicString;                                   //define the cstring
-template <typename T>
-struct Net_Vector
-{
-	typedef typename basiclib::basic_vector<T>::type ContainForNet;
-};
-
-template <typename KEY, typename VAL>
-struct Net_Map
-{
-	typedef typename basiclib::basic_map<KEY, VAL>::type ContainForNet;
-};
-template <typename T>
-struct Net_Set
-{
-	typedef typename basiclib::basic_set<T>::type ContainForNet;
-};
-//支持序列化的map和vector定义
-typedef Net_Vector<Net_Int>::ContainForNet									VTNetInt;
-typedef VTNetInt::iterator													VTNetIntIterator;
-typedef VTNetInt::const_iterator											VTNetIntIteratorConst;
-typedef Net_Vector<Net_UInt>::ContainForNet                                 VTNetUInt;
-typedef VTNetUInt::iterator													VTNetUIntIterator;
-typedef VTNetUInt::const_iterator											VTNetUIntIteratorConst;
-typedef Net_Map<Net_Int, Net_Int>::ContainForNet							MapNetIntToInt;
-typedef MapNetIntToInt::iterator											MapNetIntToIntIterator;
-typedef MapNetIntToInt::const_iterator										MapNetIntToIntIteratorConst;
-typedef Net_Map<Net_UInt, Net_Int>::ContainForNet							MapNetUIntToInt;
-typedef MapNetUIntToInt::iterator											MapNetUIntToIntIterator;
-typedef MapNetUIntToInt::const_iterator										MapNetUIntToIntIteratorConst;
-typedef Net_Map<Net_UInt, Net_UInt>::ContainForNet                          MapNetUIntToUInt;
-typedef MapNetUIntToUInt::iterator											MapNetUIntToUIntIterator;
-typedef MapNetUIntToUInt::const_iterator									MapNetUIntToUIntIteratorConst;
 
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +76,7 @@ struct BasicNetStat;		//发送接收的统计信息
 * \remarks 在使用通信类以前必须调用该函数
 */
 typedef basiclib::CBasicString(*pGetConfFunc)(const char* pParam);
-void SetNetInitializeGetParamFunc(pGetConfFunc func);
+_BASIC_DLL_API void SetNetInitializeGetParamFunc(pGetConfFunc func);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class _BASIC_DLL_API CBasicPreSend : public CBasicObject
@@ -121,11 +87,11 @@ public:
 public:
 	/*\brief 过滤收到的数据 */
 	// 过滤生成的数据放入buf
-	virtual Net_Int OnPreReceive(const char *pszData, Net_Int cbData, CBasicSmartBuffer& buf, CBasicSessionNetClient* pNetSession) = 0;
+	virtual Net_Int OnPreReceive(const char *pszData, Net_Int cbData, CBasicBitstream& buf, CBasicSessionNetClient* pNetSession) = 0;
 
 	/*\brief 过滤发送的数据 */
 	// 过滤生成的数据放入buf
-	virtual Net_Int OnPreSend(const char *pszData, Net_Int cbData, Net_UInt dwFlag, CBasicSmartBuffer& buf) = 0;
+	virtual Net_Int OnPreSend(const char *pszData, Net_Int cbData, Net_UInt dwFlag, SendDataToSendThread& buf) = 0;
 
 	/*\brief 构造新的实例 */
 	// 用于Accept
@@ -225,11 +191,13 @@ struct _BASIC_DLL_API  BasicNetStat
 
 #define ADDRESS_MAX_LENGTH		64
 //////////////////////////////////////////////////////////////////////////////
-
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
 
 class CNetThread;
 class CBasicSessionNetClient;
-class CBasicSessionNet : public basiclib::CBasicObject, public basiclib::EnableRefPtr<CBasicSessionNet>
+class _BASIC_DLL_API CBasicSessionNet : public basiclib::CBasicObject, public basiclib::EnableRefPtr<CBasicSessionNet>
 {
 public:
 	//global
@@ -318,7 +286,7 @@ struct SendBuffer
 };
 
 typedef void(*pCallThreadSafeBeforeSendData)(SendDataToSendThread*);
-class CBasicSessionNetClient : public CBasicSessionNet
+class _BASIC_DLL_API CBasicSessionNetClient : public CBasicSessionNet
 {
 public:
 	static CBasicSessionNetClient* CreateClient(Net_UInt nSessionID, bool bAddOnTimer = true){ return new CBasicSessionNetClient(nSessionID, bAddOnTimer); }
@@ -333,6 +301,7 @@ public:
 	BOOL IsConnected() { return GetSessionStatus(TIL_SS_LINK) == TIL_SS_CONNECTED; }
 	BOOL IsTransmit(){ return GetSessionStatus(TIL_SS_SHAKEHANDLE_MASK) == TIL_SS_SHAKEHANDLE_TRANSMIT; }
 	virtual Net_Int Send(void *pData, Net_Int cbData, Net_UInt dwFlag = 0);
+	Net_Int Send(basiclib::CBasicSmartBuffer& smBuf, Net_UInt dwFlag = 0);
 	void GetNetAddress(basiclib::CBasicString& strAddr){ strAddr = m_szPeerAddr; }
 	UINT GetNetAddressPort(){ return m_nPeerPort; }
 	virtual void OnTimer(Net_UInt nTickTime);
@@ -353,7 +322,7 @@ protected:
 	Net_Int _handle_rece(Net_UInt dwNetCode, const char *pszData, Net_Int cbData);
 	Net_Int _handle_send(Net_UInt dwNetCode, Net_Int cbSend);
 protected:
-	void InitClientEvent(evutil_socket_t socketfd, bool bAddWrite = true);
+	void InitClientEvent(evutil_socket_t socketfd, bool bAddWrite = true, bool bAddRead = true);
 	void AddWriteEvent();
 	virtual void InitMember();
 	virtual void CloseCallback(BOOL bRemote, DWORD dwNetCode = 0);
@@ -364,7 +333,7 @@ protected:
 	void SetIdleCallback();
 	void _OnIdle();
 
-	Net_Int SendData(void *pData, Net_Int cbData, Net_UInt dwFlag);
+	Net_Int SendData(SendDataToSendThread& sendData, Net_UInt dwFlag);
 	
 	void OnReadEvent();
 	void OnWriteEvent();
@@ -391,7 +360,7 @@ protected:
 	BasicNetStat			m_lastNet;
 	//真正加入发送队列之前回调，比如加入序号包
 	pCallThreadSafeBeforeSendData	m_threadSafeSendData;
-	CBasicSmartBuffer		m_bufCacheTmp;
+	CBasicBitstream					m_bufCacheTmp;
 private:
 	//只在libevent线程使用
 	void LibEventThreadSendData();
@@ -404,9 +373,9 @@ private:
 };
 typedef basiclib::CBasicRefPtr<CBasicSessionNetClient> CRefBasicSessionNetClient;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-typedef basiclib::basic_map<Net_UInt, CRefBasicSessionNetClient>::type		MapClientSession;
-typedef basiclib::basic_vector<CRefBasicSessionNetClient>::type				VTClientSession;
-class CBasicSessionNetServer : public CBasicSessionNet
+typedef basiclib::basic_map<Net_UInt, CRefBasicSessionNetClient>			MapClientSession;
+typedef basiclib::basic_vector<CRefBasicSessionNetClient>					VTClientSession;
+class _BASIC_DLL_API CBasicSessionNetServer : public CBasicSessionNet
 {
 public:
 	static CBasicSessionNetServer* CreateServer(Net_UInt nSessionID){ return new CBasicSessionNetServer(nSessionID); }
@@ -448,10 +417,10 @@ protected:
 	friend void OnLinkListenRead(int fd, short event, void *arg);
 	void AcceptClient();
 	void CopyClientSession(VTClientSession& vtClient);
-	Net_Int ClientDisconnectCallback(CBasicSessionNetClient* pClient, Net_UInt p2);//clientdisconnectcallback
+	Net_Int OnClientDisconnectCallback(CBasicSessionNetClient* pClient, Net_UInt p2);//clientdisconnectcallback
 	virtual void ReleaseCallback();
 protected:
-	CBasicSessionNetClient* CreateServerClientSession(Net_UInt nSessionID);
+	virtual CBasicSessionNetClient* CreateServerClientSession(Net_UInt nSessionID);
 	virtual CBasicSessionNetClient* ConstructSession(Net_UInt nSessionID);
 protected:
 	Net_UInt							m_nOnTimerTick;
@@ -467,10 +436,10 @@ protected:
 private:
 	Net_UInt GetNewSessionID();
 private:
-	Net_UInt							m_sessionIDMgr;
-	CMessageQueueLock<Net_UInt>			m_sessionIDQueue;
+	Net_UInt								m_sessionIDMgr;
+	CLockFreeMessageQueue<Net_UInt>			m_sessionIDQueue;
 };
-
+#pragma warning (pop)
 __NS_BASIC_END
 //////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma pack()

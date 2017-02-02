@@ -17,8 +17,8 @@
 
 __NS_BASIC_START
 
-const char*	CPCodeToCPStr(int nCPCode);
-int CPStrToCPCode(const char* strCPStr);
+_BASIC_DLL_API const char*	CPCodeToCPStr(int nCPCode);
+_BASIC_DLL_API int CPStrToCPCode(const char* strCPStr);
 
 /*!字符串转为UNICODE(UTF-16LE)编码
 * \param str [in]源字符串
@@ -26,7 +26,7 @@ int CPStrToCPCode(const char* strCPStr);
 * \param nCodePage [in]源字符串的code page。默认0
 * \return 转换后的宽字符串
 */
-wchar_string Basic_MultiStringToWideString(const char* str, int len, unsigned int nCodePage = 0);
+_BASIC_DLL_API wchar_string Basic_MultiStringToWideString(const char* str, int len, unsigned int nCodePage = 0);
 
 /*!字符串转为UNICODE(UTF-16LE)编码
 * \param src [in]源字符串
@@ -35,7 +35,7 @@ wchar_string Basic_MultiStringToWideString(const char* str, int len, unsigned in
 * \param nCodePage [in]源字符串的code page
 * \return 转换后的宽字符串,同dest
 */
-wchar_string& Basic_MultiStringToWideString(const char* src, int len, wchar_string& dest, unsigned int nCodePage = 0);
+_BASIC_DLL_API wchar_string& Basic_MultiStringToWideString(const char* src, int len, wchar_string& dest, unsigned int nCodePage = 0);
 
 /*!UNICODE(UTF-16)编码的字符串转为目标字符串编码
 * \param str [in]源字符串
@@ -43,7 +43,7 @@ wchar_string& Basic_MultiStringToWideString(const char* src, int len, wchar_stri
 * \param nCodePage [in]目标字符串的code page
 * \return 转换后的字符串
 */
-char_string Basic_WideStringToMultiString(const WCHAR* str, int len, unsigned int nCodePage = 0);
+_BASIC_DLL_API char_string Basic_WideStringToMultiString(const WCHAR* str, int len, unsigned int nCodePage = 0);
 
 /*!UNICODE(UTF-16)编码的字符串转为目标字符串编码
 * \param src [in]源字符串
@@ -52,7 +52,7 @@ char_string Basic_WideStringToMultiString(const WCHAR* str, int len, unsigned in
 * \param nCodePage [in]目标字符串的code page
 * \return 转换后字符串,同dest
 */
-char_string& Basic_WideStringToMultiString(const WCHAR* src, int len, char_string& dest, unsigned int nCodePage = 0);
+_BASIC_DLL_API char_string& Basic_WideStringToMultiString(const WCHAR* src, int len, char_string& dest, unsigned int nCodePage = 0);
 
 
 /*!两种非UTF-16编码间的转换
@@ -62,7 +62,7 @@ char_string& Basic_WideStringToMultiString(const WCHAR* src, int len, char_strin
 * \param nCPTo [in]目标字符串的code page
 * \return 转换后的字符串
 */
-char_string Basic_MultiStringToMultiString(const char* str, int len, unsigned int nCPFrom, unsigned int nCPTo);
+_BASIC_DLL_API char_string Basic_MultiStringToMultiString(const char* str, int len, unsigned int nCPFrom, unsigned int nCPTo);
 
 /*!两种非UTF-16编码间的转换
 * \param src [in]源字符串
@@ -72,7 +72,7 @@ char_string Basic_MultiStringToMultiString(const char* str, int len, unsigned in
 * \param nCPTo [in]目标字符串的code page
 * \return  转换后字符串的长度
 */
-char_string& Basic_MultiStringToMultiString(const char* src, int len, char_string& dest, unsigned int nCPFrom, unsigned int nCPTo);
+_BASIC_DLL_API char_string& Basic_MultiStringToMultiString(const char* src, int len, char_string& dest, unsigned int nCPFrom, unsigned int nCPTo);
 
 
 /*!字符串转化为UTF8
@@ -81,7 +81,7 @@ char_string& Basic_MultiStringToMultiString(const char* src, int len, char_strin
 * \param nCodePage [in]原字符串code page
 * \return 转换后的字符串。
 */
-char_string Basic_MultiStringToUTF8(const char* str, int len, unsigned int nCodePage = 0);
+_BASIC_DLL_API char_string Basic_MultiStringToUTF8(const char* str, int len, unsigned int nCodePage = 0);
 
 /*!字符串转化为UTF8,str为非UNICODE6编码
 * \param src [in]源字符串。非UTF-16编码
@@ -90,7 +90,7 @@ char_string Basic_MultiStringToUTF8(const char* str, int len, unsigned int nCode
 * \param nCodePage [in]源字符串code page
 * \return 转换后的字符串。同dest
 */
-char_string& Basic_MultiStringToUTF8(const char* src, int len, char_string& dest, unsigned int nCodePage = 0);
+_BASIC_DLL_API char_string& Basic_MultiStringToUTF8(const char* src, int len, char_string& dest, unsigned int nCodePage = 0);
 
 //---------------------8<------------------code page 不同的分割线--------------------
 
@@ -100,7 +100,7 @@ char_string& Basic_MultiStringToUTF8(const char* src, int len, char_string& dest
 * \param from [in]原字符串编码
 * \return 转换后的字符串
 */
-wchar_string Basic_MultiStringToWideString(const char* str, int len, const char* from);
+_BASIC_DLL_API wchar_string Basic_MultiStringToWideString(const char* str, int len, const char* from);
 
 /*!字符串转为UNICODE(UTF-16)编码
 * \param src [in]源字符串。非UTF-16编码
@@ -109,7 +109,7 @@ wchar_string Basic_MultiStringToWideString(const char* str, int len, const char*
 * \param from [in]原字符串编码
 * \return 转换后的字符串，同dest
 */
-wchar_string& Basic_MultiStringToWideString(const char* src, int len, wchar_string& dest, const char* from);
+_BASIC_DLL_API wchar_string& Basic_MultiStringToWideString(const char* src, int len, wchar_string& dest, const char* from);
 
 /*!UNICODE(UTF-16)编码的字符串转为目标字符串编码
 * \param str [in]源字符串
@@ -117,7 +117,7 @@ wchar_string& Basic_MultiStringToWideString(const char* src, int len, wchar_stri
 * \param to [in]目标字符串的code page
 * \return char_string 转换后的字符串
 */
-char_string	Basic_WideStringToMultiString(const WCHAR* str, int len, const char* to);
+_BASIC_DLL_API char_string	Basic_WideStringToMultiString(const WCHAR* str, int len, const char* to);
 
 
 /*!UNICODE(UTF-16)编码的字符串转为目标字符串编码
@@ -127,7 +127,7 @@ char_string	Basic_WideStringToMultiString(const WCHAR* str, int len, const char*
 * \param to [in]目标字符串的code page
 * \return 转换后字符串,同dest
 */
-char_string& Basic_WideStringToMultiString(const WCHAR* src, int len, char_string& dest, const char* to);
+_BASIC_DLL_API char_string& Basic_WideStringToMultiString(const WCHAR* src, int len, char_string& dest, const char* to);
 
 
 /*!两种非UTF-16编码间的转换
@@ -137,7 +137,7 @@ char_string& Basic_WideStringToMultiString(const WCHAR* src, int len, char_strin
 * \param to [in]目标字符串的code page
 * \return 转换后的字符串
 */
-char_string	Basic_MultiStringToMultiString(const char* str, int len, const char* from, const char* to);
+_BASIC_DLL_API char_string	Basic_MultiStringToMultiString(const char* str, int len, const char* from, const char* to);
 
 /*!两种非UTF-16编码间的转换
 * \param src [in]源字符串
@@ -147,7 +147,7 @@ char_string	Basic_MultiStringToMultiString(const char* str, int len, const char*
 * \param to [in]目标字符串的code page
 * \return  转换后字符串的长度
 */
-char_string& Basic_MultiStringToMultiString(const char* src, int len, char_string& dest, const char* from, const char* to);
+_BASIC_DLL_API char_string& Basic_MultiStringToMultiString(const char* src, int len, char_string& dest, const char* from, const char* to);
 
 
 /*!字符串转化为UTF8
@@ -156,7 +156,7 @@ char_string& Basic_MultiStringToMultiString(const char* src, int len, char_strin
 * \param from [in]原字符串code page
 * \return 转换后的字符串。
 */
-char_string	Basic_MultiStringToUTF8(const char* str, int len, const char* from);
+_BASIC_DLL_API char_string	Basic_MultiStringToUTF8(const char* str, int len, const char* from);
 
 /*!字符串转化为UTF8,str为非UNICODE6编码
 * \param src [in]源字符串。非UTF-16编码
@@ -165,7 +165,7 @@ char_string	Basic_MultiStringToUTF8(const char* str, int len, const char* from);
 * \param from [in]源字符串code page
 * \return 转换后的字符串。同dest
 */
-char_string& Basic_MultiStringToUTF8(const char* src, int len, char_string& dest, const char* from);
+_BASIC_DLL_API char_string& Basic_MultiStringToUTF8(const char* src, int len, char_string& dest, const char* from);
 
 // --------------------8<-----------------简繁体处理的分割线------------------
 
@@ -179,9 +179,9 @@ typename __BasicString<CharType>::StringType Basic_GbToBig5(const CharType* str,
 
 }
 /*!简体转繁体*/
-char_string&	Basic_GbToBig5(const char* src, int len, char_string& dest);
+_BASIC_DLL_API char_string&	Basic_GbToBig5(const char* src, int len, char_string& dest);
 /*!简体转繁体*/
-wchar_string&	Basic_GbToBig5(const WCHAR* str, int len, wchar_string& dest);
+_BASIC_DLL_API wchar_string&	Basic_GbToBig5(const WCHAR* str, int len, wchar_string& dest);
 
 /*!繁体转简体*/
 template<typename CharType>
@@ -192,16 +192,16 @@ typename __BasicString<CharType>::StringType Basic_Big5ToGb(const CharType* str,
 	return Basic_Big5ToGb(str, len, dest);
 }
 /*!简体转繁体*/
-char_string&	Basic_Big5ToGb(const char* str, int len, char_string& dest);
+_BASIC_DLL_API char_string&	Basic_Big5ToGb(const char* str, int len, char_string& dest);
 /*!繁体转简体*/
-wchar_string&	Basic_Big5ToGb(const WCHAR* str, int len, wchar_string& dest);
+_BASIC_DLL_API wchar_string&	Basic_Big5ToGb(const WCHAR* str, int len, wchar_string& dest);
 
 
 /*!判断一个字符串是否是UTF8编码*/
-bool			Basic_IsUTF8Str(const char* str, int len);
+_BASIC_DLL_API bool			Basic_IsUTF8Str(const char* str, int len);
 
 //! 把一个 TCHAR 字符串转换成 char 字符串，只是在 UNICODE 版本下面才要转换。
-class CTStringToMultiString
+class _BASIC_DLL_API CTStringToMultiString
 {
 public:
 	CTStringToMultiString(LPCTSTR lpszText);

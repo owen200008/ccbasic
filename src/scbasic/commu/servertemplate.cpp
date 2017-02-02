@@ -42,6 +42,7 @@ Net_Int CNetServerControlClient::OnReceive(Net_UInt dwNetCode, const char *pszDa
 CNetServerControl::CNetServerControl(Net_UInt nSessionID) : basiclib::CBasicSessionNetServer(nSessionID)
 {
 	m_nSessionMaxCount = -1;
+	m_handleVerifySuccess = nullptr;
 }
 
 CNetServerControl::~CNetServerControl()
@@ -110,8 +111,53 @@ Net_Int CNetServerControl::StartServer(const char* lpszAddress, basiclib::CBasic
 	return nRet;
 }
 
+Net_Int CNetServerControl::OnUserVerify(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetCode, Net_Int cbData, const char *pszData)
+{
+	//先不需要回调上层
+	SuccessLogin(pNotify);
+	return BASIC_NET_OK;
+}
+
+Net_Int CNetServerControl::OnVerifyDisconnectCallback(basiclib::CBasicSessionNetClient* pClient, Net_UInt p2)
+{
+	basiclib::CSingleLock lockUser(&m_mtxCSessionVerify, TRUE);
+	m_mapClientSessionVerify.erase(pClient->GetSessionID());
+	lockUser.Unlock();
+	return OnClientDisconnectCallback(pClient, p2);
+}
+
+//用户登录成功
+bool CNetServerControl::SuccessLogin(basiclib::CBasicSessionNetClient* pNotify)
+{
+	pNotify->bind_rece(m_funcReceive);
+	//加入用户队列
+	pNotify->bind_disconnect(MakeFastFunction(this, &CNetServerControl::OnVerifyDisconnectCallback));
+	Net_UInt nSessionID = pNotify->GetSessionID();
+	basiclib::CSingleLock lockUser(&m_mtxCSessionVerify, TRUE);
+	basiclib::MapClientSession::iterator iter = m_mapClientSessionVerify.find(nSessionID);
+	if (iter != m_mapClientSessionVerify.end()){
+		basiclib::BasicLogEventErrorV("SuccessLogin 添加session失败 SessionID(%d)", pNotify->GetSessionID());
+		pNotify->Close(0);
+		return false;
+	}
+	m_mapClientSessionVerify[nSessionID] = pNotify;
+
+	if (m_handleVerifySuccess)
+		if (!m_handleVerifySuccess(pNotify)){
+			pNotify->Close(0);
+			return false;
+		}
+	return true;
+}
+
 basiclib::CBasicSessionNetClient* CNetServerControl::ConstructSession(Net_UInt nSessionID)
 { 
 	return CNetServerControlClient::CreateControlClient(nSessionID, this);
 }
 
+basiclib::CBasicSessionNetClient* CNetServerControl::CreateServerClientSession(Net_UInt nSessionID)
+{
+	basiclib::CBasicSessionNetClient* pRet = ConstructSession(nSessionID);
+	pRet->bind_rece(MakeFastFunction(this, &CNetServerControl::OnUserVerify));
+	return pRet;
+}

@@ -160,6 +160,7 @@ CCorutinePlusPool::CCorutinePlusPool()
 #ifndef USE_UCONTEXT
 	coctx_init(&m_ctxMain);
 #endif
+	m_usCreateTimes = 0;
 }
 
 CCorutinePlusPool::~CCorutinePlusPool()

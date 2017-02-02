@@ -213,6 +213,10 @@ encode(const struct sproto_arg *args)
 			lua_getfield(L, self->tbl_index, args->tagname);
 			if (lua_isnil(L, -1)) 
 			{
+				//判断是否是star
+				if (args->m_bStar)
+					return 0;
+
 				if (self->array_index) 
 				{
 					lua_replace(L, self->array_index);
@@ -238,7 +242,6 @@ encode(const struct sproto_arg *args)
 		{
 			// use lua_next to iterate the table
 			// todo: check the key is equal to mainindex value
-
 			lua_pushvalue(L,self->iter_index);
 			if (!lua_next(L, self->array_index)) 
 			{
@@ -322,15 +325,25 @@ encode(const struct sproto_arg *args)
 		{
 			lua_geti(L, self->array_index, args->index);
 		}
+		if (lua_isnil(L, -1))
+		{
+			lua_pop(L, 1);
+			return SPROTO_CB_NIL;
+		}
 	} 
 	else 
 	{
 		lua_getfield(L, self->tbl_index, args->tagname);
+		if (lua_isnil(L, -1))
+		{
+			lua_pop(L, 1);
+			//判断是否是star
+			if (args->m_bStar)
+				return 0;
+			return encode_xmdefault(args);
+		}
 	}
-	if (lua_isnil(L, -1)) 
-	{
-		return encode_xmdefault(args);
-	}
+
 	switch (args->type) 
 	{
 	case SPROTO_CC_CHAR:
@@ -953,49 +966,6 @@ pushfunction_withbuffer(lua_State *L, const char * name, lua_CFunction func) {
 	lua_setfield(L, -2, name);
 }
 
-static int
-lprotocol(lua_State *L) {
-	struct sproto * sp = (sproto*)lua_touserdata(L, 1);
-	struct sproto_type * request;
-	struct sproto_type * response;
-	int t;
-	int tag;
-	if (sp == NULL) {
-		return luaL_argerror(L, 1, "Need a sproto_type object");
-	}
-	t = lua_type(L,2);
-	if (t == LUA_TNUMBER) {
-		const char * name;
-		tag = lua_tointeger(L, 2);
-		name = sproto_protoname(sp, tag);
-		if (name == NULL)
-			return 0;
-		lua_pushstring(L, name);
-	} else {
-		const char * name = lua_tostring(L, 2);
-		if (name == NULL) {
-			return luaL_argerror(L, 2, "Should be number or string");
-		}
-		tag = sproto_prototag(sp, name);
-		if (tag < 0)
-			return 0;
-		lua_pushinteger(L, tag);
-	}
-	request = sproto_protoquery(sp, tag, SPROTO_REQUEST);
-	if (request == NULL) {
-		lua_pushnil(L);
-	} else {
-		lua_pushlightuserdata(L, request);
-	}
-	response = sproto_protoquery(sp, tag, SPROTO_RESPONSE);
-	if (response == NULL) {
-		lua_pushnil(L);
-	} else {
-		lua_pushlightuserdata(L, response);
-	}
-	return 3;
-}
-
 /* global sproto pointer for multi states
    NOTICE : It is not thread safe
  */
@@ -1122,13 +1092,12 @@ luaopen_sproto_core(lua_State *L) {
 		{ "dumpproto", ldumpproto },
 		{ "querytype", lquerytype },
 		{ "decode", ldecode },
-		{ "protocol", lprotocol },
 		{ "loadproto", lloadproto },
 		{ "saveproto", lsaveproto },
 		{ "default", ldefault },
 		{ NULL, NULL },
 	};
-	luaL_register(L, "sproto.core", l);
+	//luaL_register(L, "sproto.core", l);
 	//luaL_newlib(L,l);
 	pushfunction_withbuffer(L, "encode", lencode);
 	pushfunction_withbuffer(L, "pack", lpack);

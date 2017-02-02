@@ -510,6 +510,16 @@ CBasicString BasicGetModuleName(HANDLE hModule)
 	return szPath;
 }
 
+//取得模块名
+//如hModule==NULL，则取当前主程序名
+CWBasicString WBasicGetModuleName(HANDLE hModule)
+{
+	TCHAR szPath[_MAX_PATH];
+	szPath[0] = '\0';
+	GetModuleFileName((HMODULE)hModule, szPath, sizeof(szPath));
+	return szPath;
+}
+
 long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBufLen)
 {
 	return GetModuleFileNameA((HMODULE)hModule, pszBuffer, nBufLen);
@@ -519,6 +529,23 @@ CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
 {
 	CBasicString strModule = BasicGetModuleName(hModule);
 	int nPos = strModule.ReverseFind(PATHSPLIT_S);
+	if (nPos >= 0)
+		strModule = strModule.Mid(nPos + 1);
+	if (!bExt)
+	{
+		//去掉后缀名
+		nPos = strModule.ReverseFind('.');
+		if (nPos >= 0)
+			strModule = strModule.Left(nPos);
+	}
+	return strModule;
+}
+
+//取得模块名，不包括全路径
+CWBasicString WBasicGetModuleTitle(HANDLE hModule, BOOL bExt)
+{
+	CWBasicString strModule = WBasicGetModuleName(hModule);
+	int nPos = strModule.ReverseFind(WIDEPATHSPLIT);
 	if (nPos >= 0)
 		strModule = strModule.Mid(nPos + 1);
 	if (!bExt)
@@ -544,6 +571,18 @@ CBasicString BasicGetModulePath(HANDLE hModule)
 	return szPath;
 }
 
+//取得路径
+CWBasicString WBasicGetModulePath(HANDLE hModule)
+{
+	TCHAR szPath[_MAX_PATH];
+	szPath[0] = '\0';
+	GetModuleFileName((HMODULE)hModule, szPath, sizeof(szPath));
+	int i = 0;
+	for (i = _tcslen(szPath) - 1; i >= 0 && szPath[i] != WIDEPATHSPLIT; i--);
+	i++;
+	szPath[i] = '\0';
+	return szPath;
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //取本机IP地址和子网掩码
 int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer)
@@ -772,6 +811,93 @@ double BasicGetHighPerformanceCounter()
                 fFreq = nFreq.QuadPart / 1000000.0;
         }
         return (time.QuadPart / fFreq);
+}
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////
+
+// Windows版本
+// 支持win95/98/ME/2000/xp/2003/vista
+// 不支持winnt4.0及2000/xp/2003/vista下16位进程
+//************************************************************************
+// Author:    Mini.J @2009/3/13
+// Method:    BasicCreateProcessEntry => 建立进程信息链表(使用ToolHelp32库)
+// Returns:   PROCESSLIST* => 返回链表头
+//************************************************************************
+PROCESSLIST* BasicCreateProcessEntry()
+{
+	PROCESSLIST* pHead = NULL;
+	PROCESSLIST* pNode = NULL;
+	PROCESSLIST* pNext = NULL;
+	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if (hSnapshot != INVALID_HANDLE_VALUE)
+	{
+		TCHAR szPath[MAX_PATH] = { 0 };
+		PROCESSENTRY32 entry;
+		entry.dwSize = sizeof(PROCESSENTRY32);
+		BOOL bWork = Process32First(hSnapshot, &entry);
+		while (bWork)
+		{
+			pNext = Basic_NewObject<PROCESSLIST>();
+			ASSERT(pNext != NULL);
+			if (pNode != NULL)
+			{
+				pNode->m_pNext = pNext;
+			}
+			pNode = pNext;
+			if (pHead == NULL)
+			{
+				pHead = pNode;
+			}
+			pNode->m_dwProcessID = entry.th32ProcessID;
+			pNode->m_dwParentProcessID = entry.th32ParentProcessID;
+			pNode->m_dwModuleID = entry.th32ModuleID;
+			pNode->m_dwThreadCnt = entry.cntThreads;
+			HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pNode->m_dwProcessID);
+			BOOL bFlag = FALSE;
+			if (hProcess != NULL)
+			{
+				memset(szPath, 0, MAX_PATH);
+				DWORD dwTmp = GetModuleFileNameEx(hProcess, NULL, szPath, MAX_PATH);
+				if (dwTmp > 0)
+				{
+					CWBasicString strPath(szPath), strPathTmp;
+					int nPos = strPath.ReverseFind(_T('\\'));
+					if (nPos > 0)
+					{
+						strPathTmp = strPath.Mid(0, nPos + 1);
+						strPath = strPath.Mid(nPos + 1);
+					}
+					__tcscpyn(pNode->m_szExeFile, MAX_PATH, (LPCTSTR)strPath, strPath.GetLength());
+					__tcscpyn(pNode->m_szExePath, MAX_PATH, (LPCTSTR)strPathTmp, strPathTmp.GetLength());
+					bFlag = TRUE;
+				}
+				CloseHandle(hProcess);
+			}
+			if (!bFlag)
+			{
+				__tcscpyn(pNode->m_szExeFile, MAX_PATH, entry.szExeFile, __tcslen(entry.szExeFile));
+			}
+			bWork = Process32Next(hSnapshot, &entry);
+		}
+		CloseHandle(hSnapshot);
+	}
+	return pHead;
+}
+
+//************************************************************************
+// Method:    BasicReleaseProcessEntry => 释放进程链接队列
+// Returns:   void => 
+// Parameter: PROCESSLIST * pList => 链表头
+//************************************************************************
+void BasicReleaseProcessEntry(PROCESSLIST* pList)
+{
+	while (pList != NULL)
+	{
+		PROCESSLIST* pTmp = pList;
+		pList = pList->m_pNext;
+		BASIC_DeleteObject<PROCESSLIST>(pTmp);
+	}
 }
 
 

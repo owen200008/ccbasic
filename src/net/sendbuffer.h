@@ -107,6 +107,10 @@ struct SendDataToSendThread
 		m_pData = (char*)basiclib::BasicAllocate(cbData);
 		memcpy(m_pData, pBuffer, cbData);
 	}
+	void Reset(const char* pBuffer, Net_Int cbData){
+		ResetDataLength(cbData);
+		memcpy(m_pData, pBuffer, cbData);
+	}
 	void ReleaseData(){
 		if (m_pData)
 			basiclib::BasicDeallocate(m_pData);
@@ -129,6 +133,15 @@ struct SendDataToSendThread
 	}
 	BOOL IsEmpty(){
 		return m_nIndex >= m_cbData && m_pData != nullptr;
+	}
+	char* ResetDataLength(Net_Int cbData){
+		if (m_pData){
+			basiclib::BasicDeallocate(m_pData);
+		}
+		m_cbData = cbData;
+		m_nIndex = 0;
+		m_pData = (char*)basiclib::BasicAllocate(cbData);
+		return m_pData;
 	}
 };
 #pragma	pack()

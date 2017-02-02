@@ -19,78 +19,65 @@ using namespace std;
 __NS_BASIC_START
 
 template<class _Kty>
-struct basic_set
+class basic_set : public unordered_set<_Kty, hash<_Kty>, equal_to<_Kty>, DEFAULT_ALLOCATOR<_Kty> >
 {
-	typedef unordered_set<_Kty, hash<_Kty>, equal_to<_Kty>, DEFAULT_ALLOCATOR<_Kty> >		type;
 };
 
 template<class _Kty>
-struct basic_multiset
+class basic_multiset : public unordered_multiset<_Kty, hash<_Kty>, equal_to<_Kty>, DEFAULT_ALLOCATOR<_Kty> >
 {
-	typedef unordered_multiset<_Kty, hash<_Kty>, equal_to<_Kty>, DEFAULT_ALLOCATOR<_Kty> >		type;
 };
 
 template<class _Key, class _Tp>
-struct basic_map
+class basic_map : public unordered_map<_Key, _Tp, hash<_Key>, equal_to<_Key>, DEFAULT_ALLOCATOR<_Tp>>
 {
-	typedef unordered_map<_Key, _Tp, hash<_Key>, equal_to<_Key>, DEFAULT_ALLOCATOR<_Tp> >			type;
 };
 
 template<class _Key, class _Tp>
-struct basic_order_map
+class basic_order_map : public map<_Key, _Tp, less<_Key>, DEFAULT_ALLOCATOR<_Tp> >
 {
-	typedef map<_Key, _Tp, less<_Key>, DEFAULT_ALLOCATOR<_Tp> >			type;
 };
 
 template<class _Key, class _Tp>
-struct basic_multimap
+class basic_multimap : public unordered_multimap<_Key, _Tp, hash<_Key>, equal_to<_Key>, DEFAULT_ALLOCATOR<_Tp> >
 {
-	typedef unordered_multimap<_Key, _Tp, hash<_Key>, equal_to<_Key>, DEFAULT_ALLOCATOR<_Tp> >	type;
 };
 
 template<class _Key, class _Tp>
-struct basic_order_multimap
+class basic_order_multimap : public multimap<_Key, _Tp, less<_Key>, DEFAULT_ALLOCATOR<_Tp> >
 {
-	typedef multimap<_Key, _Tp, less<_Key>, DEFAULT_ALLOCATOR<_Tp> >	type;
 };
 
 template<class _Ty>
-struct basic_vector
+class basic_vector : public vector<_Ty, DEFAULT_ALLOCATOR<_Ty> >
 {
-	typedef vector<_Ty, DEFAULT_ALLOCATOR<_Ty> >	type;
 };
 
 template<class _Ty>
-struct basic_list
+class basic_list : public list<_Ty, DEFAULT_ALLOCATOR<_Ty> >
 {
-	typedef list<_Ty, DEFAULT_ALLOCATOR<_Ty> >	type;
 };
 
 template<class _Ty>
-struct basic_deque
+class basic_deque : public deque<_Ty, DEFAULT_ALLOCATOR<_Ty> >
 {
-	typedef deque<_Ty, DEFAULT_ALLOCATOR<_Ty> >	type;
 };
 
 template<class _Ty>
-struct basic_stack
+class basic_stack : public stack<_Ty, basic_deque<_Ty>>
 {
-	typedef typename basic_deque<_Ty>::type SequenceType;
-	typedef stack<_Ty, SequenceType>	type;
-};
-
-template<class _Ty>
-struct basic_queue
-{
-	typedef typename basic_deque<_Ty>::type SequenceType;
-	typedef queue<_Ty, SequenceType>	type;
 };
 
 
 template<class _Ty>
-struct basic_priority_queue
+class basic_queue : public queue<_Ty, basic_deque<_Ty>>
 {
-	typedef priority_queue<_Ty, basic_vector<_Ty> >	type;
+};
+
+
+template<class _Ty>
+struct basic_priority_queue : public priority_queue<_Ty, basic_vector<_Ty> >
+{
 };
 
 template<class _Elem>

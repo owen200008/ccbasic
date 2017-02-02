@@ -26,7 +26,7 @@ __NS_BASIC_START
 
 /////////////////////////////////////////////////////////////////////////////
 // CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>
-#define base_class basic_map<KEY, VALUE>::type
+#define base_class basic_map<KEY, VALUE>
 
 #pragma warning (push)
 #pragma warning (disable: 4251)

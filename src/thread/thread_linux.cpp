@@ -137,6 +137,35 @@ void CBasic_Thread::Join()
       pthread_join(hnd_, 0);
 }
 
+CBasicThreadTLS::CBasicThreadTLS()
+{
+	m_bCreate = false;
+	m_key = 0;
+}
+
+CBasicThreadTLS::~CBasicThreadTLS()
+{
+	if(m_bCreate){
+		pthread_key_delete(m_key);
+	}
+}
+
+bool CBasicThreadTLS::CreateTLS()
+{
+	if(pthread_key_create(&m_key, nullptr))
+		return false;
+	m_bCreate = true;
+	return true;
+}
+
+void* CBasicThreadTLS::GetValue()
+{
+	return pthread_getspecific(m_key);
+}
+BOOL CBasicThreadTLS::SetValue(void* pValue)
+{
+	return pthread_setspecific(m_key, pValue) == 0;
+}
 
 
 __NS_BASIC_END

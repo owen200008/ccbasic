@@ -117,7 +117,7 @@ public:
 		return this;
 	}
 #ifdef __BASICWINDOWS
-	friend  basiclib::basic_list<CBasicRefPtr<T> >::type;
+	friend  basiclib::basic_list<CBasicRefPtr<T> >;
 	friend  std::list<CBasicRefPtr<T> >;
 #else
 #endif
@@ -127,7 +127,7 @@ private:
 };
 
 template<class T>
-class _BASIC_DLL_API EnableRefPtr
+class EnableRefPtr
 {
 public:
 	EnableRefPtr()
@@ -142,10 +142,13 @@ public:
 		BasicInterlockedIncrement(&m_lRef);
 	}
 
-	void DelRef()
+	bool DelRef()
 	{
-		if (0 == BasicInterlockedDecrement(&m_lRef))
+		if (0 == BasicInterlockedDecrement(&m_lRef)){
 			delete this;
+			return true;
+		}
+		return false;
 	}
 
 	CBasicRefPtr<T>	GetRefPtr()

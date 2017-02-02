@@ -56,6 +56,7 @@ CBasicOnTimer::CBasicOnTimer()
 	m_current_point = 0;
 
 	m_pMapNode = new MapTimerNode();
+	m_hThread = nullptr;
 }
 
 CBasicOnTimer::~CBasicOnTimer()
@@ -106,7 +107,7 @@ void CBasicOnTimer::TimerUpdate()
 		m_current += diff;
 		for (int i = 0; i<diff; i++)
 		{
-			basiclib::CSpinLockFunc lock(&m_lock, TRUE);
+			basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
 
 			// try to dispatch timeout 0 (rare condition)
 			timer_execute(lock);
@@ -119,7 +120,7 @@ void CBasicOnTimer::TimerUpdate()
 	}
 }
 
-void CBasicOnTimer::timer_execute(basiclib::CSpinLockFunc& lock)
+void CBasicOnTimer::timer_execute(basiclib::CSpinLockFuncNoSameThreadSafe& lock)
 {
 	int idx = m_time & TIME_NEAR_MASK;
 
@@ -180,7 +181,7 @@ void CBasicOnTimer::dispatch_list(struct timer_node *current)
 		timer_event * event = (struct timer_event *)(current + 1);
 		if (current->m_bIsValid)
 		{
-			event->m_callbackFunc();
+			event->m_callbackFunc(event->m_nKey, event->m_pParam1);
 		}
 		timer_node* temp = current;
 		current = current->next;
@@ -189,7 +190,7 @@ void CBasicOnTimer::dispatch_list(struct timer_node *current)
 			//spin unlock, so add is valid
 			temp->expire += temp->m_nRepeatTime;
 
-			basiclib::CSpinLockFunc lock(&m_lock, TRUE);
+			basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
 			add_node(temp);
 		}
 		else
@@ -210,15 +211,15 @@ void CBasicOnTimer::timer_add(timer_event& event, int time, int bRepeat)
 	node->expire = time + m_time;
 	if (bRepeat > 0)
 	{
-		(*m_pMapNode)[event.m_callbackFunc] = node;
+		(*m_pMapNode)[event.m_nKey] = node;
 	}
 	add_node(node);
 }
 
-void CBasicOnTimer::timer_del(pOnTimerCallback pFunc)
+void CBasicOnTimer::timer_del(Net_PtrInt nKey)
 {
 	basiclib::CSpinLockFunc lock(&m_lock, TRUE);
-	MapTimerNode::iterator iter = (*m_pMapNode).find(pFunc);
+	MapTimerNode::iterator iter = (*m_pMapNode).find(nKey);
 	if (iter != (*m_pMapNode).end())
 	{
 		timer_node* pNode = iter->second;
@@ -262,6 +263,8 @@ void CBasicOnTimer::linklist(link_list *list, timer_node *node)
 
 bool CBasicOnTimer::InitTimer()
 {
+	if (m_hThread)
+		return false;
 	int i, j;
 	for (i = 0; i < TIME_NEAR; i++)
 	{
@@ -280,8 +283,14 @@ bool CBasicOnTimer::InitTimer()
 	m_current_point = gettime();
 
 	DWORD nThreadId = 0;
-	basiclib::BasicCreateThread(Timer_Thread, this, &nThreadId);
+	m_hThread = basiclib::BasicCreateThread(Timer_Thread, this, &nThreadId);
 	return true;
+}
+
+void CBasicOnTimer::WaitThreadExit()
+{
+	if (m_hThread)
+		basiclib::BasicWaitThread(m_hThread);
 }
 
 void CBasicOnTimer::CloseTimer()
@@ -289,36 +298,40 @@ void CBasicOnTimer::CloseTimer()
 	m_bTimerExit = true;
 }
 
-bool CBasicOnTimer::AddTimeOut(pOnTimerCallback pFunc, int nTimes)
+bool CBasicOnTimer::AddTimeOut(Net_PtrInt nKey, pOnTimerCallback pFunc, int nTimes, Net_PtrInt pParam1)
 {
 	if (nTimes <= 0)
 	{
-		pFunc();
+		pFunc(nKey, pParam1);
 	}
 	else
 	{
 		struct timer_event event;
 		event.m_callbackFunc = pFunc;
+		event.m_nKey = nKey;
+		event.m_pParam1 = pParam1;
 		timer_add(event, nTimes, 0);
 	}
 	return true;
 }
 
-bool CBasicOnTimer::AddOnTimer(pOnTimerCallback pFunc, int nTimes)
+bool CBasicOnTimer::AddOnTimer(Net_PtrInt nKey, pOnTimerCallback pFunc, int nTimes, Net_PtrInt pParam1)
 {
 	if (time > 0)
 	{
 		struct timer_event event;
 		event.m_callbackFunc = pFunc;
+		event.m_nKey = nKey;
+		event.m_pParam1 = pParam1;
 		timer_add(event, nTimes, 1);
 		return true;
 	}
 	return false;
 }
 
-void CBasicOnTimer::DelTimer(pOnTimerCallback pFunc)
+void CBasicOnTimer::DelTimer(Net_PtrInt nKey)
 {
-	timer_del(pFunc);
+	timer_del(nKey);
 }
 
 timer_node* CBasicOnTimer::link_clear(link_list *list)

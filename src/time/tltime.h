@@ -160,7 +160,7 @@ protected:
     //更新时间
     void UpdateBasicTime(time_t tmNow);
 public:
-    typedef basic_vector<BasicTimeSplite>::type VTTimeSpliteInfo;
+    typedef basic_vector<BasicTimeSplite>		 VTTimeSpliteInfo;
     typedef VTTimeSpliteInfo::iterator          VTTimeSpliteInfoIterator;
     VTTimeSpliteInfo                            m_vtTimeSplite;
     BasicTimeSpliteType                         m_timeSpliteType;
@@ -197,7 +197,7 @@ protected:
 	void UpdateBasicTime(time_t tmNow);
 
 protected:
-	typedef basiclib::basic_vector<basiclib::CTime>::type	VTPrizeTime;
+	typedef basiclib::basic_vector<basiclib::CTime>			VTPrizeTime;
 	typedef VTPrizeTime::iterator							VTPrizeTimeIterator;
 	VTPrizeTime												m_vtPrizeTime;
 	basiclib::CTimeSpan										m_tmSpan;		//颁奖的周期时间

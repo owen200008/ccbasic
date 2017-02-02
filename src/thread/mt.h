@@ -67,7 +67,7 @@ public:
 *  
 */
 
-class CSemaphore : public CBasicSyncObject
+class _BASIC_DLL_API CSemaphore : public CBasicSyncObject
 {
 
 // Constructor
@@ -223,7 +223,7 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////
 //自旋锁
-struct SpinLock
+struct _BASIC_DLL_API SpinLock
 {
 	int		m_nLock;
 	DWORD	m_lockThreadID;
@@ -233,21 +233,34 @@ struct SpinLock
 		m_lockThreadID = 0;
 	}
 };
-
-class CSpinLockFunc
+class _BASIC_DLL_API CSpinLockFuncNoSameThreadSafe
 {
 public:
-	CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock = FALSE);
-	virtual ~CSpinLockFunc();
+	CSpinLockFuncNoSameThreadSafe(SpinLock* pLock, BOOL bInitialLock = FALSE);
+	virtual ~CSpinLockFuncNoSameThreadSafe();
 
-	void Lock();
-	void LockAndSleep(unsigned short usSleep = 100);
-	bool LockNoWait();
-	void UnLock();
+	virtual void Lock();
+	virtual void LockAndSleep(unsigned short usSleep = 100);
+	virtual bool LockNoWait();
+	virtual void UnLock();
 	bool IsLock();
 protected:
 	SpinLock* 		m_pLock;
 	bool			m_bAcquired;
+};
+
+class _BASIC_DLL_API CSpinLockFunc : public CSpinLockFuncNoSameThreadSafe
+{
+public:
+	CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock = FALSE) : CSpinLockFuncNoSameThreadSafe(pLock, bInitialLock){
+	}
+	virtual ~CSpinLockFunc(){
+	}
+
+	virtual void Lock();
+	virtual void LockAndSleep(unsigned short usSleep = 100);
+	virtual bool LockNoWait();
+	virtual void UnLock();
 };
 
 //spinlock和mutex结合的lock
@@ -281,7 +294,7 @@ protected:
 #define DELETE_RWLOCK_VAR(v)		pthread_rwlock_destroy(&(v))
 #endif 
 
-struct RWLock
+struct _BASIC_DLL_API RWLock
 {
 	RWLOCK_VAR	lock;
 	RWLock()
@@ -294,7 +307,7 @@ struct RWLock
 	}
 };
 //RWLock
-class CRWLockFunc
+class _BASIC_DLL_API CRWLockFunc
 {
 public:
 	CRWLockFunc(RWLock* lock, bool bInitialWLock = false, bool bInitialRLock = false)
@@ -361,7 +374,7 @@ protected:
 *\return *lpAddend + 1
 *\remarks *lpAddend = *lpAddend + 1
 */
-LONG BasicInterlockedIncrement (LONG volatile *lpAddend);
+_BASIC_DLL_API LONG BasicInterlockedIncrement(LONG volatile *lpAddend);
 
 //! 原子操作，变量递减
 /*! 
@@ -369,16 +382,16 @@ LONG BasicInterlockedIncrement (LONG volatile *lpAddend);
 *\return *lpAddend - 1
 *\remarks *lpAddend = *lpAddend - 1
 */
-LONG BasicInterlockedDecrement (LONG volatile *lpAddend);
+_BASIC_DLL_API LONG BasicInterlockedDecrement(LONG volatile *lpAddend);
 
 //! 原子操作，变量赋值
 /*! 
 *\param Target	目标变量
 *\param Value	赋值变量
-*\return Value
+*\return resValue
 *\remarks *Target = Value
 */
-LONG BasicInterlockedExchange (LONG volatile *Target, LONG Value);
+_BASIC_DLL_API LONG BasicInterlockedExchange(LONG volatile *Target, LONG Value);
 
 //! 原子操作，变量相加
 /*! 
@@ -387,8 +400,8 @@ LONG BasicInterlockedExchange (LONG volatile *Target, LONG Value);
 *\return *Addend初始值
 *\remarks *Addend = *Addend + Value
 */
-LONG BasicInterlockedExchangeAdd (LONG volatile *Addend, LONG Value);
-LONG BasicInterlockedExchangeSub (LONG volatile *Addend, LONG Value);
+_BASIC_DLL_API LONG BasicInterlockedExchangeAdd(LONG volatile *Addend, LONG Value);
+_BASIC_DLL_API LONG BasicInterlockedExchangeSub(LONG volatile *Addend, LONG Value);
 //! 原子操作，变量比较
 /*! 
 *\param Destination	目标变量
@@ -397,7 +410,7 @@ LONG BasicInterlockedExchangeSub (LONG volatile *Addend, LONG Value);
 *\return *Destination初始值
 *\remarks 如Comperand==*Destination,则执行*Destination=Exchange
 */
-LONG BasicInterlockedCompareExchange (LONG volatile *Destination, LONG Exchange, LONG Comperand);
+_BASIC_DLL_API LONG BasicInterlockedCompareExchange(LONG volatile *Destination, LONG Exchange, LONG Comperand);
 
 //! 创建事件对象
 /*! 
@@ -413,35 +426,35 @@ LONG BasicInterlockedCompareExchange (LONG volatile *Destination, LONG Exchange,
 *\param lpName			事件对象命名，可以是无名
 *\return 事件对象句柄，如失败返回NULL
 */
-HANDLE BasicCreateEvent(BOOL bManualReset, BOOL bInitialState, LPCTSTR lpName);
+_BASIC_DLL_API HANDLE BasicCreateEvent(BOOL bManualReset, BOOL bInitialState, LPCTSTR lpName);
 
 //! 设置事件信号
 /*! 
 *\param hEvent	事件对象句柄
 *\return 如操作成功返回非零值，否则返回0
 */
-BOOL BasicSetEvent(HANDLE hEvent);
+_BASIC_DLL_API BOOL BasicSetEvent(HANDLE hEvent);
 
 //! 重置事件到无信号状态
 /*! 
 *\param hEvent	事件对象句柄
 *\return 如操作成功返回非零值，否则返回0
 */
-BOOL BasicResetEvent(HANDLE hEvent);
+_BASIC_DLL_API BOOL BasicResetEvent(HANDLE hEvent);
 
 //! 销毁事件信号
 /*! 
 *\param hEvent	事件对象句柄
 *\return 如操作成功返回非零值，否则返回0
 */
-BOOL BasicDestoryEvent(HANDLE hEvent);
+_BASIC_DLL_API BOOL BasicDestoryEvent(HANDLE hEvent);
 
 //! 销毁对象句柄
 /*! 
 *\param hObject	对象句柄
 *\return 如操作成功返回非零值，否则返回0
 */
-BOOL BasicCloseHandle(HANDLE hObject);
+_BASIC_DLL_API BOOL BasicCloseHandle(HANDLE hObject);
 
 
 //! 等待事件信号
@@ -450,7 +463,7 @@ BOOL BasicCloseHandle(HANDLE hObject);
 *\param dwMilliseconds 超时时间，单位毫秒。-1为不超时。
 *\return 有信号状态返回WAIT_OBJECT_0，超时返回WAIT_TIMEOUT
 */
-DWORD BasicWaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds);
+_BASIC_DLL_API DWORD BasicWaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds);
 
 //信号状态返回值定义
 #ifndef WAIT_OBJECT_0

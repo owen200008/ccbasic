@@ -48,7 +48,7 @@ const char NullAString[] = { 0 };
 template<typename CharType>
 struct __BasicString
 {
-	typedef typename basic_basic_string<CharType>::type		StringType;
+	typedef typename basic_basic_string<CharType>::type			StringType;
 	typedef typename basic_basic_stringstream<CharType>::type	StringStreamType;
 };
  

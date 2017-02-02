@@ -49,8 +49,8 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>$(OutDir)../$(TargetName)$(TargetExt)</OutputFile>
-      <ImportLibrary>$(OutDir)../dll/lib/$(TargetName).lib</ImportLibrary>
+      <OutputFile>../../../lib/$(TargetName)$(TargetExt)</OutputFile>
+      <ImportLibrary>../../../lib/$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>../../../lib/lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

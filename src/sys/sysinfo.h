@@ -95,6 +95,7 @@ _BASIC_DLL_API_C  double _BASIC_DLL_API BasicGetTickTimeCount();
  *\return 模块名
  */
 CBasicString _BASIC_DLL_API BasicGetModuleName(HANDLE hModule = NULL);
+CWBasicString _BASIC_DLL_API WBasicGetModuleName(HANDLE hModule);
 //! 取得模块名，包括全路径
 /*!
  *\param hModule  如hModule==NULL，则取当前主程序名，
@@ -110,6 +111,7 @@ long _BASIC_DLL_API BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBuf
  *\return 模块名
  */
 CBasicString _BASIC_DLL_API BasicGetModuleTitle(HANDLE hModule = NULL, BOOL bExt = FALSE);
+CWBasicString _BASIC_DLL_API WBasicGetModuleTitle(HANDLE hModule = NULL, BOOL bExt = FALSE);
 
 //! 取得模块路径
 /*!
@@ -117,6 +119,7 @@ CBasicString _BASIC_DLL_API BasicGetModuleTitle(HANDLE hModule = NULL, BOOL bExt
  *\return 模块路径
  */
  CBasicString _BASIC_DLL_API BasicGetModulePath(HANDLE hModule = NULL);
+ CWBasicString _BASIC_DLL_API WBasicGetModulePath(HANDLE hModule = NULL);
 
 #define	BASIC_PSL_RET_ERROR				-1			// 出错，不确定状态
 #define	BASIC_PSL_RET_NOT_EXIST			0			// 进程不存在
@@ -136,6 +139,38 @@ _BASIC_DLL_API_C  BOOL _BASIC_DLL_API BasicProcessIsTerminated(DWORD dwProcessID
  */
 _BASIC_DLL_API_C  BOOL _BASIC_DLL_API BasicSetSysTime(time_t tTime);
 
+#ifdef __BASICWINDOWS
+//
+//!进程信息结构
+typedef struct   tagPROCESSLIST
+{
+	DWORD	m_dwProcessID;				//!< 进程ID
+	DWORD	m_dwParentProcessID;		//!< 父进程ID
+	DWORD	m_dwThreadCnt;				//!< 线程数
+	DWORD	m_dwModuleID;				//!< 模块ID
+	TCHAR	m_szExeFile[MAX_PATH];		//!< 执行文件名(不带路径)
+	TCHAR	m_szExePath[MAX_PATH];		//!< 文件所有目录
+	tagPROCESSLIST*		m_pNext;		//!< 下个结点
+	// 
+	tagPROCESSLIST()
+	{
+		memset(this, 0, sizeof(*this));
+	}
+} PROCESSLIST;
+
+
+//! 创建进程信息列表
+/*!
+*\return 进程信息链表
+*/
+PROCESSLIST* BasicCreateProcessEntry();
+
+//! 释放进程信息列表
+/*!
+*\param pList 进程信息链表
+*/
+void BasicReleaseProcessEntry(PROCESSLIST* pList);
+#endif
 //////////////////////////////////////////////////////////////////////////
 //!网络相关信息
 
@@ -156,7 +191,7 @@ typedef struct   tagLocalAddr
  *\param pBuffer cbBuffer 输入IP地址信息空间
  *\return 返回IP地址数量
  */
-int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer);
+_BASIC_DLL_API int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer);
 
 ///////////////////////////////////////////////////////////////////////////////
 //!动态库调用的函数
@@ -166,14 +201,14 @@ int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer);
  *\param lpszLibFileName	动态库文件名
  *\return 成功返回非零动态库句柄，失败返回NULL
  */
-void* BasicLoadLibrary(const char* lpszLibFileName);
+_BASIC_DLL_API void* BasicLoadLibrary(const char* lpszLibFileName);
 
 //! 释放动态库
 /*!
  *\param hModule	动态库句柄
  *\return 成功返回0，否则失败
  */
-long	BasicFreeLibrary(void* hModule);
+_BASIC_DLL_API long	BasicFreeLibrary(void* hModule);
 
 //!取动态库函数入口
 /*!
@@ -181,11 +216,11 @@ long	BasicFreeLibrary(void* hModule);
  *\param lpszProcName 函数名
  *\return 成功返回非零函数地址，失败返回NULL
  */
-void*	BasicGetProcAddress(void* hModule, const char* lpszProcName);
+_BASIC_DLL_API void*	BasicGetProcAddress(void* hModule, const char* lpszProcName);
 /*
  * \brief 用户计算进程的CPU使用率
  */
-class   CProcessInfo
+class  _BASIC_DLL_API CProcessInfo
 {
 public:
 	CProcessInfo(DWORD nProcessId);
@@ -215,7 +250,7 @@ protected:
 *\return  如果成功返回 从系统启动到现在的微秒数。
 *\remarks 这个函数需要硬件支持（HRT），主要用于性能记录中的时间记录
 */
-double BasicGetHighPerformanceCounter();
+_BASIC_DLL_API double BasicGetHighPerformanceCounter();
 
 __NS_BASIC_END
 

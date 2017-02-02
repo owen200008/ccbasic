@@ -19,6 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\algorithm\xtra.h" />
+    <ClInclude Include="..\..\src\algorithm\zip\tlgzip.h" />
+    <ClInclude Include="..\..\src\algorithm\zip\tlzipfile.h" />
+    <ClInclude Include="..\..\src\algorithm\zip\zconf.h" />
+    <ClInclude Include="..\..\src\algorithm\zip\zlib.h" />
     <ClInclude Include="..\..\src\coroutine\coroutineplus.h" />
     <ClInclude Include="..\..\src\coroutine\libco_coroutine.h" />
     <ClInclude Include="..\..\src\datastruct\array.h" />
@@ -30,10 +35,16 @@
     <ClInclude Include="..\..\src\debug\debug.h" />
     <ClInclude Include="..\..\src\dll\loaddll.h" />
     <ClInclude Include="..\..\src\exception\call_stack.hpp" />
+    <ClInclude Include="..\..\src\exception\exception.h" />
+    <ClInclude Include="..\..\src\exception\exception_linux.h" />
+    <ClInclude Include="..\..\src\exception\exception_win.h" />
     <ClInclude Include="..\..\src\exception\StackWalker.h" />
     <ClInclude Include="..\..\src\exception\stack_exception.hpp" />
+    <ClInclude Include="..\..\src\file\filebase.h" />
     <ClInclude Include="..\..\src\file\filedefine.h" />
     <ClInclude Include="..\..\src\file\fileman.h" />
+    <ClInclude Include="..\..\src\file\filenotify.h" />
+    <ClInclude Include="..\..\src\file\fileobj.h" />
     <ClInclude Include="..\..\src\file\file_linux.h" />
     <ClInclude Include="..\..\src\file\inifile.h" />
     <ClInclude Include="..\..\src\inc\basic.h" />
@@ -51,18 +62,11 @@
     <ClInclude Include="..\..\src\misc\tlrefptr.h" />
     <ClInclude Include="..\..\src\net\net.h" />
     <ClInclude Include="..\..\src\net\sendbuffer.h" />
-    <ClInclude Include="..\..\src\scbasic\cache\cachemgr.h" />
-    <ClInclude Include="..\..\src\scbasic\commu\basicclient.h" />
-    <ClInclude Include="..\..\src\scbasic\commu\ipverify.h" />
-    <ClInclude Include="..\..\src\scbasic\commu\servertemplate.h" />
-    <ClInclude Include="..\..\src\scbasic\json\scbasicjson.h" />
-    <ClInclude Include="..\..\src\scbasic\newhttp\httpdefine.h" />
-    <ClInclude Include="..\..\src\scbasic\newhttp\httpparser.h" />
-    <ClInclude Include="..\..\src\scbasic\newhttp\httprequest.h" />
-    <ClInclude Include="..\..\src\scbasic\newhttp\httpresponse.h" />
-    <ClInclude Include="..\..\src\scbasic\newhttp\httpsession.h" />
-    <ClInclude Include="..\..\src\scbasic\sproto\msvcint.h" />
-    <ClInclude Include="..\..\src\scbasic\sproto\sproto.h" />
+    <ClInclude Include="..\..\src\sqlite\sqlite3.h" />
+    <ClInclude Include="..\..\src\sqlite\sqlite3db.h" />
+    <ClInclude Include="..\..\src\sqlite\sqlite3dbquery.h" />
+    <ClInclude Include="..\..\src\sqlite\sqlite3dbtable.h" />
+    <ClInclude Include="..\..\src\sqlite\sqlite3ext.h" />
     <ClInclude Include="..\..\src\sys\syserror.h" />
     <ClInclude Include="..\..\src\sys\sysinfo.h" />
     <ClInclude Include="..\..\src\thread\mt.h" />
@@ -102,6 +106,9 @@
     <ClInclude Include="..\..\src\util\strutil\strutil.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\algorithm\xtra.cpp" />
+    <ClCompile Include="..\..\src\algorithm\zip\tlgzip.cpp" />
+    <ClCompile Include="..\..\src\algorithm\zip\tlzipfile.cpp" />
     <ClCompile Include="..\..\src\coroutine\coroutineplus.cpp" />
     <ClCompile Include="..\..\src\coroutine\libco_coroutine.cpp" />
     <ClCompile Include="..\..\src\datastruct\basic_string.cpp" />
@@ -114,11 +121,18 @@
     <ClCompile Include="..\..\src\dll\loaddll.cpp" />
     <ClCompile Include="..\..\src\exception\call_stack_gcc.cpp" />
     <ClCompile Include="..\..\src\exception\call_stack_msvc.cpp" />
+    <ClCompile Include="..\..\src\exception\exception.cpp" />
+    <ClCompile Include="..\..\src\exception\exception_linux.cpp" />
+    <ClCompile Include="..\..\src\exception\exception_win.cpp" />
     <ClCompile Include="..\..\src\exception\StackWalker.cpp" />
+    <ClCompile Include="..\..\src\file\diskfile.cpp" />
     <ClCompile Include="..\..\src\file\filefind.cpp" />
     <ClCompile Include="..\..\src\file\fileman.cpp" />
+    <ClCompile Include="..\..\src\file\filenotify.cpp" />
+    <ClCompile Include="..\..\src\file\fileobj.cpp" />
     <ClCompile Include="..\..\src\file\file_linux.cpp" />
     <ClCompile Include="..\..\src\file\inifile.cpp" />
+    <ClCompile Include="..\..\src\file\memfile.cpp" />
     <ClCompile Include="..\..\src\log\log.cpp" />
     <ClCompile Include="..\..\src\mem\bitstream.cpp" />
     <ClCompile Include="..\..\src\mem\mem.cpp" />
@@ -126,15 +140,11 @@
     <ClCompile Include="..\..\src\mem\tlstaticbuffer.cpp" />
     <ClCompile Include="..\..\src\net\net.cpp" />
     <ClCompile Include="..\..\src\net\sendbuffer.cpp" />
-    <ClCompile Include="..\..\src\scbasic\commu\basicclient.cpp" />
-    <ClCompile Include="..\..\src\scbasic\commu\ipverify.cpp" />
-    <ClCompile Include="..\..\src\scbasic\commu\servertemplate.cpp" />
-    <ClCompile Include="..\..\src\scbasic\json\scbasicjson.cpp" />
-    <ClCompile Include="..\..\src\scbasic\newhttp\httpparser.cpp" />
-    <ClCompile Include="..\..\src\scbasic\newhttp\httprequest.cpp" />
-    <ClCompile Include="..\..\src\scbasic\newhttp\httpresponse.cpp" />
-    <ClCompile Include="..\..\src\scbasic\newhttp\httpsession.cpp" />
-    <ClCompile Include="..\..\src\scbasic\sproto\sproto.cpp" />
+    <ClCompile Include="..\..\src\sqlite\shell.c" />
+    <ClCompile Include="..\..\src\sqlite\sqlite3db.cpp" />
+    <ClCompile Include="..\..\src\sqlite\sqlite3dbquery.cpp" />
+    <ClCompile Include="..\..\src\sqlite\sqlite3dbtable.cpp" />
+    <ClCompile Include="..\..\src\sqlite\sqlite3secure.c" />
     <ClCompile Include="..\..\src\sys\sysinfo.cpp" />
     <ClCompile Include="..\..\src\sys\sysinfo_android.cpp" />
     <ClCompile Include="..\..\src\sys\sysinfo_linux.cpp" />
@@ -170,6 +180,7 @@
   <ItemGroup>
     <MASM Include="..\..\src\coroutine\coctx_swap_win.asm">
       <FileType>Document</FileType>
+      <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug_Dll|Win32'">true</UseSafeExceptionHandlers>
     </MASM>
   </ItemGroup>
   <ItemGroup>
@@ -263,6 +274,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
       <OutputFile>..\$(ProjectName)13.lib</OutputFile>
@@ -290,9 +302,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dll|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../3rd/libevent/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../3rd/libevent/include;../../3rd/libevent/WIN32-Code/nmake;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__BASICWINDOWS;_DEBUG;_LIB;XML_STATIC;SQLITE_HAS_CODEC=1;SQLITE_SECURE_DELETE;SQLITE_SOUNDEX;SQLITE_ENABLE_COLUMN_METADATA;CODEC_TYPE=CODEC_TYPE_AES256;_USE_SYS_MALLOC;BASIC_DLL_EXPORTS;BASIC_DLL_EXPORTS_C;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -300,9 +312,10 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FLzlib13.lib;../3rd/libevent/build/lib/Debug/event.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\$(ProjectName)D13.dll</OutputFile>
       <AdditionalLibraryDirectories>..\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -313,7 +326,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../3rd/libevent/include;../../3rd/libevent/WIN32-Code/nmake;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__BASICWINDOWS;NDEBUG;_BASIC_TRACE;_LIB;XML_STATIC;_USE_SYS_MALLOC;SQLITE_HAS_CODEC=1;SQLITE_SECURE_DELETE;SQLITE_SOUNDEX;SQLITE_ENABLE_COLUMN_METADATA;CODEC_TYPE=CODEC_TYPE_AES256;BASIC_DLL_EXPORTS;BASIC_DLL_EXPORTS_C;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>

@@ -19,6 +19,7 @@ __NS_BASIC_START
 	class CBasicFileFind;				//ÎÄ¼þ²éÕÒ
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+#define WSTR_INVALID(x) (x == NULL || x[0] == _T('\0'))					//!< ÅÐ¶Ï×Ö·û´®Ö¸Õë
 #define STR_INVALID(x) (x == NULL || x[0] == '\0')					//!< ÅÐ¶Ï×Ö·û´®Ö¸Õë
 
 
@@ -166,6 +167,7 @@ char* Basic_FindFileName(const char* lpszPathName);
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
 long Basic_mkdir(const char* lpszPath);
+long WBasic_mkdir(LPCTSTR lpszPath);
 
 char* Basic_TempFileName(const char* lpszDir, const char* lpszHead, const char* lpszExt, char* lpszBuffer, int nMax);
 
@@ -442,9 +444,11 @@ protected:
 
 //Â·¾¶·Ö¸ô·û¶¨Òå
 #ifdef __BASICWINDOWS
+#define WIDEPATHSPLIT 				_T('\\')		//µ¥¸ö×Ö·û
 #define PATHSPLIT_S					'\\'
 #define PATHSPLITSTRING_S			"\\"			//×Ö·û´®
 #else
+#define WIDEPATHSPLIT 				_T('/')			//µ¥¸ö×Ö·û
 #define PATHSPLIT_S 				'/'			//µ¥¸ö×Ö·û
 #define PATHSPLIT					PATHSPLIT_S
 #define PATHSPLITSTRING_S			"/"				//×Ö·û´®

@@ -59,7 +59,7 @@
 //
 //异常保护,使用开元stacktrace
 #include "../exception/call_stack.hpp"
-//#include "../exception/exception.h"
+#include "../exception/exception.h"
 //
 #include "../util/functor.h"
 //内存管理
@@ -96,13 +96,13 @@
 //
 //文件处理
 #include "../file/filedefine.h"
-//#include "../file/filenotify.h"
-//#include "../file/fileobj.h"
+#include "../file/filenotify.h"
+#include "../file/fileobj.h"
 #include "../file/fileman.h"
 #include "../file/inifile.h"
 
 //xtra
-//#include "../algorithm/xtra.h"
+#include "../algorithm/xtra.h"
 
 //CRC16
 //#include "../algorithm/crc16.h"
@@ -127,17 +127,14 @@
 //#include "../algorithm/tlmath.h"
 #include <math.h>
 
-// 和颜色处理相关的函数
-//#include "../graphics/colorutil.h"
-
 //贪婪加载
 //#include "../misc/lazy_init.h"
 
 #include "../coroutine/coroutineplus.h"
+#include "../mem/bitstream.h"
 //通讯定义
 #include "../net/sendbuffer.h"
 #include "../net/net.h"
-//#include "../net/networkprotocal.h"
 //
 //CRC16
 //#include "../algorithm/crc16.h"
@@ -145,9 +142,9 @@
 //#include "../algorithm/rc5/rc5.h"
 
 // 压缩
-//#include "../algorithm/zip/tlgzip.h"
-//#include "../algorithm/zip/tlzipfile.h"
-//#include "../algorithm/zip/zlib.h"
+#include "../algorithm/zip/tlgzip.h"
+#include "../algorithm/zip/tlzipfile.h"
+#include "../algorithm/zip/zlib.h"
 
 // XML
 //#include "../util/xml/xmldom.h"
@@ -161,15 +158,11 @@
 
 //dll加载
 #include "../dll/loaddll.h"
-//fl
-//#include "../flcommu/basicclient.h"
-//#include "../flcommu/servertemplate.h"
 
 //sqlite支持
-//#include "../sqlite/sqlite3.h"
-//#include "../sqlite/sqlite3db.h"
+#include "../sqlite/sqlite3.h"
+#include "../sqlite/sqlite3db.h"
 
-#include "../mem/bitstream.h"
 
 
 #endif 

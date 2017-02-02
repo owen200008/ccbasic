@@ -251,17 +251,64 @@ BOOL CCriticalSection::Unlock()
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-CSpinLockFunc::CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock)
+CSpinLockFuncNoSameThreadSafe::CSpinLockFuncNoSameThreadSafe(SpinLock* pLock, BOOL bInitialLock)
 {
 	m_pLock = pLock;
 	m_bAcquired = false;
 	if (bInitialLock)
 		Lock();
 }
-
-CSpinLockFunc::~CSpinLockFunc()
+CSpinLockFuncNoSameThreadSafe::~CSpinLockFuncNoSameThreadSafe()
 {
 	UnLock();
+}
+
+void CSpinLockFuncNoSameThreadSafe::Lock()
+{
+	if (!m_bAcquired)
+	{
+		while (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1)){
+		}
+		m_bAcquired = true;
+	}
+}
+bool CSpinLockFuncNoSameThreadSafe::LockNoWait()
+{
+	if (!m_bAcquired)
+	{
+		while (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1))
+		{
+			return false;
+		}
+		m_bAcquired = true;
+	}
+	return true;
+}
+
+void CSpinLockFuncNoSameThreadSafe::LockAndSleep(unsigned short usSleep)
+{
+	if (!m_bAcquired)
+	{
+		while (basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 1))
+		{
+			BasicSleep(usSleep);
+		}
+		m_bAcquired = true;
+	}
+}
+
+void CSpinLockFuncNoSameThreadSafe::UnLock()
+{
+	if (m_bAcquired)
+	{
+		basiclib::BasicInterlockedExchange((LONG*)&(m_pLock->m_nLock), 0);
+		m_bAcquired = false;
+	}
+}
+
+bool CSpinLockFuncNoSameThreadSafe::IsLock()
+{
+	return basiclib::BasicInterlockedExchangeAdd((LONG*)&(m_pLock->m_nLock), 0);
 }
 
 void CSpinLockFunc::Lock()
@@ -326,10 +373,6 @@ void CSpinLockFunc::UnLock()
 	}
 }
 
-bool CSpinLockFunc::IsLock()
-{
-	return basiclib::BasicInterlockedExchangeAdd((LONG*)&(m_pLock->m_nLock), 0);
-}
 ////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef __BASICWINDOWS
 

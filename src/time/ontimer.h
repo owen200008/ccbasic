@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-typedef void(*pOnTimerCallback)();
+typedef void(*pOnTimerCallback)(Net_PtrInt, Net_PtrInt pParam1);
 ///////////////////////////////////////////////////////////////////////////////////////////
 #define TIME_NEAR_SHIFT 8
 #define TIME_NEAR (1 << TIME_NEAR_SHIFT)
@@ -18,7 +18,9 @@ typedef void(*pOnTimerCallback)();
 
 struct timer_event 
 {
-	pOnTimerCallback m_callbackFunc;
+	pOnTimerCallback	m_callbackFunc;
+	Net_PtrInt			m_nKey;
+	Net_PtrInt			m_pParam1;
 };
 
 struct timer_node 
@@ -34,9 +36,12 @@ struct link_list
 	timer_node	head;
 	timer_node*	tail;
 };
-typedef basiclib::basic_map<pOnTimerCallback, timer_node*>::type MapTimerNode;
+typedef basiclib::basic_map<Net_PtrInt, timer_node*>	 MapTimerNode;
 ///////////////////////////////////////////////////////////////////////////////////////////
-class CBasicOnTimer
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
+class _BASIC_DLL_API CBasicOnTimer : public basiclib::CBasicObject
 {
 public:
 	CBasicOnTimer();
@@ -44,10 +49,15 @@ public:
 
 	bool InitTimer();
 	void CloseTimer();
+	void WaitThreadExit();
 
-	bool AddTimeOut(pOnTimerCallback pFunc, int nTimes);
-	bool AddOnTimer(pOnTimerCallback pFunc, int nTimes);
-	void DelTimer(pOnTimerCallback pFunc);
+	/*	最高精度10ms, 实际误差25ms(sleep)
+		100=1s 
+		实际100ms精度内的无法完全准确
+	*/
+	bool AddTimeOut(Net_PtrInt nKey, pOnTimerCallback pFunc, int nTimes, Net_PtrInt pParam1);
+	bool AddOnTimer(Net_PtrInt nKey, pOnTimerCallback pFunc, int nTimes, Net_PtrInt pParam1);
+	void DelTimer(Net_PtrInt nKey);
 protected:
 	friend THREAD_RETURN Timer_Thread(void* pParam);
 	void TimerRun();
@@ -55,10 +65,10 @@ protected:
 	void TimerUpdate();
 protected:
 	void timer_add(timer_event& event, int time, int bRepeat);
-	void timer_del(pOnTimerCallback pFunc);
+	void timer_del(Net_PtrInt nKey);
 
 	timer_node* link_clear(link_list *list);
-	void timer_execute(basiclib::CSpinLockFunc& lock);
+	void timer_execute(basiclib::CSpinLockFuncNoSameThreadSafe& lock);
 	void timer_shift();
 	void move_list(int level, int idx);
 	void dispatch_list(struct timer_node *current);
@@ -66,6 +76,7 @@ protected:
 	void linklist(link_list *list, timer_node *node);
 protected:
 	bool							m_bTimerExit;
+	HANDLE							m_hThread;
 
 	link_list                		m_near[TIME_NEAR];
 	link_list                		m_t[4][TIME_LEVEL];
@@ -76,5 +87,6 @@ protected:
 	uint64_t                        m_current_point;
 	MapTimerNode*					m_pMapNode;
 };
+#pragma warning (pop)
 
 #endif

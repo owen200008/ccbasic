@@ -4,7 +4,7 @@
 
 __NS_BASIC_START
 
-struct BasicStaticBuffer
+struct _BASIC_DLL_API BasicStaticBuffer
 {
 public:
 	void*		Alloc(unsigned short len);
@@ -28,7 +28,7 @@ protected:
 	unsigned short m_nAlloc;
 };
 
-class CBasicStaticBuffer
+class _BASIC_DLL_API CBasicStaticBuffer
 {
 public:
 	CBasicStaticBuffer();

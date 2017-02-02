@@ -19,7 +19,7 @@ __NS_BASIC_START
 /*!
 *  
 */
-struct SmartBufferExportOutData
+struct _BASIC_DLL_API SmartBufferExportOutData
 {
 	char*	m_pExport;
 	int		m_nLength;
@@ -42,6 +42,7 @@ class _BASIC_DLL_API CBasicSmartBuffer : public CBasicObject
 {
 public:
 	CBasicSmartBuffer();
+	CBasicSmartBuffer(int nAllocaSize);
 	CBasicSmartBuffer(const basiclib::CBasicSmartBuffer &smBuf);
 	virtual ~CBasicSmartBuffer();
 public:

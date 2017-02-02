@@ -71,8 +71,8 @@ public:
 	//»ñÈ¡×´Ì¬
 	virtual void GetStatus(basiclib::CBasicString& strInfo);
 protected:
-	typedef basiclib::basic_vector<basiclib::CBasicStringArray>::type ContainRuleInfo;
-	typedef ContainRuleInfo::iterator                       ContainRuleInfoIterator;
+	typedef basiclib::basic_vector<basiclib::CBasicStringArray> ContainRuleInfo;
+	typedef ContainRuleInfo::iterator							ContainRuleInfoIterator;
 	ContainRuleInfo  m_ayRuleInfo;
 
 	basiclib::CBasicString m_strInfo;
@@ -97,8 +97,8 @@ public:
 	//
 	basiclib::CBasicString GetPortInfo(int nIndex);
 protected:
-	typedef basiclib::basic_vector<unsigned short>::type      ContainPort;
-	typedef basiclib::basic_vector<ContainPort>::type         ContainNumber;
+	typedef basiclib::basic_vector<unsigned short>				ContainPort;
+	typedef basiclib::basic_vector<ContainPort>					ContainNumber;
 	typedef ContainNumber::iterator               ContainNumberIterator;
 
 	ContainNumber                                m_ayRuleExtre;

@@ -55,26 +55,23 @@
     <Filter Include="scbasic">
       <UniqueIdentifier>{9a8bd4bf-730d-48be-99cd-ed9e2873475b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="scbasic\cache">
-      <UniqueIdentifier>{a1f748ba-e9ea-4710-81a5-d2c7d8076203}</UniqueIdentifier>
-    </Filter>
     <Filter Include="util\regex">
       <UniqueIdentifier>{0bdaa64e-6280-4743-b3ad-66294e5df05f}</UniqueIdentifier>
     </Filter>
     <Filter Include="time\timelib">
       <UniqueIdentifier>{ea76020c-d552-4fc3-9d06-7d580ded7ee3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="scbasic\newhttp">
-      <UniqueIdentifier>{71774eae-08af-4d1a-929f-795eeb1b5b40}</UniqueIdentifier>
+    <Filter Include="algorithm">
+      <UniqueIdentifier>{7a6a5d93-2fcc-4bab-9879-bc055307b925}</UniqueIdentifier>
     </Filter>
-    <Filter Include="scbasic\commu">
-      <UniqueIdentifier>{d45d2f8b-4598-4e84-88a8-0ca4ac00c726}</UniqueIdentifier>
+    <Filter Include="algorithm\zip">
+      <UniqueIdentifier>{6a887c78-a702-4f1c-8eea-b341b2816e4c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="scbasic\json">
-      <UniqueIdentifier>{d4cea587-3e20-4efa-aed0-91ced6ba0cb7}</UniqueIdentifier>
+    <Filter Include="sqlite">
+      <UniqueIdentifier>{8ff2ce59-2cb7-4795-98a3-edcb4fe532a4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="scbasic\sproto">
-      <UniqueIdentifier>{ce551f10-745d-480b-bf51-da70c1134756}</UniqueIdentifier>
+    <Filter Include="file\file">
+      <UniqueIdentifier>{ee3d5afb-05e6-4723-a73c-1a5782cfbf20}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -225,9 +222,6 @@
     <ClInclude Include="..\..\src\file\inifile.h">
       <Filter>file</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\cache\cachemgr.h">
-      <Filter>scbasic\cache</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\util\regex\regex.h">
       <Filter>util\regex</Filter>
     </ClInclude>
@@ -276,32 +270,8 @@
     <ClInclude Include="..\..\src\time\timelib\fallbackmap.h">
       <Filter>time\timelib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\newhttp\httpsession.h">
-      <Filter>scbasic\newhttp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\newhttp\httprequest.h">
-      <Filter>scbasic\newhttp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\newhttp\httpparser.h">
-      <Filter>scbasic\newhttp</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\util\containerext.h">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\newhttp\httpdefine.h">
-      <Filter>scbasic\newhttp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\commu\basicclient.h">
-      <Filter>scbasic\commu</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\commu\ipverify.h">
-      <Filter>scbasic\commu</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\commu\servertemplate.h">
-      <Filter>scbasic\commu</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\newhttp\httpresponse.h">
-      <Filter>scbasic\newhttp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\misc\fastdelegatebind.h">
       <Filter>misc</Filter>
@@ -309,17 +279,56 @@
     <ClInclude Include="..\..\src\misc\fastdelegate.h">
       <Filter>misc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\json\scbasicjson.h">
-      <Filter>scbasic\json</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\mem\bitstream.h">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\sproto\sproto.h">
-      <Filter>scbasic\sproto</Filter>
+    <ClInclude Include="..\..\src\algorithm\zip\zconf.h">
+      <Filter>algorithm\zip</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\scbasic\sproto\msvcint.h">
-      <Filter>scbasic\sproto</Filter>
+    <ClInclude Include="..\..\src\algorithm\zip\zlib.h">
+      <Filter>algorithm\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\algorithm\zip\tlgzip.h">
+      <Filter>algorithm\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\algorithm\xtra.h">
+      <Filter>algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\sqlite\sqlite3.h">
+      <Filter>sqlite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\sqlite\sqlite3ext.h">
+      <Filter>sqlite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\sqlite\sqlite3db.h">
+      <Filter>sqlite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\sqlite\sqlite3dbquery.h">
+      <Filter>sqlite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\sqlite\sqlite3dbtable.h">
+      <Filter>sqlite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\file\filebase.h">
+      <Filter>file\file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\file\fileobj.h">
+      <Filter>file\file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\file\filenotify.h">
+      <Filter>file\file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\exception\exception.h">
+      <Filter>exception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\exception\exception_win.h">
+      <Filter>exception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\exception\exception_linux.h">
+      <Filter>exception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\algorithm\zip\tlzipfile.h">
+      <Filter>algorithm\zip</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -485,35 +494,53 @@
     <ClCompile Include="..\..\src\time\timelib\parse_date.c">
       <Filter>time\timelib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\scbasic\newhttp\httpsession.cpp">
-      <Filter>scbasic\newhttp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scbasic\newhttp\httprequest.cpp">
-      <Filter>scbasic\newhttp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scbasic\newhttp\httpparser.cpp">
-      <Filter>scbasic\newhttp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scbasic\commu\basicclient.cpp">
-      <Filter>scbasic\commu</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scbasic\commu\ipverify.cpp">
-      <Filter>scbasic\commu</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scbasic\commu\servertemplate.cpp">
-      <Filter>scbasic\commu</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scbasic\newhttp\httpresponse.cpp">
-      <Filter>scbasic\newhttp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scbasic\json\scbasicjson.cpp">
-      <Filter>scbasic\json</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\mem\bitstream.cpp">
       <Filter>mem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\scbasic\sproto\sproto.cpp">
-      <Filter>scbasic\sproto</Filter>
+    <ClCompile Include="..\..\src\algorithm\zip\tlgzip.cpp">
+      <Filter>algorithm\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\algorithm\xtra.cpp">
+      <Filter>algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sqlite\shell.c">
+      <Filter>sqlite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sqlite\sqlite3secure.c">
+      <Filter>sqlite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sqlite\sqlite3db.cpp">
+      <Filter>sqlite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sqlite\sqlite3dbquery.cpp">
+      <Filter>sqlite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sqlite\sqlite3dbtable.cpp">
+      <Filter>sqlite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\file\fileobj.cpp">
+      <Filter>file\file</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\file\filenotify.cpp">
+      <Filter>file\file</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\file\memfile.cpp">
+      <Filter>file\file</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\file\diskfile.cpp">
+      <Filter>file\file</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\exception\exception.cpp">
+      <Filter>exception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\exception\exception_linux.cpp">
+      <Filter>exception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\exception\exception_win.cpp">
+      <Filter>exception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\algorithm\zip\tlzipfile.cpp">
+      <Filter>algorithm\zip</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

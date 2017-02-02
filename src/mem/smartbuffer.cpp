@@ -28,6 +28,14 @@ CBasicSmartBuffer::CBasicSmartBuffer()
 {
 	EmptyBuffer();
 }
+CBasicSmartBuffer::CBasicSmartBuffer(int nAllocaSize)
+{
+	EmptyBuffer();
+	if (AllocBuffer(nAllocaSize) == NULL)
+	{
+		return;
+	}
+}
 
 CBasicSmartBuffer::CBasicSmartBuffer(const basiclib::CBasicSmartBuffer &buffer)
 {

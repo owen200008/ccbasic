@@ -17,7 +17,11 @@ enum CoroutineState
 class CCorutinePlus;
 class CCorutinePlusPool;
 typedef void (*coroutine_func)(CCorutinePlus* pCorutinePlus);
-class CCorutinePlus : public basiclib::CBasicObject
+
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
+class _BASIC_DLL_API CCorutinePlus : public basiclib::CBasicObject
 {
 public:
 	CCorutinePlus();
@@ -75,7 +79,7 @@ public:
 		Resume(pPool);
 	}
 	CCorutinePlusPool* GetRunPool(){return m_pRunPool;}
-
+	CoroutineState GetCoroutineState(){ return m_state; }
 	//no call self
 	void StartFunc();
 	void StartFuncLibco();
@@ -97,7 +101,7 @@ protected:
 };
 
 //thread not safe
-class CCorutinePlusPool : public basiclib::CBasicObject
+class _BASIC_DLL_API CCorutinePlusPool : public basiclib::CBasicObject
 {
 public:
 	CCorutinePlusPool();
@@ -106,12 +110,12 @@ public:
 	bool InitCorutine(int nDefaultSize = DEFAULT_COROUTINE, int nDefaultStackSize = 1024 * 16);
 	
 	CCorutinePlus* GetCorutine();
-	void ReleaseCorutine(CCorutinePlus* pPTR);
 
 	int GetVTCorutineSize(){ return m_vtCorutinePlus.size(); }
 	int GetCreateCorutineTimes(){return m_usCreateTimes;}
 protected:
 	CCorutinePlus* CreateCorutine(bool bPush);
+	void ReleaseCorutine(CCorutinePlus* pPTR);
 protected:
 #ifdef USE_UCONTEXT
 	ucontext_t              			m_ctxMain;
@@ -119,13 +123,14 @@ protected:
 	coctx_t								m_ctxMain;
 #endif
 	char 								m_stack[STACK_SIZE];
-	typedef basiclib::basic_vector<CCorutinePlus*>::type	VTCorutinePlus;
+	typedef basiclib::basic_vector<CCorutinePlus*>	VTCorutinePlus;
 	VTCorutinePlus						m_vtCorutinePlus;
 	unsigned short						m_usCreateTimes;
 	int									m_nDefaultStackSize;
 
 	friend class CCorutinePlus;
 };
+#pragma warning (pop)
 
 
 #endif

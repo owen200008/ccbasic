@@ -87,16 +87,16 @@ __NS_BASIC_START
 #endif////__ANDROID
 
 //!定位断言代码行
-BOOL BasicAssertFailedLine(const char* lpszFileName, int nLine);
+_BASIC_DLL_API BOOL BasicAssertFailedLine(const char* lpszFileName, int nLine);
 
 //!中断
-void BasicDebugBreak();
+_BASIC_DLL_API void BasicDebugBreak();
 
 //!输出跟踪信息
-void BasicTrace(const char* lpszFormat, ...);
+_BASIC_DLL_API void BasicTrace(const char* lpszFormat, ...);
 
 //!输出跟踪信息到调试器
-void BasicTraceDebugView(const char* lpszString);
+_BASIC_DLL_API void BasicTraceDebugView(const char* lpszString);
 
 ///////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_END

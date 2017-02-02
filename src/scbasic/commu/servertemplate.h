@@ -12,12 +12,16 @@
 class CNetServerControl : public basiclib::CBasicSessionNetServer
 {
 public:
-	static CNetServerControl* CreateNetServerControl(Net_UInt nSessionID){ return new CNetServerControl(nSessionID); }
+	typedef fastdelegate::FastDelegate1<basiclib::CBasicSessionNetClient*, bool> HandleVerifySuccess;
+
+	static CNetServerControl* CreateNetServerControl(Net_UInt nSessionID = 0){ return new CNetServerControl(nSessionID); }
 protected:
 	CNetServerControl(Net_UInt nSessionID);
 	virtual ~CNetServerControl();
 public:
-	Net_Int StartServer(const char* lpszAddress, basiclib::CBasicPreSend* pPreSend = nullptr);
+	void bind_verifysuccess(const HandleVerifySuccess& func){ m_handleVerifySuccess = func; }
+
+	virtual Net_Int StartServer(const char* lpszAddress, basiclib::CBasicPreSend* pPreSend = nullptr);
 	BOOL IsListen();
 	void SetIpTrust(const char* lpszIpTrust);
 	void SetSessionMaxCount(int nCount);
@@ -25,12 +29,22 @@ public:
 	//不需要外部调用
 	virtual void OnTimer(Net_UInt nTick);
 protected:
+	virtual Net_Int OnUserVerify(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetCode, Net_Int cbData, const char *pszData);
+	virtual Net_Int OnVerifyDisconnectCallback(basiclib::CBasicSessionNetClient* pClient, Net_UInt p2);
+	//用户登录成功
+	virtual bool SuccessLogin(basiclib::CBasicSessionNetClient* pNotify);
+protected:
+	virtual basiclib::CBasicSessionNetClient* CreateServerClientSession(Net_UInt nSessionID);
 	virtual basiclib::CBasicSessionNetClient* ConstructSession(Net_UInt nSessionID);
 protected:
+	HandleVerifySuccess			m_handleVerifySuccess;
 	//ip信任地址
-	CIpVerify			m_ipTrust;
+	CIpVerify					m_ipTrust;
 	// 最大允许session连接数量	小于0 表示不限制
-	int	m_nSessionMaxCount;
+	int							m_nSessionMaxCount;
+
+	basiclib::CMutex			m_mtxCSessionVerify;
+	basiclib::MapClientSession	m_mapClientSessionVerify;
 
 	friend class CNetServerControlClient;
 };

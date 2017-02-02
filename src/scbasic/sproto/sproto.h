@@ -6,14 +6,7 @@
 struct sproto;
 struct sproto_type;
 
-#define SPROTO_REQUEST 0
-#define SPROTO_RESPONSE 1
-
-//#define SPROTO_TINTEGER 0
-//#define SPROTO_TBOOLEAN 1
-//#define SPROTO_TSTRING 2
-//#define SPROTO_TSTRUCT 3
-
+//支持的类型
 #define SPROTO_CC_CHAR		10
 #define SPROTO_CC_SHORT		11
 #define SPROTO_CC_INT		12
@@ -44,11 +37,6 @@ struct sproto_type;
 struct sproto * sproto_create(const void * proto, size_t sz);
 void sproto_release(struct sproto *);
 
-int sproto_prototag(const struct sproto *, const char * name);
-const char * sproto_protoname(const struct sproto *, int proto);
-// SPROTO_REQUEST(0) : request, SPROTO_RESPONSE(1): response
-struct sproto_type * sproto_protoquery(const struct sproto *, int proto, int what);
-
 struct sproto_type * sproto_type(const struct sproto *, const char * type_name);
 
 int sproto_pack(const void * src, int srcsz, void * buffer, int bufsz);
@@ -57,7 +45,7 @@ int sproto_unpack(const void * src, int srcsz, void * buffer, int bufsz);
 struct sproto_arg {
 	void *ud;
 	const char *tagname;
-	//int tagid;
+	int m_bStar;
 	int type;
 	struct sproto_type *subtype;
 	void *value;

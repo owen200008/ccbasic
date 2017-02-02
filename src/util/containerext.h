@@ -3,13 +3,16 @@
 #define BASIC_CONTAINEREXT_H__
 
 #include "../inc/basic.h"
+#include "../../3rd/concurrentqueue/concurrentqueue.h"
 
 __NS_BASIC_START
 
 
 #define DEFAULT_QUEUE_SIZE			64
 #define DEFAULT_QUEUE_OVERLOAD		1024
-
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
 template<class StructData>
 class CMessageQueue : public basiclib::CBasicObject
 {
@@ -157,15 +160,15 @@ public:
 
 	}
 	virtual void MQPush(StructData* message){
-		basiclib::CSpinLockFunc lock(&m_lock, TRUE);
+		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
 		CMessageQueue<StructData>::MQPush(message);
 	}
 	virtual int MQPop(StructData* message){
-		basiclib::CSpinLockFunc lock(&m_lock, TRUE);
+		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
 		return CMessageQueue<StructData>::MQPop(message);
 	}
 	virtual int GetMQLength(){
-		basiclib::CSpinLockFunc lock(&m_lock, TRUE);
+		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
 		return CMessageQueue<StructData>::GetMQLength();
 	}
 
@@ -173,6 +176,80 @@ protected:
 	basiclib::SpinLock		m_lock;
 };
 
+template<size_t defaultBLOCKSize = 32>
+class CBasicConcurrentQueueTraits : public moodycamel::ConcurrentQueueDefaultTraits
+{
+public:
+	static const size_t BLOCK_SIZE = defaultBLOCKSize;
+	static const size_t EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD = defaultBLOCKSize;
+
+	static inline void* malloc(size_t size) { return basiclib::BasicAllocate(size); }
+	static inline void free(void* ptr) { return basiclib::BasicDeallocate(ptr); }
+};
+
+//nBlockSize必须为2的指数幂
+template<class T, size_t nBlockSize = 64>
+class CLockFreeMessageQueue : public moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>
+{
+public:
+	struct AllocateIndexData
+	{
+		std::atomic<size_t> initialBlockPoolIndex;
+		Block* initialBlockPool;
+		size_t initialBlockPoolSize;
+		AllocateIndexData(int blockCount) : initialBlockPoolIndex(0){
+			initialBlockPoolSize = blockCount;
+			initialBlockPool = create_array<Block>(blockCount);
+			for (size_t i = 0; i < initialBlockPoolSize; ++i) {
+				initialBlockPool[i].dynamicallyAllocated = false;
+			}
+		}
+		~AllocateIndexData(){
+			destroy_array(initialBlockPool, initialBlockPoolSize);
+		}
+		Block* GetBlock(){
+			if (initialBlockPoolIndex.load(std::memory_order_relaxed) >= initialBlockPoolSize) {
+				return nullptr;
+			}
+
+			auto index = initialBlockPoolIndex.fetch_add(1, std::memory_order_relaxed);
+
+			return index < initialBlockPoolSize ? (initialBlockPool + index) : nullptr;
+		}
+	};
+	CLockFreeMessageQueue(size_t capacity = nBlockSize) : moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>(capacity),
+		m_lock(0)
+	{
+		m_nAllocateIndex = 0;
+		m_vtAllocateIndexData.push_back(new AllocateIndexData(initialBlockPoolSize));
+	}
+	virtual ~CLockFreeMessageQueue(){
+		for (auto& allocateData : m_vtAllocateIndexData){
+			delete allocateData;
+		}
+	}
+	virtual Block* ChildCreateBlock(){
+		int nAllocateIndex = m_nAllocateIndex;
+		AllocateIndexData* pData = m_vtAllocateIndexData[nAllocateIndex];
+		Block* pRet = pData->GetBlock();
+		if (pRet)
+			return pRet;
+		while (m_lock.exchange(1)){};
+		if (nAllocateIndex != m_nAllocateIndex){
+			m_lock.exchange(0);
+			return ChildCreateBlock();
+		}
+		m_vtAllocateIndexData.push_back(new AllocateIndexData(pData->initialBlockPoolSize * 2));
+		m_nAllocateIndex++;
+		m_lock.exchange(0);
+		TRACE("expand_queue:%d\n", pData->initialBlockPoolSize * 2 * sizeof(T));
+		return ChildCreateBlock();
+	}
+protected:
+	int															m_nAllocateIndex;
+	typename basiclib::basic_vector<AllocateIndexData*>			m_vtAllocateIndexData;
+	std::atomic<char>											m_lock;
+};
 ///////////////////////////////////////////////////////////////////////////////////////
 //内存检测不能用，因为不能重复调用allocate
 //stack，dbghelp决定必须单线程
@@ -180,7 +257,7 @@ template<class KeyType>
 class CCheckNoPairKey : public basiclib::CBasicObject
 {
 public:
-	typedef typename basiclib::basic_map<KeyType, stacktrace::call_stack>::type MapPair;
+	typedef typename basiclib::basic_map<KeyType, stacktrace::call_stack>	 MapPair;
 	CCheckNoPairKey(){
 
 	}
@@ -207,7 +284,7 @@ protected:
 	MapPair		m_map;
 	SpinLock	m_spinlock;
 };
-
+#pragma warning (pop)
 __NS_BASIC_END
 
 #endif // BASIC_CONTAINER_H__

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include "../inc/basic_def.h"
 
 namespace stacktrace {
 
@@ -27,7 +28,10 @@ struct entry {
 };
 
 /** Stack-trace base class, for retrieving the current call-stack. */
-class call_stack {
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
+class _BASIC_DLL_API call_stack {
 public:
 	call_stack(){
 	}
@@ -50,5 +54,5 @@ public:
     /** Call stack. */
     std::vector<entry> stack;
 };
-
+#pragma warning (pop)
 } // namespace stacktrace

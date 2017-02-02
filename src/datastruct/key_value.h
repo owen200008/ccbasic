@@ -17,7 +17,7 @@ __NS_BASIC_START
 #pragma warning (push)
 #pragma warning (disable: 4251)
 
-class CBasicKey2Value : public basiclib::CBasicObject
+class _BASIC_DLL_API CBasicKey2Value : public basiclib::CBasicObject
 {
 public:
 	CBasicKey2Value(int nHashSize = 7);

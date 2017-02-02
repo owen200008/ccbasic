@@ -76,7 +76,7 @@ long ParseIniChar(const char* pszData, long cbData, F f, long cbBeginPos = 0)
 					break;
 			}
 
-			if (d == _T('\n'))
+			if (d == '\n')
 			{
 				++nLines;
 				nLineBegin = i + 1;	//新行开始位置
@@ -207,7 +207,7 @@ public:
     //!get size
     int GetIniSize();
 public:
-	typedef		 basic_map<CBasicString, LONGLONG>::type   Dict;		//单独可以的对应关系	
+	typedef		 basic_map<CBasicString, LONGLONG>   Dict;		//单独可以的对应关系	
 	Dict				m_dic;					///通过key查找数据的数据结构		
 	CBasicString		m_file;				///默认的ini文件名，保留最后读取的文件名
 

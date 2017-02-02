@@ -10,3 +10,9 @@
 [submodule "3rd/lua"]
 	path = 3rd/lua
 	url = https://github.com/ejoy/lua.git
+[submodule "3rd/cryptopp"]
+	path = 3rd/cryptopp
+	url = https://github.com/weidai11/cryptopp.git
+[submodule "3rd/concurrentqueue"]
+	path = 3rd/concurrentqueue
+	url = https://github.com/cameron314/concurrentqueue.git
