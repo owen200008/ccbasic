@@ -3,7 +3,7 @@
 #define BASIC_CONTAINEREXT_H__
 
 #include "../inc/basic.h"
-#include "../../3rd/concurrentqueue/concurrentqueue.h"
+#include "concurrentqueue/concurrentqueue.h"
 
 __NS_BASIC_START
 
