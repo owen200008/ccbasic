@@ -1,13 +1,11 @@
 #include "../inc/basic.h"
-
-__NS_BASIC_START
-
 #ifdef __BASICWINDOWS
 #pragma comment(lib, "ws2_32.lib")
 #elif defined(__LINUX)
 #include <signal.h>
 #endif
 
+__NS_BASIC_START
 basiclib::CBasicString DefaultParamFuc(const char* pParam)
 {
 	return "";

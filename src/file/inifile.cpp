@@ -441,44 +441,5 @@ int CBasicIniOp::InitData(const char* lpszData, size_t cbData)
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef __BASICWINDOWS
-static CMutex   g_IniMutex;	
-static CMutex*  GetIniMutex()
-{	
-	return &g_IniMutex;
-}
-BOOL WritePrivateProfileString(LPCTSTR lpszAppName, LPCTSTR lpszKeyName, LPCTSTR lpszString, LPCTSTR lpszFilename)
-{
-	CSingleLock lock(GetIniMutex());
-	if(!lock.Lock(3000))
-		return FALSE;
-
-	CWBasicIniOp ini(lpszFilename);
-	ini.SetData(lpszAppName, lpszKeyName, lpszString);
-	return ini.WriteToFile(lpszFilename);
-}
-
-DWORD GetPrivateProfileString(LPCTSTR lpAppName, LPCTSTR lpKeyName,LPCTSTR lpDefault,LPTSTR lpReturnedString, DWORD nSize, LPCTSTR lpFileName)
-{
-	CSingleLock lock(GetIniMutex());
-	if(!lock.Lock(3000))
-		return FALSE;
-
-	CWBasicIniOp ini(lpFileName);
-	return _snprintf(lpReturnedString, nSize, "%s", ini.GetData(lpAppName, lpKeyName, lpDefault).c_str());
-}
-
-int   GetPrivateProfileInt( LPCSTR lpAppName, LPCSTR lpKeyName, INT nDefault, LPCSTR lpFileName)
-{
-	CSingleLock lock(GetIniMutex());
-	if(!lock.Lock(3000))
-		return FALSE;
-
-	char szBuf[128];
-	_snprintf(szBuf, sizeof(szBuf), "%d", nDefault);
-	CWBasicIniOp ini(lpFileName);
-	return ini.GetLong(lpAppName, lpKeyName, szBuf);
-}
-#endif
 
 __NS_BASIC_END

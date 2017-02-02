@@ -450,12 +450,5 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma warning (pop)
 
-
-#ifndef __BASICWINDOWS
-BOOL  WritePrivateProfileString(LPCTSTR lpszAppName, LPCTSTR lpszKeyName, LPCTSTR lpszString, LPCTSTR lpszFilename);
-DWORD GetPrivateProfileString(LPCTSTR lpAppName, LPCTSTR lpKeyName,LPCTSTR lpDefault,LPTSTR lpReturnedString, DWORD nSize, LPCTSTR lpFileName);
-int   GetPrivateProfileInt( LPCSTR lpAppName, LPCSTR lpKeyName, INT nDefault, LPCSTR lpFileName);
-#endif
-
 __NS_BASIC_END
 #endif
