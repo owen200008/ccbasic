@@ -490,7 +490,7 @@ LPCRITICAL_SECTION lpCriticalSection
 	if (lpCriticalSection->OwningThread != 0)
 	{
 		BasicTrace("DeleteCritcalSection (%d) \n", lpCriticalSection->OwningThread);
-		basiclib::LeaveCriticalSection(lpCriticalSection);
+		LeaveCriticalSection(lpCriticalSection);
 	}
 	pthread_mutex_t* pmutex = (pthread_mutex_t*)lpCriticalSection->LockSemaphore;
 	pthread_mutex_destroy(pmutex);
