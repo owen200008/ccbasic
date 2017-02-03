@@ -2,7 +2,7 @@
 #define _MT_LINUX_H
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-__NS_BASIC_START
+//__NS_BASIC_START
 
 #ifndef LPSECURITY_ATTRIBUTES
 #define LPSECURITY_ATTRIBUTES void*
@@ -56,12 +56,12 @@ BOOL PulseEvent(HANDLE hEvent);
 
 BOOL CloseHandle(HANDLE hObject);
 
-VOID InitializeCriticalSection(LPCRITICAL_SECTION lpCriticalSection );
-VOID EnterCriticalSection(LPCRITICAL_SECTION lpCriticalSection);
-BOOL TryEnterCriticalSection(LPCRITICAL_SECTION lpCriticalSection);
-VOID LeaveCriticalSection(LPCRITICAL_SECTION lpCriticalSection);
-VOID DeleteCriticalSection(LPCRITICAL_SECTION lpCriticalSection);
+VOID InitializeCriticalSection(basiclib::LPCRITICAL_SECTION lpCriticalSection );
+VOID EnterCriticalSection(basiclib::LPCRITICAL_SECTION lpCriticalSection);
+BOOL TryEnterCriticalSection(basiclib::LPCRITICAL_SECTION lpCriticalSection);
+VOID LeaveCriticalSection(basiclib::LPCRITICAL_SECTION lpCriticalSection);
+VOID DeleteCriticalSection(basiclib::LPCRITICAL_SECTION lpCriticalSection);
 
-__NS_BASIC_END
+//__NS_BASIC_END
 
 #endif

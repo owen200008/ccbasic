@@ -2,6 +2,7 @@
 ccbasic是一个C++的基础库，目的是跨手机（ios，android），pc（linux，windows，mac）的通用基础库
 
 ## 编译 
+```
 For Windows：
 basic.sln vs2013以上的版本
 
@@ -16,8 +17,9 @@ Android.mk
 
 For IOS
 lib/mac
-
+```
 ## 功能
+```
 1.内存池的管理
 2.基础字符串
 3.通用数据结构
@@ -33,11 +35,14 @@ lib/mac
 13.支持协程
 14.通用日志和错误模块
 15.文件处理，压缩
-
+```
 ## 附加功能
+```
 1.通用网络框架实现（C,S）
 2.通用http框架实现
 3.支持RSA加解密
 4.支持JSON
 5.支持lua, lpeg解析, sproto协议（修改过）
+```
+
 

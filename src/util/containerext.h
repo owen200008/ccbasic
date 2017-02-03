@@ -207,7 +207,7 @@ public:
 			}
 		}
 		~AllocateIndexData(){
-			destroy_array(initialBlockPool, initialBlockPoolSize);
+			moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>::destroy_array(initialBlockPool, initialBlockPoolSize);
 		}
 		LockFreeMsgBlock* GetBlock(){
 			if (initialBlockPoolIndex.load(std::memory_order_relaxed) >= initialBlockPoolSize) {
