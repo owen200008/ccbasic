@@ -142,7 +142,7 @@ struct zip_base_file_info
 };
 
 //typedef list<zip_base_file_info*>	file_container;
-typedef basic_map<char_string, zip_base_file_info*>		file_container;
+typedef basic_order_map<char_string, zip_base_file_info*>		file_container;
 
 // 从zip文件中读出的文件信息
 struct zip_file_info : public zip_base_file_info
@@ -384,7 +384,7 @@ struct basicbase_file_info
 	};
 };
 
-typedef basiclib::basic_map<basiclib::CBasicString, basicbase_file_info*>		basicfile_container;
+typedef basiclib::basic_order_map<basiclib::CBasicString, basicbase_file_info*>		basicfile_container;
 
 // 从zip文件中读出的文件信息
 struct basicfile_info : public basicbase_file_info

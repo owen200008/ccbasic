@@ -192,14 +192,16 @@ template<class T, size_t nBlockSize = 64>
 class CLockFreeMessageQueue : public moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>
 {
 public:
+	typedef typename moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>::Block LockFreeMsgBlock;
+
 	struct AllocateIndexData
 	{
 		std::atomic<size_t> initialBlockPoolIndex;
-		Block* initialBlockPool;
+		LockFreeMsgBlock* initialBlockPool;
 		size_t initialBlockPoolSize;
 		AllocateIndexData(int blockCount) : initialBlockPoolIndex(0){
 			initialBlockPoolSize = blockCount;
-			initialBlockPool = create_array<Block>(blockCount);
+			initialBlockPool = moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>::create_array(blockCount);
 			for (size_t i = 0; i < initialBlockPoolSize; ++i) {
 				initialBlockPool[i].dynamicallyAllocated = false;
 			}
@@ -207,7 +209,7 @@ public:
 		~AllocateIndexData(){
 			destroy_array(initialBlockPool, initialBlockPoolSize);
 		}
-		Block* GetBlock(){
+		LockFreeMsgBlock* GetBlock(){
 			if (initialBlockPoolIndex.load(std::memory_order_relaxed) >= initialBlockPoolSize) {
 				return nullptr;
 			}
@@ -221,17 +223,17 @@ public:
 		m_lock(0)
 	{
 		m_nAllocateIndex = 0;
-		m_vtAllocateIndexData.push_back(new AllocateIndexData(initialBlockPoolSize));
+		m_vtAllocateIndexData.push_back(new AllocateIndexData(capacity));
 	}
 	virtual ~CLockFreeMessageQueue(){
 		for (auto& allocateData : m_vtAllocateIndexData){
 			delete allocateData;
 		}
 	}
-	virtual Block* ChildCreateBlock(){
+	virtual LockFreeMsgBlock* ChildCreateBlock(){
 		int nAllocateIndex = m_nAllocateIndex;
 		AllocateIndexData* pData = m_vtAllocateIndexData[nAllocateIndex];
-		Block* pRet = pData->GetBlock();
+		LockFreeMsgBlock* pRet = pData->GetBlock();
 		if (pRet)
 			return pRet;
 		while (m_lock.exchange(1)){};

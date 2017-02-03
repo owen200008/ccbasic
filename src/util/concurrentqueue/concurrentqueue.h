@@ -1467,7 +1467,7 @@ protected:
 	///////////////////////////
 	
 	enum InnerQueueContext { implicit_context = 0, explicit_context = 1 };
-	protected:
+	public:
 	struct Block
 	{
 		Block()
@@ -2949,7 +2949,7 @@ private:
 			return;
 		}
 		
-		initialBlockPool = create_array<Block>(blockCount);
+		initialBlockPool = create_array(blockCount);
 		if (initialBlockPool == nullptr) {
 			initialBlockPoolSize = 0;
 		}
@@ -3488,29 +3488,27 @@ private:
 	//////////////////////////////////
 	// Utility functions
 	//////////////////////////////////
-	
-	template<typename U>
-	static inline U* create_array(size_t count)
+	public:
+	static inline Block* create_array(size_t count)
 	{
 		assert(count > 0);
-		auto p = static_cast<U*>((Traits::malloc)(sizeof(U) * count));
+		auto p = static_cast<Block*>((Traits::malloc)(sizeof(Block) * count));
 		if (p == nullptr) {
 			return nullptr;
 		}
 		
 		for (size_t i = 0; i != count; ++i) {
-			new (p + i) U();
+			new (p + i) Block();
 		}
 		return p;
 	}
 	
-	template<typename U>
-	static inline void destroy_array(U* p, size_t count)
+	static inline void destroy_array(Block* p, size_t count)
 	{
 		if (p != nullptr) {
 			assert(count > 0);
 			for (size_t i = count; i != 0; ) {
-				(p + --i)->~U();
+				(p + --i)->~Block();
 			}
 			(Traits::free)(p);
 		}

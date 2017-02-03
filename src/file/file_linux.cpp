@@ -10,8 +10,10 @@
 #include <dirent.h>
 #include <utime.h>
 #include <sys/stat.h>
+
+using namespace basiclib;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__NS_BASIC_START
+//__NS_BASIC_START
 BOOL CloseHandle(HANDLE hObject)
 {
 	return CloseFile(hObject);
@@ -436,7 +438,7 @@ DWORD GetFullPathName(LPCTSTR lpFileName,DWORD nBufferLength,LPTSTR lpBuffer,LPT
 
 	if(lpFilePart != NULL)
 	{
-		*lpFilePart = Basic_FindFileName(lpBuffer);
+		*lpFilePart = basiclib::Basic_FindFileName(lpBuffer);
 	}
 	return (DWORD)lAbsLen;
 }
@@ -783,5 +785,5 @@ BOOL PathMatchSpec(LPCTSTR pszFileParam, LPCTSTR pszSpec)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__NS_BASIC_END
+//__NS_BASIC_END
 #endif //#ifdef __LINUX __MAC

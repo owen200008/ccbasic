@@ -87,6 +87,8 @@
     <ClInclude Include="..\..\src\types\linux.h" />
     <ClInclude Include="..\..\src\types\types.h" />
     <ClInclude Include="..\..\src\util\auto_cast.h" />
+    <ClInclude Include="..\..\src\util\concurrentqueue\blockingconcurrentqueue.h" />
+    <ClInclude Include="..\..\src\util\concurrentqueue\concurrentqueue.h" />
     <ClInclude Include="..\..\src\util\container.h" />
     <ClInclude Include="..\..\src\util\containerext.h" />
     <ClInclude Include="..\..\src\util\functor.h" />

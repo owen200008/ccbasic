@@ -1,10 +1,6 @@
 #include "../inc/basic.h"
 #include "filebase.h"
-
-
-#if  (defined(__LINUX) || defined(__MAC) || defined(__ANDROID))
-#include "../../def/file/file_linux.h"
-#endif
+#include "file_linux.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define SF_RW_MAX_SIZE		(10 * 1024 * 1024)		//一次写入(读出)的最大长度，超出这个长度要分批处理。

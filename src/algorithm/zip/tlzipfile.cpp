@@ -1132,7 +1132,7 @@ bool CBasicZipFile::DeletePackFile(const char* filepath)
 zip_base_file_info* CBasicZipFile::deleteFileInfo(const char* file, file_container* dir)
 {
 	zip_base_file_info* info = NULL;
-	file_container::iterator iter = dir->lower_bound(file);
+	file_container::iterator iter = dir->find(file);
 	if (iter != dir->end())
 	{
 		info = iter->second;

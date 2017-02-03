@@ -89,6 +89,28 @@ namespace __private
 
 typedef	tstring_s									char_string;
 typedef tstring										wchar_string;
+__NS_BASIC_END
+namespace std{
+	template<>
+	struct hash<basiclib::char_string> : public std::unary_function<basiclib::char_string, std::size_t>{
+		std::size_t operator()(const basiclib::char_string &key) const{
+			#ifdef __BASICWINDOWS
+				return _Hash_seq((const unsigned char*)key.c_str(), key.length());
+			#else
+				hash<const char*> hash_fn;
+				return hash_fn(key.c_str());
+			#endif			
+		}
+	};
+	template <>
+	struct equal_to<basiclib::char_string> : public binary_function<basiclib::char_string, basiclib::char_string, bool>{
+		bool operator()(const basiclib::char_string& __x, const basiclib::char_string& __y) const{
+			return __x == __y;
+		}
+	};
+}
+
+__NS_BASIC_START
 
 // 由字符类型取得对应的usigned的类型
 template<typename CharType>
@@ -1141,7 +1163,7 @@ BOOL Basic_StringMatchSpec(const CharType* pszFile, const CharType* pszSpec)
 		}
 		p = e;
 	}while(p != NULL);
-	BasicDeallocate(sp, nAlloc);
+	BasicDeallocate(sp);
 	return bMatch;
 }
 #endif

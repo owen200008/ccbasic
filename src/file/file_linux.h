@@ -8,7 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #pragma	pack(1)
-__NS_BASIC_START
+//__NS_BASIC_START
 #if (defined(__LINUX) || defined(__MAC) || defined(__ANDROID))
 /////////////////////////////////////////////////////////////////////////////////////////////
 //ÉùÃ÷
@@ -78,6 +78,13 @@ typedef DWORD   *LPSECURITY_ATTRIBUTES;
 
 typedef DWORD   *LPOVERLAPPED;
 
+#ifndef LPWIN32_FIND_DATAA
+#define LPWIN32_FIND_DATAA LPWIN32_FIND_DATA
+#endif
+
+#ifndef WIN32_FIND_DATAA
+#define WIN32_FIND_DATAA WIN32_FIND_DATA
+#endif
 ////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL	CloseHandle(HANDLE hObject);
 BOOL	CloseFile(HANDLE hObject);
@@ -121,6 +128,13 @@ HANDLE	FindFirstFile(LPCTSTR lpFileName,LPWIN32_FIND_DATA lpFindFileData);
 BOOL	FindNextFile(HANDLE hFindFile,LPWIN32_FIND_DATA lpFindFileData);
 BOOL	FindClose(HANDLE hFindFile);
 
+#ifndef FindFirstFileA
+#define FindFirstFileA FindFirstFile
+#endif
+
+#ifndef FindNextFileA
+#define FindNextFileA FindNextFile
+#endif
 
 BOOL	PathMatchSpec(LPCTSTR pszFileParam,LPCTSTR pszSpec);
 #define PathMatchSpecA PathMatchSpec
@@ -128,7 +142,7 @@ BOOL	PathMatchSpec(LPCTSTR pszFileParam,LPCTSTR pszSpec);
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 #endif  //__LINUX __MAC
-__NS_BASIC_END
+//__NS_BASIC_END
 ////////////////////////////////////////////////////////////////////////////////////////////
 #pragma pack()
 #endif		//INC_FILELINUX_H

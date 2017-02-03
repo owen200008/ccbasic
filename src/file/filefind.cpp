@@ -1,28 +1,11 @@
 #include "../inc/basic.h"
+#include "file_linux.h"
 
 #ifdef __BASICWINDOWS
 #include <shlwapi.h>
 #include <time.h>
 #else
 #include <dirent.h>
-
-#include "file_linux.h"
-#ifndef LPWIN32_FIND_DATAA
-#define LPWIN32_FIND_DATAA LPWIN32_FIND_DATA
-#endif
-
-#ifndef WIN32_FIND_DATAA
-#define WIN32_FIND_DATAA WIN32_FIND_DATA
-#endif
-
-#ifndef FindFirstFileA
-#define FindFirstFileA FindFirstFile
-#endif
-
-
-#ifndef FindNextFileA
-#define FindNextFileA FindNextFile
-#endif
 #endif //#ifdef _WIN32
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

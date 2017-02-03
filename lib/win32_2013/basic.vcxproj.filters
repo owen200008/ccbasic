@@ -73,6 +73,9 @@
     <Filter Include="file\file">
       <UniqueIdentifier>{ee3d5afb-05e6-4723-a73c-1a5782cfbf20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="util\concurrentqueue">
+      <UniqueIdentifier>{9792b300-061e-459e-8d70-254d6fc7399b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\inc\basic_def.h">
@@ -329,6 +332,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\algorithm\zip\tlzipfile.h">
       <Filter>algorithm\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\concurrentqueue\blockingconcurrentqueue.h">
+      <Filter>util\concurrentqueue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\util\concurrentqueue\concurrentqueue.h">
+      <Filter>util\concurrentqueue</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
