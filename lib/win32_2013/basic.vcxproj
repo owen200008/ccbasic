@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\algorithm\sha1\sha1.h" />
     <ClInclude Include="..\..\src\algorithm\xtra.h" />
     <ClInclude Include="..\..\src\algorithm\zip\tlgzip.h" />
     <ClInclude Include="..\..\src\algorithm\zip\tlzipfile.h" />
@@ -32,6 +33,8 @@
     <ClInclude Include="..\..\src\datastruct\key_value.h" />
     <ClInclude Include="..\..\src\datastruct\list.h" />
     <ClInclude Include="..\..\src\datastruct\map.h" />
+    <ClInclude Include="..\..\src\datastruct\pbzk.h" />
+    <ClInclude Include="..\..\src\datastruct\stringex.h" />
     <ClInclude Include="..\..\src\debug\debug.h" />
     <ClInclude Include="..\..\src\dll\loaddll.h" />
     <ClInclude Include="..\..\src\exception\call_stack.hpp" />
@@ -69,6 +72,7 @@
     <ClInclude Include="..\..\src\sqlite\sqlite3ext.h" />
     <ClInclude Include="..\..\src\sys\syserror.h" />
     <ClInclude Include="..\..\src\sys\sysinfo.h" />
+    <ClInclude Include="..\..\src\thread\basicpoll.h" />
     <ClInclude Include="..\..\src\thread\mt.h" />
     <ClInclude Include="..\..\src\thread\mt_linux.h" />
     <ClInclude Include="..\..\src\thread\thread.h" />
@@ -108,6 +112,7 @@
     <ClInclude Include="..\..\src\util\strutil\strutil.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\algorithm\sha1\sha1.cpp" />
     <ClCompile Include="..\..\src\algorithm\xtra.cpp" />
     <ClCompile Include="..\..\src\algorithm\zip\tlgzip.cpp" />
     <ClCompile Include="..\..\src\algorithm\zip\tlzipfile.cpp" />
@@ -115,6 +120,8 @@
     <ClCompile Include="..\..\src\coroutine\libco_coroutine.cpp" />
     <ClCompile Include="..\..\src\datastruct\basic_string.cpp" />
     <ClCompile Include="..\..\src\datastruct\key_value.cpp" />
+    <ClCompile Include="..\..\src\datastruct\pbzk.cpp" />
+    <ClCompile Include="..\..\src\datastruct\stringex.cpp" />
     <ClCompile Include="..\..\src\debug\debug.cpp" />
     <ClCompile Include="..\..\src\debug\debug_android.cpp" />
     <ClCompile Include="..\..\src\debug\debug_linux.cpp" />
@@ -152,6 +159,7 @@
     <ClCompile Include="..\..\src\sys\sysinfo_linux.cpp" />
     <ClCompile Include="..\..\src\sys\sysinfo_mac.cpp" />
     <ClCompile Include="..\..\src\sys\sysinfo_win.cpp" />
+    <ClCompile Include="..\..\src\thread\basicpoll.cpp" />
     <ClCompile Include="..\..\src\thread\mt.cpp" />
     <ClCompile Include="..\..\src\thread\mt_linux.cpp" />
     <ClCompile Include="..\..\src\thread\thread_linux.cpp" />
@@ -285,7 +293,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../3rd/libevent/include;../../3rd/libevent/WIN32-Code/nmake;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../3rd/libevent/include;../../3rd/libevent/WIN32-Code/nmake;../../3rd/libuv/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__BASICWINDOWS;_DEBUG;_LIB;XML_STATIC;SQLITE_HAS_CODEC=1;SQLITE_SECURE_DELETE;SQLITE_SOUNDEX;SQLITE_ENABLE_COLUMN_METADATA;CODEC_TYPE=CODEC_TYPE_AES256;_USE_SYS_MALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -304,7 +312,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dll|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../3rd/libevent/include;../../3rd/libevent/WIN32-Code/nmake;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../3rd/libevent/include;../../3rd/libevent/WIN32-Code/nmake;../../3rd/libuv/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__BASICWINDOWS;_DEBUG;_LIB;XML_STATIC;SQLITE_HAS_CODEC=1;SQLITE_SECURE_DELETE;SQLITE_SOUNDEX;SQLITE_ENABLE_COLUMN_METADATA;CODEC_TYPE=CODEC_TYPE_AES256;_USE_SYS_MALLOC;BASIC_DLL_EXPORTS;BASIC_DLL_EXPORTS_C;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

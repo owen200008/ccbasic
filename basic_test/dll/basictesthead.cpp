@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "basictesthead.h"
 
 class CTestHeadMgr : public basiclib::CBasicObject

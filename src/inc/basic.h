@@ -50,6 +50,8 @@
 //
 //同步对象定义
 #include "../thread/mt.h"
+//事件驱动
+#include "../thread/basicpoll.h"
 //
 //单态实现
 #include "../misc/singleton.h"
@@ -83,7 +85,7 @@
 #include "../datastruct/key_value.h"
 //#include "../datastruct/tlcoll.h"
 //屏蔽字库实现
-//#include "../datastruct/pbzk.h"
+#include "../datastruct/pbzk.h"
 
 // 容器
 #include "../util/container.h"
@@ -113,7 +115,7 @@
 //#include "../algorithm/algorithm.h"
 //#include "../algorithm/md5.h"
 //#include "../algorithm/aes/aes.h"
-//#include "../algorithm/sha1/sha1.h"
+#include "../algorithm/sha1/sha1.h"
 //Time
 #include "../time/tltime.h"
 #include "../time/ontimer.h"
@@ -132,9 +134,12 @@
 
 #include "../coroutine/coroutineplus.h"
 #include "../mem/bitstream.h"
+
 //通讯定义
+#ifndef BASIC_NO_ADD_NET
 #include "../net/sendbuffer.h"
 #include "../net/net.h"
+#endif
 //
 //CRC16
 //#include "../algorithm/crc16.h"

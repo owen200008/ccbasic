@@ -25,6 +25,7 @@ CCorutinePlus::CCorutinePlus()
 	m_stack = nullptr;
 	m_pRunPool = nullptr;
 	memset(m_pResumeParam, 0, sizeof(void*) * RESUME_MAXPARAM);
+	m_bSysHook = true;
 }
 
 CCorutinePlus::~CCorutinePlus()
@@ -67,10 +68,12 @@ void CCorutinePlus::YieldCorutine()
 	memcpy(m_stack, &dummy, m_nSize);
 
 	m_state = CoroutineState_Suspend;
+
+	m_pRunPool->m_usRunCorutineStack--;
 #ifdef USE_UCONTEXT
-	swapcontext(&m_ctx, &m_pRunPool->m_ctxMain);
+	swapcontext(&m_ctx, &m_pRunPool->m_pStackRunCorutine[m_pRunPool->m_usRunCorutineStack - 1]->m_ctx);
 #else
-	coctx_swapcontext(&m_ctx, &m_pRunPool->m_ctxMain);
+	coctx_swapcontext(&m_ctx, &m_pRunPool->m_pStackRunCorutine[m_pRunPool->m_usRunCorutineStack - 1]->m_ctx);
 #endif
 }
 
@@ -82,9 +85,11 @@ void CCorutinePlus::StartFunc()
 void CCorutinePlus::StartFuncLibco()
 {
 	StartFunc();
+
+	m_pRunPool->m_usRunCorutineStack--;
 	//exit no need to save stack
 #ifndef USE_UCONTEXT
-	coctx_swapcontext(&m_ctx, &m_pRunPool->m_ctxMain);
+	coctx_swapcontext(&m_ctx, &m_pRunPool->m_pStackRunCorutine[m_pRunPool->m_usRunCorutineStack - 1]->m_ctx);
 	printf("error, much resume...\n");
 #endif
 }
@@ -96,21 +101,24 @@ void CCorutinePlus::Resume(CCorutinePlusPool* pPool)
 	{
 	case CoroutineState_Ready:
 		{
+			CCorutinePlus* pRunCorutine = pPool->GetCurrentCorutinePlus();
 #ifdef USE_UCONTEXT
 			getcontext(&m_ctx);
 			m_ctx.uc_stack.ss_sp = pPool->m_stack;
 			m_ctx.uc_stack.ss_size = STACK_SIZE;
-			m_ctx.uc_link = &pPool->m_ctxMain;
+			m_ctx.uc_link = &pRunCorutine->m_ctx;
 			m_state = CoroutineState_Running;
 			uintptr_t ptr = (uintptr_t)this;
 			makecontext(&m_ctx, (void (*)(void))MakeContextFunc, 2, (uint32_t)ptr, (uint32_t)(ptr>>32));
-			swapcontext(&pPool->m_ctxMain, &m_ctx);
+			swapcontext(&pRunCorutine->m_ctx, &m_ctx);
 #else
 			m_ctx.ss_sp = pPool->m_stack;
 			m_ctx.ss_size = STACK_SIZE;
 			m_state = CoroutineState_Running;
 			coctx_make(&m_ctx, (coctx_pfn_t)MakeContextFuncLibco, this);
-			coctx_swapcontext(&pPool->m_ctxMain, &m_ctx);
+
+			m_pRunPool->m_pStackRunCorutine[m_pRunPool->m_usRunCorutineStack++] = this;
+			coctx_swapcontext(&pRunCorutine->m_ctx, &m_ctx);
 #endif
 			if(m_state == CoroutineState_Dead)
 			{
@@ -120,21 +128,24 @@ void CCorutinePlus::Resume(CCorutinePlusPool* pPool)
 		break;
 	case CoroutineState_Suspend:
 		{
+			CCorutinePlus* pRunCorutine = pPool->GetCurrentCorutinePlus();
 #ifdef USE_UCONTEXT
 			m_ctx.uc_stack.ss_sp = pPool->m_stack;
 			m_ctx.uc_stack.ss_size = STACK_SIZE;
-			m_ctx.uc_link = &pPool->m_ctxMain;
+			m_ctx.uc_link = &pRunCorutine->m_ctx;
 			
 			memcpy(pPool->m_stack + STACK_SIZE - m_nSize, m_stack, m_nSize);
 			m_state = CoroutineState_Running;
-			swapcontext(&pPool->m_ctxMain, &m_ctx);
+			swapcontext(&pRunCorutine->m_ctx, &m_ctx);
 #else
 			m_ctx.ss_sp = pPool->m_stack;
 			m_ctx.ss_size = STACK_SIZE;
 
 			memcpy(pPool->m_stack + STACK_SIZE - m_nSize, m_stack,m_nSize);
 			m_state = CoroutineState_Running;
-			coctx_swapcontext(&pPool->m_ctxMain, &m_ctx);
+
+			m_pRunPool->m_pStackRunCorutine[m_pRunPool->m_usRunCorutineStack++] = this;
+			coctx_swapcontext(&pRunCorutine->m_ctx, &m_ctx);
 #endif
 			if(m_state == CoroutineState_Dead)
 			{
@@ -157,10 +168,12 @@ void CCorutinePlus::Resume(CCorutinePlusPool* pPool)
 ///////////////////////////////////////////////////////////////////////////
 CCorutinePlusPool::CCorutinePlusPool()
 {
-#ifndef USE_UCONTEXT
-	coctx_init(&m_ctxMain);
-#endif
 	m_usCreateTimes = 0;
+	m_usRunCorutineStack = 0;
+	for (int i = 0; i < CorutinePlus_Max_Stack; i++){
+		m_pStackRunCorutine[i] = nullptr;
+	}
+	m_pStackRunCorutine[m_usRunCorutineStack++] = &m_selfPlus;
 }
 
 CCorutinePlusPool::~CCorutinePlusPool()
@@ -213,3 +226,21 @@ CCorutinePlus* CCorutinePlusPool::CreateCorutine(bool bPush)
 		m_vtCorutinePlus.push_back(pRet);
 	return pRet;
 }
+////////////////////////////////////////////////////////////////////////////////////////////
+CCorutinePlusThreadData::CCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS, void* pParam)
+{
+	pTLS->SetValue(this);
+	m_pParam = pParam;
+}
+
+CCorutinePlusThreadData::~CCorutinePlusThreadData()
+{
+
+}
+
+CCorutinePlusThreadData* GetCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS)
+{
+	return (CCorutinePlusThreadData*)pTLS->GetValue();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////

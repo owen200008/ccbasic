@@ -355,7 +355,7 @@ protected:
 struct basicbase_file_info
 {
 	basiclib::CBasicString	file_name;			//zip文件中的文件名
-	Net_UShort				zip_type;			//压缩方式
+	uint16_t				zip_type;			//压缩方式
 
 	basicbase_file_info()
 	{
@@ -369,7 +369,7 @@ struct basicbase_file_info
 	}
 	struct is_equal_filename
 	{
-		is_equal_filename(const char* filename, Net_UShort len) : __filename(filename), __len(len){}
+		is_equal_filename(const char* filename, uint16_t len) : __filename(filename), __len(len){}
 		bool operator()(basicbase_file_info* info)
 		{
 			const char* nakename = strrchr(info->file_name.c_str(), '/');
@@ -380,7 +380,7 @@ struct basicbase_file_info
 			return strncmp(nakename, __filename, __len) == 0;
 		}
 		const char* __filename;
-		Net_UShort	__len;
+		uint16_t	__len;
 	};
 };
 
@@ -389,11 +389,11 @@ typedef basiclib::basic_order_map<basiclib::CBasicString, basicbase_file_info*>	
 // 从zip文件中读出的文件信息
 struct basicfile_info : public basicbase_file_info
 {
-	Net_UInt	size_zipped;		// 压缩后文件大小
-	Net_UInt	size_unzipped;		// 未压缩的文件大小
-	Net_UInt	offset_data_block;	// 数据块偏移
-	Net_UInt	offset_dir_block;	// 索引块偏移
-	Net_UInt	crc;				// crc校验和
+	uint32_t	size_zipped;		// 压缩后文件大小
+	uint32_t	size_unzipped;		// 未压缩的文件大小
+	uint32_t	offset_data_block;	// 数据块偏移
+	uint32_t	offset_dir_block;	// 索引块偏移
+	uint32_t	crc;				// crc校验和
 
 	basicfile_info()
 	{
@@ -405,11 +405,11 @@ struct basicfile_info : public basicbase_file_info
 struct _BASIC_DLL_API BasicPackFileStatus
 {
 	time_t					m_mtime;
-	Net_UInt				m_zipped;		/*!< 压缩后大小 */
-	Net_UInt				m_unzipped;		/*!< 压缩前大小 */
-	Net_UChar				m_attribute;     /*!< 文件的属性。是枚举 TLFileAttribute 的值 */
+	uint32_t				m_zipped;		/*!< 压缩后大小 */
+	uint32_t				m_unzipped;		/*!< 压缩前大小 */
+	uint8_t					m_attribute;     /*!< 文件的属性。是枚举 TLFileAttribute 的值 */
 	basiclib::CBasicString	m_filename;
-	Net_UInt				m_crc;		    /*!< crc校验和 */
+	uint32_t				m_crc;		    /*!< crc校验和 */
 
 	BasicPackFileStatus();
 	bool IsDirectory() const;
@@ -453,7 +453,7 @@ public:
 	//! \breif 解压到目录
 	bool	ExtractTo(const char* path);
 
-	Net_UShort	GetFileNumTotal() const;
+	uint16_t	GetFileNumTotal() const;
 
 	//合并文件
 	bool CombinFileAdd(CBasicCombinFile& combinFile);

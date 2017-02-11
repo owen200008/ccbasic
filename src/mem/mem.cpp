@@ -8,9 +8,9 @@ __NS_BASIC_START
 basiclib::CMutex g_lockCheck;
 std::map<void*, stacktrace::call_stack> g_mapCheck;
 #ifdef _DEBUG
-Net_UInt g_nCheckMemMode = MemRunMemCheck_RunSizeCheck | MemRunMemCheck_RunTongJi;
+uint32_t g_nCheckMemMode = MemRunMemCheck_RunSizeCheck | MemRunMemCheck_RunTongJi;
 #else
-Net_UInt g_nCheckMemMode = 0;
+uint32_t g_nCheckMemMode = 0;
 #endif
 int	m_nCheckMin = 0;
 int m_nCheckMax = 0;
@@ -275,7 +275,7 @@ pReallocateFunc g_pReallocateFunc = Fast_reallocate;
 pDeallocateFunc g_pDeallocateFunc = Fast_deallocate;
 #endif
 
-void BasicSetMemRunMemCheck(Net_UInt nMode, int nMin, int nMax)
+void BasicSetMemRunMemCheck(uint32_t nMode, int nMin, int nMax)
 {
 	if (nMode == 0)
 	{

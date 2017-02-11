@@ -30,6 +30,7 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
 /*
  *û��ʵ�ֵĺ���
  *DWORD BasicGetDiskInfo(char* pszDiskBuffer, int nBufferLen)��
@@ -243,7 +244,6 @@ struct proc_t
         unsigned long dt;
 };
 
-#define PAGE_SIZE 4096
 //
 //ȡ�ý��ʹ���ڴ� ��λK
 DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
@@ -314,8 +314,7 @@ DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
 #define PROPAGATE_ALL_ONES(x) \
 	((sizeof(x) < sizeof(uintmax_t) \
 	&& (~ (x) == (sizeof(x) < sizeof(int) \
-	? -(1L << (sizeof(x) * CHAR_BIT)) \
-	: 0))) \
+	? -(1L << (sizeof(x) * CHAR_BIT)) : 0))) \
 	? UINTMAX_MAX : (x))
 
 #define EXTRACT_TOP_BIT(x) ((x) & ((uintmax_t)1 << (sizeof(x) * CHAR_BIT - 1)))

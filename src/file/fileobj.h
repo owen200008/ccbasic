@@ -37,7 +37,7 @@ class CFileBase;
 /*!
 * 封装了对文件的一系列操作，包括对文件内容的读写，对文件的拷贝、删除，文件状态的操作
 */
-class CBasicFileObj : public basiclib::CBasicObject
+class _BASIC_DLL_API CBasicFileObj : public basiclib::CBasicObject
 {
 	//BASIC_DECLARE_DYNCREATE(CWBasicFileObj)
 public:

@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-typedef void(*pOnTimerCallback)(Net_PtrInt, Net_PtrInt pParam1);
+typedef void(*pOnTimerCallback)(intptr_t, intptr_t pParam1);
 ///////////////////////////////////////////////////////////////////////////////////////////
 #define TIME_NEAR_SHIFT 8
 #define TIME_NEAR (1 << TIME_NEAR_SHIFT)
@@ -19,8 +19,8 @@ typedef void(*pOnTimerCallback)(Net_PtrInt, Net_PtrInt pParam1);
 struct timer_event 
 {
 	pOnTimerCallback	m_callbackFunc;
-	Net_PtrInt			m_nKey;
-	Net_PtrInt			m_pParam1;
+	intptr_t			m_nKey;
+	intptr_t			m_pParam1;
 };
 
 struct timer_node 
@@ -36,7 +36,7 @@ struct link_list
 	timer_node	head;
 	timer_node*	tail;
 };
-typedef basiclib::basic_map<Net_PtrInt, timer_node*>	 MapTimerNode;
+typedef basiclib::basic_map<intptr_t, timer_node*>	 MapTimerNode;
 ///////////////////////////////////////////////////////////////////////////////////////////
 #pragma warning (push)
 #pragma warning (disable: 4251)
@@ -55,9 +55,9 @@ public:
 		100=1s 
 		实际100ms精度内的无法完全准确
 	*/
-	bool AddTimeOut(Net_PtrInt nKey, pOnTimerCallback pFunc, int nTimes, Net_PtrInt pParam1);
-	bool AddOnTimer(Net_PtrInt nKey, pOnTimerCallback pFunc, int nTimes, Net_PtrInt pParam1);
-	void DelTimer(Net_PtrInt nKey);
+	bool AddTimeOut(intptr_t nKey, pOnTimerCallback pFunc, int nTimes, intptr_t pParam1);
+	bool AddOnTimer(intptr_t nKey, pOnTimerCallback pFunc, int nTimes, intptr_t pParam1);
+	void DelTimer(intptr_t nKey);
 protected:
 	friend THREAD_RETURN Timer_Thread(void* pParam);
 	void TimerRun();
@@ -65,7 +65,7 @@ protected:
 	void TimerUpdate();
 protected:
 	void timer_add(timer_event& event, int time, int bRepeat);
-	void timer_del(Net_PtrInt nKey);
+	void timer_del(intptr_t nKey);
 
 	timer_node* link_clear(link_list *list);
 	void timer_execute(basiclib::CSpinLockFuncNoSameThreadSafe& lock);

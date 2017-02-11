@@ -2,20 +2,20 @@
 
 __NS_BASIC_START
 
-inline int SerializeUChar(unsigned char* pBuffer, const Net_UChar v)
+inline int SerializeUChar(unsigned char* pBuffer, const uint8_t v)
 {
 	pBuffer[0] = v;
 	return 1;
 }
 
-inline int SerializeUShort(unsigned char* pBuffer, const Net_UShort v)
+inline int SerializeUShort(unsigned char* pBuffer, const uint16_t v)
 {
 	pBuffer[0] = (v)& 0xFF;
 	pBuffer[1] = (v >> 8) & 0xFF;
 	return 2;
 }
 
-inline int SerializeUInt(unsigned char* pBuffer, const Net_UInt v)
+inline int SerializeUInt(unsigned char* pBuffer, const uint32_t v)
 {
 	pBuffer[0] = (v)& 0xFF;
 	pBuffer[1] = (v >> 8) & 0xFF;
@@ -23,8 +23,15 @@ inline int SerializeUInt(unsigned char* pBuffer, const Net_UInt v)
 	pBuffer[3] = (v >> 24) & 0xFF;
 	return 4;
 }
+inline int SerializeUInt3Bit(unsigned char* pBuffer, const uint32_t v)
+{
+	pBuffer[0] = (v)& 0xFF;
+	pBuffer[1] = (v >> 8) & 0xFF;
+	pBuffer[2] = (v >> 16) & 0xFF;
+	return 3;
+}
 
-inline int SerializeLONGLONG(unsigned char* pBuffer, const Net_LONGLONG v)
+inline int SerializeLONGLONG(unsigned char* pBuffer, const int64_t v)
 {
 	pBuffer[0] = (v)& 0xFF;
 	pBuffer[1] = (v >> 8) & 0xFF;
@@ -36,7 +43,7 @@ inline int SerializeLONGLONG(unsigned char* pBuffer, const Net_LONGLONG v)
 	pBuffer[7] = (v >> 56) & 0xFF;
 	return 8;
 }
-inline int SerializeCBasicString(unsigned char* pBuffer, const Net_Char* v, Net_UShort usLength)
+inline int SerializeCBasicString(unsigned char* pBuffer, const int8_t* v, uint16_t usLength)
 {
 	int nRetSize = 0;
 	nRetSize = SerializeUShort(pBuffer, usLength);
@@ -47,48 +54,53 @@ inline int SerializeCBasicString(unsigned char* pBuffer, const Net_Char* v, Net_
 	return nRetSize + usLength;
 }
 
-inline int UnSerializeUChar(unsigned char* pBuffer, Net_UChar& v)
+inline int UnSerializeUChar(unsigned char* pBuffer, uint8_t& v)
 {
 	v = pBuffer[0];
 	return 1;
 }
-inline int UnSerializeChar(unsigned char* pBuffer, Net_Char& v)
+inline int UnSerializeChar(unsigned char* pBuffer, int8_t& v)
 {
 	v = pBuffer[0];
 	return 1;
 }
 
-inline int UnSerializeUShort(unsigned char* pBuffer, Net_UShort& v)
+inline int UnSerializeUShort(unsigned char* pBuffer, uint16_t& v)
 {
 	v = pBuffer[0] | pBuffer[1] << 8;
 	return 2;
 }
-inline int UnSerializeShort(unsigned char* pBuffer, Net_Short& v)
+inline int UnSerializeShort(unsigned char* pBuffer, int16_t& v)
 {
 	v = pBuffer[0] | pBuffer[1] << 8;
 	return 2;
 }
-inline int UnSerializeUInt(unsigned char* pBuffer, Net_UInt& v)
+inline int UnSerializeUInt3Bit(unsigned char* pBuffer, uint32_t& v)
+{
+	v = pBuffer[0] | pBuffer[1] << 8 | pBuffer[2] << 16;
+	return 3;
+}
+inline int UnSerializeUInt(unsigned char* pBuffer, uint32_t& v)
 {
 	v = pBuffer[0] | pBuffer[1] << 8 | pBuffer[2] << 16 | pBuffer[3] << 24;
 	return 4;
 }
-inline int UnSerializeInt(unsigned char* pBuffer, Net_Int& v)
+inline int UnSerializeInt(unsigned char* pBuffer, int32_t& v)
 {
 	v = pBuffer[0] | pBuffer[1] << 8 | pBuffer[2] << 16 | pBuffer[3] << 24;
 	return 4;
 }
-inline int UnSerializeLONGLONG(unsigned char* pBuffer, Net_LONGLONG& v)
+inline int UnSerializeLONGLONG(unsigned char* pBuffer, int64_t& v)
 {
-	Net_LONGLONG vHigh = pBuffer[4] << 0 | pBuffer[5] << 8 | pBuffer[6] << 16 | pBuffer[7] << 24;
-	Net_LONGLONG vLow = pBuffer[0] | pBuffer[1] << 8 | pBuffer[2] << 16 | pBuffer[3] << 24;
+	int64_t vHigh = pBuffer[4] << 0 | pBuffer[5] << 8 | pBuffer[6] << 16 | pBuffer[7] << 24;
+	int64_t vLow = pBuffer[0] | pBuffer[1] << 8 | pBuffer[2] << 16 | pBuffer[3] << 24;
 	v = vLow | vHigh << 32;
 	return 8;
 }
 inline int UnSerializeCBasicString(unsigned char* pBuffer, basiclib::CBasicString& str)
 {
 	int nRet = 0;
-	Net_UShort usLength = 0;
+	uint16_t usLength = 0;
 	nRet = UnSerializeUShort(pBuffer, usLength);
 	if (usLength > 0){
 		char* lpszData = str.GetBufferSetLength(usLength);
@@ -107,19 +119,19 @@ CNetBasicValue::~CNetBasicValue()
 	Release();
 }
 
-CNetBasicValue::CNetBasicValue(const Net_Double& value)
+CNetBasicValue::CNetBasicValue(const double& value)
 {
 	EmptyValue();
-	SetDouble(value);
+	SetNet_Double(value);
 }
 
-CNetBasicValue::CNetBasicValue(const Net_LONGLONG& value)
+CNetBasicValue::CNetBasicValue(const int64_t& value)
 {
 	EmptyValue();
 	SetLongLong(value);
 }
 
-CNetBasicValue::CNetBasicValue(const Net_Int value)
+CNetBasicValue::CNetBasicValue(const int32_t value)
 {
 	EmptyValue();
 	SetLong(value);
@@ -155,25 +167,25 @@ void CNetBasicValue::Release()
 	EmptyValue();
 }
 
-void CNetBasicValue::SetLong(const Net_Int value)
+void CNetBasicValue::SetLong(const int32_t value)
 {
 	Release();
 	m_type = NETVALUE_LONG;
 	m_lValue[0] = value;
 }
 
-void CNetBasicValue::SetDouble(const Net_Double& value)
+void CNetBasicValue::SetNet_Double(const double& value)
 {
 	Release();
 	m_type = NETVALUE_DOUBLE;
 	m_dValue = value;
 }
 
-void CNetBasicValue::SetLongLong(const Net_LONGLONG& value)
+void CNetBasicValue::SetLongLong(const int64_t& value)
 {
 	Release();
 	m_type = NETVALUE_LONGLONG;
-	memcpy(&m_llValue, &value, sizeof(Net_LONGLONG));
+	memcpy(&m_llValue, &value, sizeof(int64_t));
 }
 
 void CNetBasicValue::SetString(const char* value, size_t len)
@@ -195,22 +207,22 @@ void CNetBasicValue::SetString(const char* value, size_t len)
 	}
 }
 
-Net_Int CNetBasicValue::GetLong() const
+int32_t CNetBasicValue::GetLong() const
 {
-	Net_Int ret = DTE_LONG_NULL;
+	int32_t ret = DTE_LONG_NULL;
 	toData(ret);
 	return ret;
 }
-Net_Double CNetBasicValue::GetDouble() const
+double CNetBasicValue::GetNet_Double() const
 {
-	double ret = DTE_DOUBLE_NULL;
+	double ret = DTEdouble_NULL;
 	toData(ret);
 	return ret;
 }
 
-Net_LONGLONG CNetBasicValue::GetLongLong() const
+int64_t CNetBasicValue::GetLongLong() const
 {
-	Net_LONGLONG ret = 0;
+	int64_t ret = 0;
 	toData(ret);
 	return ret;
 }
@@ -252,7 +264,7 @@ const char* CNetBasicValue::GetStringRef() const
 }
 
 
-void CNetBasicValue::toData(Net_Int& lValue) const
+void CNetBasicValue::toData(int32_t& lValue) const
 {
 	lValue = DTE_LONG_NULL;
 	if (!IsNull())
@@ -263,10 +275,10 @@ void CNetBasicValue::toData(Net_Int& lValue) const
 			lValue = m_lValue[0];
 			break;
 		case NETVALUE_DOUBLE:
-			lValue = (Net_Int)m_dValue;
+			lValue = (int32_t)m_dValue;
 			break;
 		case NETVALUE_LONGLONG:
-			lValue = (Net_Int)m_llValue;
+			lValue = (int32_t)m_llValue;
 			break;
 		case NETVALUE_CHAR:
 			sscanf(m_cValue, "%ld", &lValue);
@@ -279,9 +291,9 @@ void CNetBasicValue::toData(Net_Int& lValue) const
 }
 
 
-void CNetBasicValue::toData(Net_Double& fValue) const
+void CNetBasicValue::toData(double& fValue) const
 {
-	fValue = DTE_DOUBLE_NULL;
+	fValue = DTEdouble_NULL;
 	if (!IsNull())
 	{
 		switch (m_type)
@@ -305,7 +317,7 @@ void CNetBasicValue::toData(Net_Double& fValue) const
 	}
 }
 
-void CNetBasicValue::toData(Net_LONGLONG& llValue) const
+void CNetBasicValue::toData(int64_t& llValue) const
 {
 	if (!IsNull())
 	{
@@ -315,10 +327,10 @@ void CNetBasicValue::toData(Net_LONGLONG& llValue) const
 			llValue = m_lValue[0];
 			break;
 		case NETVALUE_LONGLONG:
-			memcpy(&llValue, &m_llValue, sizeof(Net_LONGLONG));
+			memcpy(&llValue, &m_llValue, sizeof(int64_t));
 			break;
 		case NETVALUE_DOUBLE:
-			llValue = (Net_LONGLONG)m_dValue;
+			llValue = (int64_t)m_dValue;
 			break;
 		case NETVALUE_CHAR:
 		{
@@ -368,7 +380,7 @@ bool CNetBasicValue::IsNull() const
 		ret = (m_lValue[0] == DTE_LONG_NULL);
 		break;
 	case NETVALUE_DOUBLE:
-		ret = IsDoubleNullExt(m_dValue);
+		ret = IsNet_DoubleNullExt(m_dValue);
 		break;
 	case NETVALUE_LONGLONG:
 		break;
@@ -413,7 +425,7 @@ int CNetBasicValue::CompareBasicValue(const CNetBasicValue* pRhs) const
 		ret = CompareLongLong(rhs.m_llValue);
 		break;
 	case NETVALUE_DOUBLE:
-		ret = CompareDouble(rhs.m_dValue);
+		ret = CompareNet_Double(rhs.m_dValue);
 		break;
 	case NETVALUE_CHAR:
 		ret = ComparePointString(rhs.m_cValue, sizeof(m_cValue) / sizeof(m_cValue[0]));
@@ -425,7 +437,7 @@ int CNetBasicValue::CompareBasicValue(const CNetBasicValue* pRhs) const
 	return ret;
 
 }
-int CNetBasicValue::CompareInt(Net_Int rhs) const
+int CNetBasicValue::CompareInt(int32_t rhs) const
 {
 	if (IsNull())
 		return (rhs == DTE_LONG_NULL) ? 0 : -1;
@@ -440,7 +452,7 @@ int CNetBasicValue::CompareInt(Net_Int rhs) const
 		ret = (m_lValue[0] < rhs) ? -1 : ((m_lValue[0] > rhs) ? 1 : 0);
 		break;
 	case NETVALUE_LONGLONG:
-		ret = (m_llValue < (Net_LONGLONG)rhs) ? -1 : ((m_llValue >(Net_LONGLONG)rhs) ? 1 : 0);
+		ret = (m_llValue < (int64_t)rhs) ? -1 : ((m_llValue >(int64_t)rhs) ? 1 : 0);
 		break;
 	case NETVALUE_DOUBLE:
 	{
@@ -459,7 +471,7 @@ int CNetBasicValue::CompareInt(Net_Int rhs) const
 	return ret;
 }
 
-int CNetBasicValue::CompareLongLong(Net_LONGLONG rhs) const
+int CNetBasicValue::CompareLongLong(int64_t rhs) const
 {
 	if (IsNull())
 		return (rhs == DTE_LONG_NULL) ? 0 : -1;
@@ -489,7 +501,7 @@ int CNetBasicValue::CompareLongLong(Net_LONGLONG rhs) const
 	break;
 	case NETVALUE_STRING:
 	{
-		Net_LONGLONG value = GetLongLong();
+		int64_t value = GetLongLong();
 		ret = (value < rhs) ? -1 : ((value > rhs) ? 1 : 0);
 	}
 	break;
@@ -497,12 +509,12 @@ int CNetBasicValue::CompareLongLong(Net_LONGLONG rhs) const
 	return ret;
 }
 
-int CNetBasicValue::CompareDouble(const Net_Double& rhs) const
+int CNetBasicValue::CompareNet_Double(const double& rhs) const
 {
 	if (IsNull())
-		return IsDoubleNullExt(rhs) ? 0 : -1;
+		return IsNet_DoubleNullExt(rhs) ? 0 : -1;
 
-	if (IsDoubleNullExt(rhs))
+	if (IsNet_DoubleNullExt(rhs))
 		return 1;
 
 	int ret = 0;
@@ -520,7 +532,7 @@ int CNetBasicValue::CompareDouble(const Net_Double& rhs) const
 		break;
 	case NETVALUE_CHAR:
 	case NETVALUE_STRING:
-		delta = GetDouble() - rhs;
+		delta = GetNet_Double() - rhs;
 		break;
 	}
 	return (fabs(delta) < TINY_VALUE) ? 0 : ((delta > 0.0) ? 1 : -1);
@@ -563,7 +575,7 @@ int CNetBasicValue::GetSeriazeLength() const
 	break;
 	case NETVALUE_STRING:
 	{
-		Net_UShort l = (Net_UShort)m_pBufValue->GetLength();
+		uint16_t l = (uint16_t)m_pBufValue->GetLength();
 		nRetSize = l + 3;
 	}
 	break;
@@ -602,10 +614,10 @@ int CNetBasicValue::Seriaze(char* pData, int nLength)
 	break;
 	case NETVALUE_STRING:
 	{
-		Net_UShort l = (Net_UShort)m_pBufValue->GetLength();
+		uint16_t l = (uint16_t)m_pBufValue->GetLength();
 		if (nLength < l + 3)
 			return -1;
-		nRetSize = SerializeCBasicString((unsigned char*)(pData + 1), m_pBufValue->c_str(), l) + 1;
+		nRetSize = SerializeCBasicString((unsigned char*)(pData + 1), (int8_t*)m_pBufValue->c_str(), l) + 1;
 	}
 	break;
 	case NETVALUE_LONG:
@@ -616,7 +628,7 @@ int CNetBasicValue::Seriaze(char* pData, int nLength)
 	break;
 	case NETVALUE_DOUBLE:
 	{
-		SerializeLONGLONG((unsigned char*)(pData + 1), (*(Net_LONGLONG*)&m_dValue));
+		SerializeLONGLONG((unsigned char*)(pData + 1), (*(int64_t*)&m_dValue));
 		nRetSize = 9;
 	}
 	break;
@@ -650,7 +662,7 @@ int CNetBasicValue::UnSeriaze(const char* pData, int nLength)
 		if (nLength < 3)
 			return -1;
 		m_pBufValue = new Net_CBasicString();
-		Net_UShort l = 0;
+		uint16_t l = 0;
 		UnSerializeUShort((unsigned char*)(pData + 1), l);
 		if (l > 0)
 		{
@@ -674,9 +686,9 @@ int CNetBasicValue::UnSeriaze(const char* pData, int nLength)
 	{
 		if (nLength < sizeof(CNetBasicValue))
 			return -1;
-		Net_LONGLONG vValue = 0;
+		int64_t vValue = 0;
 		UnSerializeLONGLONG((unsigned char*)(pData + 1), vValue);
-		m_dValue = *(Net_Double*)&vValue;
+		m_dValue = *(double*)&vValue;
 		return 9;
 	}
 	break;
@@ -705,7 +717,7 @@ void CNetBasicValue::SeriazeSMBuf(basiclib::CBasicSmartBuffer& smBuf) const
 		break;
 	case NETVALUE_STRING:
 	{
-		Net_UShort l = (Net_UShort)m_pBufValue->GetLength();
+		uint16_t l = (uint16_t)m_pBufValue->GetLength();
 		unsigned char szBuf[2] = { 0 };
 		SerializeUShort(szBuf, l);
 		smBuf.AppendData((char*)szBuf, 2);
@@ -725,7 +737,7 @@ void CNetBasicValue::SeriazeSMBuf(basiclib::CBasicSmartBuffer& smBuf) const
 	case NETVALUE_DOUBLE:
 	{
 		char szBuf[8] = { 0 };
-		SerializeLONGLONG((unsigned char*)szBuf, (*(Net_LONGLONG*)&m_dValue));
+		SerializeLONGLONG((unsigned char*)szBuf, (*(int64_t*)&m_dValue));
 		smBuf.AppendData(szBuf, 8);
 	}
 		break;
@@ -752,7 +764,7 @@ void CNetBasicValue::UnSeriazeSMBuf(basiclib::CBasicSmartBuffer& smBuf)
 	case NETVALUE_STRING:
 	{
 		m_pBufValue = new Net_CBasicString();
-		Net_UShort l = 0;
+		uint16_t l = 0;
 		unsigned char szBuf[2] = { 0 };
 		smBuf.ReadData(szBuf, 2);
 		UnSerializeUShort(szBuf, l);
@@ -774,9 +786,9 @@ void CNetBasicValue::UnSeriazeSMBuf(basiclib::CBasicSmartBuffer& smBuf)
 	{
 		unsigned char szBuf[8] = { 0 };
 		smBuf.ReadData(szBuf, 8);
-		Net_LONGLONG vValue = 0;
+		int64_t vValue = 0;
 		UnSerializeLONGLONG(szBuf, vValue);
-		m_dValue = *(Net_Double*)&vValue;
+		m_dValue = *(double*)&vValue;
 	}
 	break;
 	case NETVALUE_LONGLONG:
@@ -806,17 +818,17 @@ const CNetBasicValue& CNetBasicValue::operator = (const CNetBasicValue& rhs)
 	}
 	return *this;
 }
-const CNetBasicValue& CNetBasicValue::operator = (const Net_Int rhs)
+const CNetBasicValue& CNetBasicValue::operator = (const int32_t rhs)
 {
 	SetLong(rhs);
 	return *this;
 }
-const CNetBasicValue& CNetBasicValue::operator = (const Net_Double& rhs)
+const CNetBasicValue& CNetBasicValue::operator = (const double& rhs)
 {
-	SetDouble(rhs);
+	SetNet_Double(rhs);
 	return *this;
 }
-const CNetBasicValue& CNetBasicValue::operator = (const Net_LONGLONG& rhs)
+const CNetBasicValue& CNetBasicValue::operator = (const int64_t& rhs)
 {
 	SetLongLong(rhs);
 	return *this;
@@ -840,7 +852,7 @@ const CNetBasicValue& CNetBasicValue::operator += (const CNetBasicValue& rhs)
 			*this += rhs.m_lValue[0];
 			break;
 		case NETVALUE_DOUBLE:
-			*this += rhs.GetDouble();
+			*this += rhs.GetNet_Double();
 			break;
 		case NETVALUE_LONGLONG:
 			*this += rhs.GetLongLong();
@@ -854,7 +866,7 @@ const CNetBasicValue& CNetBasicValue::operator += (const CNetBasicValue& rhs)
 	return *this;
 }
 
-const CNetBasicValue& CNetBasicValue::operator += (const Net_Int rhs)
+const CNetBasicValue& CNetBasicValue::operator += (const int32_t rhs)
 {
 	if (!IsNull())
 	{
@@ -926,7 +938,7 @@ CBasicString CNetBasicValue::DataToString(unsigned short nDataType, const void* 
 	return strOut;
 }
 
-const CNetBasicValue& CNetBasicValue::operator += (const Net_Double& rhs)
+const CNetBasicValue& CNetBasicValue::operator += (const double& rhs)
 {
 	switch (m_type)
 	{
@@ -952,14 +964,14 @@ const CNetBasicValue& CNetBasicValue::operator += (const Net_Double& rhs)
 	return *this;
 }
 
-const CNetBasicValue& CNetBasicValue::operator += (const Net_LONGLONG& rhs)
+const CNetBasicValue& CNetBasicValue::operator += (const int64_t& rhs)
 {
 	if (!IsNull())
 	{
 		switch (m_type)
 		{
 		case NETVALUE_LONG:
-			*this = ((Net_LONGLONG)m_lValue[0] + rhs);
+			*this = ((int64_t)m_lValue[0] + rhs);
 			break;
 		case NETVALUE_DOUBLE:
 			m_dValue += rhs;
@@ -1011,7 +1023,7 @@ const CNetBasicValue& CNetBasicValue::operator -= (const CNetBasicValue& rhs)
 	return *this;
 }
 
-const CNetBasicValue& CNetBasicValue::operator -= (const Net_Int rhs)
+const CNetBasicValue& CNetBasicValue::operator -= (const int32_t rhs)
 {
 	if (!IsNull())
 	{
@@ -1031,27 +1043,27 @@ const CNetBasicValue& CNetBasicValue::operator -= (const Net_Int rhs)
 	return *this;
 }
 
-const CNetBasicValue& CNetBasicValue::operator -= (const Net_Double& rhs)
+const CNetBasicValue& CNetBasicValue::operator -= (const double& rhs)
 {
 	if (!IsNull())
 	{
 		switch (m_type)
 		{
 		case NETVALUE_LONG:
-			SetDouble((double)m_lValue[0] - rhs);
+			SetNet_Double((double)m_lValue[0] - rhs);
 			break;
 		case NETVALUE_DOUBLE:
 			m_dValue -= rhs;
 			break;
 		case NETVALUE_LONGLONG:
-			SetDouble((double)m_llValue - rhs);
+			SetNet_Double((double)m_llValue - rhs);
 			break;
 		}
 	}
 	return *this;
 }
 
-const CNetBasicValue& CNetBasicValue::operator -= (const Net_LONGLONG& rhs)
+const CNetBasicValue& CNetBasicValue::operator -= (const int64_t& rhs)
 {
 	if (!IsNull())
 	{
@@ -1082,7 +1094,7 @@ const CNetBasicValue& CNetBasicValue::operator *= (const CNetBasicValue& rhs)
 		*this *= rhs.GetLong();
 		break;
 	case NETVALUE_DOUBLE:
-		*this *= rhs.GetDouble();
+		*this *= rhs.GetNet_Double();
 		break;
 	case NETVALUE_LONGLONG:
 		*this *= rhs.GetLongLong();
@@ -1090,7 +1102,7 @@ const CNetBasicValue& CNetBasicValue::operator *= (const CNetBasicValue& rhs)
 	}
 	return *this;
 }
-const CNetBasicValue& CNetBasicValue::operator *= (const Net_Int rhs)
+const CNetBasicValue& CNetBasicValue::operator *= (const int32_t rhs)
 {
 	if (!IsNull())
 	{
@@ -1110,27 +1122,27 @@ const CNetBasicValue& CNetBasicValue::operator *= (const Net_Int rhs)
 	return *this;
 }
 
-const CNetBasicValue& CNetBasicValue::operator *= (const Net_Double& rhs)
+const CNetBasicValue& CNetBasicValue::operator *= (const double& rhs)
 {
 	if (!IsNull())
 	{
 		switch (m_type)
 		{
 		case NETVALUE_LONG:
-			SetDouble((double)m_lValue[0] * rhs);
+			SetNet_Double((double)m_lValue[0] * rhs);
 			break;
 		case NETVALUE_DOUBLE:
 			m_dValue *= rhs;
 			break;
 		case NETVALUE_LONGLONG:
-			SetDouble((double)m_llValue * rhs);
+			SetNet_Double((double)m_llValue * rhs);
 			break;
 		}
 	}
 	return *this;
 }
 
-const CNetBasicValue& CNetBasicValue::operator *= (const Net_LONGLONG& rhs)
+const CNetBasicValue& CNetBasicValue::operator *= (const int64_t& rhs)
 {
 	if (!IsNull())
 	{
@@ -1161,7 +1173,7 @@ const CNetBasicValue& CNetBasicValue::operator /= (const CNetBasicValue& rhs)
 		*this /= rhs.GetLong();
 		break;
 	case NETVALUE_DOUBLE:
-		*this /= rhs.GetDouble();
+		*this /= rhs.GetNet_Double();
 		break;
 	case NETVALUE_LONGLONG:
 		*this /= rhs.GetLongLong();
@@ -1170,7 +1182,7 @@ const CNetBasicValue& CNetBasicValue::operator /= (const CNetBasicValue& rhs)
 	return *this;
 }
 
-const CNetBasicValue& CNetBasicValue::operator /= (const Net_Int rhs)
+const CNetBasicValue& CNetBasicValue::operator /= (const int32_t rhs)
 {
 	if (!IsNull())
 	{
@@ -1189,26 +1201,26 @@ const CNetBasicValue& CNetBasicValue::operator /= (const Net_Int rhs)
 	}
 	return *this;
 }
-const CNetBasicValue& CNetBasicValue::operator /= (const Net_Double& rhs)
+const CNetBasicValue& CNetBasicValue::operator /= (const double& rhs)
 {
 	if (!IsNull())
 	{
 		switch (m_type)
 		{
 		case NETVALUE_LONG:
-			SetDouble((double)m_lValue[0] / rhs);
+			SetNet_Double((double)m_lValue[0] / rhs);
 			break;
 		case NETVALUE_DOUBLE:
 			m_dValue /= rhs;
 			break;
 		case NETVALUE_LONGLONG:
-			SetDouble((double)m_llValue / rhs);
+			SetNet_Double((double)m_llValue / rhs);
 			break;
 		}
 	}
 	return *this;
 }
-const CNetBasicValue& CNetBasicValue::operator /= (const Net_LONGLONG& rhs)
+const CNetBasicValue& CNetBasicValue::operator /= (const int64_t& rhs)
 {
 	if (IsNull())
 	{
@@ -1250,17 +1262,17 @@ CBasicBitstream::CBasicBitstream(const char* buf, int size)
 	AppendData(buf, size);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CBasicBitstream& CBasicBitstream::operator >> (Net_Char* v)
+CBasicBitstream& CBasicBitstream::operator >> (int8_t* v)
 {
-	Net_UShort l = 0;
+	uint16_t l = 0;
 	*this >> l;
 	if (l > 0)
 		ReadData(v, l);
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator >> (Net_UChar* v)
+CBasicBitstream& CBasicBitstream::operator >> (uint8_t* v)
 {
-	Net_UShort l = 0;
+	uint16_t l = 0;
 	*this >> l;
 	if (l > 0)
 		ReadData((char*)v, l);
@@ -1269,7 +1281,7 @@ CBasicBitstream& CBasicBitstream::operator >> (Net_UChar* v)
 
 CBasicBitstream& CBasicBitstream::operator >> (CBasicSmartBuffer& os)
 {
-	Net_UShort l = 0;
+	uint16_t l = 0;
 	*this >> l;
 	if (l > 0)
 	{
@@ -1279,44 +1291,44 @@ CBasicBitstream& CBasicBitstream::operator >> (CBasicSmartBuffer& os)
 	return *this;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CBasicBitstream& CBasicBitstream::operator << (const Net_UChar v)
+CBasicBitstream& CBasicBitstream::operator << (const uint8_t v)
 {
 	AppendData((const char*)&v, sizeof(v));
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator << (const Net_Char v)
+CBasicBitstream& CBasicBitstream::operator << (const int8_t v)
 {
 	AppendData((const char*)&v, sizeof(v));
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator << (const Net_UShort v)
+CBasicBitstream& CBasicBitstream::operator << (const uint16_t v)
 {
 	AppendData((char*)m_szBuf, SerializeUShort(m_szBuf, v));
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator << (const Net_Short v)
+CBasicBitstream& CBasicBitstream::operator << (const int16_t v)
 {
 	AppendData((char*)m_szBuf, SerializeUShort(m_szBuf, v));
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator << (const Net_UInt v)
+CBasicBitstream& CBasicBitstream::operator << (const uint32_t v)
 {
 	AppendData((char*)m_szBuf, SerializeUInt(m_szBuf, v));
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator << (const Net_Int v)
+CBasicBitstream& CBasicBitstream::operator << (const int32_t v)
 {
 	AppendData((char*)m_szBuf, SerializeUInt(m_szBuf, v));
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator << (const Net_LONGLONG v)
+CBasicBitstream& CBasicBitstream::operator << (const int64_t v)
 {
 	AppendData((char*)m_szBuf, SerializeLONGLONG(m_szBuf, v));
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator << (const Net_Double v)
+CBasicBitstream& CBasicBitstream::operator << (const double v)
 {
-	AppendData((char*)m_szBuf, SerializeLONGLONG(m_szBuf, (*(Net_LONGLONG*)&v)));
+	AppendData((char*)m_szBuf, SerializeLONGLONG(m_szBuf, (*(int64_t*)&v)));
 	return *this;
 }
 CBasicBitstream& CBasicBitstream::operator << (const CNetBasicValue* pV)
@@ -1332,86 +1344,86 @@ CBasicBitstream& CBasicBitstream::operator << (const CNetBasicValue& v)
 
 CBasicBitstream& CBasicBitstream::operator << (const Net_CBasicString* pV)
 {
-	SerializeDataBuffer(pV->c_str(), pV->GetLength());
+	SerializeDataBuffer((int8_t*)pV->c_str(), pV->GetLength());
 	return *this;
 }
 CBasicBitstream& CBasicBitstream::operator << (const Net_CBasicString& data)
 {
-	SerializeDataBuffer(data.c_str(), data.GetLength());
+	SerializeDataBuffer((int8_t*)data.c_str(), data.GetLength());
 	return *this;
 }
 CBasicBitstream& CBasicBitstream::operator << (const basiclib::CBasicSmartBuffer* pV)
 {
-	SerializeDataBuffer(pV->GetDataBuffer(), pV->GetDataLength());
+	SerializeDataBuffer((int8_t*)pV->GetDataBuffer(), pV->GetDataLength());
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator << (const Net_Char* v)
+CBasicBitstream& CBasicBitstream::operator << (const int8_t* v)
 {
-	SerializeDataBuffer(v, strlen(v));
+	SerializeDataBuffer(v, strlen((char*)v));
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator << (const Net_UChar* v)
+CBasicBitstream& CBasicBitstream::operator << (const uint8_t* v)
 {
-	SerializeDataBuffer((const Net_Char*)v, strlen((const Net_Char*)v));
+	SerializeDataBuffer((const int8_t*)v, strlen((const char*)v));
 	return *this;
 }
 CBasicBitstream& CBasicBitstream::operator << (const CBasicSmartBuffer& insRet)
 {
-	SerializeDataBuffer(insRet.GetDataBuffer(), insRet.GetDataLength());
+	SerializeDataBuffer((int8_t*)insRet.GetDataBuffer(), insRet.GetDataLength());
 	return *this;
 }
-void CBasicBitstream::SerializeDataBuffer(const Net_Char* pData, Net_UShort usLength)
+void CBasicBitstream::SerializeDataBuffer(const int8_t* pData, uint16_t usLength)
 {
-	Net_UInt nResLength = m_cbBuffer;
-	SetDataLength(nResLength + sizeof(Net_UShort) + usLength);
+	uint32_t nResLength = m_cbBuffer;
+	SetDataLength(nResLength + sizeof(uint16_t) + usLength);
 	SerializeCBasicString((unsigned char*)(m_pszBuffer + nResLength), pData, usLength);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CBasicBitstream& CBasicBitstream::operator >> (Net_UChar& v)
+CBasicBitstream& CBasicBitstream::operator >> (uint8_t& v)
 {
 	ReadData(&v, sizeof(v));
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator >> (Net_Char& v)
+CBasicBitstream& CBasicBitstream::operator >> (int8_t& v)
 {
 	ReadData(&v, sizeof(v));
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator >> (Net_UShort& v)
+CBasicBitstream& CBasicBitstream::operator >> (uint16_t& v)
 {
 	ReadData(m_szBuf, 2);
 	UnSerializeUShort(m_szBuf, v);
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator >> (Net_Short& v)
+CBasicBitstream& CBasicBitstream::operator >> (int16_t& v)
 {
 	ReadData(m_szBuf, 2);
 	UnSerializeShort(m_szBuf, v);
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator >> (Net_UInt& v)
+CBasicBitstream& CBasicBitstream::operator >> (uint32_t& v)
 {
 	ReadData(m_szBuf, 4);
 	UnSerializeUInt(m_szBuf, v);
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator >> (Net_Int& v)
+CBasicBitstream& CBasicBitstream::operator >> (int32_t& v)
 {
 	ReadData(m_szBuf, 4);
 	UnSerializeInt(m_szBuf, v);
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator >> (Net_LONGLONG& v)
+CBasicBitstream& CBasicBitstream::operator >> (int64_t& v)
 {
 	ReadData(m_szBuf, 8);
 	UnSerializeLONGLONG(m_szBuf, v);
 	return *this;
 }
-CBasicBitstream& CBasicBitstream::operator >> (Net_Double& v)
+CBasicBitstream& CBasicBitstream::operator >> (double& v)
 {
-	Net_LONGLONG vValue;
+	int64_t vValue;
 	*this >> vValue;
-	v = *(Net_Double*)&vValue;
+	v = *(double*)&vValue;
 	return *this;
 }
 CBasicBitstream& CBasicBitstream::operator >> (Net_CBasicString* pV)
@@ -1427,7 +1439,7 @@ CBasicBitstream& CBasicBitstream::operator >> (Net_CBasicString& data)
 
 void CBasicBitstream::UnSerializeCString(Net_CBasicString* pV)
 {
-	Net_UShort l = 0;
+	uint16_t l = 0;
 	*this >> l;
 	if (l > 0)
 	{
@@ -1443,7 +1455,7 @@ CBasicBitstream& CBasicBitstream::operator >> (basiclib::CBasicSmartBuffer* pV)
 
 void CBasicBitstream::UnSerializeSmbuf(basiclib::CBasicSmartBuffer* pV)
 {
-	Net_UShort l = 0;
+	uint16_t l = 0;
 	*this >> l;
 	if (l > 0)
 	{

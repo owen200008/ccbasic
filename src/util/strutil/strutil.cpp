@@ -121,7 +121,7 @@ namespace __private
 	};
 
 	const size_t HTML_SPEC_CHAR_AMPERSAND	= 0;
-	const size_t HTML_SPEC_CHAR_DOUBLEQUOTE	= 1;
+	const size_t HTML_SPEC_CHAR_DOUBLEQUOTE = 1;
 	const size_t HTML_SPEC_CHAR_SINGLEQUOTE = 2;
 	const size_t HTML_SPEC_CHAR_LESSTHAN	= 3;
 	const size_t HTML_SPEC_CHAR_GREATERTHAN = 4;

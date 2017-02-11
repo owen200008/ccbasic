@@ -55,7 +55,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>../src/inc;../3rd/libevent/include;../3rd/libevent/WIN32-Code/nmake</AdditionalIncludeDirectories>
@@ -75,7 +75,7 @@
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;__BASICWINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>../src/inc;../3rd/libevent/include;../3rd/libevent/WIN32-Code/nmake</AdditionalIncludeDirectories>
@@ -92,6 +92,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\scbasic\commu\basicclient.cpp" />
+    <ClCompile Include="..\src\scbasic\commu\ipverify.cpp" />
+    <ClCompile Include="..\src\scbasic\commu\servertemplate.cpp" />
     <ClCompile Include="basic_Test.cpp" />
     <ClCompile Include="dll\basictesthead.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -100,6 +103,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\scbasic\commu\basicclient.h" />
+    <ClInclude Include="..\src\scbasic\commu\ipverify.h" />
+    <ClInclude Include="..\src\scbasic\commu\servertemplate.h" />
     <ClInclude Include="comm\functionxiaolvtest.h" />
     <ClInclude Include="coroutine\coroutinetest.h" />
     <ClInclude Include="dll\basictesthead.h" />
@@ -108,6 +114,7 @@
     <ClInclude Include="misc\fastdelegatetest.h" />
     <ClInclude Include="net\nettest.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="thread\threadtest.h" />
     <ClInclude Include="time\ontimertest.h" />
     <ClInclude Include="util\containerexttest.h" />
   </ItemGroup>

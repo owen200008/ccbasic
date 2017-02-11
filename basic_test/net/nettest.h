@@ -14,9 +14,9 @@ CheckNoReleaseInfo m_checknorelease;
 class CServerClient : public CNetServerControlClient
 {
 public:
-	static CServerClient* CreateClient(Net_UInt nSessionID, CRefNetServerControl pServer){ return new CServerClient(nSessionID, pServer); }
+	static CServerClient* CreateClient(uint32_t nSessionID, CRefNetServerControl pServer){ return new CServerClient(nSessionID, pServer); }
 public:
-	CServerClient(Net_UInt nSessionID, CRefNetServerControl pServer) : CNetServerControlClient(nSessionID, pServer)
+	CServerClient(uint32_t nSessionID, CRefNetServerControl pServer) : CNetServerControlClient(nSessionID, pServer)
 	{
 		m_uniValue = basiclib::BasicInterlockedIncrement(&g_StartNetCount);
 		AddStack(m_uniValue);
@@ -39,9 +39,9 @@ basiclib::CBasicString strInfo = "Vi";
 class CServer : public CNetServerControl
 {
 public:
-	static CServer* CreateServer(Net_UInt nSessionID = 0){ return new CServer(nSessionID); }
+	static CServer* CreateServer(uint32_t nSessionID = 0){ return new CServer(nSessionID); }
 protected:
-	Net_Int bind_connectfunc(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetState){
+	int32_t bind_connectfunc(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState){
 		CServerClient* pSession = (CServerClient*)pNotify;
 		basiclib::CBasicString strAddr;
 		pSession->GetNetAddress(strAddr);
@@ -49,7 +49,7 @@ protected:
 		TRACE("Server:OnConnect(%s:%d)\n", strAddr.c_str(), nPort);
 		return BASIC_NET_HC_RET_HANDSHAKE;
 	}
-	Net_Int bind_recefunc(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetState, Net_Int cbData, const char* pData){
+	int32_t bind_recefunc(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState, int32_t cbData, const char* pData){
 		if (memcmp(strInfo.c_str(), pData, cbData) == 0 && cbData == strInfo.GetLength())
 		{
 			pNotify->Send((void*)pData, cbData);
@@ -63,7 +63,7 @@ protected:
 		pNotify->bind_rece(MakeFastFunction(this, &CServer::bind_recefuncsuccess));
 		return BASIC_NET_HR_RET_HANDSHAKE;
 	}
-	Net_Int bind_recefuncsuccess(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetState, Net_Int cbData, const char* pData){
+	int32_t bind_recefuncsuccess(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState, int32_t cbData, const char* pData){
 		CServerClient* pSession = (CServerClient*)pNotify;
 		pSession->m_smRecvBuf.AppendData(pData, cbData);
 		if (pSession->m_smRecvBuf.GetDataLength() % sizeof(int) != 0)
@@ -84,7 +84,7 @@ protected:
 		pSession->m_smRecvBuf.SetDataLength(0);
 		return BASIC_NET_OK;
 	}
-	Net_Int bind_disconnectfunc(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetState){
+	int32_t bind_disconnectfunc(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState){
 		CServerClient* pSession = (CServerClient*)pNotify;
 		basiclib::CBasicString strAddr;
 		pSession->GetNetAddress(strAddr);
@@ -92,19 +92,19 @@ protected:
 		TRACE("Server:DisConnect(%s:%d)\n", strAddr.c_str(), nPort);
 		return BASIC_NET_OK;
 	}
-	Net_Int bind_idlefunc(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetState){
+	int32_t bind_idlefunc(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState){
 		if (dwNetState % 10 == 0)
 		{
 			TRACE("Server:Idle(%d)\n", dwNetState);
 		}
 		return BASIC_NET_OK;
 	}
-	Net_Int bind_errorfunc(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetState, Net_Int lError){
+	int32_t bind_errorfunc(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState, int32_t lError){
 		CServerClient* pSession = (CServerClient*)pNotify;
 		TRACE("Server:Error(%d:%d)\n", dwNetState, lError);
 		return BASIC_NET_OK;
 	}
-	CServer(Net_UInt nSessionID) : CNetServerControl(nSessionID)
+	CServer(uint32_t nSessionID) : CNetServerControl(nSessionID)
 	{
 		m_uniValue = basiclib::BasicInterlockedIncrement(&g_StartNetCount);
 		AddStack(m_uniValue);
@@ -120,7 +120,7 @@ protected:
 		DelStack(m_uniValue);
 	}
 
-	virtual basiclib::CBasicSessionNetClient* ConstructSession(Net_UInt nSessionID){ return CServerClient::CreateClient(nSessionID, this); }
+	virtual basiclib::CBasicSessionNetClient* ConstructSession(uint32_t nSessionID){ return CServerClient::CreateClient(nSessionID, this); }
 
 	LONG m_uniValue;
 };
@@ -135,24 +135,24 @@ bool bClose = false;
 class CClient : public CCommonClientSession
 {
 public:
-	Net_Int bind_connectfunc(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetState){
+	int32_t bind_connectfunc(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState){
 		m_nSendNumber = 0;
 		m_nAlreadySendNumber = 0;
 		m_nReceiveNumber = 0;
 		pNotify->Send((void*)strInfo.c_str(), strInfo.GetLength());
 		return BASIC_NET_OK;
 	}
-	Net_Int bind_idlefunc(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetState){
+	int32_t bind_idlefunc(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState){
 		return BASIC_NET_OK;
 	}
-	Net_Int bind_disconnectfunc(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetState){
+	int32_t bind_disconnectfunc(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState){
 		basiclib::CBasicString strAddr;
 		pNotify->GetNetAddress(strAddr);
 		UINT nPort = pNotify->GetNetAddressPort();
 		TRACE("%x Client:DisConnect(%s:%d)\n", this, strAddr.c_str(), nPort);
 		return BASIC_NET_OK;
 	}
-	CClient(Net_UInt nSessionID) : CCommonClientSession(nSessionID){
+	CClient(uint32_t nSessionID) : CCommonClientSession(nSessionID){
 		m_uniValue = basiclib::BasicInterlockedIncrement(&g_StartNetCount);
 		AddStack(m_uniValue);
 		m_nSendNumber = 0;
@@ -179,16 +179,16 @@ public:
 		{
 			//int nSendNumber = ((rand() + 1)) % (m_nSendNumber - m_nAlreadySendNumber) + 1;
 			int nSendNumber = nCount == 0 ? ((rand() + 1)) % 1000 : nCount;
-			for (Net_UInt i = 0; i < nSendNumber; i++)
+			for (uint32_t i = 0; i < nSendNumber; i++)
 			{
-				Send((void*)&m_nAlreadySendNumber, sizeof(Net_UInt));
+				Send((void*)&m_nAlreadySendNumber, sizeof(uint32_t));
 				m_nAlreadySendNumber++;
 				//if (m_nAlreadySendNumber % 10000 == 9999)
 				//	TRACE("%x Client Send:%d:%d\n", this, m_nAlreadySendNumber, nSendNumber);
 			}
 		}
 	}
-	Net_Int OnReceive(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetState, Net_Int cbData, const char* pData){
+	int32_t OnReceive(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState, int32_t cbData, const char* pData){
 		m_smRecvBuf.AppendData(pData, cbData);
 		if (m_smRecvBuf.GetDataLength() % sizeof(int) != 0)
 			return BASIC_NET_OK;
@@ -208,7 +208,7 @@ public:
 		m_smRecvBuf.SetDataLength(0);
 		return BASIC_NET_OK;
 	}
-	Net_Int OnReceiveVerify(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetState, Net_Int cbData, const char* pData){
+	int32_t OnReceiveVerify(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState, int32_t cbData, const char* pData){
 		if (memcmp(strInfo.c_str(), pData, cbData) == 0 && cbData == strInfo.GetLength())
 		{
 			m_nSendNumber = (rand() + 1) * 10;
@@ -221,9 +221,9 @@ public:
 	}
 	
 
-	Net_UInt m_nSendNumber;
-	Net_UInt m_nAlreadySendNumber;
-	Net_UInt m_nReceiveNumber;
+	uint32_t m_nSendNumber;
+	uint32_t m_nAlreadySendNumber;
+	uint32_t m_nReceiveNumber;
 	basiclib::CBasicSmartBuffer m_smRecvBuf;
 	LONG m_uniValue;
 };
@@ -276,7 +276,7 @@ THREAD_RETURN WorkerServerThread(void *arg)
 	});
 	CServer* pServer = CServer::CreateServer();
 	pServer->SetClientRecTimeout(30);
-	Net_Int lRet = pServer->Listen(ADDRESS_S, true);
+	int32_t lRet = pServer->Listen(ADDRESS_S, true);
 	TRACE("ListenRet:%d %s\n", lRet, pServer->GetLibeventMethod());
 	int nIndex = 0;
 	while (!bClose)

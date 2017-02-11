@@ -14,28 +14,28 @@ class CNetServerControl : public basiclib::CBasicSessionNetServer
 public:
 	typedef fastdelegate::FastDelegate1<basiclib::CBasicSessionNetClient*, bool> HandleVerifySuccess;
 
-	static CNetServerControl* CreateNetServerControl(Net_UInt nSessionID = 0){ return new CNetServerControl(nSessionID); }
+	static CNetServerControl* CreateNetServerControl(uint32_t nSessionID = 0){ return new CNetServerControl(nSessionID); }
 protected:
-	CNetServerControl(Net_UInt nSessionID);
+	CNetServerControl(uint32_t nSessionID);
 	virtual ~CNetServerControl();
 public:
 	void bind_verifysuccess(const HandleVerifySuccess& func){ m_handleVerifySuccess = func; }
 
-	virtual Net_Int StartServer(const char* lpszAddress, basiclib::CBasicPreSend* pPreSend = nullptr);
+	virtual int32_t StartServer(const char* lpszAddress, basiclib::CBasicPreSend* pPreSend = nullptr);
 	BOOL IsListen();
 	void SetIpTrust(const char* lpszIpTrust);
 	void SetSessionMaxCount(int nCount);
 
 	//不需要外部调用
-	virtual void OnTimer(Net_UInt nTick);
+	virtual void OnTimer(uint32_t nTick);
 protected:
-	virtual Net_Int OnUserVerify(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetCode, Net_Int cbData, const char *pszData);
-	virtual Net_Int OnVerifyDisconnectCallback(basiclib::CBasicSessionNetClient* pClient, Net_UInt p2);
+	virtual int32_t OnUserVerify(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetCode, int32_t cbData, const char *pszData);
+	virtual int32_t OnVerifyDisconnectCallback(basiclib::CBasicSessionNetClient* pClient, uint32_t p2);
 	//用户登录成功
 	virtual bool SuccessLogin(basiclib::CBasicSessionNetClient* pNotify);
 protected:
-	virtual basiclib::CBasicSessionNetClient* CreateServerClientSession(Net_UInt nSessionID);
-	virtual basiclib::CBasicSessionNetClient* ConstructSession(Net_UInt nSessionID);
+	virtual basiclib::CBasicSessionNetClient* CreateServerClientSession(uint32_t nSessionID);
+	virtual basiclib::CBasicSessionNetClient* ConstructSession(uint32_t nSessionID);
 protected:
 	HandleVerifySuccess			m_handleVerifySuccess;
 	//ip信任地址
@@ -54,14 +54,14 @@ typedef basiclib::CBasicRefPtr<CNetServerControl> CRefNetServerControl;
 class CNetServerControlClient : public basiclib::CBasicSessionNetClient
 {
 public:
-	static CNetServerControlClient* CreateControlClient(Net_UInt nSessionID, CRefNetServerControl pServer){ return new CNetServerControlClient(nSessionID, pServer); }
+	static CNetServerControlClient* CreateControlClient(uint32_t nSessionID, CRefNetServerControl pServer){ return new CNetServerControlClient(nSessionID, pServer); }
 protected:
-	CNetServerControlClient(Net_UInt nSessionID, CRefNetServerControl pServer);
+	CNetServerControlClient(uint32_t nSessionID, CRefNetServerControl pServer);
 	virtual ~CNetServerControlClient();
 
-	virtual Net_Int OnConnect(Net_UInt dwNetCode);
-	virtual Net_Int OnDisconnect(Net_UInt dwNetCode);
-	virtual Net_Int OnReceive(Net_UInt dwNetCode, const char *pszData, Net_Int cbData);
+	virtual int32_t OnConnect(uint32_t dwNetCode);
+	virtual int32_t OnDisconnect(uint32_t dwNetCode);
+	virtual int32_t OnReceive(uint32_t dwNetCode, const char *pszData, int32_t cbData);
 public:
 	CRefNetServerControl m_server;
 };

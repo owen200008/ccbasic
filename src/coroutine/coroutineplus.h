@@ -83,6 +83,14 @@ public:
 	//no call self
 	void StartFunc();
 	void StartFuncLibco();
+
+	//设置是否hook io函数，目前只有unix linux有效（参考libco）
+	void SetSysHook(bool bSysHook){
+		m_bSysHook = bSysHook;
+	}
+	bool IsSysHook(){
+		return m_bSysHook;
+	}
 protected:
 	CoroutineState							m_state;
 	coroutine_func 							m_func;
@@ -98,9 +106,13 @@ protected:
 	//resume param
 	CCorutinePlusPool*						m_pRunPool;
 	void*									m_pResumeParam[RESUME_MAXPARAM];
+
+	//是否hook sys io函数,默认是true
+	bool									m_bSysHook;
 };
 
 //thread not safe
+#define CorutinePlus_Max_Stack	128
 class _BASIC_DLL_API CCorutinePlusPool : public basiclib::CBasicObject
 {
 public:
@@ -113,23 +125,38 @@ public:
 
 	int GetVTCorutineSize(){ return m_vtCorutinePlus.size(); }
 	int GetCreateCorutineTimes(){return m_usCreateTimes;}
+
+	CCorutinePlus* GetCurrentCorutinePlus(){ return m_pStackRunCorutine[m_usRunCorutineStack - 1]; }
 protected:
 	CCorutinePlus* CreateCorutine(bool bPush);
 	void ReleaseCorutine(CCorutinePlus* pPTR);
 protected:
-#ifdef USE_UCONTEXT
-	ucontext_t              			m_ctxMain;
-#else
-	coctx_t								m_ctxMain;
-#endif
 	char 								m_stack[STACK_SIZE];
 	typedef basiclib::basic_vector<CCorutinePlus*>	VTCorutinePlus;
 	VTCorutinePlus						m_vtCorutinePlus;
 	unsigned short						m_usCreateTimes;
 	int									m_nDefaultStackSize;
 
+	CCorutinePlus*						m_pStackRunCorutine[CorutinePlus_Max_Stack];
+	unsigned short						m_usRunCorutineStack;
+	CCorutinePlus						m_selfPlus;
+
 	friend class CCorutinePlus;
 };
+
+//call in the thread create
+class basiclib::CBasicThreadTLS;
+class _BASIC_DLL_API CCorutinePlusThreadData : public basiclib::CBasicObject
+{
+public:
+	CCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS, void* pParam = nullptr);
+	virtual ~CCorutinePlusThreadData();
+public:
+	CCorutinePlusPool	m_pool;
+	void*				m_pParam;
+};
+CCorutinePlusThreadData* GetCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS);
+
 #pragma warning (pop)
 
 

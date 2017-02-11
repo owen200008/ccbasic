@@ -6,6 +6,15 @@
     <ClCompile Include="dll\basictesthead.cpp">
       <Filter>dll</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\scbasic\commu\servertemplate.cpp">
+      <Filter>scbasic\comm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scbasic\commu\basicclient.cpp">
+      <Filter>scbasic\comm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scbasic\commu\ipverify.cpp">
+      <Filter>scbasic\comm</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -36,6 +45,18 @@
     <ClInclude Include="util\containerexttest.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\scbasic\commu\ipverify.h">
+      <Filter>scbasic\comm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\scbasic\commu\servertemplate.h">
+      <Filter>scbasic\comm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\scbasic\commu\basicclient.h">
+      <Filter>scbasic\comm</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\threadtest.h">
+      <Filter>thread</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -64,6 +85,15 @@
     </Filter>
     <Filter Include="util">
       <UniqueIdentifier>{1a216c6c-02ca-4b2e-95ad-968fe6b948ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scbasic">
+      <UniqueIdentifier>{ae25118f-fa13-4a64-9ee6-b16571ceffb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scbasic\comm">
+      <UniqueIdentifier>{b294e3d1-f4f0-4205-8e51-49a514be9421}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thread">
+      <UniqueIdentifier>{b7808ea6-f2cd-40ee-9062-ffd329c9d097}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,0 +1,127 @@
+#include "../inc/basic.h"
+
+char g_cPBZKChar[] =
+{
+	' ', '%'
+};
+
+CPBZK::CPBZK()
+{
+
+}
+
+CPBZK::~CPBZK()
+{
+	for (HashMapPBZKIterator iter = m_mapPBZK.begin(); iter != m_mapPBZK.end();iter++)
+	{
+		delete (HashMapPBZK*)iter->second;
+	}
+	m_mapPBZK.clear();
+}
+
+void CPBZK::AddPBZKToMap(basiclib::CBasicStringArray& ayItems)
+{
+	int nSize = ayItems.GetSize();
+	for (int i = 0; i < nSize; i++)
+	{
+		if (ayItems[i].IsEmpty())
+			continue;
+		int nWordLength = ayItems[i].GetLength();
+
+		HashMapPBZK* pMap = &m_mapPBZK;
+		for (int j = 0; j < nWordLength; j++)
+		{
+			char cKey = ayItems[i].GetAt(j);
+			if (pMap->find(cKey) == pMap->end())
+			{
+				(*pMap)[cKey] = new HashMapPBZK();
+			}
+			pMap = (HashMapPBZK*)(*pMap)[cKey];
+			if (j == nWordLength - 1)
+			{
+				(*pMap)[PBZK_END_STRING] = NULL;
+			}
+		}
+	}
+}
+
+void CPBZK::ReadPBZKFileBuffer(const char* pBuffer, int nLength, bool bAddZiFu)
+{
+	basiclib::CBasicStringArray ayItems;
+	basiclib::BasicSpliteString(pBuffer, "\r\n", basiclib::IntoContainer_s<basiclib::CBasicStringArray>(ayItems));
+	AddPBZKToMap(ayItems);
+	if (bAddZiFu)
+	{
+		HashMapPBZK* pMap = &m_mapPBZK;
+		int nCount = _countof(g_cPBZKChar);
+		for (int i = 0; i < nCount; i++)
+		{
+			char cKey = g_cPBZKChar[i];
+			if (pMap->find(cKey) == pMap->end())
+			{
+				(*pMap)[cKey] = new HashMapPBZK();
+			}
+			pMap = (HashMapPBZK*)(*pMap)[cKey];
+			(*pMap)[PBZK_END_STRING] = NULL;
+		}
+	}
+}
+
+//! 判断是否有非法字符
+int CPBZK::CheckPBZKExist(const char* txt, int nLength, int nBeginIndex, bool bDeep)
+{
+	int matchFlag = 0;
+	HashMapPBZK* pMap = &m_mapPBZK;
+	bool bFind = false;
+	for (int i = nBeginIndex; i < nLength; i++)
+	{
+		char cKey = txt[i];
+		if (pMap->find(cKey) == pMap->end())
+		{
+			break;
+		}
+		matchFlag++;
+		pMap = (HashMapPBZK*)(*pMap)[cKey];
+		if (pMap->find(PBZK_END_STRING) != pMap->end())
+		{
+			bFind = true;
+			if (!bDeep)
+			{
+				break;
+			}
+			
+		}
+	}
+
+	return bFind ? matchFlag : 0;
+}
+
+bool CPBZK::IsContainPBZK(const char* txt, int nLength, bool bDeep)
+{
+	for (int i = 0; i < nLength; i++)
+	{
+		int nMatch = CheckPBZKExist(txt, nLength, i, bDeep);
+		if (nMatch > 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+//发现直接替换
+void CPBZK::ReplacePBZK(char* txt, int nLength, char cReplace, bool bDeep)
+{
+	for (int i = 0; i < nLength; i++)
+	{
+		int nMatch = CheckPBZKExist(txt, nLength, i, bDeep);
+		if (nMatch > 0)
+		{
+			int nEnd = i + nMatch;
+			for (; i < nEnd && i < nLength; i++)
+			{
+				txt[i] = cReplace;
+			}
+		}
+	}
+}

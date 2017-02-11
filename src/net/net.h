@@ -22,7 +22,6 @@ class CBasicSessionNetServer;		//监听
 class CBasicSessionNetClient;		//主动连接
 
 struct BasicNetStat;		//发送接收的统计信息
-#pragma	pack(1)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 //返回错误定义
@@ -87,11 +86,11 @@ public:
 public:
 	/*\brief 过滤收到的数据 */
 	// 过滤生成的数据放入buf
-	virtual Net_Int OnPreReceive(const char *pszData, Net_Int cbData, CBasicBitstream& buf, CBasicSessionNetClient* pNetSession) = 0;
+	virtual int32_t OnPreReceive(const char *pszData, int32_t cbData, CBasicBitstream& buf, CBasicSessionNetClient* pNetSession) = 0;
 
 	/*\brief 过滤发送的数据 */
 	// 过滤生成的数据放入buf
-	virtual Net_Int OnPreSend(const char *pszData, Net_Int cbData, Net_UInt dwFlag, SendDataToSendThread& buf) = 0;
+	virtual int32_t OnPreSend(const char *pszData, int32_t cbData, uint32_t dwFlag, SendDataToSendThread& buf) = 0;
 
 	/*\brief 构造新的实例 */
 	// 用于Accept
@@ -107,10 +106,10 @@ public:
 */
 struct _BASIC_DLL_API  BasicNetStat
 {
-	Net_UInt	m_dwSendBytes;		/*!< 发送的字节数 */
-	Net_UInt	m_dwSendTimes;		/*!< 发送的次数 */
-	Net_UInt	m_dwReceBytes;		/*!< 接收的字节数 */
-	Net_UInt	m_dwReceTimes;		/*!< 接收的次数 */
+	uint32_t	m_dwSendBytes;		/*!< 发送的字节数 */
+	uint32_t	m_dwSendTimes;		/*!< 发送的次数 */
+	uint32_t	m_dwReceBytes;		/*!< 接收的字节数 */
+	uint32_t	m_dwReceTimes;		/*!< 接收的次数 */
 	time_t		m_tmLastRecTime;	//记录最后收到数据的时间
 	double		m_fLastSendRate;
 	double		m_fLastRecvRate;
@@ -197,22 +196,29 @@ struct _BASIC_DLL_API  BasicNetStat
 
 class CNetThread;
 class CBasicSessionNetClient;
-class _BASIC_DLL_API CBasicSessionNet : public basiclib::CBasicObject, public basiclib::EnableRefPtr<CBasicSessionNet>
+class CBasicNetInitObject : public basiclib::CBasicObject, public basiclib::EnableRefPtr<CBasicNetInitObject>
 {
 public:
+	CBasicNetInitObject();
+	virtual ~CBasicNetInitObject();
+
 	//global
 	static void Initialize(pGetConfFunc func);
-	static void CloseSocket();
+	static void CloseNetSocket();
+};
+
+class _BASIC_DLL_API CBasicSessionNet : public CBasicNetInitObject
+{
 public:
 	typedef basiclib::CBasicRefPtr<CBasicSessionNet> CRefBasicSessionNet;
-	typedef void(*pCallSameRefNetSessionFunc)(CBasicSessionNet* pRefNetSession, Net_PtrInt lRevert);
+	typedef void(*pCallSameRefNetSessionFunc)(CBasicSessionNet* pRefNetSession, intptr_t lRevert);
 
-	typedef fastdelegate::FastDelegate4<CBasicSessionNetClient*, Net_UInt, Net_Int, const char *, Net_Int> HandleReceive;
-	typedef fastdelegate::FastDelegate3<CBasicSessionNetClient*, Net_UInt, Net_Int, Net_Int> HandleSend;			//发送数据的通知
-	typedef fastdelegate::FastDelegate2<CBasicSessionNetClient*, Net_UInt, Net_Int> HandleConnect;				//处理连接
-	typedef fastdelegate::FastDelegate2<CBasicSessionNetClient*, Net_UInt, Net_Int> HandleDisConnect;			//断开的消息
-	typedef fastdelegate::FastDelegate2<CBasicSessionNetClient*, Net_UInt, Net_Int> HandleIdle;				//空闲消息
-	typedef fastdelegate::FastDelegate3<CBasicSessionNetClient*, Net_UInt, Net_Int, Net_Int> HandleError;			//错误消息
+	typedef fastdelegate::FastDelegate4<CBasicSessionNetClient*, uint32_t, int32_t, const char *, int32_t> HandleReceive;
+	typedef fastdelegate::FastDelegate3<CBasicSessionNetClient*, uint32_t, int32_t, int32_t> HandleSend;			//发送数据的通知
+	typedef fastdelegate::FastDelegate2<CBasicSessionNetClient*, uint32_t, int32_t> HandleConnect;				//处理连接
+	typedef fastdelegate::FastDelegate2<CBasicSessionNetClient*, uint32_t, int32_t> HandleDisConnect;			//断开的消息
+	typedef fastdelegate::FastDelegate2<CBasicSessionNetClient*, uint32_t, int32_t> HandleIdle;				//空闲消息
+	typedef fastdelegate::FastDelegate3<CBasicSessionNetClient*, uint32_t, int32_t, int32_t> HandleError;			//错误消息
 
 	void bind_rece(const HandleReceive& func){ m_funcReceive = func; }
 	void bind_send(const HandleSend& func){ m_funcSend = func; }
@@ -223,20 +229,20 @@ public:
 	
 public:
 	//1s
-	virtual void OnTimer(Net_UInt nTick) = 0;
+	virtual void OnTimer(uint32_t nTick) = 0;
 	//release the object
 	virtual void Release();
 	//close net
 	void Close(BOOL bRemote = FALSE);
 	//register presend filter
-	int RegistePreSend(CBasicPreSend* pFilter, Net_UInt dwRegOptions = 0);
+	int RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptions = 0);
 	
 	const char* GetLibeventMethod();
 
-	Net_UInt GetSessionStatus(Net_UInt dwMask){ return m_unSessionStatus & dwMask; }
+	uint32_t GetSessionStatus(uint32_t dwMask){ return m_unSessionStatus & dwMask; }
 	evutil_socket_t GetSocketFD(){ return m_socketfd; }
 protected:
-	CBasicSessionNet(Net_UInt nSessionID, bool bAddOnTimer = true);
+	CBasicSessionNet(uint32_t nSessionID, bool bAddOnTimer = true);
 	virtual ~CBasicSessionNet();
 
 	virtual void InitMember();
@@ -247,9 +253,9 @@ protected:
 	void SetToRelease(){ SetSessionStatus(TIL_SS_TORELEASE, TIL_SS_TORELEASE); }
 	virtual BOOL CanClose();
 	
-	void SetSessionStatus(Net_UInt dwValue, Net_UInt dwMask){ m_unSessionStatus &= ~dwMask; m_unSessionStatus |= (dwValue & dwMask); }
+	void SetSessionStatus(uint32_t dwValue, uint32_t dwMask){ m_unSessionStatus &= ~dwMask; m_unSessionStatus |= (dwValue & dwMask); }
 protected:
-	void SetLibEvent(pCallSameRefNetSessionFunc pCallback, Net_PtrInt lRevert = 0);
+	void SetLibEvent(pCallSameRefNetSessionFunc pCallback, intptr_t lRevert = 0);
 	virtual void ReleaseCallback();
 	virtual void CloseCallback(BOOL bRemote, DWORD dwNetCode = 0);
 protected:
@@ -265,7 +271,7 @@ protected:
 	CNetThread*				m_pThread;
 	CBasicPreSend*			m_pPreSend;
 
-	Net_UInt				m_unSessionStatus;				//状态  TIL_SS_*
+	uint32_t				m_unSessionStatus;				//状态  TIL_SS_*
 
 	evutil_socket_t			m_socketfd;
 	event					m_revent;
@@ -289,38 +295,38 @@ typedef void(*pCallThreadSafeBeforeSendData)(SendDataToSendThread*);
 class _BASIC_DLL_API CBasicSessionNetClient : public CBasicSessionNet
 {
 public:
-	static CBasicSessionNetClient* CreateClient(Net_UInt nSessionID, bool bAddOnTimer = true){ return new CBasicSessionNetClient(nSessionID, bAddOnTimer); }
+	static CBasicSessionNetClient* CreateClient(uint32_t nSessionID, bool bAddOnTimer = true){ return new CBasicSessionNetClient(nSessionID, bAddOnTimer); }
 protected:
-	CBasicSessionNetClient(Net_UInt nSessionID, bool bAddOnTimer);//must be new object
+	CBasicSessionNetClient(uint32_t nSessionID, bool bAddOnTimer);//must be new object
 	virtual ~CBasicSessionNetClient();
 public:
-	Net_UInt GetSessionID(){ return m_nSessionID; }//uni id
+	uint32_t GetSessionID(){ return m_nSessionID; }//uni id
 
-	virtual Net_Int Connect(const char* lpszAddress);//formats [IPv6Address]:port || IPv4Address:port
-	Net_Int DoConnect();
+	virtual int32_t Connect(const char* lpszAddress);//formats [IPv6Address]:port || IPv4Address:port
+	int32_t DoConnect();
 	BOOL IsConnected() { return GetSessionStatus(TIL_SS_LINK) == TIL_SS_CONNECTED; }
 	BOOL IsTransmit(){ return GetSessionStatus(TIL_SS_SHAKEHANDLE_MASK) == TIL_SS_SHAKEHANDLE_TRANSMIT; }
-	virtual Net_Int Send(void *pData, Net_Int cbData, Net_UInt dwFlag = 0);
-	Net_Int Send(basiclib::CBasicSmartBuffer& smBuf, Net_UInt dwFlag = 0);
+	virtual int32_t Send(void *pData, int32_t cbData, uint32_t dwFlag = 0);
+	int32_t Send(basiclib::CBasicSmartBuffer& smBuf, uint32_t dwFlag = 0);
 	void GetNetAddress(basiclib::CBasicString& strAddr){ strAddr = m_szPeerAddr; }
 	UINT GetNetAddressPort(){ return m_nPeerPort; }
-	virtual void OnTimer(Net_UInt nTickTime);
-	BOOL IsRecTimeout(time_t tmNow, Net_UShort nTimeoutSecond);
+	virtual void OnTimer(uint32_t nTickTime);
+	BOOL IsRecTimeout(time_t tmNow, uint16_t nTimeoutSecond);
 	void GetReceiveTime(char* pBuffer, int nLength);//! 获取最后收到数据的时间
 	virtual void GetNetStatus(CBasicString& strStatus);//! 获取状态信息
 	void GetNetStatInfo(BasicNetStat& netState){ netState = m_stNet; }
 protected:
-	virtual Net_Int OnConnect(Net_UInt dwNetCode);
-	virtual Net_Int OnDisconnect(Net_UInt dwNetCode);
-	virtual void OnSendData(Net_UInt dwIoSize);
-	virtual Net_Int OnReceive(Net_UInt dwNetCode, const char *pszData, Net_Int cbData);
-	virtual Net_Int OnIdle(Net_UInt dwIdleCount);		//空闲处理
-	Net_Int _handle_connect(Net_UInt dwNetCode);
-	Net_Int _handle_disconnect(Net_UInt dwNetCode);
-	Net_Int _handle_idle(Net_UInt dwNetCode);
-	Net_Int _handle_error(Net_UInt dwNetCode, Net_Int lRetCode);
-	Net_Int _handle_rece(Net_UInt dwNetCode, const char *pszData, Net_Int cbData);
-	Net_Int _handle_send(Net_UInt dwNetCode, Net_Int cbSend);
+	virtual int32_t OnConnect(uint32_t dwNetCode);
+	virtual int32_t OnDisconnect(uint32_t dwNetCode);
+	virtual void OnSendData(uint32_t dwIoSize);
+	virtual int32_t OnReceive(uint32_t dwNetCode, const char *pszData, int32_t cbData);
+	virtual int32_t OnIdle(uint32_t dwIdleCount);		//空闲处理
+	int32_t _handle_connect(uint32_t dwNetCode);
+	int32_t _handle_disconnect(uint32_t dwNetCode);
+	int32_t _handle_idle(uint32_t dwNetCode);
+	int32_t _handle_error(uint32_t dwNetCode, int32_t lRetCode);
+	int32_t _handle_rece(uint32_t dwNetCode, const char *pszData, int32_t cbData);
+	int32_t _handle_send(uint32_t dwNetCode, int32_t cbSend);
 protected:
 	void InitClientEvent(evutil_socket_t socketfd, bool bAddWrite = true, bool bAddRead = true);
 	void AddWriteEvent();
@@ -333,25 +339,25 @@ protected:
 	void SetIdleCallback();
 	void _OnIdle();
 
-	Net_Int SendData(SendDataToSendThread& sendData, Net_UInt dwFlag);
+	int32_t SendData(SendDataToSendThread& sendData, uint32_t dwFlag);
 	
 	void OnReadEvent();
 	void OnWriteEvent();
 	friend void OnLinkRead(int fd, short event, void *arg);
 	friend void OnLinkWrite(int fd, short event, void *arg);
-	void OnReceiveData(const char* pszData, Net_UInt dwIoSize);
+	void OnReceiveData(const char* pszData, uint32_t dwIoSize);
 protected:
 	BOOL IsSendBusy();					//判断是否正在发送
 	void SetSendBusy(BOOL bBusy);		//设置是否在发送
 	BOOL CheckSendBusy();				//检查是否在发送状态，如果不是，设置为发送状态，返回TRUE。否则返回FALSE。
 protected:
-	Net_Int PreReceiveData(Net_UInt dwNetCode, const char *pszData, Net_Int cbData);//过滤器接受数据
+	int32_t PreReceiveData(uint32_t dwNetCode, const char *pszData, int32_t cbData);//过滤器接受数据
 	void ResetPreSend();//\brief 重置过滤器状态
 protected:
-	Net_UInt				m_nSessionID;
+	uint32_t				m_nSessionID;
 	unsigned short			m_usTimeoutShakeHandle;		//default shakehandle timeout time
-	Net_UInt				m_unIdleCount;				//进入空闲的次数
-	Net_UShort				m_usRecTimeout;				//超时时间，0代表不超时
+	uint32_t				m_unIdleCount;				//进入空闲的次数
+	uint16_t				m_usRecTimeout;				//超时时间，0代表不超时
 	event					m_wevent;
 	char					m_szPeerAddr[ADDRESS_MAX_LENGTH];
 	UINT					m_nPeerPort;
@@ -365,7 +371,7 @@ private:
 	//只在libevent线程使用
 	void LibEventThreadSendData();
 	void SendDataFromQueue();
-	BOOL ReadBuffer(Net_Int lSend);
+	BOOL ReadBuffer(int32_t lSend);
 	virtual BOOL CanClose();
 private:
 	CMsgSendBufferQueue		m_msgQueue;
@@ -373,15 +379,15 @@ private:
 };
 typedef basiclib::CBasicRefPtr<CBasicSessionNetClient> CRefBasicSessionNetClient;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-typedef basiclib::basic_map<Net_UInt, CRefBasicSessionNetClient>			MapClientSession;
+typedef basiclib::basic_map<uint32_t, CRefBasicSessionNetClient>			MapClientSession;
 typedef basiclib::basic_vector<CRefBasicSessionNetClient>					VTClientSession;
 class _BASIC_DLL_API CBasicSessionNetServer : public CBasicSessionNet
 {
 public:
-	static CBasicSessionNetServer* CreateServer(Net_UInt nSessionID){ return new CBasicSessionNetServer(nSessionID); }
+	static CBasicSessionNetServer* CreateServer(uint32_t nSessionID){ return new CBasicSessionNetServer(nSessionID); }
 protected:
 	//must be new object
-	CBasicSessionNetServer(Net_UInt nSessionID = 0);
+	CBasicSessionNetServer(uint32_t nSessionID = 0);
 	virtual ~CBasicSessionNetServer();
 
 public:
@@ -390,9 +396,9 @@ public:
 	-[IPv6Address]:port
 	-IPv4Address:port
 	*/
-	virtual Net_Int Listen(const char* lpszAddress, bool bWaitSuccess = false);
+	virtual int32_t Listen(const char* lpszAddress, bool bWaitSuccess = false);
 
-	void SetClientRecTimeout(Net_UShort uTimesSecond){
+	void SetClientRecTimeout(uint16_t uTimesSecond){
 		m_usRecTimeout = uTimesSecond;
 	}
 	//
@@ -400,8 +406,8 @@ public:
 	//断开所有连接,断开前的回调
 	void CloseAllSession(const std::function<void(CBasicSessionNetClient* pSession)>& func);
 
-	virtual void OnTimer(Net_UInt nTick);
-	virtual void OnTimerWithAllClient(Net_UInt nTick, VTClientSession& vtClients);
+	virtual void OnTimer(uint32_t nTick);
+	virtual void OnTimerWithAllClient(uint32_t nTick, VTClientSession& vtClients);
 	//! 获取状态信息
 	virtual void GetNetStatus(CBasicString& strStatus);
 public:
@@ -410,37 +416,38 @@ public:
 	{
 		return m_mapClientSession.size();
 	}
-	CRefBasicSessionNetClient GetClientBySessionID(Net_UInt nSessionID);
+	CRefBasicSessionNetClient GetClientBySessionID(uint32_t nSessionID);
 protected:
 	void InitListenEvent(evutil_socket_t socketfd);
 	void OnListenReadEvent();
 	friend void OnLinkListenRead(int fd, short event, void *arg);
 	void AcceptClient();
 	void CopyClientSession(VTClientSession& vtClient);
-	Net_Int OnClientDisconnectCallback(CBasicSessionNetClient* pClient, Net_UInt p2);//clientdisconnectcallback
+	int32_t OnClientDisconnectCallback(CBasicSessionNetClient* pClient, uint32_t p2);//clientdisconnectcallback
 	virtual void ReleaseCallback();
 protected:
-	virtual CBasicSessionNetClient* CreateServerClientSession(Net_UInt nSessionID);
-	virtual CBasicSessionNetClient* ConstructSession(Net_UInt nSessionID);
+	virtual CBasicSessionNetClient* CreateServerClientSession(uint32_t nSessionID);
+	virtual CBasicSessionNetClient* ConstructSession(uint32_t nSessionID);
 protected:
-	Net_UInt							m_nOnTimerTick;
+	uint32_t							m_nOnTimerTick;
 	
 	CMutex								m_mtxCSession;
 	MapClientSession					m_mapClientSession;
 
 	basiclib::CBasicString				m_strListenAddr;
 
-	Net_UShort							m_usRecTimeout;				//超时时间，0代表不超时
+	uint16_t							m_usRecTimeout;				//超时时间，0代表不超时
 /////////////////////////////////////////////////////////////////////////////////
 //libevent线程下操作
 private:
-	Net_UInt GetNewSessionID();
+	uint32_t GetNewSessionID();
 private:
-	Net_UInt								m_sessionIDMgr;
-	CLockFreeMessageQueue<Net_UInt>			m_sessionIDQueue;
+	uint32_t								m_sessionIDMgr;
+	CLockFreeMessageQueue<uint32_t>			m_sessionIDQueue;
 };
+
 #pragma warning (pop)
 __NS_BASIC_END
 //////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma pack()
+
 #endif 

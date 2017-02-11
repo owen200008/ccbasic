@@ -132,11 +132,7 @@ CEvent::~CEvent()
 {
 	if (m_hObject != NULL)
 	{
-#if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
 		BasicDestoryEvent(m_hObject);
-#else
-		BasicCloseHandle(m_hObject);
-#endif
 		m_hObject = NULL;
 	}
 }
@@ -437,6 +433,11 @@ BOOL BasicResetEvent(HANDLE hEvent)
 BOOL BasicCloseHandle(HANDLE hObject)
 {
 	return ::CloseHandle(hObject);
+}
+
+BOOL BasicDestoryEvent(HANDLE hEvent)
+{
+	return BasicCloseHandle(hEvent);
 }
 
 DWORD BasicWaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds)

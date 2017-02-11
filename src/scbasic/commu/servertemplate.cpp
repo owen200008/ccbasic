@@ -1,6 +1,6 @@
 #include "servertemplate.h"
 
-CNetServerControlClient::CNetServerControlClient(Net_UInt nSessionID, CRefNetServerControl pServer) : basiclib::CBasicSessionNetClient(nSessionID, false)
+CNetServerControlClient::CNetServerControlClient(uint32_t nSessionID, CRefNetServerControl pServer) : basiclib::CBasicSessionNetClient(nSessionID, false)
 {
 	m_server = pServer;
 }
@@ -9,7 +9,7 @@ CNetServerControlClient::~CNetServerControlClient()
 
 }
 
-Net_Int CNetServerControlClient::OnConnect(Net_UInt dwNetCode)
+int32_t CNetServerControlClient::OnConnect(uint32_t dwNetCode)
 {
 	if (!m_server->m_ipTrust.IsIpTrust(m_szPeerAddr))
 	{
@@ -30,16 +30,16 @@ Net_Int CNetServerControlClient::OnConnect(Net_UInt dwNetCode)
 	//需要认证
 	return basiclib::CBasicSessionNetClient::OnConnect(dwNetCode);
 }
-Net_Int CNetServerControlClient::OnDisconnect(Net_UInt dwNetCode)
+int32_t CNetServerControlClient::OnDisconnect(uint32_t dwNetCode)
 {
 	return basiclib::CBasicSessionNetClient::OnDisconnect(dwNetCode);
 }
-Net_Int CNetServerControlClient::OnReceive(Net_UInt dwNetCode, const char *pszData, Net_Int cbData)
+int32_t CNetServerControlClient::OnReceive(uint32_t dwNetCode, const char *pszData, int32_t cbData)
 {
 	return basiclib::CBasicSessionNetClient::OnReceive(dwNetCode, pszData, cbData);
 }
 //////////////////////////////////////////////////////////////////////////////////////
-CNetServerControl::CNetServerControl(Net_UInt nSessionID) : basiclib::CBasicSessionNetServer(nSessionID)
+CNetServerControl::CNetServerControl(uint32_t nSessionID) : basiclib::CBasicSessionNetServer(nSessionID)
 {
 	m_nSessionMaxCount = -1;
 	m_handleVerifySuccess = nullptr;
@@ -59,7 +59,7 @@ void CNetServerControl::SetSessionMaxCount(int nCount)
 	m_nSessionMaxCount = nCount;
 }
 
-void CNetServerControl::OnTimer(Net_UInt nTick)
+void CNetServerControl::OnTimer(uint32_t nTick)
 {
 	if (nTick % 10 == 1)
 	{
@@ -92,13 +92,13 @@ BOOL CNetServerControl::IsListen()
 	return bRet;
 }
 
-Net_Int CNetServerControl::StartServer(const char* lpszAddress, basiclib::CBasicPreSend* pPreSend)
+int32_t CNetServerControl::StartServer(const char* lpszAddress, basiclib::CBasicPreSend* pPreSend)
 {
 	if (pPreSend)
 	{
 		RegistePreSend(pPreSend);
 	}
-	Net_Int nRet = Listen(lpszAddress, true);
+	int32_t nRet = Listen(lpszAddress, true);
 	if (nRet == BASIC_NET_OK)
 	{
 		basiclib::BasicLogEventV("ListenPort: %s Success!", lpszAddress);
@@ -111,14 +111,14 @@ Net_Int CNetServerControl::StartServer(const char* lpszAddress, basiclib::CBasic
 	return nRet;
 }
 
-Net_Int CNetServerControl::OnUserVerify(basiclib::CBasicSessionNetClient* pNotify, Net_UInt dwNetCode, Net_Int cbData, const char *pszData)
+int32_t CNetServerControl::OnUserVerify(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetCode, int32_t cbData, const char *pszData)
 {
 	//先不需要回调上层
 	SuccessLogin(pNotify);
 	return BASIC_NET_OK;
 }
 
-Net_Int CNetServerControl::OnVerifyDisconnectCallback(basiclib::CBasicSessionNetClient* pClient, Net_UInt p2)
+int32_t CNetServerControl::OnVerifyDisconnectCallback(basiclib::CBasicSessionNetClient* pClient, uint32_t p2)
 {
 	basiclib::CSingleLock lockUser(&m_mtxCSessionVerify, TRUE);
 	m_mapClientSessionVerify.erase(pClient->GetSessionID());
@@ -132,7 +132,7 @@ bool CNetServerControl::SuccessLogin(basiclib::CBasicSessionNetClient* pNotify)
 	pNotify->bind_rece(m_funcReceive);
 	//加入用户队列
 	pNotify->bind_disconnect(MakeFastFunction(this, &CNetServerControl::OnVerifyDisconnectCallback));
-	Net_UInt nSessionID = pNotify->GetSessionID();
+	uint32_t nSessionID = pNotify->GetSessionID();
 	basiclib::CSingleLock lockUser(&m_mtxCSessionVerify, TRUE);
 	basiclib::MapClientSession::iterator iter = m_mapClientSessionVerify.find(nSessionID);
 	if (iter != m_mapClientSessionVerify.end()){
@@ -150,12 +150,12 @@ bool CNetServerControl::SuccessLogin(basiclib::CBasicSessionNetClient* pNotify)
 	return true;
 }
 
-basiclib::CBasicSessionNetClient* CNetServerControl::ConstructSession(Net_UInt nSessionID)
+basiclib::CBasicSessionNetClient* CNetServerControl::ConstructSession(uint32_t nSessionID)
 { 
 	return CNetServerControlClient::CreateControlClient(nSessionID, this);
 }
 
-basiclib::CBasicSessionNetClient* CNetServerControl::CreateServerClientSession(Net_UInt nSessionID)
+basiclib::CBasicSessionNetClient* CNetServerControl::CreateServerClientSession(uint32_t nSessionID)
 {
 	basiclib::CBasicSessionNetClient* pRet = ConstructSession(nSessionID);
 	pRet->bind_rece(MakeFastFunction(this, &CNetServerControl::OnUserVerify));

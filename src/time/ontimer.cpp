@@ -216,7 +216,7 @@ void CBasicOnTimer::timer_add(timer_event& event, int time, int bRepeat)
 	add_node(node);
 }
 
-void CBasicOnTimer::timer_del(Net_PtrInt nKey)
+void CBasicOnTimer::timer_del(intptr_t nKey)
 {
 	basiclib::CSpinLockFunc lock(&m_lock, TRUE);
 	MapTimerNode::iterator iter = (*m_pMapNode).find(nKey);
@@ -298,7 +298,7 @@ void CBasicOnTimer::CloseTimer()
 	m_bTimerExit = true;
 }
 
-bool CBasicOnTimer::AddTimeOut(Net_PtrInt nKey, pOnTimerCallback pFunc, int nTimes, Net_PtrInt pParam1)
+bool CBasicOnTimer::AddTimeOut(intptr_t nKey, pOnTimerCallback pFunc, int nTimes, intptr_t pParam1)
 {
 	if (nTimes <= 0)
 	{
@@ -315,7 +315,7 @@ bool CBasicOnTimer::AddTimeOut(Net_PtrInt nKey, pOnTimerCallback pFunc, int nTim
 	return true;
 }
 
-bool CBasicOnTimer::AddOnTimer(Net_PtrInt nKey, pOnTimerCallback pFunc, int nTimes, Net_PtrInt pParam1)
+bool CBasicOnTimer::AddOnTimer(intptr_t nKey, pOnTimerCallback pFunc, int nTimes, intptr_t pParam1)
 {
 	if (time > 0)
 	{
@@ -329,7 +329,7 @@ bool CBasicOnTimer::AddOnTimer(Net_PtrInt nKey, pOnTimerCallback pFunc, int nTim
 	return false;
 }
 
-void CBasicOnTimer::DelTimer(Net_PtrInt nKey)
+void CBasicOnTimer::DelTimer(intptr_t nKey)
 {
 	timer_del(nKey);
 }

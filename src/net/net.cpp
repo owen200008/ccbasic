@@ -1,8 +1,24 @@
 #include "../inc/basic.h"
+#include "sendbuffer.h"
+#include "net.h"
 #ifdef __BASICWINDOWS
 #pragma comment(lib, "ws2_32.lib")
 #elif defined(__LINUX)
 #include <signal.h>
+#endif
+
+#if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <netinet/tcp.h>
 #endif
 
 __NS_BASIC_START
@@ -34,11 +50,11 @@ struct CEventQueueItem
 {
 	CBasicSessionNet*								m_pRefNetSession;
 	CBasicSessionNet::pCallSameRefNetSessionFunc	m_pCallFunc;
-	Net_PtrInt										m_lRevert;
+	intptr_t										m_lRevert;
 };
 #pragma	pack()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-typedef void(*pCallFuncForThread)(Net_PtrInt lRevert);
+typedef void(*pCallFuncForThread)(intptr_t lRevert);
 
 static BOOL			g_bTimeToKill = TRUE;
 
@@ -57,8 +73,14 @@ public:
 	}
 	virtual ~CNetThread()
 	{
+		if (m_base){
+			event_del(&notify_event);
+			evutil_closesocket(m_pair[0]);
+			evutil_closesocket(m_pair[1]);
+			event_base_free(m_base);
+		}
 	}
-	void SetEvent(CBasicSessionNet* pSession, CBasicSessionNet::pCallSameRefNetSessionFunc pCallFunc, Net_PtrInt lRevert)
+	void SetEvent(CBasicSessionNet* pSession, CBasicSessionNet::pCallSameRefNetSessionFunc pCallFunc, intptr_t lRevert)
 	{
 		if (IsEventThread())
 		{
@@ -81,7 +103,7 @@ public:
 	{
 		return basiclib::BasicGetCurrentThreadId() == m_dwThreadID;
 	}
-	void SetSameThreadEvent(CBasicSessionNet* pSession, CBasicSessionNet::pCallSameRefNetSessionFunc pCallFunc, Net_PtrInt lRevert)
+	void SetSameThreadEvent(CBasicSessionNet* pSession, CBasicSessionNet::pCallSameRefNetSessionFunc pCallFunc, intptr_t lRevert)
 	{
 		pCallFunc(pSession, lRevert);
 	}
@@ -110,7 +132,7 @@ public:
 	virtual ~CBasicNetMgv()
 	{
 		//release net
-		CBasicSessionNet::CloseSocket();
+		CBasicSessionNet::CloseNetSocket();
 	}
 public:
 	event	m_clocktimer;
@@ -203,9 +225,22 @@ void NetOnTimer(evutil_socket_t fd, short event, void *arg)
 	return;
 }
 
-void CBasicSessionNet::Initialize(pGetConfFunc func)
+///////////////////////////////////////////////////////////////////////////////////////////////////
+CBasicNetInitObject::CBasicNetInitObject()
+{
+	CBasicSingletonNetMgv::Instance();
+}
+CBasicNetInitObject::~CBasicNetInitObject()
+{
+
+}
+
+void CBasicNetInitObject::Initialize(pGetConfFunc func)
 {
 	g_bTimeToKill = FALSE;
+
+	//使用自己的内存分配
+	event_set_mem_functions(basiclib::BasicAllocate, basiclib::BasicReallocate, basiclib::BasicDeallocate);
 #ifdef __LINUX
 	struct sigaction sa;
 	sa.sa_handler = SIG_IGN;
@@ -241,7 +276,7 @@ void CBasicSessionNet::Initialize(pGetConfFunc func)
 	for (int i = 0; i < g_nEventThreadCount; i++)
 	{
 		CNetThread* pThread = &g_pEventThreads[i];
-		
+
 		if (evutil_socketpair(AF_UNIX, SOCK_STREAM, 0, pThread->m_pair) == -1)
 		{
 			basiclib::BasicLogEventError("create evutil_socketpair error");
@@ -267,10 +302,10 @@ void CBasicSessionNet::Initialize(pGetConfFunc func)
 			tv.tv_usec = 0;
 			evtimer_add(&m_gNetMgrPoint->m_clocktimer, &tv);
 		}
-		
+
 		BasicCreateThread(WorkerThread, pThread, &(pThread->m_dwThreadID));
 	}
-	
+
 	//init all thread
 	while (g_nIntThreadCount != g_nEventThreadCount)
 	{
@@ -279,7 +314,7 @@ void CBasicSessionNet::Initialize(pGetConfFunc func)
 	event_config_free(cfg);
 }
 
-void CBasicSessionNet::CloseSocket()
+void CBasicNetInitObject::CloseNetSocket()
 {
 	TRACE("Start CloseSocket!");
 	g_bTimeToKill = TRUE;
@@ -316,19 +351,13 @@ void CBasicSessionNet::CloseSocket()
 			}
 		}
 
-		for (int i = 0; i < g_nEventThreadCount; i++)
-		{
-			CNetThread* pThread = &g_pEventThreads[i];
-			event_base_free(pThread->m_base);
-		}
 		delete[] g_pEventThreads;
 		g_pEventThreads = nullptr;
 	}
-
 	TRACE("End CloseSocket!");
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-CBasicSessionNet::CBasicSessionNet(Net_UInt nSessionID, bool bAddOnTimer)
+CBasicSessionNet::CBasicSessionNet(uint32_t nSessionID, bool bAddOnTimer)
 {
 	//init net
 	CBasicSingletonNetMgv::Instance();
@@ -340,7 +369,7 @@ CBasicSessionNet::CBasicSessionNet(Net_UInt nSessionID, bool bAddOnTimer)
 	m_unSessionStatus = 0;
 	if (m_bAddOnTimer)
 	{
-		g_pEventThreads[0].SetEvent(this, [](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+		g_pEventThreads[0].SetEvent(this, [](CBasicSessionNet* pSession, intptr_t lRevert)->void{
 			m_gNetMgrPoint->m_vtAddList.push_back(pSession);
 		}, 0);
 	}
@@ -374,7 +403,7 @@ void CBasicSessionNet::Release()
 		return;
 	SetToRelease();
 	Close(FALSE);
-	SetLibEvent([](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+	SetLibEvent([](CBasicSessionNet* pSession, intptr_t lRevert)->void{
 		if (pSession->GetSocketFD() == -1)
 			pSession->ReleaseCallback();
 	}, 0);	
@@ -382,7 +411,7 @@ void CBasicSessionNet::Release()
 
 void CBasicSessionNet::ReleaseCallback()
 {
-	g_pEventThreads[0].SetEvent(this, [](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+	g_pEventThreads[0].SetEvent(this, [](CBasicSessionNet* pSession, intptr_t lRevert)->void{
 		bool bAddOnTimer = lRevert;
 		m_gNetMgrPoint->m_vtDeathSession.push_back(pSession);
 		if (bAddOnTimer)
@@ -422,7 +451,7 @@ void CBasicSessionNet::Close(BOOL bRemote)
 
 	SetToClose();
 	//may be loop, take care
-	SetLibEvent([](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+	SetLibEvent([](CBasicSessionNet* pSession, intptr_t lRevert)->void{
 		if (pSession->CanClose())
 		{
 			BOOL bRemote = lRevert;
@@ -431,7 +460,7 @@ void CBasicSessionNet::Close(BOOL bRemote)
 	}, bRemote);
 }
 
-int CBasicSessionNet::RegistePreSend(CBasicPreSend* pFilter, Net_UInt dwRegOptions)
+int CBasicSessionNet::RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptions)
 {
 	if (pFilter != NULL)
 	{
@@ -448,7 +477,7 @@ int CBasicSessionNet::RegistePreSend(CBasicPreSend* pFilter, Net_UInt dwRegOptio
 	return 1;
 }
 
-void CBasicSessionNet::SetLibEvent(pCallSameRefNetSessionFunc pCallback, Net_PtrInt lRevert)
+void CBasicSessionNet::SetLibEvent(pCallSameRefNetSessionFunc pCallback, intptr_t lRevert)
 {
 	m_pThread->SetEvent(this, pCallback, lRevert);
 }
@@ -483,7 +512,7 @@ void OnLinkListenRead(int fd, short event, void *arg)
 	}
 }
 
-CBasicSessionNetServer::CBasicSessionNetServer(Net_UInt nSessionID) : CBasicSessionNet(nSessionID)
+CBasicSessionNetServer::CBasicSessionNetServer(uint32_t nSessionID) : CBasicSessionNet(nSessionID)
 {
 	m_nOnTimerTick = 0;
 	m_sessionIDMgr = nSessionID;
@@ -495,9 +524,9 @@ CBasicSessionNetServer::~CBasicSessionNetServer()
 
 }
 
-Net_UInt CBasicSessionNetServer::GetNewSessionID()
+uint32_t CBasicSessionNetServer::GetNewSessionID()
 {
-	Net_UInt nSessionID = 0;
+	uint32_t nSessionID = 0;
 	if (m_sessionIDQueue.try_dequeue(nSessionID))
 		return nSessionID;
 	return basiclib::BasicInterlockedIncrement((LONG*)&m_sessionIDMgr);
@@ -508,7 +537,7 @@ BOOL CBasicSessionNetServer::IsListen()
 	return (m_socketfd != -1);
 }
 
-Net_Int CBasicSessionNetServer::Listen(const char* lpszAddress, bool bWaitSuccess)
+int32_t CBasicSessionNetServer::Listen(const char* lpszAddress, bool bWaitSuccess)
 {
 	if (IsListen())
 		return BASIC_NET_ALREADY_LISTEN;
@@ -517,7 +546,7 @@ Net_Int CBasicSessionNetServer::Listen(const char* lpszAddress, bool bWaitSucces
 
 	m_strListenAddr = lpszAddress;
 
-	Net_Int lReturn = BASIC_NET_OK;
+	int32_t lReturn = BASIC_NET_OK;
 	evutil_socket_t socketfd = -1;
 	do
 	{
@@ -559,7 +588,7 @@ Net_Int CBasicSessionNetServer::Listen(const char* lpszAddress, bool bWaitSucces
 
 	if (lReturn == BASIC_NET_OK)
 	{
-		SetLibEvent([](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+		SetLibEvent([](CBasicSessionNet* pSession, intptr_t lRevert)->void{
 			evutil_socket_t socketfd = lRevert;
 			((CBasicSessionNetServer*)pSession)->InitListenEvent(lRevert);
 		}, socketfd);
@@ -614,13 +643,13 @@ void CBasicSessionNetServer::AcceptClient()
 	m_mapClientSession[pAcceptSession->GetSessionID()] = pAcceptSession;
 }
 
-Net_Int CBasicSessionNetServer::OnClientDisconnectCallback(CBasicSessionNetClient* pClient, Net_UInt p2)
+int32_t CBasicSessionNetServer::OnClientDisconnectCallback(CBasicSessionNetClient* pClient, uint32_t p2)
 {
 	//disconnect
-	Net_Int lRet = m_funcDisconnect ? m_funcDisconnect(pClient, p2) : BASIC_NET_OK;
+	int32_t lRet = m_funcDisconnect ? m_funcDisconnect(pClient, p2) : BASIC_NET_OK;
 
 	//delete
-	Net_UInt nSessionID = pClient->GetSessionID();
+	uint32_t nSessionID = pClient->GetSessionID();
 	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
 	m_mapClientSession.erase(nSessionID);
 	lock.Unlock();
@@ -633,7 +662,7 @@ Net_Int CBasicSessionNetServer::OnClientDisconnectCallback(CBasicSessionNetClien
 	return lRet;
 }
 
-CBasicSessionNetClient* CBasicSessionNetServer::CreateServerClientSession(Net_UInt nSessionID)
+CBasicSessionNetClient* CBasicSessionNetServer::CreateServerClientSession(uint32_t nSessionID)
 {
 	CBasicSessionNetClient* pNotify = ConstructSession(nSessionID);
 	pNotify->bind_rece(m_funcReceive);
@@ -649,13 +678,13 @@ CBasicSessionNetClient* CBasicSessionNetServer::CreateServerClientSession(Net_UI
 	return pNotify;
 }
 
-CBasicSessionNetClient* CBasicSessionNetServer::ConstructSession(Net_UInt nSessionID)
+CBasicSessionNetClient* CBasicSessionNetServer::ConstructSession(uint32_t nSessionID)
 {
 	return CBasicSessionNetClient::CreateClient(nSessionID, false);
 }
 
 //外部ontimer驱动1s
-void CBasicSessionNetServer::OnTimer(Net_UInt nTick)
+void CBasicSessionNetServer::OnTimer(uint32_t nTick)
 {
 	if (IsRelease())
 	{
@@ -667,7 +696,7 @@ void CBasicSessionNetServer::OnTimer(Net_UInt nTick)
 	{
 		if (!m_strListenAddr.IsEmpty() && !IsListen())
 		{
-			Net_Int lRet = Listen(m_strListenAddr.c_str());
+			int32_t lRet = Listen(m_strListenAddr.c_str());
 			if (BASIC_NET_OK == lRet)
 			{
 				basiclib::BasicLogEventV("ListenPort [%s] OK", m_strListenAddr.c_str());
@@ -700,12 +729,12 @@ void CBasicSessionNetServer::OnTimer(Net_UInt nTick)
 
 	OnTimerWithAllClient(m_nOnTimerTick, vtClient);
 }
-void CBasicSessionNetServer::OnTimerWithAllClient(Net_UInt nTick, VTClientSession& vtClients)
+void CBasicSessionNetServer::OnTimerWithAllClient(uint32_t nTick, VTClientSession& vtClients)
 {
 	
 }
 
-CRefBasicSessionNetClient CBasicSessionNetServer::GetClientBySessionID(Net_UInt nSessionID)
+CRefBasicSessionNetClient CBasicSessionNetServer::GetClientBySessionID(uint32_t nSessionID)
 {
 	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
 	MapClientSession::iterator iter = m_mapClientSession.find(nSessionID);
@@ -809,7 +838,7 @@ void OnLinkWrite(int fd, short event, void *arg)
 }
 
 
-CBasicSessionNetClient::CBasicSessionNetClient(Net_UInt nSessionID, bool bAddOnTimer) : CBasicSessionNet(nSessionID, bAddOnTimer)
+CBasicSessionNetClient::CBasicSessionNetClient(uint32_t nSessionID, bool bAddOnTimer) : CBasicSessionNet(nSessionID, bAddOnTimer)
 {
 	m_nSessionID = nSessionID;
 	m_usTimeoutShakeHandle = 10;
@@ -886,9 +915,9 @@ void CBasicSessionNetClient::Accept(evutil_socket_t s, sockaddr_storage& addr)
 	evutil_make_listen_socket_reuseable(s);
 	evutil_make_listen_socket_reuseable_port(s);
 
-	SetLibEvent([](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+	SetLibEvent([](CBasicSessionNet* pSession, intptr_t lRevert)->void{
 		evutil_socket_t socketfd = lRevert;
-		Net_Int nRet = ((CBasicSessionNetClient*)pSession)->OnConnect(BASIC_NETCODE_SUCC);
+		int32_t nRet = ((CBasicSessionNetClient*)pSession)->OnConnect(BASIC_NETCODE_SUCC);
 		if (nRet == BASIC_NET_OK || nRet == BASIC_NET_HC_RET_HANDSHAKE){
 			if (((CBasicSessionNetClient*)pSession)->IsConnected())
 				((CBasicSessionNetClient*)pSession)->InitClientEvent(socketfd, false);
@@ -918,7 +947,7 @@ void CBasicSessionNetClient::AddWriteEvent()
 	event_add(&m_wevent, NULL);
 }
 
-Net_Int CBasicSessionNetClient::OnConnect(Net_UInt dwNetCode)
+int32_t CBasicSessionNetClient::OnConnect(uint32_t dwNetCode)
 {
 	if (dwNetCode & BASIC_NETCODE_SUCC)
 	{
@@ -935,7 +964,7 @@ Net_Int CBasicSessionNetClient::OnConnect(Net_UInt dwNetCode)
 
 	ResetPreSend();
 
-	Net_Int lRet = _handle_connect(dwNetCode);
+	int32_t lRet = _handle_connect(dwNetCode);
 	//如果函数返回 BASIC_NET_HC_RET_HANDSHAKE，表示该连接需要进行握手。否则认为握手成功。
 	if (lRet == BASIC_NET_OK)
 	{
@@ -949,7 +978,7 @@ Net_Int CBasicSessionNetClient::OnConnect(Net_UInt dwNetCode)
 }
 
 //out timer
-void CBasicSessionNetClient::OnTimer(Net_UInt nTick)
+void CBasicSessionNetClient::OnTimer(uint32_t nTick)
 {
 	if (GetSessionStatus(TIL_SS_CLOSE) == TIL_SS_TOCLOSE)
 	{
@@ -969,7 +998,7 @@ void CBasicSessionNetClient::OnTimer(Net_UInt nTick)
 	}
 }
 
-BOOL CBasicSessionNetClient::IsRecTimeout(time_t tmNow, Net_UShort nTimeoutSecond)
+BOOL CBasicSessionNetClient::IsRecTimeout(time_t tmNow, uint16_t nTimeoutSecond)
 {
 	if (tmNow - m_stNet.m_tmLastRecTime >= nTimeoutSecond && nTimeoutSecond != 0)
 		return TRUE;
@@ -989,8 +1018,8 @@ void CBasicSessionNetClient::GetNetStatus(CBasicString& strStatus)
 {
 	BasicNetStat stNet;
 	GetNetStatInfo(stNet);
-	Net_UInt dwLinkNetStatus = GetSessionStatus(TIL_SS_LINK);
-	Net_UInt dwCloseNetStatus = GetSessionStatus(TIL_SS_CLOSE);
+	uint32_t dwLinkNetStatus = GetSessionStatus(TIL_SS_LINK);
+	uint32_t dwCloseNetStatus = GetSessionStatus(TIL_SS_CLOSE);
 	char szBuf[32] = { 0 };
 	if (dwCloseNetStatus != TIL_SS_NORMAL){
 		switch (dwCloseNetStatus){
@@ -1030,7 +1059,7 @@ void CBasicSessionNetClient::GetNetStatus(CBasicString& strStatus)
 	strStatus += strTemp;
 }
 
-Net_Int CBasicSessionNetClient::OnDisconnect(Net_UInt dwNetCode)
+int32_t CBasicSessionNetClient::OnDisconnect(uint32_t dwNetCode)
 {
 	_handle_disconnect(dwNetCode);
 	return BASIC_NET_OK;
@@ -1039,7 +1068,7 @@ Net_Int CBasicSessionNetClient::OnDisconnect(Net_UInt dwNetCode)
 void CBasicSessionNetClient::_OnIdle()
 {
 	m_unIdleCount++;
-	Net_UInt nState = GetSessionStatus(TIL_SS_SHAKEHANDLE_MASK);
+	uint32_t nState = GetSessionStatus(TIL_SS_SHAKEHANDLE_MASK);
 	if (nState == TIL_SS_SHAKEHANDLE_TRANSMIT)
 		OnIdle(m_unIdleCount);
 	if (m_unIdleCount > m_usTimeoutShakeHandle)
@@ -1049,18 +1078,18 @@ void CBasicSessionNetClient::_OnIdle()
 	}
 }
 
-Net_Int CBasicSessionNetClient::DoConnect()
+int32_t CBasicSessionNetClient::DoConnect()
 {
-	Net_UInt dwRelease = GetSessionStatus(TIL_SS_RELEASE_MASK);
-	Net_UInt dwLinkNetStatus = GetSessionStatus(TIL_SS_LINK);
-	Net_UInt dwCloseNetStatus = GetSessionStatus(TIL_SS_CLOSE);
+	uint32_t dwRelease = GetSessionStatus(TIL_SS_RELEASE_MASK);
+	uint32_t dwLinkNetStatus = GetSessionStatus(TIL_SS_LINK);
+	uint32_t dwCloseNetStatus = GetSessionStatus(TIL_SS_CLOSE);
 	if (dwRelease != 0)
 	{
 		return BASIC_NET_RELEASE_ERROR;
 	}
 	if (dwCloseNetStatus != TIL_SS_NORMAL)
 	{
-		Net_Int lRet = BASIC_NET_GENERIC_ERROR;
+		int32_t lRet = BASIC_NET_GENERIC_ERROR;
 		switch (dwCloseNetStatus)
 		{
 		case TIL_SS_TOCLOSE:
@@ -1073,7 +1102,7 @@ Net_Int CBasicSessionNetClient::DoConnect()
 	}
 	if (dwLinkNetStatus != TIL_SS_IDLE)
 	{
-		Net_Int lRet = BASIC_NET_GENERIC_ERROR;
+		int32_t lRet = BASIC_NET_GENERIC_ERROR;
 		switch (dwLinkNetStatus)
 		{
 		case TIL_SS_CONNECTING:
@@ -1094,7 +1123,7 @@ Net_Int CBasicSessionNetClient::DoConnect()
 		return BASIC_NET_INVALID_ADDRESS;
 	}
 	
-	Net_Int lReturn = BASIC_NET_OK;
+	int32_t lReturn = BASIC_NET_OK;
 	evutil_socket_t socketfd = -1;
 	do
 	{
@@ -1119,9 +1148,9 @@ Net_Int CBasicSessionNetClient::DoConnect()
 		int nRet = connect(socketfd, (::sockaddr*)&addr, addrlen);
 		if (nRet == 0)
 		{
-			SetLibEvent([](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+			SetLibEvent([](CBasicSessionNet* pSession, intptr_t lRevert)->void{
 				evutil_socket_t socketfd = lRevert;
-				Net_Int nRet = ((CBasicSessionNetClient*)pSession)->OnConnect(BASIC_NETCODE_SUCC);
+				int32_t nRet = ((CBasicSessionNetClient*)pSession)->OnConnect(BASIC_NETCODE_SUCC);
 				if (nRet == BASIC_NET_OK || nRet == BASIC_NET_HC_RET_HANDSHAKE){
 					if (((CBasicSessionNetClient*)pSession)->IsConnected())
 						((CBasicSessionNetClient*)pSession)->InitClientEvent(socketfd, false);
@@ -1136,7 +1165,7 @@ Net_Int CBasicSessionNetClient::DoConnect()
 		{
 			SetSessionStatus(TIL_SS_CONNECTING, TIL_SS_LINK);
 			//wait for write onconnect
-			SetLibEvent([](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+			SetLibEvent([](CBasicSessionNet* pSession, intptr_t lRevert)->void{
 				evutil_socket_t socketfd = lRevert;
 				((CBasicSessionNetClient*)pSession)->InitClientEvent(socketfd, true, false);
 			}, socketfd);
@@ -1156,7 +1185,7 @@ Net_Int CBasicSessionNetClient::DoConnect()
 	return lReturn;
 }
 
-Net_Int CBasicSessionNetClient::Connect(const char* lpszAddress)
+int32_t CBasicSessionNetClient::Connect(const char* lpszAddress)
 {
 	if (lpszAddress == nullptr || lpszAddress[0] == '\0')
 	{
@@ -1167,7 +1196,7 @@ Net_Int CBasicSessionNetClient::Connect(const char* lpszAddress)
 	return DoConnect();
 }
 
-Net_Int CBasicSessionNetClient::Send(void *pData, Net_Int cbData, Net_UInt dwFlag)
+int32_t CBasicSessionNetClient::Send(void *pData, int32_t cbData, uint32_t dwFlag)
 {
 	if (cbData <= 0)
 		return 0;
@@ -1200,12 +1229,12 @@ Net_Int CBasicSessionNetClient::Send(void *pData, Net_Int cbData, Net_UInt dwFla
 		return SendData(sendData, dwFlag);
 	}
 }
-Net_Int CBasicSessionNetClient::Send(basiclib::CBasicSmartBuffer& smBuf, Net_UInt dwFlag)
+int32_t CBasicSessionNetClient::Send(basiclib::CBasicSmartBuffer& smBuf, uint32_t dwFlag)
 {
 	return Send(smBuf.GetDataBuffer(), smBuf.GetDataLength(), dwFlag);
 }
 
-BOOL CBasicSessionNetClient::ReadBuffer(Net_Int lSend)
+BOOL CBasicSessionNetClient::ReadBuffer(int32_t lSend)
 {
 	int nLeft = m_outBuffer.len - lSend;
 	if (nLeft > 0)
@@ -1232,7 +1261,7 @@ void CBasicSessionNetClient::SendDataFromQueue()
 	}
 	BOOL bError = FALSE;
 	int nTotalSend = 0;
-	Net_Int lSend = 0;
+	int32_t lSend = 0;
 	while (ReadBuffer(lSend))
 	{
 		lSend = send(m_socketfd, m_outBuffer.buf, m_outBuffer.len, 0);
@@ -1295,7 +1324,7 @@ void CBasicSessionNetClient::LibEventThreadSendData()
 	SendDataFromQueue();
 }
 
-Net_Int CBasicSessionNetClient::SendData(SendDataToSendThread& sendData, Net_UInt dwFlag)
+int32_t CBasicSessionNetClient::SendData(SendDataToSendThread& sendData, uint32_t dwFlag)
 {
 	if (IsToClose())
 	{
@@ -1307,14 +1336,14 @@ Net_Int CBasicSessionNetClient::SendData(SendDataToSendThread& sendData, Net_UIn
 	}
 	m_msgQueue.MQPush(&sendData);
 	
-	SetLibEvent([](CBasicSessionNet* pSession, Net_PtrInt lRevert)->void{
+	SetLibEvent([](CBasicSessionNet* pSession, intptr_t lRevert)->void{
 		CBasicSessionNetClient* pClientSession = (CBasicSessionNetClient*)pSession;
 		pClientSession->LibEventThreadSendData();
 	});
 	return sendData.m_cbData;
 }
 
-void CBasicSessionNetClient::OnSendData(Net_UInt dwIoSize)
+void CBasicSessionNetClient::OnSendData(uint32_t dwIoSize)
 {
 	if (IsToClose() || !IsConnected())
 		return;
@@ -1324,9 +1353,9 @@ void CBasicSessionNetClient::OnSendData(Net_UInt dwIoSize)
 	m_unIdleCount = 0;
 }
 
-Net_Int CBasicSessionNetClient::OnReceive(Net_UInt dwNetCode, const char *pszData, Net_Int cbData)
+int32_t CBasicSessionNetClient::OnReceive(uint32_t dwNetCode, const char *pszData, int32_t cbData)
 {
-	Net_Int lRet = _handle_rece(BASIC_NETCODE_SUCC, pszData, cbData);
+	int32_t lRet = _handle_rece(BASIC_NETCODE_SUCC, pszData, cbData);
 	//返回 BASIC_NET_HR_RET_HANDSHAKE，表示握手成功。对于需要握手的连接，一定要在接收数据的处理函数里面返回这个值。
 	if ((lRet & BASIC_NET_HR_RET_HANDSHAKE) && !(lRet & NET_ERROR))
 	{
@@ -1334,13 +1363,13 @@ Net_Int CBasicSessionNetClient::OnReceive(Net_UInt dwNetCode, const char *pszDat
 	}
 	return lRet;
 }
-Net_Int CBasicSessionNetClient::OnIdle(Net_UInt dwIdleCount)
+int32_t CBasicSessionNetClient::OnIdle(uint32_t dwIdleCount)
 {
 	_handle_idle(dwIdleCount);
 	return BASIC_NET_OK;
 }
 
-void CBasicSessionNetClient::OnReceiveData(const char* pszData, Net_UInt dwIoSize)
+void CBasicSessionNetClient::OnReceiveData(const char* pszData, uint32_t dwIoSize)
 {
 	if (dwIoSize == 0)
 	{
@@ -1355,7 +1384,7 @@ void CBasicSessionNetClient::OnReceiveData(const char* pszData, Net_UInt dwIoSiz
 		return;
 	}
 
-	Net_Int lRet = 0;
+	int32_t lRet = 0;
 	m_stNet.OnReceiveData(nReceived);
 	if (m_pPreSend != NULL)
 	{
@@ -1365,7 +1394,7 @@ void CBasicSessionNetClient::OnReceiveData(const char* pszData, Net_UInt dwIoSiz
 	OnReceive(BASIC_NETCODE_SUCC, pszData, nReceived);
 }
 
-Net_Int CBasicSessionNetClient::PreReceiveData(Net_UInt dwNetCode, const char *pszData, Net_Int cbData)
+int32_t CBasicSessionNetClient::PreReceiveData(uint32_t dwNetCode, const char *pszData, int32_t cbData)
 {
 	const char* pPack = pszData;
 	long lPackLen = cbData;
@@ -1375,7 +1404,7 @@ Net_Int CBasicSessionNetClient::PreReceiveData(Net_UInt dwNetCode, const char *p
 	while (rRet == PACK_FILTER_NEXT)
 	{
 		//同一次接收，响应多次消息
-		Net_Int lRecRet = OnReceive(dwNetCode | BASIC_NETCODE_FILTER_HANDLE, m_bufCacheTmp.GetDataBuffer(), m_bufCacheTmp.GetDataLength());
+		int32_t lRecRet = OnReceive(dwNetCode | BASIC_NETCODE_FILTER_HANDLE, m_bufCacheTmp.GetDataBuffer(), m_bufCacheTmp.GetDataLength());
 		if (lRecRet < BASIC_NET_OK)	//收到错误包后可能被断开
 			return lRecRet;
 		m_bufCacheTmp.SetDataLength(0);
@@ -1467,18 +1496,18 @@ void CBasicSessionNetClient::OnReadEvent(void)
 
 void CBasicSessionNetClient::OnWriteEvent()
 {
-	Net_UInt dwStatus = GetSessionStatus(TIL_SS_LINK);
+	uint32_t dwStatus = GetSessionStatus(TIL_SS_LINK);
 	if (dwStatus == TIL_SS_CONNECTING)
 	{
 		int nErr = 0;
 		socklen_t nLen = sizeof(nErr);
 		getsockopt(m_socketfd, SOL_SOCKET, SO_ERROR, (char *)&nErr, &nLen);
-		Net_UInt dwNetCode = 0;
+		uint32_t dwNetCode = 0;
 		if (nErr == 0)
 		{
 			dwNetCode = BASIC_NETCODE_SUCC;
 		}
-		Net_Int nRet = OnConnect(dwNetCode);
+		int32_t nRet = OnConnect(dwNetCode);
 		if ((nRet == BASIC_NET_OK || nRet == BASIC_NET_HC_RET_HANDSHAKE) && dwNetCode == BASIC_NETCODE_SUCC){
 			if (IsConnected())
 				InitClientEvent(m_socketfd, false, true);
@@ -1490,9 +1519,9 @@ void CBasicSessionNetClient::OnWriteEvent()
 	}
 }
 
-Net_Int CBasicSessionNetClient::_handle_connect(Net_UInt dwNetCode)
+int32_t CBasicSessionNetClient::_handle_connect(uint32_t dwNetCode)
 {
-	Net_Int lRet = BASIC_NET_OK;
+	int32_t lRet = BASIC_NET_OK;
 	if (m_funcConnect)
 	{
 		CRefBasicSessionNet pRef = m_refSelf;
@@ -1500,9 +1529,9 @@ Net_Int CBasicSessionNetClient::_handle_connect(Net_UInt dwNetCode)
 	}
 	return lRet;
 }
-Net_Int CBasicSessionNetClient::_handle_disconnect(Net_UInt dwNetCode)
+int32_t CBasicSessionNetClient::_handle_disconnect(uint32_t dwNetCode)
 {
-	Net_Int lRet = BASIC_NET_OK;
+	int32_t lRet = BASIC_NET_OK;
 	if (m_funcDisconnect)
 	{
 		CRefBasicSessionNet pRef = m_refSelf;
@@ -1511,9 +1540,9 @@ Net_Int CBasicSessionNetClient::_handle_disconnect(Net_UInt dwNetCode)
 	return lRet;
 }
 
-Net_Int CBasicSessionNetClient::_handle_idle(Net_UInt dwNetCode)
+int32_t CBasicSessionNetClient::_handle_idle(uint32_t dwNetCode)
 {
-	Net_Int lRet = BASIC_NET_OK;
+	int32_t lRet = BASIC_NET_OK;
 	if (m_funcIdle)
 	{
 		CRefBasicSessionNet pRef = m_refSelf;
@@ -1521,9 +1550,9 @@ Net_Int CBasicSessionNetClient::_handle_idle(Net_UInt dwNetCode)
 	}
 	return lRet;
 }
-Net_Int CBasicSessionNetClient::_handle_error(Net_UInt dwNetCode, Net_Int lRetCode)
+int32_t CBasicSessionNetClient::_handle_error(uint32_t dwNetCode, int32_t lRetCode)
 {
-	Net_Int lRet = BASIC_NET_OK;
+	int32_t lRet = BASIC_NET_OK;
 	if (m_funcError)
 	{
 		CRefBasicSessionNet pRef = m_refSelf;
@@ -1531,9 +1560,9 @@ Net_Int CBasicSessionNetClient::_handle_error(Net_UInt dwNetCode, Net_Int lRetCo
 	}
 	return lRet;
 }
-Net_Int CBasicSessionNetClient::_handle_rece(Net_UInt dwNetCode, const char *pszData, Net_Int cbData)
+int32_t CBasicSessionNetClient::_handle_rece(uint32_t dwNetCode, const char *pszData, int32_t cbData)
 {
-	Net_Int lRet = BASIC_NET_OK;
+	int32_t lRet = BASIC_NET_OK;
 	if (m_funcReceive)
 	{
 		CRefBasicSessionNet pRef = m_refSelf;
@@ -1541,9 +1570,9 @@ Net_Int CBasicSessionNetClient::_handle_rece(Net_UInt dwNetCode, const char *psz
 	}
 	return lRet;
 }
-Net_Int CBasicSessionNetClient::_handle_send(Net_UInt dwNetCode, Net_Int cbSend)
+int32_t CBasicSessionNetClient::_handle_send(uint32_t dwNetCode, int32_t cbSend)
 {
-	Net_Int lRet = BASIC_NET_OK;
+	int32_t lRet = BASIC_NET_OK;
 	if (m_funcSend)
 	{
 		CRefBasicSessionNet pRef = m_refSelf;

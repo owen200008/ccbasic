@@ -42,6 +42,7 @@ LPTOP_LEVEL_EXCEPTION_FILTER CBasicWinExceptionReport::m_previousFilter;
 HANDLE CBasicWinExceptionReport::m_hProcess;
 BOOL CBasicWinExceptionReport::m_bRestart = TRUE;
 BOOL CBasicWinExceptionReport::m_bToClose = FALSE;
+BOOL CBasicWinExceptionReport::m_bLog = TRUE;
 
 // Declare global instance of class
 CBasicWinExceptionReport* g_WheatyExceptionReport = NULL;

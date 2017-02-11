@@ -20,17 +20,14 @@
 class CCommonClientSession : public basiclib::CBasicSessionNetClient
 {
 public:
-	static CCommonClientSession* CreateCCommonClientSession(Net_UInt nSessionID){ return new CCommonClientSession(nSessionID); }
+	static CCommonClientSession* CreateCCommonClientSession(uint32_t nSessionID){ return new CCommonClientSession(nSessionID); }
 
 protected:
-	CCommonClientSession(Net_UInt nSessionID);
+	CCommonClientSession(uint32_t nSessionID);
 	virtual ~CCommonClientSession();
 public:
-	virtual Net_Int Connect(const char* lpszAddress);
-	virtual Net_Int OnDisconnect(Net_UInt dwNetCode);
-
-	//！ 自身不存在定时器,由外部调用
-	virtual void OnTimer(Net_UInt nTickTime);
+	virtual int32_t Connect(const char* lpszAddress);
+	virtual int32_t OnDisconnect(uint32_t dwNetCode);
 };
 
 #endif 

@@ -6,15 +6,16 @@
 #include "misc/fastdelegatetest.h"
 #include "exception/stackwalkcheck.h"
 #include "util\containerexttest.h"
+#include "thread\threadtest.h"
+#include "coroutine\coroutinetest.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	CBasicBitstream ins;
-	Net_Map<Net_Int, Net_Int> mapData;
-	ins << mapData;
+	TestCoroutine();
+	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
-	TestContainExt();
+	//TestContainExt();
 	getchar();
 	return 0;
 }

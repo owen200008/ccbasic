@@ -21,8 +21,6 @@ __NS_BASIC_START
 class _BASIC_DLL_API CBasicString : public tstring_s
 {
 public:
-	BASIC_CREATEFUNC(CBasicString)
-
 	CBasicString();
 	CBasicString(const char* lpsz);
 	CBasicString(const char* lpch, int nLength);
@@ -298,18 +296,6 @@ public:
 	void Format(LPCTSTR lpszFormat, ...);
 	//! format string content by arglist
 	void FormatV(LPCTSTR lpszFormat, va_list argList);
-
-	/*
-	全局使用时（多个资源文件）使用lpszModuleName进行区分, 模块名和Basic_LoadStringSource时相同
-	*/
-	void FormatS(LPCTSTR lpszModuleName, LPCTSTR lpszFormatID, ...);
-	void FormatS(LPCTSTR lpszModuleName, DWORD dwFormatID, ...);
-
-	/*
-	全局使用时（多个资源文件）使用lpszModuleName进行区分, 模块名和Basic_LoadStringSource时相同
-	*/
-	BOOL LoadString(LPCTSTR lpszFormatID, LPCTSTR lpszModuleName = _T(""));
-	BOOL LoadString(DWORD dwFormatID, LPCTSTR lpszModuleName = _T(""));
 };
 
 

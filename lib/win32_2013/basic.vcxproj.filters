@@ -339,6 +339,18 @@
     <ClInclude Include="..\..\src\util\concurrentqueue\concurrentqueue.h">
       <Filter>util\concurrentqueue</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\datastruct\pbzk.h">
+      <Filter>datastruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\datastruct\stringex.h">
+      <Filter>datastruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\thread\basicpoll.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\algorithm\sha1\sha1.h">
+      <Filter>algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mem\mem.cpp">
@@ -550,6 +562,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\algorithm\zip\tlzipfile.cpp">
       <Filter>algorithm\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\datastruct\pbzk.cpp">
+      <Filter>datastruct</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\datastruct\stringex.cpp">
+      <Filter>datastruct</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\thread\basicpoll.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\algorithm\sha1\sha1.cpp">
+      <Filter>algorithm</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

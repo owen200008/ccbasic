@@ -73,10 +73,20 @@ public:
 		return (allocate(_Count));
 	}
 
+	void construct(pointer *_Ptr)
+	{	// default construct object at _Ptr
+		::new ((void *)_Ptr) _Ty();
+	}
 	void construct(pointer _Ptr, const _Ty& _Val)
 	{	// construct object at _Ptr with value _Val
 		//_Construct(_Ptr, _Val);
 		::new(_Ptr)_Ty(_Val);
+	}
+	template<class _Objty,
+	class... _Types>
+		void construct(_Objty *_Ptr, _Types&&... _Args)
+	{	// construct _Objty(_Types...) at _Ptr
+		::new (_Ptr) _Objty(std::forward<_Types>(_Args)...);
 	}
 
 	void destroy(pointer _Ptr)

@@ -194,25 +194,16 @@ local function adjust(r)
 end
 
 local buildin_types = {
-    char = 10,
     Net_Char = 10,
-    short = 11,
     Net_Short = 11,
-    int = 12,
     Net_Int = 12,
-    longlong = 13,
     Net_LONGLONG = 13,
-    double = 14,
     Net_Double = 14,
     Net_UChar = 15,
     Net_UShort = 16,
     Net_UInt = 17,
-    FLOPUserID = 17,
-    FLOPKey = 17,
-    string = 18,
     Net_CBasicString = 18,
     --外置的类型
-    CNetBasicValue = 100,
     Net_CNetBasicValue = 100,
 }
 

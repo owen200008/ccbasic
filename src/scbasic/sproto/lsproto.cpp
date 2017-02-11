@@ -1097,7 +1097,7 @@ luaopen_sproto_core(lua_State *L) {
 		{ "default", ldefault },
 		{ NULL, NULL },
 	};
-	//luaL_register(L, "sproto.core", l);
+	luaL_register(L, "sproto.core", l);
 	//luaL_newlib(L,l);
 	pushfunction_withbuffer(L, "encode", lencode);
 	pushfunction_withbuffer(L, "pack", lpack);

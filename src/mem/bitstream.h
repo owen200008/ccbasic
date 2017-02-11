@@ -25,19 +25,19 @@ class Net_Set : public basiclib::basic_set<T>
 {
 };
 //支持序列化的map和vector定义
-typedef Net_Vector<Net_Int>													VTNetInt;
+typedef Net_Vector<int32_t>													VTNetInt;
 typedef VTNetInt::iterator													VTNetIntIterator;
 typedef VTNetInt::const_iterator											VTNetIntIteratorConst;
-typedef Net_Vector<Net_UInt>				                                VTNetUInt;
+typedef Net_Vector<uint32_t>				                                VTNetUInt;
 typedef VTNetUInt::iterator													VTNetUIntIterator;
 typedef VTNetUInt::const_iterator											VTNetUIntIteratorConst;
-typedef Net_Map<Net_Int, Net_Int>											MapNetIntToInt;
+typedef Net_Map<int32_t, int32_t>											MapNetIntToInt;
 typedef MapNetIntToInt::iterator											MapNetIntToIntIterator;
 typedef MapNetIntToInt::const_iterator										MapNetIntToIntIteratorConst;
-typedef Net_Map<Net_UInt, Net_Int>											MapNetUIntToInt;
+typedef Net_Map<uint32_t, int32_t>											MapNetUIntToInt;
 typedef MapNetUIntToInt::iterator											MapNetUIntToIntIterator;
 typedef MapNetUIntToInt::const_iterator										MapNetUIntToIntIteratorConst;
-typedef Net_Map<Net_UInt, Net_UInt>					                        MapNetUIntToUInt;
+typedef Net_Map<uint32_t, uint32_t>					                        MapNetUIntToUInt;
 typedef MapNetUIntToUInt::iterator											MapNetUIntToUIntIterator;
 typedef MapNetUIntToUInt::const_iterator									MapNetUIntToUIntIteratorConst;
 
@@ -47,18 +47,20 @@ __NS_BASIC_START
 
 class CNetBasicValue;
 
-_BASIC_DLL_API int SerializeUChar(unsigned char* pBuffer, const Net_UChar v);
-_BASIC_DLL_API int SerializeUShort(unsigned char* pBuffer, const Net_UShort v);
-_BASIC_DLL_API int SerializeUInt(unsigned char* pBuffer, const Net_UInt v);
-_BASIC_DLL_API int SerializeLONGLONG(unsigned char* pBuffer, const Net_LONGLONG v);
-_BASIC_DLL_API int SerializeCBasicString(unsigned char* pBuffer, const Net_Char* v, Net_UShort usLength);
-_BASIC_DLL_API int UnSerializeUChar(unsigned char* pBuffer, Net_UChar& v);
-_BASIC_DLL_API int UnSerializeChar(unsigned char* pBuffer, Net_Char& v);
-_BASIC_DLL_API int UnSerializeUShort(unsigned char* pBuffer, Net_UShort& v);
-_BASIC_DLL_API int UnSerializeShort(unsigned char* pBuffer, Net_Short& v);
-_BASIC_DLL_API int UnSerializeUInt(unsigned char* pBuffer, Net_UInt& v);
-_BASIC_DLL_API int UnSerializeInt(unsigned char* pBuffer, Net_Int& v);
-_BASIC_DLL_API int UnSerializeLONGLONG(unsigned char* pBuffer, Net_LONGLONG& v);
+_BASIC_DLL_API int SerializeUChar(unsigned char* pBuffer, const uint8_t v);
+_BASIC_DLL_API int SerializeUShort(unsigned char* pBuffer, const uint16_t v);
+_BASIC_DLL_API int SerializeUInt3Bit(unsigned char* pBuffer, const uint32_t v);
+_BASIC_DLL_API int SerializeUInt(unsigned char* pBuffer, const uint32_t v);
+_BASIC_DLL_API int SerializeLONGLONG(unsigned char* pBuffer, const int64_t v);
+_BASIC_DLL_API int SerializeCBasicString(unsigned char* pBuffer, const int8_t* v, uint16_t usLength);
+_BASIC_DLL_API int UnSerializeUChar(unsigned char* pBuffer, uint8_t& v);
+_BASIC_DLL_API int UnSerializeChar(unsigned char* pBuffer, int8_t& v);
+_BASIC_DLL_API int UnSerializeUShort(unsigned char* pBuffer, uint16_t& v);
+_BASIC_DLL_API int UnSerializeShort(unsigned char* pBuffer, int16_t& v);
+_BASIC_DLL_API int UnSerializeUInt3Bit(unsigned char* pBuffer, uint32_t& v);
+_BASIC_DLL_API int UnSerializeUInt(unsigned char* pBuffer, uint32_t& v);
+_BASIC_DLL_API int UnSerializeInt(unsigned char* pBuffer, int32_t& v);
+_BASIC_DLL_API int UnSerializeLONGLONG(unsigned char* pBuffer, int64_t& v);
 _BASIC_DLL_API int UnSerializeCBasicString(unsigned char* pBuffer, basiclib::CBasicString& str);
 
 class _BASIC_DLL_API CBasicBitstream : public basiclib::CBasicSmartBuffer
@@ -73,26 +75,26 @@ public:
 	/////////////////////////////////////////////////////////////////////////////
 	//串行化
 	//字符串操作
-	CBasicBitstream& operator << (const Net_UChar v);
-	CBasicBitstream& operator << (const Net_Char v);
-	CBasicBitstream& operator << (const Net_UShort v);
-	CBasicBitstream& operator << (const Net_Short v);
-	CBasicBitstream& operator << (const Net_UInt v);
-	CBasicBitstream& operator << (const Net_Int v);
-	CBasicBitstream& operator << (const Net_LONGLONG v);
-	CBasicBitstream& operator << (const Net_Double v);
+	CBasicBitstream& operator << (const uint8_t v);
+	CBasicBitstream& operator << (const int8_t v);
+	CBasicBitstream& operator << (const uint16_t v);
+	CBasicBitstream& operator << (const int16_t v);
+	CBasicBitstream& operator << (const uint32_t v);
+	CBasicBitstream& operator << (const int32_t v);
+	CBasicBitstream& operator << (const int64_t v);
+	CBasicBitstream& operator << (const double v);
 	CBasicBitstream& operator << (const CNetBasicValue* pV);
 	CBasicBitstream& operator << (const CNetBasicValue& v);
 	CBasicBitstream& operator << (const Net_CBasicString* pV);
 	CBasicBitstream& operator << (const basiclib::CBasicSmartBuffer* pV);
-	CBasicBitstream& operator << (const Net_Char* v);
-	CBasicBitstream& operator << (const Net_UChar* v);
+	CBasicBitstream& operator << (const int8_t* v);
+	CBasicBitstream& operator << (const uint8_t* v);
 	CBasicBitstream& operator << (const Net_CBasicString& data);
 	CBasicBitstream& operator << (const basiclib::CBasicSmartBuffer& pV);
 	template<typename A>
 	CBasicBitstream& operator << (const Net_Set<A>& data)
 	{
-		Net_UShort uSize = data.size();
+		uint16_t uSize = data.size();
 		*this << uSize;
 		for (auto& key : data)
 		{
@@ -103,7 +105,7 @@ public:
 	template<class A>
 	CBasicBitstream& operator << (const Net_Vector<A>& data)
 	{
-		Net_UShort uSize = data.size();
+		uint16_t uSize = data.size();
 		*this << uSize;
 		for (auto& key : data)
 		{
@@ -113,7 +115,7 @@ public:
 	}
 	template<class A, class B>
 	CBasicBitstream& operator << (const Net_Map<A, B>& data){
-		Net_UShort uSize = data.size();
+		uint16_t uSize = data.size();
 		*this << uSize;
 		for (auto& key : data)
 		{
@@ -125,30 +127,30 @@ public:
 	/////////////////////////////////////////////////////////////////////////////
 	//反串行化
 	//字符串
-	CBasicBitstream& operator >> (Net_UChar& v);
-	CBasicBitstream& operator >> (Net_Char& v);
-	CBasicBitstream& operator >> (Net_UShort& v);
-	CBasicBitstream& operator >> (Net_Short& v);
-	CBasicBitstream& operator >> (Net_UInt& v);
-	CBasicBitstream& operator >> (Net_Int& v);
-	CBasicBitstream& operator >> (Net_LONGLONG& v);
-	CBasicBitstream& operator >> (Net_Double& v);
+	CBasicBitstream& operator >> (uint8_t& v);
+	CBasicBitstream& operator >> (int8_t& v);
+	CBasicBitstream& operator >> (uint16_t& v);
+	CBasicBitstream& operator >> (int16_t& v);
+	CBasicBitstream& operator >> (uint32_t& v);
+	CBasicBitstream& operator >> (int32_t& v);
+	CBasicBitstream& operator >> (int64_t& v);
+	CBasicBitstream& operator >> (double& v);
 	CBasicBitstream& operator >> (Net_CBasicString* pV);
 	CBasicBitstream& operator >> (basiclib::CBasicSmartBuffer* pV);
 	CBasicBitstream& operator >> (CNetBasicValue* pV);
 	CBasicBitstream& operator >> (CNetBasicValue& v);
-	CBasicBitstream& operator >> (Net_Char* v);
-	CBasicBitstream& operator >> (Net_UChar* v);
+	CBasicBitstream& operator >> (int8_t* v);
+	CBasicBitstream& operator >> (uint8_t* v);
 	CBasicBitstream& operator >> (Net_CBasicString& data);
 	CBasicBitstream& operator >> (basiclib::CBasicSmartBuffer& pV);
 	template<class A>
 	CBasicBitstream& operator >> (Net_Set<A>& data)
 	{
-		Net_UShort uSize = 0;
+		uint16_t uSize = 0;
 		*this >> uSize;
 		if (uSize > 0)
 		{
-			for (Net_UShort i = 0; i < uSize; i++)
+			for (uint16_t i = 0; i < uSize; i++)
 			{
 				A intKey;
 				*this >> intKey;
@@ -160,12 +162,12 @@ public:
 	template<class A>
 	CBasicBitstream& operator >> (Net_Vector<A>& data)
 	{
-		Net_UShort uSize = 0;
+		uint16_t uSize = 0;
 		*this >> uSize;
 		if (uSize > 0)
 		{
 			data.resize(uSize);
-			for (Net_UShort i = 0; i < uSize; i++)
+			for (uint16_t i = 0; i < uSize; i++)
 			{
 				*this >> data[i];
 			}
@@ -174,9 +176,9 @@ public:
 	}
 	template<class A, class B>
 	CBasicBitstream& operator >> (Net_Map<A, B>& data){
-		Net_UShort uSize = 0;
+		uint16_t uSize = 0;
 		*this >> uSize;
-		for (Net_UShort i = 0; i < uSize; i++)
+		for (uint16_t i = 0; i < uSize; i++)
 		{
 			A intKey = 0;
 			*this >> intKey;
@@ -185,7 +187,7 @@ public:
 		return *this;
 	}
 	/////////////////////////////////////////////////////////////////////////////
-	void SerializeDataBuffer(const Net_Char* pData, Net_UShort usLength);
+	void SerializeDataBuffer(const int8_t* pData, uint16_t usLength);
 	/////////////////////////////////////////////////////////////////////////////
 	void UnSerializeCString(Net_CBasicString* pV);
 	void UnSerializeSmbuf(basiclib::CBasicSmartBuffer* pV);
@@ -196,8 +198,8 @@ protected:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const double TINY_VALUE = (1E-10);
 
-const char		g_strDoubleNull[8] = { (char)0, (char)0, (char)0, (char)0, (char)0, (char)0, (char)0, (char)0x80 };
-const double	DTE_DOUBLE_NULL = *(double*)g_strDoubleNull;
+const char		g_strNet_DoubleNull[8] = { (char)0, (char)0, (char)0, (char)0, (char)0, (char)0, (char)0, (char)0x80 };
+const double	DTEdouble_NULL = *(double*)g_strNet_DoubleNull;
 
 #define DTE_CHAR_NULL		"NUL"			//字符串空值
 #define DTE_LONG_NULL		LONG_MIN		//整数空值
@@ -207,9 +209,9 @@ const double	DTE_DOUBLE_NULL = *(double*)g_strDoubleNull;
 #define IsColorNull(x)		((x) == DTE_COLOR_NULL)
 #define SetColorNull(x)		(x) = DTE_COLOR_NULL
 
-#define IsDoubleNullExt(x)		((((x)==basiclib::DTE_DOUBLE_NULL)) && ((char*)(&x))[7] == (char)0x80)
-#define IsDoubleNull(x)			(((x)==NULL) || (((*(x)==basiclib::DTE_DOUBLE_NULL)) && ((char*)(x))[7] == (char)0x80))
-#define SetDoubleNull(x)		x=basiclib::DTE_DOUBLE_NULL
+#define IsNet_DoubleNullExt(x)		((((x)==basiclib::DTEdouble_NULL)) && ((char*)(&x))[7] == (char)0x80)
+#define IsNet_DoubleNull(x)			(((x)==NULL) || (((*(x)==basiclib::DTEdouble_NULL)) && ((char*)(x))[7] == (char)0x80))
+#define SetNet_DoubleNull(x)		x=basiclib::DTEdouble_NULL
 
 #define	IsLongNull(x)			(x==DTE_LONG_NULL)
 #define SetLongNull(x)			x=DTE_LONG_NULL
@@ -229,24 +231,24 @@ class _BASIC_DLL_API CNetBasicValue : public basiclib::CBasicObject
 public:
 	CNetBasicValue();
 	~CNetBasicValue();
-	CNetBasicValue(const Net_Double& value);
-	CNetBasicValue(const Net_LONGLONG& value);
-	CNetBasicValue(const Net_Int value);
+	CNetBasicValue(const double& value);
+	CNetBasicValue(const int64_t& value);
+	CNetBasicValue(const int32_t value);
 	CNetBasicValue(const char* value, size_t len = NullLen);
 	CNetBasicValue(const CNetBasicValue& value);
 
-	void			SetLong(const Net_Int value);
-	void			SetDouble(const Net_Double& value);
-	void			SetLongLong(const Net_LONGLONG& value);
+	void			SetLong(const int32_t value);
+	void			SetNet_Double(const double& value);
+	void			SetLongLong(const int64_t& value);
 	void			SetString(const char* value, size_t len = NullLen);
 
-	Net_Int			GetLong() const;
-	Net_Double		GetDouble() const;
-	Net_LONGLONG	GetLongLong() const;
+	int32_t			GetLong() const;
+	double		GetNet_Double() const;
+	int64_t	GetLongLong() const;
 	CBasicString	GetString() const;
 	const char*		GetStringRef() const;
 
-	Net_UChar		GetDataType() const{ return m_type; }
+	uint8_t		GetDataType() const{ return m_type; }
 	long			GetDataLength() const;
 
 	bool			IsNull() const;
@@ -255,38 +257,38 @@ public:
 
 	// data comparison
 	int CompareBasicValue(const CNetBasicValue* pRhs) const;
-	int CompareInt(Net_Int rhs) const;
-	int CompareDouble(const Net_Double& rhs) const;
-	int CompareLongLong(Net_LONGLONG rhs) const;
+	int CompareInt(int32_t rhs) const;
+	int CompareNet_Double(const double& rhs) const;
+	int CompareLongLong(int64_t rhs) const;
 	int ComparePointString(const char* rhs, size_t len) const;
 
 	// assignment
 	const CNetBasicValue& operator = (const CNetBasicValue& rhs);
-	const CNetBasicValue& operator = (const Net_Int rhs);
-	const CNetBasicValue& operator = (const Net_Double& rhs);
-	const CNetBasicValue& operator = (const Net_LONGLONG& rhs);
+	const CNetBasicValue& operator = (const int32_t rhs);
+	const CNetBasicValue& operator = (const double& rhs);
+	const CNetBasicValue& operator = (const int64_t& rhs);
 	const CNetBasicValue& operator = (const char* rhs);
 	// add
 	const CNetBasicValue& operator += (const CNetBasicValue& rhs);
-	const CNetBasicValue& operator += (const Net_Int rhs);
-	const CNetBasicValue& operator += (const Net_Double& rhs);
-	const CNetBasicValue& operator += (const Net_LONGLONG& rhs);
+	const CNetBasicValue& operator += (const int32_t rhs);
+	const CNetBasicValue& operator += (const double& rhs);
+	const CNetBasicValue& operator += (const int64_t& rhs);
 	const CNetBasicValue& operator += (const char* rhs);
 	// sub
 	const CNetBasicValue& operator -= (const CNetBasicValue& rhs);
-	const CNetBasicValue& operator -= (const Net_Int rhs);
-	const CNetBasicValue& operator -= (const Net_Double& rhs);
-	const CNetBasicValue& operator -= (const Net_LONGLONG& rhs);
+	const CNetBasicValue& operator -= (const int32_t rhs);
+	const CNetBasicValue& operator -= (const double& rhs);
+	const CNetBasicValue& operator -= (const int64_t& rhs);
 	// multi
 	const CNetBasicValue& operator *= (const CNetBasicValue& rhs);
-	const CNetBasicValue& operator *= (const Net_Int rhs);
-	const CNetBasicValue& operator *= (const Net_Double& rhs);
-	const CNetBasicValue& operator *= (const Net_LONGLONG& rhs);
+	const CNetBasicValue& operator *= (const int32_t rhs);
+	const CNetBasicValue& operator *= (const double& rhs);
+	const CNetBasicValue& operator *= (const int64_t& rhs);
 	// div
 	const CNetBasicValue& operator /= (const CNetBasicValue& rhs);
-	const CNetBasicValue& operator /= (const Net_Int rhs);
-	const CNetBasicValue& operator /= (const Net_Double& rhs);
-	const CNetBasicValue& operator /= (const Net_LONGLONG& rhs);
+	const CNetBasicValue& operator /= (const int32_t rhs);
+	const CNetBasicValue& operator /= (const double& rhs);
+	const CNetBasicValue& operator /= (const int64_t& rhs);
 
 	//序列化
 	void SeriazeSMBuf(basiclib::CBasicSmartBuffer& smBuf) const;
@@ -297,22 +299,22 @@ public:
 	//获取序列化长度
 	int GetSeriazeLength() const;
 protected:
-	void			toData(Net_Int& lValue) const;
-	void			toData(Net_Double& fValue) const;
-	void			toData(Net_LONGLONG& llValue) const;
+	void			toData(int32_t& lValue) const;
+	void			toData(double& fValue) const;
+	void			toData(int64_t& llValue) const;
 
 	void	Release();
 	void	EmptyValue();
 	void	AddString(const char* lpStr);
-	static	CBasicString DataToString(Net_UShort nDataType, const void* value);
+	static	CBasicString DataToString(uint16_t nDataType, const void* value);
 protected:
-	Net_UChar				m_type;
+	uint8_t				m_type;
 	union{
-		Net_Int				m_lValue[2];
-		Net_LONGLONG		m_llValue;
-		Net_Double			m_dValue;
-		Net_Char			m_cValue[8];
-		Net_CBasicString*	m_pBufValue;
+		int32_t				m_lValue[2];
+		int64_t				m_llValue;
+		double				m_dValue;
+		char				m_cValue[8];
+		CBasicString*		m_pBufValue;
 	};
 };
 
@@ -348,7 +350,7 @@ inline bool operator>(const CNetBasicValue& lhs, const CNetBasicValue& rhs)
 {
 	return lhs.CompareBasicValue(&rhs) > 0;
 }
-inline bool operator>(const CNetBasicValue& lhs, const Net_Int rhs)
+inline bool operator>(const CNetBasicValue& lhs, const int32_t rhs)
 {
 	return lhs.CompareInt(rhs) > 0;
 }
@@ -357,7 +359,7 @@ inline bool operator>=(const CNetBasicValue& lhs, const CNetBasicValue& rhs)
 {
 	return lhs.CompareBasicValue(&rhs) >= 0;
 }
-inline bool operator>=(const CNetBasicValue& lhs, const Net_Int rhs)
+inline bool operator>=(const CNetBasicValue& lhs, const int32_t rhs)
 {
 	return lhs.CompareInt(rhs) >= 0;
 }
@@ -366,7 +368,7 @@ inline bool operator<(const CNetBasicValue& lhs, const CNetBasicValue& rhs)
 {
 	return lhs.CompareBasicValue(&rhs) < 0;
 }
-inline bool operator<(const CNetBasicValue& lhs, const Net_Int rhs)
+inline bool operator<(const CNetBasicValue& lhs, const int32_t rhs)
 {
 	return lhs.CompareInt(rhs) < 0;
 }
@@ -374,7 +376,7 @@ inline bool operator<=(const CNetBasicValue& lhs, const CNetBasicValue& rhs)
 {
 	return lhs.CompareBasicValue(&rhs) <= 0;
 }
-inline bool operator<=(const CNetBasicValue& lhs, const Net_Int rhs)
+inline bool operator<=(const CNetBasicValue& lhs, const int32_t rhs)
 {
 	return lhs.CompareInt(rhs) <= 0;
 }
@@ -383,7 +385,7 @@ inline bool operator==(const CNetBasicValue& lhs, const CNetBasicValue& rhs)
 {
 	return lhs.CompareBasicValue(&rhs) == 0;
 }
-inline bool operator==(const CNetBasicValue& lhs, const Net_Int rhs)
+inline bool operator==(const CNetBasicValue& lhs, const int32_t rhs)
 {
 	return lhs.CompareInt(rhs) == 0;
 }
@@ -391,7 +393,7 @@ inline bool operator!=(const CNetBasicValue& lhs, const CNetBasicValue& rhs)
 {
 	return lhs.CompareBasicValue(&rhs) != 0;
 }
-inline bool operator!=(const CNetBasicValue& lhs, const Net_Int rhs)
+inline bool operator!=(const CNetBasicValue& lhs, const int32_t rhs)
 {
 	return lhs.CompareInt(rhs) != 0;
 }
@@ -400,7 +402,18 @@ inline bool operator!=(const CNetBasicValue& lhs, const Net_Int rhs)
 #pragma pack()
 __NS_BASIC_END
 
-typedef basiclib::CNetBasicValue		Net_CNetBasicValue;                                   //define the cstring
+/////////////////////////////////////////////////////////////////////////////////////////////
+//结构定义
+typedef uint8_t						Net_UChar;											//1个字节
+typedef int8_t						Net_Char;											//1个字节
+typedef uint16_t					Net_UShort;											//无符号2字节
+typedef int16_t						Net_Short;											//2字节
+typedef uint32_t					Net_UInt;											//无符号4字节
+typedef int32_t						Net_Int;											//4字节
+typedef int64_t						Net_LONGLONG;										//8字节
+typedef double						Net_Double;											//8字节
+typedef intptr_t					Net_PtrInt;											//same with point size
+typedef basiclib::CNetBasicValue	Net_CNetBasicValue;                                   //define the cstring
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 

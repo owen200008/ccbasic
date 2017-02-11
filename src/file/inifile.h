@@ -296,7 +296,7 @@ public:
 	void SetLong(const char* key1, const char* key2, long lValue)
 	{
 		char szBuf[128];
-		sprintf(szBuf, "%d", (Net_Int)lValue);
+		sprintf(szBuf, "%d", (int32_t)lValue);
 		_SetData(key1, key2, szBuf);
 	}
 

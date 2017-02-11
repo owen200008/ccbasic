@@ -429,28 +429,5 @@ typedef unsigned long long	__uint64;
 }
 #endif
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-#define BASIC_CREATEFUNC(__TYPE__) \
-static __TYPE__* create() \
-{\
-return new __TYPE__(); \
-}\
-static void release(__TYPE__* pRelease)\
-{\
-delete pRelease; \
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-//结构定义
-typedef unsigned char				Net_UChar;											//1个字节
-typedef char						Net_Char;											//1个字节
-typedef unsigned short				Net_UShort;											//无符号2字节
-typedef short						Net_Short;											//2字节
-typedef unsigned int				Net_UInt;											//无符号4字节
-typedef int							Net_Int;											//4字节
-typedef long long					Net_LONGLONG;										//8字节
-typedef double						Net_Double;											//8字节
-typedef intptr_t					Net_PtrInt;											//same with point size
-
 #endif	//__TYPES_H__
 

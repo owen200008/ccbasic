@@ -1236,15 +1236,15 @@ bool CBasicZipFile::repairFile()
 #pragma pack(1)
 struct basicfile_data_block
 {
-	Net_UChar		m_cSignFileBegin;//标识符1
-	Net_UShort		bit_flag;		// 全局方式位标记 ?
-	Net_UChar		zip_type;		// 压缩方式
-	Net_UChar		m_cSignFileMid;//标识符2
-	Net_UInt		crc;			// crc32校验
-	Net_UInt		size_zipped;	// 压缩后尺寸
-	Net_UInt		size_unzipped;	// 未压缩尺寸
-	Net_UShort		size_filename;	// 文件名长度
-	Net_UChar		m_cSignFileEnd;//标识符3
+	uint8_t			m_cSignFileBegin;//标识符1
+	uint16_t		bit_flag;		// 全局方式位标记 ?
+	uint8_t			zip_type;		// 压缩方式
+	uint8_t			m_cSignFileMid;//标识符2
+	uint32_t		crc;			// crc32校验
+	uint32_t		size_zipped;	// 压缩后尺寸
+	uint32_t		size_unzipped;	// 未压缩尺寸
+	uint16_t		size_filename;	// 文件名长度
+	uint8_t			m_cSignFileEnd;//标识符3
 	// 文件名
 	// 扩展
 	// 内容
@@ -1263,19 +1263,19 @@ struct basicfile_data_block
 
 struct basicfile_dir_block
 {
-	Net_UChar	m_cSignFileBegin;//标识符1
-	Net_UShort	bit_flag;				// 全局方式位标记
-	Net_UChar	zip_type;				// 压缩方式
-	Net_UChar	m_cSignFileMid;//标识符1
-	Net_UInt	crc;					// crc32校验
-	Net_UInt	size_zipped;			// 压缩后尺寸
-	Net_UInt	size_unzipped;			// 未压缩尺寸
-	Net_UShort	size_filename;			// 文件名长度
-	Net_UShort	size_extend;			// 扩展记录长度
-	Net_UShort	property_internal_file;	// 内部文件属性
-	Net_UInt	property_outer_file;	// 外部文件属性
-	Net_UInt	local_header_offset;	// 局部头部偏移量
-	Net_UChar	m_cSignFileEnd;//标识符3
+	uint8_t		m_cSignFileBegin;//标识符1
+	uint16_t	bit_flag;				// 全局方式位标记
+	uint8_t		zip_type;				// 压缩方式
+	uint8_t		m_cSignFileMid;//标识符1
+	uint32_t	crc;					// crc32校验
+	uint32_t	size_zipped;			// 压缩后尺寸
+	uint32_t	size_unzipped;			// 未压缩尺寸
+	uint16_t	size_filename;			// 文件名长度
+	uint16_t	size_extend;			// 扩展记录长度
+	uint16_t	property_internal_file;	// 内部文件属性
+	uint32_t	property_outer_file;	// 外部文件属性
+	uint32_t	local_header_offset;	// 局部头部偏移量
+	uint8_t		m_cSignFileEnd;//标识符3
 	// 文件名
 	// 扩展字段
 	// 文件注释
@@ -1294,12 +1294,12 @@ struct basicfile_dir_block
 
 struct basicfile_end
 {
-	Net_UChar	m_cSignFileBegin;//标识符1
-	Net_UChar	m_cSignFileMid;//标识符1
-	Net_UShort	file_num_total;				// 目录区中记录总数
-	Net_UInt	size_dir;					// 目录区尺寸大小
-	Net_UInt	offset_dir_to_first_disk;	// 目录区对第一张磁盘的偏移量
-	Net_UChar	m_cSignFileEnd;//标识符3
+	uint8_t		m_cSignFileBegin;//标识符1
+	uint8_t		m_cSignFileMid;//标识符1
+	uint16_t	file_num_total;				// 目录区中记录总数
+	uint32_t	size_dir;					// 目录区尺寸大小
+	uint32_t	offset_dir_to_first_disk;	// 目录区对第一张磁盘的偏移量
+	uint8_t		m_cSignFileEnd;//标识符3
 
 	// 注释
 	basicfile_end()
@@ -1346,7 +1346,7 @@ struct basicdir_info : public basicbase_file_info
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static Net_Int k[4] = { 0x1F0DA000, 0x11223344, 0x12345678, 0x38682BAF };
+static int32_t k[4] = { 0x1F0DA000, 0x11223344, 0x12345678, 0x38682BAF };
 static int g_defaultZipLevel = 9;
 
 
@@ -1396,7 +1396,7 @@ basicfile_info*	__addfile(CBasicCombinFile* pFile, basicfile_end& m_end, basicli
 	dirblock.local_header_offset = m_end.offset_dir_to_first_disk;
 	fileinfo->offset_data_block = dirblock.local_header_offset;
 
-	Net_UInt datalen = dataBuffer->GetLength();
+	uint32_t datalen = dataBuffer->GetLength();
 	bool rval = false;
 	basiclib::CBasicStaticBuffer zippedBuffer;
 	if (block.size_unzipped > 0)
@@ -1524,7 +1524,7 @@ basicdir_info* __addpath(CBasicCombinFile* pFile, basicfile_end& m_end, basicfil
 class CBasicCombinFile::ShortenOffset
 {
 public:
-	ShortenOffset(Net_UInt diroffset, Net_UInt dirlen) : __diroffset(diroffset), __dirlen(dirlen){}
+	ShortenOffset(uint32_t diroffset, uint32_t dirlen) : __diroffset(diroffset), __dirlen(dirlen){}
 
 	int	operator()(const pair<basiclib::CBasicString, basicbase_file_info*>& p)
 	{
@@ -1541,15 +1541,15 @@ public:
 		return 0;
 	}
 protected:
-	Net_UInt	__diroffset;
-	Net_UInt	__dirlen;
+	uint32_t	__diroffset;
+	uint32_t	__dirlen;
 };
 
 
 void removeIndexFromDirBuffer(CBasicCombinFile* pFile, basicfile_end& m_end, basiclib::CBasicSmartBuffer& bufIndex, basicfile_info* fileinfo)
 {
-	Net_UInt diroffset = 0;
-	Net_UInt dirlen = 0;
+	uint32_t diroffset = 0;
+	uint32_t dirlen = 0;
 
 	diroffset = fileinfo->offset_dir_block;
 	dirlen = sizeof(basicfile_dir_block)+fileinfo->file_name.length();
@@ -1752,7 +1752,7 @@ void CBasicCombinFile::Close()
 	else
 		CBasicFileObj::Close();
 }
-Net_UShort CBasicCombinFile::GetFileNumTotal() const
+uint16_t CBasicCombinFile::GetFileNumTotal() const
 {
 	return m_pEnd->file_num_total;
 }
@@ -2004,9 +2004,9 @@ bool CBasicCombinFile::DeletePackFile(const char* filepath)
 	Seek(m_pEnd->offset_dir_to_first_disk, BASIC_FILE_BEGIN);
 
 	m_pEnd->size_dir = 0;
-	Net_UShort write = 0;
+	uint16_t write = 0;
 	size_t len = strlen(filepath);
-	for (Net_UShort i = 0; i < m_pEnd->file_num_total; ++i)
+	for (uint16_t i = 0; i < m_pEnd->file_num_total; ++i)
 	{
 		basicfile_dir_block* block = (basicfile_dir_block*)buf;
 		long dirlen = sizeof(basicfile_dir_block)+block->size_filename + block->size_extend;
@@ -2077,9 +2077,9 @@ long CBasicCombinFile::buildZipIndex()
 		}
 	}
 
-	Net_UShort buffer_size = 65535;	// uint16
+	uint16_t buffer_size = 65535;	// uint16
 	if (file_length < buffer_size)
-		buffer_size = (Net_UShort)file_length - sizeof(basicfile_data_block)-sizeof(basicfile_dir_block);
+		buffer_size = (uint16_t)file_length - sizeof(basicfile_data_block) - sizeof(basicfile_dir_block);
 
 	long remain_length = file_length - buffer_size;
 	Seek(-(long)buffer_size, BASIC_FILE_END);
@@ -2104,9 +2104,9 @@ long CBasicCombinFile::buildZipIndex()
 	Seek(file_end->offset_dir_to_first_disk, BASIC_FILE_BEGIN);
 
 	basiclib::CBasicStaticBuffer sb;
-	Net_UInt extend_length = 0;
+	uint32_t extend_length = 0;
 	basicfile_dir_block	dir_block;
-	Net_UInt diroffset = 0;
+	uint32_t diroffset = 0;
 	for (int i = 0; i < file_end->file_num_total; ++i)
 	{
 		Read(&dir_block, sizeof(basicfile_dir_block));
@@ -2219,9 +2219,9 @@ bool CBasicCombinFile::repairFile()
 		Seek(m_pEnd->offset_dir_to_first_disk, BASIC_FILE_BEGIN);
 		Read(p, m_pEnd->size_dir);
 
-		Net_UInt local_header_offset = 0;
+		uint32_t local_header_offset = 0;
 
-		Net_UInt extendlen = 0;
+		uint32_t extendlen = 0;
 		basiclib::CBasicStaticBuffer tempBuf;
 		char* extend = NULL;
 		basicfile_data_block datablock;

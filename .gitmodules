@@ -16,3 +16,6 @@
 [submodule "3rd/concurrentqueue"]
 	path = 3rd/concurrentqueue
 	url = https://github.com/cameron314/concurrentqueue.git
+[submodule "3rd/libuv"]
+	path = 3rd/libuv
+	url = https://github.com/libuv/libuv.git

@@ -67,7 +67,7 @@ _BASIC_DLL_API_C  _BASIC_DLL_API void  BasicGetOperationInfo(
 #define MemRunMemCheck_RunSizeCheck			0x00000001
 #define MemRunMemCheck_RunTongJi			0x00000002
 #define MemRunMemCheck_RunCheckMem			0x00000004		
-_BASIC_DLL_API_C  void _BASIC_DLL_API BasicSetMemRunMemCheck(Net_UInt nMode = 0, int nMin = 0, int nMax = 0);
+_BASIC_DLL_API_C  void _BASIC_DLL_API BasicSetMemRunMemCheck(uint32_t nMode = 0, int nMin = 0, int nMax = 0);
 _BASIC_DLL_API_C  void _BASIC_DLL_API DumpRunMemCheck();
 
 //!清空之前的内存分配记录
