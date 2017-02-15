@@ -144,18 +144,7 @@ protected:
 	friend class CCorutinePlus;
 };
 
-//call in the thread create
-class basiclib::CBasicThreadTLS;
-class _BASIC_DLL_API CCorutinePlusThreadData : public basiclib::CBasicObject
-{
-public:
-	CCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS, void* pParam = nullptr);
-	virtual ~CCorutinePlusThreadData();
-public:
-	CCorutinePlusPool	m_pool;
-	void*				m_pParam;
-};
-CCorutinePlusThreadData* GetCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS);
+
 
 #pragma warning (pop)
 

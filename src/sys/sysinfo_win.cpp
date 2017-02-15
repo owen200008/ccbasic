@@ -260,25 +260,6 @@ BOOL CSystemInfo::GetCpuUsage(double &dUsage, DWORD& dwTimes)
 	return TRUE;
 }
 
-//
-//内存信息， 总物理内存，总使用内存，可用物理内存
-//
-/*
-typedef struct _MEMORYSTATUSEX 
-{
-	DWORD dwLength; 
-	DWORD dwMemoryLoad; 
-	DWORDLONG ullTotalPhys; 
-	DWORDLONG ullAvailPhys; 
-	DWORDLONG ullTotalPageFile; 
-	DWORDLONG ullAvailPageFile; 
-	DWORDLONG ullTotalVirtual; 
-	DWORDLONG ullAvailVirtual; 
-	DWORDLONG ullAvailExtendedVirtual;
-} MEMORYSTATUSEX, *LPMEMORYSTATUSEX; 
-*/
-
-
 typedef BOOL (WINAPI* GMS_EX)(LPMEMORYSTATUSEX lpBuffer);
 
 //这里返回单位是 K

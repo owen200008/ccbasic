@@ -229,7 +229,7 @@ public:
 	*\return 返回当前的位置
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
-	virtual long Seek(long lOff, UINT nFrom);
+	virtual long Seek(long lOff, uint32_t nFrom);
 
 	//! \brief 设置文件的长度
 	/*!

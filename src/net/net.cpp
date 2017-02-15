@@ -438,7 +438,7 @@ BOOL CBasicSessionNetClient::CanClose()
 	BOOL bRet = CBasicSessionNet::CanClose();
 	if (bRet)
 	{
-		if (m_outBuffer.len <= 0 && m_msgQueue.GetMQLength() == 0)
+		if (m_outBuffer.len <= 0 && m_msgQueue.IsEmpty())
 			return TRUE;
 	}
 	return !IsConnected();
@@ -491,12 +491,6 @@ void CBasicSessionNet::CloseCallback(BOOL bRemote, DWORD dwNetCode)
 		InitMember();
 	}
 }
-
-//slow sleep
-const char* CBasicSessionNet::GetLibeventMethod()
-{
-	return event_base_get_method(m_pThread->m_base);
-}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void AcceptToSelf(CBasicSessionNetClient* p, evutil_socket_t s, sockaddr_storage& addr)
 {
@@ -517,6 +511,8 @@ CBasicSessionNetServer::CBasicSessionNetServer(uint32_t nSessionID) : CBasicSess
 	m_nOnTimerTick = 0;
 	m_sessionIDMgr = nSessionID;
 	m_usRecTimeout = 0;
+	m_pSessiontoken.InitQueue(m_sessionIDQueue);
+	m_cSessiontoken.InitQueue(m_sessionIDQueue);
 }
 
 CBasicSessionNetServer::~CBasicSessionNetServer()
@@ -527,7 +523,7 @@ CBasicSessionNetServer::~CBasicSessionNetServer()
 uint32_t CBasicSessionNetServer::GetNewSessionID()
 {
 	uint32_t nSessionID = 0;
-	if (m_sessionIDQueue.try_dequeue(nSessionID))
+	if (m_sessionIDQueue.try_dequeue(m_cSessiontoken, nSessionID))
 		return nSessionID;
 	return basiclib::BasicInterlockedIncrement((LONG*)&m_sessionIDMgr);
 }
@@ -657,7 +653,7 @@ int32_t CBasicSessionNetServer::OnClientDisconnectCallback(CBasicSessionNetClien
 	pClient->Release();
 
 	//回收sessionid
-	m_sessionIDQueue.enqueue(nSessionID);
+	m_sessionIDQueue.enqueue(m_pSessiontoken, nSessionID);
 
 	return lRet;
 }
@@ -862,9 +858,10 @@ void CBasicSessionNetClient::InitMember()
 	m_unIdleCount = 0;
 	
 	m_outBuffer.len = 0;
-	m_msgQueue.Drop_Queue([](SendDataToSendThread* pBuffer, void*)->void{
-		pBuffer->ReleaseData();
-	}, nullptr);
+	SendDataToSendThread sendData;
+	while (m_msgQueue.MQPop(sendData)){
+		sendData.ReleaseData();
+	}
 }
 
 void CBasicSessionNetClient::CloseCallback(BOOL bRemote, DWORD dwNetCode)
@@ -1247,7 +1244,7 @@ BOOL CBasicSessionNetClient::ReadBuffer(int32_t lSend)
 	}
 	else
 	{
-		m_outBuffer.len = m_msgQueue.ReadBuffer(m_outBuffer.buf, MAX_BUFFER);
+		m_outBuffer.len = m_msgQueue.ReadBuffer(m_outBuffer.buf, MAX_BUFFER_SEND_BUF);
 	}
 	return m_outBuffer.len > 0;
 }
@@ -1308,9 +1305,10 @@ void CBasicSessionNetClient::SendDataFromQueue()
 	{
 		//有错误清空缓存
 		m_outBuffer.len = 0;
-		m_msgQueue.Drop_Queue([](SendDataToSendThread* pBuffer, void*)->void{
-			pBuffer->ReleaseData();
-		}, nullptr);
+		SendDataToSendThread sendData;
+		while (m_msgQueue.MQPop(sendData)){
+			sendData.ReleaseData();
+		}
 		Close(TRUE);
 	}
 	else
@@ -1461,8 +1459,6 @@ void CBasicSessionNetClient::OnReadEvent(void)
 			int nNumber = errno;
 			if (nNumber == EAGAIN || nNumber == EINTR || errno == EWOULDBLOCK)
 			{
-				//加readevent
-				event_add(&m_revent, NULL);
 				return;
 			}
 			else
@@ -1474,8 +1470,7 @@ void CBasicSessionNetClient::OnReadEvent(void)
 					DWORD dwLastError = WSAGetLastError();   //I know this
 					if (dwLastError == WSAEWOULDBLOCK)
 					{
-						//加readevent
-						event_add(&m_revent, NULL);
+						//do nothing
 					}
 					else if (dwLastError != WSA_IO_PENDING)
 					{

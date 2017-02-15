@@ -416,7 +416,7 @@ void CBasicString::FormatV(const char* lpszFormat, va_list argList)
 			case 'o':
 				if (nModifier & FORCE_INT64)
 #ifdef _WIN32
-					va_arg(argList, __int64);
+					va_arg(argList, int64_t);
 #else
 					va_arg(argList, long long);
 #endif
@@ -1118,7 +1118,7 @@ void CWBasicString::FormatV(LPCTSTR lpszFormat, va_list argList)
 			case 'o':
 				if (nModifier & FORCE_INT64)
 #ifdef _WIN32
-					va_arg(argList, __int64);
+					va_arg(argList, int64_t);
 #else
 					va_arg(argList, long long);
 #endif

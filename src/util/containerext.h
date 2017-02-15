@@ -7,12 +7,54 @@
 
 __NS_BASIC_START
 
-
 #define DEFAULT_QUEUE_SIZE			64
 #define DEFAULT_QUEUE_OVERLOAD		1024
 #pragma warning (push)
 #pragma warning (disable: 4251)
 #pragma warning (disable: 4275)
+
+//////////////////////////////////////////////////////////////////////////
+//зда§Ыј
+struct _BASIC_DLL_API SpinLock
+{
+	std::atomic<int>	m_nLock;
+	DWORD				m_lockThreadID;
+	SpinLock() : m_nLock(0)
+	{
+		m_lockThreadID = 0;
+	}
+};
+
+class _BASIC_DLL_API CSpinLockFuncNoSameThreadSafe
+{
+public:
+	CSpinLockFuncNoSameThreadSafe(SpinLock* pLock, BOOL bInitialLock = FALSE);
+	virtual ~CSpinLockFuncNoSameThreadSafe();
+
+	virtual void Lock();
+	virtual void LockAndSleep(unsigned short usSleep = 100);
+	virtual bool LockNoWait();
+	virtual void UnLock();
+	bool IsLock();
+protected:
+	SpinLock* 		m_pLock;
+	bool			m_bAcquired;
+};
+
+class _BASIC_DLL_API CSpinLockFunc : public CSpinLockFuncNoSameThreadSafe
+{
+public:
+	CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock = FALSE) : CSpinLockFuncNoSameThreadSafe(pLock, bInitialLock){
+	}
+	virtual ~CSpinLockFunc(){
+	}
+
+	virtual void Lock();
+	virtual void LockAndSleep(unsigned short usSleep = 100);
+	virtual bool LockNoWait();
+	virtual void UnLock();
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class StructData>
 class CMessageQueue : public basiclib::CBasicObject
 {

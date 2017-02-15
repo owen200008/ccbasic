@@ -570,7 +570,17 @@ struct ProducerToken
 	
 	template<typename T, typename Traits>
 	explicit ProducerToken(BlockingConcurrentQueue<T, Traits>& queue);
-	
+
+	ProducerToken(){
+		producer = nullptr;
+	}
+	template<typename T, typename Traits>
+	void InitQueue(ConcurrentQueue<T, Traits>& q){
+		producer = q.recycle_or_create_producer(true);
+		if (producer != nullptr) {
+			producer->token = this;
+		}
+	}
 	ProducerToken(ProducerToken&& other) MOODYCAMEL_NOEXCEPT
 		: producer(other.producer)
 	{
@@ -579,7 +589,7 @@ struct ProducerToken
 			producer->token = this;
 		}
 	}
-	
+
 	inline ProducerToken& operator=(ProducerToken&& other) MOODYCAMEL_NOEXCEPT
 	{
 		swap(other);
@@ -636,6 +646,14 @@ struct ConsumerToken
 	template<typename T, typename Traits>
 	explicit ConsumerToken(BlockingConcurrentQueue<T, Traits>& q);
 	
+	ConsumerToken() : itemsConsumedFromCurrent(0), currentProducer(nullptr), desiredProducer(nullptr)
+	{
+		lastKnownGlobalOffset = -1;
+	}
+	template<typename T, typename Traits>
+	void InitQueue(ConcurrentQueue<T, Traits>& q){
+		initialOffset = q.nextExplicitConsumerId.fetch_add(1, std::memory_order_release);
+	}
 	ConsumerToken(ConsumerToken&& other) MOODYCAMEL_NOEXCEPT
 		: initialOffset(other.initialOffset), lastKnownGlobalOffset(other.lastKnownGlobalOffset), itemsConsumedFromCurrent(other.itemsConsumedFromCurrent), currentProducer(other.currentProducer), desiredProducer(other.desiredProducer)
 	{

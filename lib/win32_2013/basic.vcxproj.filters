@@ -351,6 +351,9 @@
     <ClInclude Include="..\..\src\algorithm\sha1\sha1.h">
       <Filter>algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\thread\mt_spinlock.h">
+      <Filter>thread</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\mem\mem.cpp">
@@ -574,6 +577,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\algorithm\sha1\sha1.cpp">
       <Filter>algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\thread\mt_spinlock.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\util\containerext.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

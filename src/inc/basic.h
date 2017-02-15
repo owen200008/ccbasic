@@ -84,12 +84,13 @@
 //扩展的数据类型
 #include "../datastruct/key_value.h"
 //#include "../datastruct/tlcoll.h"
-//屏蔽字库实现
-#include "../datastruct/pbzk.h"
 
 // 容器
 #include "../util/container.h"
 #include "../util/containerext.h"
+
+//屏蔽字库实现
+#include "../datastruct/pbzk.h"
 //
 //系统信息
 #include "../sys/syserror.h"
@@ -168,6 +169,7 @@
 #include "../sqlite/sqlite3.h"
 #include "../sqlite/sqlite3db.h"
 
-
+//判断basic库是否可用
+_BASIC_DLL_API bool IsSupportBasiclib();
 
 #endif 

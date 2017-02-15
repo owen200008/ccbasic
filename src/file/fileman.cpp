@@ -882,7 +882,7 @@ static char* _ChangeFileName(char* pszPath)  //I know that the length of this bu
 	return pBuffer;
 }
 
-long Basic_FileOperation(UINT wFunc, const char* pFrom, const char* pTo)
+long Basic_FileOperation(uint32_t wFunc, const char* pFrom, const char* pTo)
 {
 	char szCPath[_MAX_PATH + 2];
 	char szSPath[_MAX_PATH + 2];

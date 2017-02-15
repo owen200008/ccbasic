@@ -83,6 +83,9 @@ public:
 	virtual ~CMsgSendBufferQueue();
 
 	uint32_t ReadBuffer(char* pBuffer, uint32_t nLength);
+	BOOL IsEmpty(){
+		return GetMQLength() == 0;
+	}
 };
 
 class CLockFreeMsgSendBufferQueue : public CLockFreeMessageQueue<SendDataToSendThread>
@@ -93,9 +96,15 @@ public:
 
 	//单线程调用
 	uint32_t ReadBuffer(char* pBuffer, int32_t nLength);
+	BOOL IsEmpty();
+
+	void MQPush(SendDataToSendThread* pData);
+	bool MQPop(SendDataToSendThread& pData);
 protected:
 	SendDataToSendThread	m_readData;
 	bool					m_bRevertData;
+
+	ConcurrentQueue::consumer_token_t	m_ctoken;
 };
 
 __NS_BASIC_END

@@ -226,21 +226,5 @@ CCorutinePlus* CCorutinePlusPool::CreateCorutine(bool bPush)
 		m_vtCorutinePlus.push_back(pRet);
 	return pRet;
 }
-////////////////////////////////////////////////////////////////////////////////////////////
-CCorutinePlusThreadData::CCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS, void* pParam)
-{
-	pTLS->SetValue(this);
-	m_pParam = pParam;
-}
-
-CCorutinePlusThreadData::~CCorutinePlusThreadData()
-{
-
-}
-
-CCorutinePlusThreadData* GetCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS)
-{
-	return (CCorutinePlusThreadData*)pTLS->GetValue();
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

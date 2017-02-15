@@ -1606,7 +1606,7 @@ CharType* __tcscpyn(CharType* strDest, size_t nDest, const CharType* strSource, 
 *\param nLen 默认值 -1
 *\return  
 */
-LONG64 __atoi64_s(const char* str, int nLen/* = -1*/);
+int64_t __atoi64_s(const char* str, int nLen/* = -1*/);
 
 
 // 一些对于basic_string的操作

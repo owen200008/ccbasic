@@ -320,7 +320,7 @@ BOOL Basic_StringMatchSpec(const char* pszFile, const char* pszSpec)
 	return PathMatchSpecA(pszFile, pszSpec);
 }
 
-LONG64 __atoi64_s(const char* str, int nLen/* = -1*/)
+int64_t __atoi64_s(const char* str, int nLen/* = -1*/)
 {
 	char Buff[32];
 	if (nLen == -1)

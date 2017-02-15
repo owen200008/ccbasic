@@ -87,6 +87,7 @@ uint32_t CMsgSendBufferQueue::ReadBuffer(char* pBuffer, uint32_t nLength)
 CLockFreeMsgSendBufferQueue::CLockFreeMsgSendBufferQueue()
 {
 	m_bRevertData = false;
+	m_ctoken.InitQueue(*this);
 }
 
 CLockFreeMsgSendBufferQueue::~CLockFreeMsgSendBufferQueue()
@@ -109,7 +110,7 @@ uint32_t CLockFreeMsgSendBufferQueue::ReadBuffer(char* pBuffer, int32_t nLength)
 		m_readData.ReleaseData();
 	}
 	while (nLength > 0){
-		if (!try_dequeue(m_readData)){
+		if (!MQPop(m_readData)){
 			break;
 		}
 		int32_t nThisCopy = m_readData.ReadBuffer(pBuffer, nLength);
@@ -123,6 +124,22 @@ uint32_t CLockFreeMsgSendBufferQueue::ReadBuffer(char* pBuffer, int32_t nLength)
 		m_readData.ReleaseData();
 	}
 	return lCopy;
+}
+
+BOOL CLockFreeMsgSendBufferQueue::IsEmpty()
+{
+	return size_approx() == 0 && m_readData.IsEmpty();
+}
+
+void CLockFreeMsgSendBufferQueue::MQPush(SendDataToSendThread* pData)
+{
+	ConcurrentQueue::producer_token_t token(*this);
+	enqueue(token, *pData);
+}
+
+bool CLockFreeMsgSendBufferQueue::MQPop(SendDataToSendThread& data)
+{
+	return try_dequeue(m_ctoken, data);
 }
 
 __NS_BASIC_END

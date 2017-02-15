@@ -172,7 +172,7 @@ long CBasicFileObj::SeekToBegin()
 	return Seek(0, BASIC_FILE_BEGIN);
 }
 
-long CBasicFileObj::Seek(long lOff, UINT nFrom)
+long CBasicFileObj::Seek(long lOff, uint32_t nFrom)
 {
 	CHECK_OPEN;
 	return m_pFileObj->Seek(lOff, nFrom);

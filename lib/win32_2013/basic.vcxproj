@@ -75,6 +75,7 @@
     <ClInclude Include="..\..\src\thread\basicpoll.h" />
     <ClInclude Include="..\..\src\thread\mt.h" />
     <ClInclude Include="..\..\src\thread\mt_linux.h" />
+    <ClInclude Include="..\..\src\thread\mt_spinlock.h" />
     <ClInclude Include="..\..\src\thread\thread.h" />
     <ClInclude Include="..\..\src\time\ontimer.h" />
     <ClInclude Include="..\..\src\time\timelib\astro.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="..\..\src\thread\basicpoll.cpp" />
     <ClCompile Include="..\..\src\thread\mt.cpp" />
     <ClCompile Include="..\..\src\thread\mt_linux.cpp" />
+    <ClCompile Include="..\..\src\thread\mt_spinlock.cpp" />
     <ClCompile Include="..\..\src\thread\thread_linux.cpp" />
     <ClCompile Include="..\..\src\thread\thread_win.cpp" />
     <ClCompile Include="..\..\src\time\ontimer.cpp" />
@@ -175,6 +177,7 @@
     <ClCompile Include="..\..\src\time\timeutil.cpp" />
     <ClCompile Include="..\..\src\time\tltime.cpp" />
     <ClCompile Include="..\..\src\types\basicobj.cpp" />
+    <ClCompile Include="..\..\src\util\containerext.cpp" />
     <ClCompile Include="..\..\src\util\regex\regcomp.c" />
     <ClCompile Include="..\..\src\util\regex\regerror.c" />
     <ClCompile Include="..\..\src\util\regex\regexec.c" />

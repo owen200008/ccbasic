@@ -221,59 +221,6 @@ protected:
 	BOOL			m_bAcquired;	//!< 是否被占用标记
 };
 
-//////////////////////////////////////////////////////////////////////////
-//自旋锁
-struct _BASIC_DLL_API SpinLock
-{
-	int		m_nLock;
-	DWORD	m_lockThreadID;
-	SpinLock()
-	{
-		m_nLock = 0;
-		m_lockThreadID = 0;
-	}
-};
-class _BASIC_DLL_API CSpinLockFuncNoSameThreadSafe
-{
-public:
-	CSpinLockFuncNoSameThreadSafe(SpinLock* pLock, BOOL bInitialLock = FALSE);
-	virtual ~CSpinLockFuncNoSameThreadSafe();
-
-	virtual void Lock();
-	virtual void LockAndSleep(unsigned short usSleep = 100);
-	virtual bool LockNoWait();
-	virtual void UnLock();
-	bool IsLock();
-protected:
-	SpinLock* 		m_pLock;
-	bool			m_bAcquired;
-};
-
-class _BASIC_DLL_API CSpinLockFunc : public CSpinLockFuncNoSameThreadSafe
-{
-public:
-	CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock = FALSE) : CSpinLockFuncNoSameThreadSafe(pLock, bInitialLock){
-	}
-	virtual ~CSpinLockFunc(){
-	}
-
-	virtual void Lock();
-	virtual void LockAndSleep(unsigned short usSleep = 100);
-	virtual bool LockNoWait();
-	virtual void UnLock();
-};
-
-//spinlock和mutex结合的lock
-class CSpinLockAndMutex : public basiclib::CBasicObject
-{
-public:
-	CSpinLockAndMutex();
-	virtual ~CSpinLockAndMutex();
-
-protected:
-	SpinLock	m_spinLock;
-	CMutex		m_synLock;
-};
 
 #ifdef __BASICWINDOWS
 //适用于vista以及server 2008及以上系统
@@ -384,15 +331,6 @@ _BASIC_DLL_API LONG BasicInterlockedIncrement(LONG volatile *lpAddend);
 */
 _BASIC_DLL_API LONG BasicInterlockedDecrement(LONG volatile *lpAddend);
 
-//! 原子操作，变量赋值
-/*! 
-*\param Target	目标变量
-*\param Value	赋值变量
-*\return resValue
-*\remarks *Target = Value
-*/
-_BASIC_DLL_API LONG BasicInterlockedExchange(LONG volatile *Target, LONG Value);
-
 //! 原子操作，变量相加
 /*! 
 *\param Addend	目标变量
@@ -407,10 +345,10 @@ _BASIC_DLL_API LONG BasicInterlockedExchangeSub(LONG volatile *Addend, LONG Valu
 *\param Destination	目标变量
 *\param Exchange	赋值变量
 *\param Comperand	比较变量
-*\return *Destination初始值
+*\return 是否相等
 *\remarks 如Comperand==*Destination,则执行*Destination=Exchange
 */
-_BASIC_DLL_API LONG BasicInterlockedCompareExchange(LONG volatile *Destination, LONG Exchange, LONG Comperand);
+_BASIC_DLL_API bool BasicInterlockedCompareExchange(LONG volatile *Destination, LONG Exchange, LONG Comperand);
 
 //! 创建事件对象
 /*! 

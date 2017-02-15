@@ -50,6 +50,10 @@ _BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventError(const char* pszLog);
 #define LOG_ERROR_NAME_EMPTY		-1	//!< 文件名为空
 #define LOG_ERROR_OPEN_FILE			-2	//!< 打开文件失败
 #define LOG_ERROR_FULL				-3	//!< 日志记录通道已经满了。
+
+//设置是否启动锁，启动锁的话日志变成线程安全，不然就是单线程使用, 自动启动检测线程，只有在lock情况下才开启
+_BASIC_DLL_API_C  _BASIC_DLL_API void InitBasicLog(bool bLock, bool bThreadCheckSelf);
+
 //
 //! 设置默认的事件记录模式
 /*

@@ -21,40 +21,36 @@ void ReadSelfOrder(int fd, short event, void *arg)
 THREAD_RETURN WorkerThreadTest(void *arg)
 {
 #define TIMES_FORTEST 1000000
-			{
-				
+		{
 				clock_t begin = clock();
-				for (int i = 0; i < TIMES_FORTEST; i++){
+				int i = 0;
+				for (i = 0; i < TIMES_FORTEST; i++){
+					int n = i;
+					SetGI(&n);
+					int* pRet = GetGI();
+				}
+				clock_t end = clock();
+				printf("int设置读取效率 %d:%d\n", i, end - begin);
+		}
+		{
+				clock_t begin = clock();
+				int i = 0;
+				for (i = 0; i < TIMES_FORTEST; i++){
 					int n = i;
 					tls.SetValue(&n);
 					int* pRet = (int*)tls.GetValue();
 				}
 
 				clock_t end = clock();
-				printf("tls %d:%d\n", TIMES_FORTEST, end - begin);
-			}
-		{
-			
-			clock_t begin = clock();
-			for (int i = 0; i < TIMES_FORTEST; i++){
-				int n = i;
-				SetGI(&n);
-				int* pRet = GetGI();
-			}
-			
-			clock_t end = clock();
-			printf("int %d:%d\n", TIMES_FORTEST, end - begin);
+				printf("tls存取效率 %d:%d\n", i, end - begin);
 		}
+
 				{
 					CEvent event(TRUE, FALSE, nullptr);
 					LONG m_lWaitThreadCount = 0;
 					clock_t begin = clock();
 					for (int i = 0; i < TIMES_FORTEST; i++){
-						LONG lRet = basiclib::BasicInterlockedExchange(&m_lWaitThreadCount, 0);
-						if (lRet > 0){
-							//m_pEvent->SetEvent();
-						}
-						//event.ResetEvent();
+	
 					}
 
 					clock_t end = clock();
@@ -91,7 +87,7 @@ THREAD_RETURN WorkerThreadTest(void *arg)
 			evutil_closesocket(m_pair[1]);
 			event_config_free(cfg);
 			event_base_free(m_base);
-		}
+		}*/
 		{
 			CBasicSessionNetClient::CreateClient(0);
 
@@ -124,7 +120,7 @@ THREAD_RETURN WorkerThreadTest(void *arg)
 			evutil_closesocket(m_pair[1]);
 			event_config_free(cfg);
 			event_base_free(m_base);
-		}*/
+		}
 		{
 			CBasicSessionNetClient::CreateClient(0);
 
@@ -172,8 +168,6 @@ void TestThread()
 		DWORD dwThreadServerID = 0;
 		basiclib::BasicCreateThread(WorkerThreadTest, nullptr, &dwThreadServerID);
 	}
-
-	getchar();
 }
 
 

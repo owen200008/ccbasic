@@ -344,7 +344,7 @@ public:
 		return strtol(Buff, &pEnd, 10);
 #endif
 	}
-	__int64 GetInt64(const char* key1, const char* key2, __int64 nDefault = 0)
+	int64_t GetInt64(const char* key1, const char* key2, int64_t nDefault = 0)
 	{
 		CBasicString strRet = GetData(key1, key2);
 		if (strRet.GetLength() <= 0)

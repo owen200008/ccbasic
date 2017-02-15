@@ -61,9 +61,9 @@ BasicInterlockedIncrement(
     )
 {
 #ifdef __MAC
-    return BasicInterlockedExchangeAdd( lpAddend, 1 );
+	return OSAtomicAdd32(1, (volatile int32_t*)Addend);
 #else
-	return BasicInterlockedExchangeAdd( lpAddend, 1 ) + 1;
+	return __sync_add_and_fetch(lpAddend, 1);
 #endif
 }
 
@@ -73,32 +73,19 @@ BasicInterlockedDecrement(
     )
 {
 #ifdef __MAC
-    return BasicInterlockedExchangeAdd( lpAddend, -1 );
+	return OSAtomicAdd32(-1, (volatile int32_t*)Addend);
 #else
-	return BasicInterlockedExchangeAdd( lpAddend, -1 ) - 1;
+	__sync_sub_and_fetch(lpAddend, 1);
 #endif
 }
 
-LONG
-BasicInterlockedExchange(
-    LONG volatile *Target,
-    LONG Value
-    )
-{
-    return BasicInterlockedCompareExchange(Target, Value, *Target);
-}
-
-LONG
+bool
 BasicInterlockedCompareExchange(LONG volatile *dest, long exch, long comp)
 {
 #ifdef __MAC
-	LONG lRet = *dest;
-    bool ret = OSAtomicCompareAndSwap32((int32_t)comp, (int32_t)exch, (volatile int32_t*)dest);
-    return lRet;
+	return OSAtomicCompareAndSwap32((int32_t)comp, (int32_t)exch, (volatile int32_t*)dest)
 #else
- 	LONG lRet = *dest;
- 	__sync_val_compare_and_swap(dest, comp, exch);
-  	return lRet;
+	return __sync_bool_compare_and_swap(dest, comp, exch);
 #endif
 }
 
@@ -109,7 +96,7 @@ BasicInterlockedExchangeAdd(
     )
 {
 #ifdef __MAC
-    return OSAtomicAdd32((int32_t)Increment, (volatile int32_t*)Addend);
+	return OSAtomicAdd32((int32_t)Increment, (volatile int32_t*)Addend) - Increment;
 #else
 	return __sync_fetch_and_add(Addend, Increment);
 #endif
@@ -118,9 +105,9 @@ BasicInterlockedExchangeAdd(
 LONG BasicInterlockedExchangeSub(LONG volatile *Addend, LONG Increment)
 {
 #ifdef __MAC
-	return OSAtomicAdd32((int32_t)-Increment, (volatile int32_t*)Addend);
+	return OSAtomicAdd32((int32_t)-Increment, (volatile int32_t*)Addend) + Increment;
 #else
-	return __sync_fetch_and_add(Addend, -Increment);
+	return __sync_fetch_and_sub(Addend, Increment);
 #endif
 }
 

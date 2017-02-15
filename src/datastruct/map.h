@@ -69,9 +69,9 @@ public:
 
 	// advanced features for derived classes
 	//! get hash table size
-	UINT GetHashTableSize() const;
+	uint32_t GetHashTableSize() const;
 	//! set hash table size, for MFC compatible, not really implement
-	void InitHashTable(UINT hashSize, BOOL bAllocNow = TRUE);
+	void InitHashTable(uint32_t hashSize, BOOL bAllocNow = TRUE);
 
 // Implementation
 protected:
@@ -171,7 +171,7 @@ inline POSITION CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::GetStartPosition() const
 }
 
 template<class KEY, class ARG_KEY, class VALUE, class ARG_VALUE>
-inline UINT CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::GetHashTableSize() const
+inline uint32_t CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::GetHashTableSize() const
 {
 	return 0;
 }
@@ -186,7 +186,7 @@ CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::CMap(int nBlockSize)
 
 template<class KEY, class ARG_KEY, class VALUE, class ARG_VALUE>
 void CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::InitHashTable(
-	UINT nHashSize, BOOL bAllocNow)
+	uint32_t nHashSize, BOOL bAllocNow)
 //
 // Used to force allocation of a hash table or to override the default
 //   hash table size of (which is fairly small)

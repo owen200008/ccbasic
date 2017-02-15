@@ -31,11 +31,9 @@ public:
 		InitMember();
 	}
 public:
-	void InitLogData(const char* lpszText, void* pData, long lDataLen)
+	void InitLogData(const char* lpszText)
 	{
 		m_pText = (char*)lpszText;
-		m_pData = pData;
-		m_lDataLen = lDataLen;
 	}
 
 	void CopyLogData(WriteLogDataBuffer& logData)
@@ -45,12 +43,6 @@ public:
 			int nLen = __tcslen(logData.m_pText);
 			m_pText = (char*)BasicAllocate((nLen + 1) * sizeof(char));
 			__tcscpy(m_pText, logData.m_pText);
-		}
-		if (logData.m_pData != NULL && logData.m_lDataLen > 0)
-		{
-			m_lDataLen = logData.m_lDataLen;
-			m_pData = BasicAllocate(m_lDataLen);
-			memcpy(m_pData, logData.m_pData, m_lDataLen);
 		}
 		m_lCurTime = logData.m_lCurTime;
 		m_dwProcessId = logData.m_dwProcessId;
@@ -63,10 +55,6 @@ public:
 		{
 			BasicDeallocate(m_pText);
 		}
-		if (m_pData != NULL)
-		{
-			BasicDeallocate(m_pData);
-		}
 		InitMember();
 	}
 protected:
@@ -76,8 +64,6 @@ protected:
 	}
 
 public:
-	void*		m_pData;
-	long		m_lDataLen;
 	char*		m_pText;
 	time_t		m_lCurTime;
 	DWORD		m_dwProcessId;
@@ -129,11 +115,10 @@ static void GetTodayString(char* szToday)
 
 
 //日志文件属性结构
-class CBasicLogChannel
+class CBasicLogChannel : public basiclib::CBasicObject
 {
 public:
-	CBasicLogChannel()
-	{
+	CBasicLogChannel(){
 		m_nLogOption = 0;
 		m_nSizeLimit = 0;
 		m_fLog = NULL;
@@ -144,15 +129,22 @@ public:
 
 		m_pSynLogFile = NULL;
 	}
+	~CBasicLogChannel(){
+		if (m_pSynLogFile){
+			delete m_pSynLogFile;
+		}
+	}
 public:
 	long InitLogChannel(long nOption, const char* lpszLogFile);		//初始化
 	long ChangeLogChannel(long nOption, const char* lpszLogFile);	//更新设置
 	void CheckChannel(const char* lpszToday);						//定时检查，比如隔天重新生成文件名，判断文件大小等。
 
-	long WriteLogData(void* pData, long lDataLen, const char* lpszText);	//写日志数据
+	long WriteLogData(const char* lpszText);	//写日志数据
 
 	void WriteLogBuffer();
-
+	static void SetLockChannel(bool bLock){
+		m_bInitLock = bLock;
+	}
 protected:
 	long OpenLogFile()
 	{
@@ -213,6 +205,7 @@ protected:
 	{
 		return BasicInterlockedIncrement(&m_lLastFileNo);
 	}
+
 private:
 	long	m_nLogOption;					//日志的属性，见定义 LOG_*
 	long	m_nSizeLimit;					//日志文件的大小限制。0表示不限制
@@ -222,6 +215,7 @@ private:
 	long	m_lReplacePos;					//替换日期或者序号的起始位置
 
 	static long	m_lLastFileNo;				//对于当天多个文件自动生成的文件编号。
+	static bool m_bInitLock;				//是否上锁
 
 	CCriticalSection* m_pSynLogFile;		//操作成员变量的临界区
 
@@ -230,6 +224,7 @@ private:
 };
 
 long	CBasicLogChannel::m_lLastFileNo = 0;		//对于当天多个文件自动生成的文件编号。
+bool	CBasicLogChannel::m_bInitLock = true;		//默认上锁
 
 long CBasicLogChannel::InitLogChannel(long nOption, const char* lpszLogFile)
 {
@@ -237,7 +232,8 @@ long CBasicLogChannel::InitLogChannel(long nOption, const char* lpszLogFile)
 	long lRet = OpenLogFile();
 	if (lRet == 0)
 	{
-		m_pSynLogFile = new CCriticalSection;
+		if (m_bInitLock)
+			m_pSynLogFile = new CCriticalSection;
 	}
 
 	return lRet;
@@ -345,10 +341,10 @@ void CBasicLogChannel::WriteLogBuffer()
 	}
 }
 
-long CBasicLogChannel::WriteLogData(void* pData, long lDataLen, const char* lpszText)
+long CBasicLogChannel::WriteLogData(const char* lpszText)
 {
 	WriteLogDataBuffer logData;
-	logData.InitLogData(lpszText, pData, lDataLen);
+	logData.InitLogData(lpszText);
 
 	_FillLogDataBuffer(logData);
 
@@ -413,10 +409,6 @@ long CBasicLogChannel::_WriteLogDataBuffer(WriteLogDataBuffer& logData)
 		smBuf.AppendString(szLog);
 	}
 
-	if (logData.m_pData != NULL && logData.m_lDataLen > 0)
-	{
-		smBuf.AppendData((char*)logData.m_pData, logData.m_lDataLen);
-	}
 	if (logData.m_pText != NULL)
 	{
 		smBuf.AppendString(logData.m_pText);
@@ -543,12 +535,6 @@ long BasicSetLogEventMode(long nOption, const char* pszLogFile)
 
 	g_pLogChannel[nIndex] = _CreateLogChannel(nOption, pszLogFile);
 
-	if (g_LogThread == NULL)
-	{
-		g_LogThread = new CWriteLogThread;
-		g_LogThread->Start();
-	}
-
 	return nIndex;
 }
 
@@ -565,12 +551,6 @@ long BasicSetDefaultLogEventErrorMode(long nOption, const char* pszLogFile)
 	else
 	{
 		g_pLogChannel[1]->ChangeLogChannel(nOption, pszLogFile);
-	}
-
-	if (g_LogThread == NULL)
-	{
-		g_LogThread = new CWriteLogThread;
-		g_LogThread->Start();
 	}
 	return 0;
 }
@@ -590,11 +570,7 @@ long BasicSetDefaultLogEventMode(long nOption, const char* pszLogFile)
 		g_pLogChannel[0]->ChangeLogChannel(nOption, pszLogFile);
 	}
 
-	if (g_LogThread == NULL)
-	{
-		g_LogThread = new CWriteLogThread;
-		g_LogThread->Start();
-	}
+
 	return 0;
 }
 
@@ -712,12 +688,53 @@ void BasicLogEvent(long lLogChannel, const char* pszLog)
 
 	TRACE("LOG%d:%s\r\n", lLogChannel, pszLog);
 
-	CBasicLogChannel* pChannel = _GetChannel(lLogChannel);
-	if (pChannel == NULL)
-	{
-		return;
+	//如果找不到直接让他崩溃掉
+	_GetChannel(lLogChannel)->WriteLogData(pszLog);
+}
+
+//设置是否启动锁，启动锁的话日志变成线程安全，不然就是单线程使用, 自动启动检测线程，只有在lock情况下才开启
+void InitBasicLog(bool bLock, bool bThreadCheckSelf)
+{
+	CBasicLogChannel::SetLockChannel(bLock);
+	if (bLock){
+		if (bThreadCheckSelf){
+			if (g_LogThread == NULL)
+			{
+				g_LogThread = new CWriteLogThread;
+				g_LogThread->Start();
+			}
+		}
 	}
-	pChannel->WriteLogData(NULL, 0, pszLog);
+	else{
+		if (g_LogThread){
+			g_LogThread->Stop();
+			delete g_LogThread;
+		}
+	}
 }
 
 __NS_BASIC_END
+
+#define CHECKSUPPORTATOMIC(a) \
+	{\
+		std::atomic<a> tmp;\
+		if (!tmp.is_lock_free())\
+			return false;\
+	}
+//判断basic库是否可用
+_BASIC_DLL_API bool IsSupportBasiclib()
+{
+	CHECKSUPPORTATOMIC(bool);
+	CHECKSUPPORTATOMIC(char);
+	CHECKSUPPORTATOMIC(signed char);
+	CHECKSUPPORTATOMIC(unsigned char);
+	CHECKSUPPORTATOMIC(short);
+	CHECKSUPPORTATOMIC(unsigned short);
+	CHECKSUPPORTATOMIC(int);
+	CHECKSUPPORTATOMIC(unsigned int);
+	CHECKSUPPORTATOMIC(unsigned int);
+	CHECKSUPPORTATOMIC(long long);
+	CHECKSUPPORTATOMIC(unsigned long long);
+	CHECKSUPPORTATOMIC(void*);
+	return true;
+}

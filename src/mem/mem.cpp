@@ -52,10 +52,12 @@ static uint32_t* get_allocated_field(uint32_t handle)
 	uint32_t old_alloc = data->allocated;
 	if (old_handle == 0 || old_alloc <= 0)
 	{
-		BasicInterlockedCompareExchange((LONG*)&data->handle, old_handle, handle);
+		if (!basiclib::BasicInterlockedCompareExchange((LONG*)&data->handle, handle, old_handle)){
+			return nullptr;
+		}
 		if (old_alloc < 0)
 		{
-			BasicInterlockedCompareExchange((LONG*)&data->allocated, old_alloc, 0);
+			basiclib::BasicInterlockedCompareExchange((LONG*)&data->allocated, 0, old_handle);
 		}
 	}
 	if (data->handle != handle)
@@ -73,7 +75,7 @@ void UpdateMallocState_Alloc(uint32_t handleid, size_t size)
 	uint32_t* allocated = get_allocated_field(handleid);
 	if (allocated)
 	{
-		BasicInterlockedExchangeAdd((LONG*)allocated, size);
+		basiclib::BasicInterlockedExchangeAdd((LONG*)allocated, size);
 	}
 	
 }
@@ -85,7 +87,7 @@ void UpdateMallocState_Free(uint32_t handleid, size_t size)
 	uint32_t* allocated = get_allocated_field(handleid);
 	if (allocated)
 	{
-		BasicInterlockedExchangeSub((LONG*)allocated, size);
+		basiclib::BasicInterlockedExchangeSub((LONG*)allocated, size);
 	}
 }
 

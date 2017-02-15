@@ -57,6 +57,7 @@
     <ClInclude Include="thread\threadtest.h">
       <Filter>thread</Filter>
     </ClInclude>
+    <ClInclude Include="headdefine.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

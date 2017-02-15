@@ -195,7 +195,7 @@ char* Basic_TempFileName(const char* lpszDir, const char* lpszHead, const char* 
 *\warning  支持删除单个文件
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long Basic_FileOperation(UINT wFunc, const char* pFrom, const char* pTo);		
+long Basic_FileOperation(uint32_t wFunc, const char* pFrom, const char* pTo);		
 
 #define BASIC_FIND_SUBDIR			0x0001			//!< 查找子目录
 #define BASIC_FIND_DIR				0x0002			//!< 返回目录的名称

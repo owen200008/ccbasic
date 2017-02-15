@@ -45,7 +45,7 @@ protected:
 		CServerClient* pSession = (CServerClient*)pNotify;
 		basiclib::CBasicString strAddr;
 		pSession->GetNetAddress(strAddr);
-		UINT nPort = pSession->GetNetAddressPort();
+		uint32_t nPort = pSession->GetNetAddressPort();
 		TRACE("Server:OnConnect(%s:%d)\n", strAddr.c_str(), nPort);
 		return BASIC_NET_HC_RET_HANDSHAKE;
 	}
@@ -88,7 +88,7 @@ protected:
 		CServerClient* pSession = (CServerClient*)pNotify;
 		basiclib::CBasicString strAddr;
 		pSession->GetNetAddress(strAddr);
-		UINT nPort = pSession->GetNetAddressPort();
+		uint32_t nPort = pSession->GetNetAddressPort();
 		TRACE("Server:DisConnect(%s:%d)\n", strAddr.c_str(), nPort);
 		return BASIC_NET_OK;
 	}
@@ -148,7 +148,7 @@ public:
 	int32_t bind_disconnectfunc(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState){
 		basiclib::CBasicString strAddr;
 		pNotify->GetNetAddress(strAddr);
-		UINT nPort = pNotify->GetNetAddressPort();
+		uint32_t nPort = pNotify->GetNetAddressPort();
 		TRACE("%x Client:DisConnect(%s:%d)\n", this, strAddr.c_str(), nPort);
 		return BASIC_NET_OK;
 	}
@@ -277,7 +277,7 @@ THREAD_RETURN WorkerServerThread(void *arg)
 	CServer* pServer = CServer::CreateServer();
 	pServer->SetClientRecTimeout(30);
 	int32_t lRet = pServer->Listen(ADDRESS_S, true);
-	TRACE("ListenRet:%d %s\n", lRet, pServer->GetLibeventMethod());
+	//TRACE("ListenRet:%d %s\n", lRet, pServer->GetLibeventMethod());
 	int nIndex = 0;
 	while (!bClose)
 	{
@@ -327,7 +327,6 @@ void NetServerTest()
 	TRACE("Mem:(allocatecount:%d, deallocate:%d, Use:%d, %d, %d)\n", a, b, c, e, f);
 	basiclib::DumpRunMemCheck();
 	TRACE("Closed\n");
-	getchar();
 }
 
 #endif

@@ -10,7 +10,7 @@
 #define BASIC_BITSTREAMBUFFER_H
 
 
-typedef basiclib::CBasicString		Net_CBasicString;                                   //define the cstring
+
 template <typename T>
 class Net_Vector : public basiclib::basic_vector<T>
 {
@@ -24,22 +24,6 @@ template <typename T>
 class Net_Set : public basiclib::basic_set<T>
 {
 };
-//支持序列化的map和vector定义
-typedef Net_Vector<int32_t>													VTNetInt;
-typedef VTNetInt::iterator													VTNetIntIterator;
-typedef VTNetInt::const_iterator											VTNetIntIteratorConst;
-typedef Net_Vector<uint32_t>				                                VTNetUInt;
-typedef VTNetUInt::iterator													VTNetUIntIterator;
-typedef VTNetUInt::const_iterator											VTNetUIntIteratorConst;
-typedef Net_Map<int32_t, int32_t>											MapNetIntToInt;
-typedef MapNetIntToInt::iterator											MapNetIntToIntIterator;
-typedef MapNetIntToInt::const_iterator										MapNetIntToIntIteratorConst;
-typedef Net_Map<uint32_t, int32_t>											MapNetUIntToInt;
-typedef MapNetUIntToInt::iterator											MapNetUIntToIntIterator;
-typedef MapNetUIntToInt::const_iterator										MapNetUIntToIntIteratorConst;
-typedef Net_Map<uint32_t, uint32_t>					                        MapNetUIntToUInt;
-typedef MapNetUIntToUInt::iterator											MapNetUIntToUIntIterator;
-typedef MapNetUIntToUInt::const_iterator									MapNetUIntToUIntIteratorConst;
 
 __NS_BASIC_START
 
@@ -85,11 +69,11 @@ public:
 	CBasicBitstream& operator << (const double v);
 	CBasicBitstream& operator << (const CNetBasicValue* pV);
 	CBasicBitstream& operator << (const CNetBasicValue& v);
-	CBasicBitstream& operator << (const Net_CBasicString* pV);
+	CBasicBitstream& operator << (const basiclib::CBasicString* pV);
 	CBasicBitstream& operator << (const basiclib::CBasicSmartBuffer* pV);
 	CBasicBitstream& operator << (const int8_t* v);
 	CBasicBitstream& operator << (const uint8_t* v);
-	CBasicBitstream& operator << (const Net_CBasicString& data);
+	CBasicBitstream& operator << (const basiclib::CBasicString& data);
 	CBasicBitstream& operator << (const basiclib::CBasicSmartBuffer& pV);
 	template<typename A>
 	CBasicBitstream& operator << (const Net_Set<A>& data)
@@ -135,13 +119,13 @@ public:
 	CBasicBitstream& operator >> (int32_t& v);
 	CBasicBitstream& operator >> (int64_t& v);
 	CBasicBitstream& operator >> (double& v);
-	CBasicBitstream& operator >> (Net_CBasicString* pV);
+	CBasicBitstream& operator >> (basiclib::CBasicString* pV);
 	CBasicBitstream& operator >> (basiclib::CBasicSmartBuffer* pV);
 	CBasicBitstream& operator >> (CNetBasicValue* pV);
 	CBasicBitstream& operator >> (CNetBasicValue& v);
 	CBasicBitstream& operator >> (int8_t* v);
 	CBasicBitstream& operator >> (uint8_t* v);
-	CBasicBitstream& operator >> (Net_CBasicString& data);
+	CBasicBitstream& operator >> (basiclib::CBasicString& data);
 	CBasicBitstream& operator >> (basiclib::CBasicSmartBuffer& pV);
 	template<class A>
 	CBasicBitstream& operator >> (Net_Set<A>& data)
@@ -189,7 +173,7 @@ public:
 	/////////////////////////////////////////////////////////////////////////////
 	void SerializeDataBuffer(const int8_t* pData, uint16_t usLength);
 	/////////////////////////////////////////////////////////////////////////////
-	void UnSerializeCString(Net_CBasicString* pV);
+	void UnSerializeCString(basiclib::CBasicString* pV);
 	void UnSerializeSmbuf(basiclib::CBasicSmartBuffer* pV);
 protected:
 	unsigned char m_szBuf[8];			//最大编码8字节整型
@@ -198,8 +182,8 @@ protected:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const double TINY_VALUE = (1E-10);
 
-const char		g_strNet_DoubleNull[8] = { (char)0, (char)0, (char)0, (char)0, (char)0, (char)0, (char)0, (char)0x80 };
-const double	DTEdouble_NULL = *(double*)g_strNet_DoubleNull;
+const char		g_strDoubleNull[8] = { (char)0, (char)0, (char)0, (char)0, (char)0, (char)0, (char)0, (char)0x80 };
+const double	DTEDOUBLE_NULL = *(double*)g_strDoubleNull;
 
 #define DTE_CHAR_NULL		"NUL"			//字符串空值
 #define DTE_LONG_NULL		LONG_MIN		//整数空值
@@ -209,9 +193,9 @@ const double	DTEdouble_NULL = *(double*)g_strNet_DoubleNull;
 #define IsColorNull(x)		((x) == DTE_COLOR_NULL)
 #define SetColorNull(x)		(x) = DTE_COLOR_NULL
 
-#define IsNet_DoubleNullExt(x)		((((x)==basiclib::DTEdouble_NULL)) && ((char*)(&x))[7] == (char)0x80)
-#define IsNet_DoubleNull(x)			(((x)==NULL) || (((*(x)==basiclib::DTEdouble_NULL)) && ((char*)(x))[7] == (char)0x80))
-#define SetNet_DoubleNull(x)		x=basiclib::DTEdouble_NULL
+#define IsDoubleNullExt(x)		((((x)==basiclib::DTEDOUBLE_NULL)) && ((char*)(&x))[7] == (char)0x80)
+#define IsDoubleNull(x)			(((x)==NULL) || (((*(x)==basiclib::DTEDOUBLE_NULL)) && ((char*)(x))[7] == (char)0x80))
+#define SetDoubleNull(x)			x=basiclib::DTEDOUBLE_NULL
 
 #define	IsLongNull(x)			(x==DTE_LONG_NULL)
 #define SetLongNull(x)			x=DTE_LONG_NULL
@@ -238,12 +222,12 @@ public:
 	CNetBasicValue(const CNetBasicValue& value);
 
 	void			SetLong(const int32_t value);
-	void			SetNet_Double(const double& value);
+	void			SetDouble(const double& value);
 	void			SetLongLong(const int64_t& value);
 	void			SetString(const char* value, size_t len = NullLen);
 
 	int32_t			GetLong() const;
-	double		GetNet_Double() const;
+	double			GetDouble() const;
 	int64_t	GetLongLong() const;
 	CBasicString	GetString() const;
 	const char*		GetStringRef() const;
@@ -258,7 +242,7 @@ public:
 	// data comparison
 	int CompareBasicValue(const CNetBasicValue* pRhs) const;
 	int CompareInt(int32_t rhs) const;
-	int CompareNet_Double(const double& rhs) const;
+	int CompareDouble(const double& rhs) const;
 	int CompareLongLong(int64_t rhs) const;
 	int ComparePointString(const char* rhs, size_t len) const;
 
@@ -398,10 +382,8 @@ inline bool operator!=(const CNetBasicValue& lhs, const int32_t rhs)
 	return lhs.CompareInt(rhs) != 0;
 }
 
-
 #pragma pack()
 __NS_BASIC_END
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 //结构定义
 typedef uint8_t						Net_UChar;											//1个字节
@@ -413,8 +395,24 @@ typedef int32_t						Net_Int;											//4字节
 typedef int64_t						Net_LONGLONG;										//8字节
 typedef double						Net_Double;											//8字节
 typedef intptr_t					Net_PtrInt;											//same with point size
-typedef basiclib::CNetBasicValue	Net_CNetBasicValue;                                   //define the cstring
+typedef basiclib::CBasicString		Net_CBasicString;                                   //define the cstring
+typedef basiclib::CNetBasicValue	Net_CNetBasicValue;                                 //define the cstring
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
+//支持序列化的map和vector定义
+typedef Net_Vector<Net_Int>													VTNetInt;
+typedef VTNetInt::iterator													VTNetIntIterator;
+typedef VTNetInt::const_iterator											VTNetIntIteratorConst;
+typedef Net_Vector<Net_UInt>				                                VTNetUInt;
+typedef VTNetUInt::iterator													VTNetUIntIterator;
+typedef VTNetUInt::const_iterator											VTNetUIntIteratorConst;
+typedef Net_Map<Net_Int, Net_Int>											MapNetIntToInt;
+typedef MapNetIntToInt::iterator											MapNetIntToIntIterator;
+typedef MapNetIntToInt::const_iterator										MapNetIntToIntIteratorConst;
+typedef Net_Map<Net_UInt, Net_Int>											MapNetUIntToInt;
+typedef MapNetUIntToInt::iterator											MapNetUIntToIntIterator;
+typedef MapNetUIntToInt::const_iterator										MapNetUIntToIntIteratorConst;
+typedef Net_Map<Net_UInt, Net_UInt>					                        MapNetUIntToUInt;
+typedef MapNetUIntToUInt::iterator											MapNetUIntToUIntIterator;
+typedef MapNetUIntToUInt::const_iterator									MapNetUIntToUIntIteratorConst;
 
 #endif 

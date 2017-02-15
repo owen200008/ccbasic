@@ -111,6 +111,7 @@
     <ClInclude Include="dll\basictesthead.h" />
     <ClInclude Include="dll\dlltest.h" />
     <ClInclude Include="exception\stackwalkcheck.h" />
+    <ClInclude Include="headdefine.h" />
     <ClInclude Include="misc\fastdelegatetest.h" />
     <ClInclude Include="net\nettest.h" />
     <ClInclude Include="stdafx.h" />

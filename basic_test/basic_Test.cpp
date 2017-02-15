@@ -11,11 +11,16 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	TestCoroutine();
+	if (!IsSupportBasiclib()){
+		printf("Not SupportBasiclib!!!");
+		getchar();
+		return 0;
+	}
+	//TestCoroutine();
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
-	//TestContainExt();
+	TestContainExt();
 	getchar();
 	return 0;
 }

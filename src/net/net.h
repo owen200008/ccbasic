@@ -236,8 +236,6 @@ public:
 	void Close(BOOL bRemote = FALSE);
 	//register presend filter
 	int RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptions = 0);
-	
-	const char* GetLibeventMethod();
 
 	uint32_t GetSessionStatus(uint32_t dwMask){ return m_unSessionStatus & dwMask; }
 	evutil_socket_t GetSocketFD(){ return m_socketfd; }
@@ -279,10 +277,10 @@ protected:
 	friend class CNetThread;
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define MAX_BUFFER				4096
+#define MAX_BUFFER_SEND_BUF				4096
 struct SendBuffer
 {
-	char	buf[MAX_BUFFER];
+	char	buf[MAX_BUFFER_SEND_BUF];
 	int		len;
 
 	SendBuffer()
@@ -309,7 +307,7 @@ public:
 	virtual int32_t Send(void *pData, int32_t cbData, uint32_t dwFlag = 0);
 	int32_t Send(basiclib::CBasicSmartBuffer& smBuf, uint32_t dwFlag = 0);
 	void GetNetAddress(basiclib::CBasicString& strAddr){ strAddr = m_szPeerAddr; }
-	UINT GetNetAddressPort(){ return m_nPeerPort; }
+	uint32_t GetNetAddressPort(){ return m_nPeerPort; }
 	virtual void OnTimer(uint32_t nTickTime);
 	BOOL IsRecTimeout(time_t tmNow, uint16_t nTimeoutSecond);
 	void GetReceiveTime(char* pBuffer, int nLength);//! 获取最后收到数据的时间
@@ -360,7 +358,7 @@ protected:
 	uint16_t				m_usRecTimeout;				//超时时间，0代表不超时
 	event					m_wevent;
 	char					m_szPeerAddr[ADDRESS_MAX_LENGTH];
-	UINT					m_nPeerPort;
+	uint32_t				m_nPeerPort;
 	basiclib::CBasicString	m_strConnectAddr;
 	BasicNetStat			m_stNet;
 	BasicNetStat			m_lastNet;
@@ -374,8 +372,8 @@ private:
 	BOOL ReadBuffer(int32_t lSend);
 	virtual BOOL CanClose();
 private:
-	CMsgSendBufferQueue		m_msgQueue;
-	SendBuffer				m_outBuffer;		//发送的缓存
+	CLockFreeMsgSendBufferQueue		m_msgQueue;
+	SendBuffer						m_outBuffer;		//发送的缓存
 };
 typedef basiclib::CBasicRefPtr<CBasicSessionNetClient> CRefBasicSessionNetClient;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -418,13 +416,7 @@ public:
 	}
 	CRefBasicSessionNetClient GetClientBySessionID(uint32_t nSessionID);
 protected:
-	void InitListenEvent(evutil_socket_t socketfd);
-	void OnListenReadEvent();
-	friend void OnLinkListenRead(int fd, short event, void *arg);
-	void AcceptClient();
 	void CopyClientSession(VTClientSession& vtClient);
-	int32_t OnClientDisconnectCallback(CBasicSessionNetClient* pClient, uint32_t p2);//clientdisconnectcallback
-	virtual void ReleaseCallback();
 protected:
 	virtual CBasicSessionNetClient* CreateServerClientSession(uint32_t nSessionID);
 	virtual CBasicSessionNetClient* ConstructSession(uint32_t nSessionID);
@@ -439,11 +431,21 @@ protected:
 	uint16_t							m_usRecTimeout;				//超时时间，0代表不超时
 /////////////////////////////////////////////////////////////////////////////////
 //libevent线程下操作
-private:
+protected:
+	void InitListenEvent(evutil_socket_t socketfd);
+	void OnListenReadEvent();
+	friend void OnLinkListenRead(int fd, short event, void *arg);
+
 	uint32_t GetNewSessionID();
+	void AcceptClient();
+
+	int32_t OnClientDisconnectCallback(CBasicSessionNetClient* pClient, uint32_t p2);//clientdisconnectcallback
+	virtual void ReleaseCallback();
 private:
 	uint32_t								m_sessionIDMgr;
 	CLockFreeMessageQueue<uint32_t>			m_sessionIDQueue;
+	moodycamel::ProducerToken				m_pSessiontoken;
+	moodycamel::ConsumerToken				m_cSessiontoken;
 };
 
 #pragma warning (pop)
