@@ -1,5 +1,5 @@
 #include "../inc/basic.h"
-
+/*
 CBasicPoll::CBasicPoll()
 {
 
@@ -44,4 +44,5 @@ bool CBasicPoll::Init(event_config *cfg)
 	if (bReleaseCFG){
 		event_config_free(cfg);
 	}
-}
+	return true;
+	}*/

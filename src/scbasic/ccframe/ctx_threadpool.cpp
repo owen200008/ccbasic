@@ -1,5 +1,7 @@
 #include "ctx_threadpool.h"
 #include <basic.h>
+#include "dllmodule.h"
+#include "log/ctx_log.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 CCorutinePlusThreadData::CCorutinePlusThreadData(CCtx_ThreadPool* pThreadPool)
@@ -35,7 +37,7 @@ void CCorutinePlusThreadData::ExecThreadOnWork()
 	CCtxMessageQueue* pQ = nullptr;
 	CCtxMessageQueue* pThreadQ = nullptr;
 
-	basiclib::BasicLogEventV("启动ExecThreadOnWork %d ThreadID(%d)", basiclib::BasicGetCurrentThreadId(), m_dwThreadID);
+	CCFrameSCBasicLogEventV(this, "启动ExecThreadOnWork %d ThreadID(%d)", basiclib::BasicGetCurrentThreadId(), m_dwThreadID);
 	while (bRunning){
 		pQ = DispathCtxMsg(pMgrQueue, pQ, usPacketNumber);
 		if (pQ == nullptr) {
@@ -44,7 +46,7 @@ void CCorutinePlusThreadData::ExecThreadOnWork()
 				pMgrQueue->WaitForGlobalMQ(100);
 		}
 	}
-	basiclib::BasicLogEventV("退出ExecThreadOnWork %d ThreadID(%d)", basiclib::BasicGetCurrentThreadId(), m_dwThreadID);
+	CCFrameSCBasicLogEventV(this, "退出ExecThreadOnWork %d ThreadID(%d)", basiclib::BasicGetCurrentThreadId(), m_dwThreadID);
 }
 
 CCtxMessageQueue* CCorutinePlusThreadData::DispathCtxMsg(CMQMgr* pMgrQueue, CCtxMessageQueue* pQ, uint32_t& usPacketNumber)
@@ -58,7 +60,7 @@ CCtxMessageQueue* CCorutinePlusThreadData::DispathCtxMsg(CMQMgr* pMgrQueue, CCtx
 	CRefCoroutineCtx pCtx = CSingletonCoroutineCtxHandle::Instance().GetContextByHandleID(nCtxID);
 	if (pCtx == nullptr){
 		//发生异常
-		basiclib::BasicLogEventErrorV("分发队列(DispathCtxMsg)找不到ctxid!!!");
+		CCFrameSCBasicLogEventError(this, "分发队列(DispathCtxMsg)找不到ctxid!!!");
 		return pMgrQueue->GlobalMQPop(m_globalCToken);
 	}
 	if (pCtx->IsReleaseCtx()){
@@ -67,7 +69,7 @@ CCtxMessageQueue* CCorutinePlusThreadData::DispathCtxMsg(CMQMgr* pMgrQueue, CCtx
 		ctx_message msg;
 		while (pQ->MQPop(token, msg)){
 			msg.FormatMsgQueueToString([&](const char* pData, int nLength)->void{
-
+				CCFrameSCBasicLogEvent(this, pData);
 			});
 		}
 		CSingletonCoroutineCtxHandle::Instance().UnRegister(pCtx.GetResFunc());
@@ -75,22 +77,22 @@ CCtxMessageQueue* CCorutinePlusThreadData::DispathCtxMsg(CMQMgr* pMgrQueue, CCtx
 	}
 
 	DispatchReturn nDispathRet = DispatchReturn_Success;
-	for (int i = 0; i < nDealPacketNumber; i++){
+	for (uint32_t i = 0; i < usPacketNumber; i++){
 		ctx_message msg;
 		if (!pQ->MQPop(msg)){
-			return pMgrQueue->GlobalMQPop();
+			return pMgrQueue->GlobalMQPop(m_globalCToken);
 		}
 		//分配任务
-		//nDispathRet = pCtx->DispatchMsg(msg, );
+		nDispathRet = pCtx->DispatchMsg(msg, this);
 		if (nDispathRet < DispatchReturn_Success){
-			basiclib::BasicLogEventErrorV("DispatchMsg出现错误(%d) Ctx(%d) Name(%s) SignName(%s)", nDispathRet, nCtxID, pCtx->GetCtxName().c_str(), pCtx->GetCtxSignName().c_str());
+			CCFrameSCBasicLogEventErrorV(this, "DispatchMsg出现错误(%d) Ctx(%d) Name(%s) SignName(%s)", nDispathRet, nCtxID, pCtx->GetCtxName().c_str(), pCtx->GetCtxSignName().c_str());
 		}
 		else if (nDispathRet == DispatchReturn_LockCtx){
-			ASSERT(msg.sz == 0);
-			break;
+			continue;
 		}
+		msg.ReleaseData();
 	}
-	CCtxMessageQueue* pNextQ = pMgrQueue->GlobalMQPop();
+	CCtxMessageQueue* pNextQ = pMgrQueue->GlobalMQPop(m_globalCToken);
 	if (pNextQ) {
 		//锁定就不需要放到全局队列
 		if (nDispathRet != DispatchReturn_LockCtx)
@@ -106,12 +108,24 @@ CCorutinePlusThreadData* GetCorutinePlusThreadData(basiclib::CBasicThreadTLS* pT
 	return (CCorutinePlusThreadData*)pTLS->GetValue();
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
+
+CCtx_ThreadPool* m_pCtxThreadPool;
+CCtx_ThreadPool* CCtx_ThreadPool::GetThreadPool(){
+	return m_pCtxThreadPool;
+}
+void CCtx_ThreadPool::CreateThreadPool(CCtx_ThreadPool* pPool){
+	m_pCtxThreadPool = pPool;
+}
+CCorutinePlusThreadData* CCtx_ThreadPool::GetSelfThreadData(){
+	return GetCorutinePlusThreadData(&m_pCtxThreadPool->m_threadIndexTLS);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
 CCtx_ThreadPool::CCtx_ThreadPool()
 {
 	m_nDPacketNumPerTime = 1;
 	m_bRunning = false;
+	m_pLog = nullptr;
 }
 
 CCtx_ThreadPool::~CCtx_ThreadPool()
@@ -119,10 +133,22 @@ CCtx_ThreadPool::~CCtx_ThreadPool()
 
 }
 
-bool CCtx_ThreadPool::Init(int nWorkThreadCount,
-	const std::function<void*(CCorutinePlusThreadData*)>& pCreateFunc,
+bool CCtx_ThreadPool::Init(const std::function<void*(CCorutinePlusThreadData*)>& pCreateFunc,
 	const std::function<void*(void*)>& pReleaseParamFunc)
 {
+	int nWorkThreadCount = atol(GetCtxInitString(InitGetParamType_Config, "workthread", "4"));
+	m_nDPacketNumPerTime = atol(GetCtxInitString(InitGetParamType_Config, "threadworkpacketnumber", "1"));
+	//default log
+	CCoroutineCtxTemplate* pLogTemplate = m_mgtDllCtx.GetCtxTemplate(GetCtxInitString(InitGetParamType_Config, "logtemplate", ""));
+	if (nullptr == pLogTemplate){
+		m_pLog = new CCoroutineCtx_Log();
+		m_pLog->InitCtx(&m_globalMQMgrModule);
+	}
+	else{
+		pLogTemplate->GetCreate()()->InitCtx(&m_globalMQMgrModule);
+	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//log创建即可
 	m_bRunning = true;
 
 	m_pCreateFunc = pCreateFunc;
@@ -137,6 +163,26 @@ bool CCtx_ThreadPool::Init(int nWorkThreadCount,
 		m_vtHandle.push_back(basiclib::BasicCreateThread(ThreadOnWork, new CCorutinePlusThreadData(this), &dwThreadID));
 	}
 	m_hMonitor = basiclib::BasicCreateThread(ThreadOnMonitor, this, &dwThreadID);
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	basiclib::SetNetInitializeGetParamFunc([](const char* pParam)->basiclib::CBasicString{
+		return CCtx_ThreadPool::GetThreadPool()->GetCtxInitString(InitGetParamType_Config, pParam, "4");
+	});
+
+	//main module
+	CCoroutineCtxTemplate* pMainTemplate = m_mgtDllCtx.GetCtxTemplate(GetCtxInitString(InitGetParamType_Config, "maintemplate", ""));
+	if (pMainTemplate == nullptr){
+		printf("获取启动的MainTemplate失败%s", GetCtxInitString(InitGetParamType_Config, "maintemplate", ""));
+		return false;
+	}
+	pMainTemplate->GetCreate()()->InitCtx(&m_globalMQMgrModule);
+
+	//创建状态上下文
+	CCoroutineCtxTemplate* pThreadStateTemplate = m_mgtDllCtx.GetCtxTemplate(GetCtxInitString(InitGetParamType_Config, "statetemplate", ""));
+	if (pThreadStateTemplate == nullptr){
+		CCFrameSCBasicLogEventErrorV("获取启动的StateTemplate失败%s", m_config.m_strStateTemplate.c_str());
+		return;
+	}
+
 	return true;
 }
 
@@ -172,10 +218,11 @@ THREAD_RETURN ThreadOnMonitor(void* pArgv)
 void CCtx_ThreadPool::ExecThreadOnMonitor()
 {
 	uint32_t& nTotalCtx = CCoroutineCtx::GetTotalCreateCtx();
-	basiclib::BasicLogEventV("启动ExecThreadOnMonitor %d", basiclib::BasicGetCurrentThreadId());
+	CCFrameSCBasicLogEventV("启动ExecThreadOnMonitor %d", basiclib::BasicGetCurrentThreadId());
 	while (nTotalCtx != 0){
 		basiclib::BasicSleep(100);
 	}
 	m_bRunning = false;
-	basiclib::BasicLogEventV("退出ExecThreadOnMonitor %d", basiclib::BasicGetCurrentThreadId());
+	CCFrameSCBasicLogEventV("退出ExecThreadOnMonitor %d", basiclib::BasicGetCurrentThreadId());
 }
+

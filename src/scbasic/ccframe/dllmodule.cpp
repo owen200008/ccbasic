@@ -1,4 +1,5 @@
 #include "dllmodule.h"
+#include "log/ctx_log.h"
 
 CInheritGlobalParam::CInheritGlobalParam(const char* pVersion)
 {
@@ -24,7 +25,7 @@ bool CKernelLoadDll::LoadKernelDll(const char* pLoadDll, bool bReplace)
 {
 	if (m_dll.LoadLibrary(pLoadDll) != 0)
 	{
-		basiclib::BasicLogEventErrorV("加载动态库失败%s", pLoadDll);
+		CCFrameSCBasicLogEventErrorV("加载动态库失败%s", pLoadDll);
 		return false;
 	}
 
@@ -38,7 +39,7 @@ bool CKernelLoadDll::LoadKernelDll(const char* pLoadDll, bool bReplace)
 bool CKernelLoadDll::ReplaceDll(CKernelLoadDll& dll)
 {
 	bool bRet = m_dll.ReplaceDll(dll.GetDll(), [](const char* pLog)->void{
-		basiclib::BasicLogEvent(pLog);
+		CCFrameSCBasicLogEvent(pLog);
 	});
 	//合并
 	if (m_pDllGlobalParam)
@@ -137,27 +138,27 @@ bool CDllRegisterCtxTemplateMgr::Register(CCoroutineCtxTemplateCreateFunc pCreat
 {
 	if (nullptr == pCreate || nullptr == pRelease)
 	{
-		basiclib::BasicLogEventError("注册上下文失败创建和释放函数是空");
+		CCFrameSCBasicLogEventError("注册上下文失败创建和释放函数是空");
 #ifdef _DEBUG
 		stacktrace::call_stack stack(0);
-		basiclib::BasicLogEventErrorV("%s", stack.to_string());
+		CCFrameSCBasicLogEventErrorV("%s", stack.to_string());
 #endif
 		return false;
 	}
 	CCoroutineCtxTemplate* pTemplate = pCreate();
 	if (pTemplate == nullptr){
-		basiclib::BasicLogEventError("注册上下文创建模板失败");
+		CCFrameSCBasicLogEventError("注册上下文创建模板失败");
 #ifdef _DEBUG
 		stacktrace::call_stack stack(0);
-		basiclib::BasicLogEventErrorV("%s", stack.to_string());
+		CCFrameSCBasicLogEventErrorV("%s", stack.to_string());
 #endif
 		return false;
 	}
 	if (!pTemplate->IsValid()){
-		basiclib::BasicLogEventError("注册上下文模板创建后参数异常");
+		CCFrameSCBasicLogEventError("注册上下文模板创建后参数异常");
 #ifdef _DEBUG
 		stacktrace::call_stack stack(0);
-		basiclib::BasicLogEventErrorV("%s", stack.to_string());
+		CCFrameSCBasicLogEventErrorV("%s", stack.to_string());
 #endif
 		return false;
 	}
@@ -181,6 +182,14 @@ CCoroutineCtxTemplate* CDllRegisterCtxTemplateMgr::GetCtxTemplate(const char* pN
 	return nullptr;
 }
 
+void CCoroutineCtxTemplateMessage::Release(){
+	if (m_pTemplate && m_pReleaseFunc){
+		m_pReleaseFunc(m_pTemplate);
+	}
+	else{
+		CCFrameSCBasicLogEventErrorV("释放上下文模板对象出错(%s)", m_pTemplate->GetTemplateName().c_str());
+	}
+}
 ///////////////////////////////////////////////////////////////////////////////////////////
 void ReleaseTemplate(CCoroutineCtxTemplate* pTemplate){
 	delete pTemplate;

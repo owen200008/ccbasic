@@ -76,6 +76,8 @@ bool CBasicSmartBuffer::ExportOutData(SmartBufferExportOutData& data)
 		data.ReleaseData();
 		data.m_pExport = m_pszBuffer;
 		data.m_nLength = m_cbBuffer;
+
+		EmptyBuffer();
 		return true;
 	}
 	return false;

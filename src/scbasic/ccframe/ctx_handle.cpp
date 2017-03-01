@@ -1,4 +1,5 @@
 #include "ctx_handle.h"
+#include "log/ccframelog.h"
 
 CCoroutineCtxHandle::CCoroutineCtxHandle()
 {
@@ -88,7 +89,7 @@ uint32_t CCoroutineCtxHandle::GetNewHandleID()
 		if (uRetHandleID % 10000 == 0)
 		{
 			//100 log
-			basiclib::BasicLogEventErrorV("HandleID Allocate warning %d, need restart!!", uRetHandleID);
+			CCFrameSCBasicLogEventErrorV("HandleID Allocate warning %d, need restart!!", uRetHandleID);
 		}
 	}
 

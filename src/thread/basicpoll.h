@@ -11,14 +11,12 @@
 
 #include "event.h"
 
-#pragma	pack(1)
 typedef void(*pCallBasicPollNotify)(void* m_ud);
 struct CBasicPollNotify
 {
 	pCallBasicPollNotify							m_func;
 	void*											m_ud;
 };
-#pragma	pack()
 
 //基于libevent实现,底层如果不是fd驱动的会卡死
 class CBasicPoll : public basiclib::CBasicObject

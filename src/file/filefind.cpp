@@ -57,26 +57,27 @@ void CBasicFileFind::CloseContext()
 
 ULONGLONG CBasicFileFind::GetLength() const
 {
-	ULARGE_INTEGER nFileSize;
+	uint64_t nFileSize;
 
 	if (m_pFoundInfo != NULL)
 	{
 		LPWIN32_FIND_DATAA pFindData = (LPWIN32_FIND_DATAA)m_pFoundInfo;
 #ifdef __BASICWINDOWS
-		nFileSize.LowPart = pFindData->nFileSizeLow;
-		nFileSize.HighPart = pFindData->nFileSizeHigh;
+		nFileSize = pFindData->nFileSizeHigh;
+		nFileSize <<= 32;
+		nFileSize += pFindData->nFileSizeLow;
 #else
 		ULONGLONG uTmp = pFindData->nFileSizeHigh;
-		nFileSize.QuadPart = uTmp << 32;
-		nFileSize.QuadPart += pFindData->nFileSizeLow;
+		nFileSize = uTmp << 32;
+		nFileSize += pFindData->nFileSizeLow;
 #endif
 	}
 	else
 	{
-		nFileSize.QuadPart = 0;
+		nFileSize = 0;
 	}
 
-	return nFileSize.QuadPart;
+	return nFileSize;
 }
 
 CBasicString CBasicFileFind::GetFilePath() const

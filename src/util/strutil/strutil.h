@@ -90,6 +90,7 @@ namespace __private
 typedef	tstring_s									char_string;
 typedef tstring										wchar_string;
 __NS_BASIC_END
+
 namespace std{
 	template<>
 	struct hash<basiclib::char_string> : public std::unary_function<basiclib::char_string, std::size_t>{
@@ -97,15 +98,13 @@ namespace std{
 			#ifdef __BASICWINDOWS
 				return _Hash_seq((const unsigned char*)key.c_str(), key.length());
 			#else
+#ifdef __GNUC__
+				return std::_Hash_impl::hash(key.c_str(), key.length());
+#else
 				hash<const char*> hash_fn;
-				return hash_fn(key.c_str());
+				return hash_fn(key.c_str(), key.length());
+#endif
 			#endif			
-		}
-	};
-	template <>
-	struct equal_to<basiclib::char_string> : public binary_function<basiclib::char_string, basiclib::char_string, bool>{
-		bool operator()(const basiclib::char_string& __x, const basiclib::char_string& __y) const{
-			return __x == __y;
 		}
 	};
 }

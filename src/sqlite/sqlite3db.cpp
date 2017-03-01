@@ -34,7 +34,7 @@ bool CCQLite3DB::Open(const char *szFileName, const char* pPwd, int nLength)
 			return Open(szFileName, NULL, 0);
 		}
 	}
-	return true;
+	return m_pDB != nullptr;
 }
 
 bool CCQLite3DB::Close()

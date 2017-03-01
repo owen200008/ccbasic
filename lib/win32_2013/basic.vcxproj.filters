@@ -584,6 +584,9 @@
     <ClCompile Include="..\..\src\util\containerext.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\thread\thread.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="..\..\src\coroutine\coctx_swap_win.asm">

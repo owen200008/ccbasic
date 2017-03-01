@@ -18,6 +18,25 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DWORD ChangeFileAttributes(struct _stat& st)
+{
+	DWORD dwAttr = 0;
+	if(st.st_mode & S_IFDIR)
+	{
+		dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
+}
+	if (st.st_mode & S_IFCHR)
+	{
+		dwAttr |= FILE_ATTRIBUTE_DEVICE;
+	}
+	if (st.st_mode & S_IFREG)
+	{
+		dwAttr |= FILE_ATTRIBUTE_NORMAL;
+	}
+	return dwAttr;
+}
+
 __NS_BASIC_START
 long GetFileErrorID()
 {
@@ -403,24 +422,6 @@ void FillFileStatusTime(TLFileStatus& rStatus, const FILETIME& ftCreate, const F
 	{
 		rStatus.m_atime = rStatus.m_mtime;
 	}
-}
-
-DWORD ChangeFileAttributes(struct _stat& st)
-{
-	DWORD dwAttr = 0;
-	if(st.st_mode & S_IFDIR)
-	{
-		dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
-	}
-	if(st.st_mode & S_IFCHR)
-	{
-		dwAttr |= FILE_ATTRIBUTE_DEVICE;
-	}
-	if(st.st_mode & S_IFREG)
-	{
-		dwAttr |= FILE_ATTRIBUTE_NORMAL;
-	}
-	return dwAttr;
 }
 
 long Basic_GetFileStatus(const char* lpszFileName, TLFileStatus& rStatus)

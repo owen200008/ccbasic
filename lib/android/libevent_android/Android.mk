@@ -32,7 +32,8 @@ LOCAL_SRC_FILES :=	../../../3rd/libevent/buffer.c				\
 					../../../3rd/libevent/poll.c 					\
 					../../../3rd/libevent/select.c 				\
 					../../../3rd/libevent/signal.c 				\
-					../../../3rd/libevent/strlcpy.c
+					../../../3rd/libevent/strlcpy.c				\
+					../../../3rd/libevent/evutil_time.c				
    
 LOCAL_C_INCLUDES :=	$(LOCAL_PATH)/../../../3rd/libevent 			\
 					$(LOCAL_PATH)/android 	\

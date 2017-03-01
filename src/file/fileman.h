@@ -10,7 +10,6 @@
 #define BASIC_FILEMAN_H
 
 #pragma once
-#pragma	pack(1)
 
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -469,5 +468,5 @@ void Basic_RegulatePathString(CBasicString& strPath);
 void Basic_RegulateFileNameString(CBasicString& strFileName);
 __NS_BASIC_END
 /////////////////////////////////////////////////////////////////////////////////////////////
-#pragma	pack()
+
 #endif 

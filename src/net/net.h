@@ -327,7 +327,6 @@ protected:
 	int32_t _handle_send(uint32_t dwNetCode, int32_t cbSend);
 protected:
 	void InitClientEvent(evutil_socket_t socketfd, bool bAddWrite = true, bool bAddRead = true);
-	void AddWriteEvent();
 	virtual void InitMember();
 	virtual void CloseCallback(BOOL bRemote, DWORD dwNetCode = 0);
 

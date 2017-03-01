@@ -160,6 +160,10 @@ protected:
 	BasicTLS_Key	m_key;
 };
 
+#define BasicGetBasiclibGlobalTLS_Net	0xE0000001
+_BASIC_DLL_API void* BasicGetBasiclibGlobalTLS(int nKey);
+_BASIC_DLL_API void BasicSetBasiclibGlobalTLS(int nKey, void* pData);
+
 __NS_BASIC_END
 
 #endif 

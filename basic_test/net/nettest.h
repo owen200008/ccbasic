@@ -4,6 +4,7 @@
 #include <basic.h>
 #include "../scbasic/commu/servertemplate.h"
 #include "../scbasic/commu/basicclient.h"
+#include "../scbasic/encode/rsaencode.h"
 LONG g_StartNetCount = 0;
 typedef basiclib::CCheckNoPairKey<LONG> CheckNoReleaseInfo;
 CheckNoReleaseInfo m_checknorelease;
@@ -302,6 +303,9 @@ THREAD_RETURN WorkerServerThread(void *arg)
 
 void NetServerTest()
 {
+	CSCBasicRSA rsa;
+	rsa.SetPublicFileName("e:/pub.gem");
+
 	basiclib::BasicSetMemRunMemCheck(MemRunMemCheck_RunTongJi | MemRunMemCheck_RunCheckMem, 9, 0x0FFFFFFF);
 	srand(time(NULL) + basiclib::BasicGetTickTime());
 	TRACE("StartServer\n");

@@ -10,11 +10,13 @@
 #define SCBASIC_CTX_THREADPOOL_H
 
 #include "ctx_handle.h"
+#include "dllmodule.h"
+#include "log/ctx_log.h"
 
 //call in the thread create
 class basiclib::CBasicThreadTLS;
 class CCtx_ThreadPool;
-class _BASIC_DLL_API CCorutinePlusThreadData : public basiclib::CBasicObject
+class _SCBASIC_DLL_API CCorutinePlusThreadData : public basiclib::CBasicObject
 {
 public:
 	CCorutinePlusThreadData(CCtx_ThreadPool* pThreadPool);
@@ -24,6 +26,9 @@ public:
 
 	//执行
 	void ExecThreadOnWork();
+
+	//! 封装执行一个协程
+
 protected:
 	CCtxMessageQueue* DispathCtxMsg(CMQMgr* pMgrQueue, CCtxMessageQueue* pQ, uint32_t& usPacketNumber);
 public:
@@ -39,24 +44,29 @@ public:
 CCorutinePlusThreadData* GetCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS);
 
 typedef fastdelegate::FastDelegate0<void*> OnCreateUDData;
-class _SCBASIC_DLL_API CCtx_ThreadPool : basiclib::CBasicObject
+class _SCBASIC_DLL_API CCtx_ThreadPool : public basiclib::CBasicObject
 {
+public:
+	static CCtx_ThreadPool* GetThreadPool();
+	static CCorutinePlusThreadData* GetSelfThreadData();
+	static void CreateThreadPool(CCtx_ThreadPool* pPool);
+public:
+	//必须实现的虚函数
+	virtual const char* GetCtxInitString(InitGetParamType nType, const char* pParam, const char* pDefault) = 0;
 public:
 	CCtx_ThreadPool();
 	virtual ~CCtx_ThreadPool();
 
 	//! 初始化
-	bool Init(int nWorkThreadCount, 
-		const std::function<void*(CCorutinePlusThreadData*)>& pCreateFunc, 
+	virtual bool Init(const std::function<void*(CCorutinePlusThreadData*)>& pCreateFunc, 
 		const std::function<void*(void*)>& pReleaseParamFunc);
 	//! 等待退出
 	void Wait();
-	//! 启动工作线程
-
 public:
 	basiclib::CBasicThreadTLS& GetTLS(){ return m_threadIndexTLS; }
 	CBasicOnTimer& GetOnTimerModule();
 	CMQMgr& GetGlobalMQMgr(){ return m_globalMQMgrModule; }
+	CDllRegisterCtxTemplateMgr& GetCtxTemplateRegister(){ return m_mgtDllCtx; }
 protected:
 	friend THREAD_RETURN ThreadOnWork(void*);
 	
@@ -74,7 +84,11 @@ protected:
 
 	std::function<void*(CCorutinePlusThreadData*)>				m_pCreateFunc;
 	std::function<void*(void*)>									m_pReleaseFunc;
-												
+	//ctx管理
+	CDllRegisterCtxTemplateMgr									m_mgtDllCtx;
+protected:
+	//不会释放的ctx
+	CCoroutineCtx_Log*											m_pLog;
 
 	friend class CCoroutineCtx;
 	friend class CCorutinePlusThreadData;

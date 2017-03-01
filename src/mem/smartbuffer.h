@@ -9,7 +9,6 @@
 #ifndef BASIC_SMARTBUFFER_H
 #define BASIC_SMARTBUFFER_H
 
-#pragma	pack(1)
 __NS_BASIC_START
 //////////////////////////////////////////////////////////////////////////////////////////////
 //class CBasicObject;
@@ -27,6 +26,9 @@ struct _BASIC_DLL_API SmartBufferExportOutData
 	{
 		m_pExport = nullptr;
 		m_nLength = 0;
+	}
+	~SmartBufferExportOutData(){
+		ReleaseData();
 	}
 	void ReleaseData()
 	{
@@ -95,5 +97,4 @@ bool operator == (CBasicSmartBuffer& b1, CBasicSmartBuffer& b2);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_END
 //////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma pack()
 #endif 

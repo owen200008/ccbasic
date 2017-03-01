@@ -10,7 +10,7 @@
 #include <pthread.h>
 #include <errno.h>
 using namespace basiclib;
-__NS_BASIC_START
+//__NS_BASIC_START
 ////////////////////////////////////////////////////////////////
 //����ͬһ�̼߳���
 int pthread_mutex_init_np(pthread_mutex_t *pmutex)
@@ -49,12 +49,7 @@ typedef sem_private_struct *sem_private;
 //////////////////////////////////////////////////////////////////////////////
 //32λԭ�Ӳ���
 #ifndef _USER64BITREGISTER_LINUX
-LONG
-BasicInterlockedExchangeAdd(
-    LONG volatile *Addend,
-    LONG Increment
-    );
-
+__NS_BASIC_START
 LONG
 BasicInterlockedIncrement(
     LONG volatile *lpAddend
@@ -75,7 +70,7 @@ BasicInterlockedDecrement(
 #ifdef __MAC
 	return OSAtomicAdd32(-1, (volatile int32_t*)Addend);
 #else
-	__sync_sub_and_fetch(lpAddend, 1);
+	return __sync_sub_and_fetch(lpAddend, 1);
 #endif
 }
 
@@ -110,21 +105,10 @@ LONG BasicInterlockedExchangeSub(LONG volatile *Addend, LONG Increment)
 	return __sync_fetch_and_sub(Addend, Increment);
 #endif
 }
-
+__NS_BASIC_END
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL
-BASIC_CloseHandle(
-    HANDLE hObject
-    )
-{
-	if(hObject == NULL || hObject == INVALID_HANDLE_VALUE)
-		return FALSE;
-	//TRACE("!!!Don't call me, CloseHandle not support!\n");
-	return TRUE;
-}
-
 BOOL
 ReleaseSemaphore(
     HANDLE hSemaphore,
@@ -230,12 +214,35 @@ DestoryMutex(HANDLE hMutex)
 	return true;
 }
 
+
+BOOL
+PulseEvent(
+    HANDLE hEvent
+    )
+{
+	return true;
+}
+
+DWORD
+MsgWaitForMultipleObjects(
+    DWORD nCount,
+    LPHANDLE pHandles,
+    BOOL fWaitAll,
+    DWORD dwMilliseconds,
+    DWORD dwWakeMask)
+{
+	return 0;
+}
+
+__NS_BASIC_START
+
+
 HANDLE
 BasicCreateEvent(
-    BOOL bManualReset,
-    BOOL bInitialState,
-    LPCSTR lpName
-    )
+BOOL bManualReset,
+BOOL bInitialState,
+LPCSTR lpName
+)
 {
 	sem_private token = (sem_private) BasicAllocate(sizeof(sem_private_struct));
 	token->m_manualReset = bManualReset;
@@ -257,8 +264,8 @@ BasicCreateEvent(
 
 BOOL
 BasicSetEvent(
-    HANDLE hEvent
-    )
+HANDLE hEvent
+)
 {
 	if(hEvent == NULL)
 		return false;
@@ -272,8 +279,8 @@ BasicSetEvent(
 
 BOOL
 BasicResetEvent(
-    HANDLE hEvent
-    )
+HANDLE hEvent
+)
 {
 	sem_private token = (sem_private)hEvent;
 	pthread_mutex_lock(&(token->m_mutex));
@@ -290,25 +297,6 @@ BasicDestoryEvent(HANDLE hEvent)
 	pthread_cond_destroy(&(token->m_condition));
 	BasicDeallocate (token); 
 	return true;
-}
-
-BOOL
-PulseEvent(
-    HANDLE hEvent
-    )
-{
-	return true;
-}
-
-DWORD
-MsgWaitForMultipleObjects(
-    DWORD nCount,
-    LPHANDLE pHandles,
-    BOOL fWaitAll,
-    DWORD dwMilliseconds,
-    DWORD dwWakeMask)
-{
-	return 0;
 }
 
 DWORD

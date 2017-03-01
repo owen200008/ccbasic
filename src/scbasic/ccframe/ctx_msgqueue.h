@@ -19,14 +19,17 @@
 
 //执行函数的定义
 class CCoroutineCtx;
-typedef void(*pRunFuncCtxMessageCallback)(CCoroutineCtx*, intptr_t);
+struct ctx_message;
+class CCorutinePlusThreadData;
+typedef void(*pRunFuncCtxMessageCallback)(CCoroutineCtx*, ctx_message*, CCorutinePlusThreadData* pData);
 
 #pragma	pack(1)
 struct _SCBASIC_DLL_API ctx_message
 {
-	uint32_t		m_nCtxID;
+	uint32_t		m_nSourceCtxID;
 	intptr_t		m_session;
 	uint32_t		m_nType;
+	void*			m_pFunc;
 	void*			m_data;
 	size_t			sz;
 	ctx_message(){
@@ -34,28 +37,48 @@ struct _SCBASIC_DLL_API ctx_message
 	}
 	ctx_message(uint32_t nCtxID){
 		memset(this, 0, sizeof(ctx_message));
-		m_nCtxID = nCtxID;
+		m_nSourceCtxID = nCtxID;
 	}
 	//! 执行函数
 	ctx_message(uint32_t nCtxID, pRunFuncCtxMessageCallback pFunc, intptr_t nSession = 0){
 		memset(this, 0, sizeof(ctx_message));
-		m_nCtxID = nCtxID;
-		m_data = pFunc;
+		m_nType = CTXMESSAGE_TYPE_RUNFUNC;
+		m_nSourceCtxID = nCtxID;
+		m_pFunc = pFunc;
+		m_session = nSession;
+	}
+	//! 执行协程
+	ctx_message(uint32_t nCtxID, CCorutinePlus* pCorutine, intptr_t nSession = 0){
+		memset(this, 0, sizeof(ctx_message));
+		m_nType = CTXMESSAGE_TYPE_RUNCOROUTINE;
+		m_nSourceCtxID = nCtxID;
+		m_pFunc = pCorutine;
+		m_session = nSession;
+	}
+	//! ontimer
+	ctx_message(uint32_t nCtxID, Net_PtrInt nOnTimerKey, intptr_t nSession = 0){
+		memset(this, 0, sizeof(ctx_message));
+		m_nType = CTXMESSAGE_TYPE_ONTIMER;
+		m_nSourceCtxID = nCtxID;
+		m_pFunc = (void*)nOnTimerKey;
 		m_session = nSession;
 	}
 	ctx_message(ctx_message&& msg){
 		*this = msg;
 		msg.sz = 0;
 	}
-	~ctx_message(){
-		if (sz > 0){
-			basiclib::BasicDeallocate(m_data);
-		}
-	}
 	ctx_message& operator = (ctx_message&& msg){
 		*this = msg;
 		msg.sz = 0;
 		return *this;
+	}
+	void ExportFromSmartBuffer(basiclib::CBasicSmartBuffer& smBuf){
+		basiclib::SmartBufferExportOutData data;
+		smBuf.ExportOutData(data);
+		m_data = data.m_pExport;
+		sz = data.m_nLength;
+		data.m_pExport = nullptr;
+		data.m_nLength = 0;
 	}
 	void CloneData(const char* pData, int nLength){
 		if (nLength != 0){
@@ -64,11 +87,22 @@ struct _SCBASIC_DLL_API ctx_message
 			memcpy(m_data, pData, sz);
 		}
 	}
+	void ReleaseData(){
+		if (sz > 0 && m_data){
+			basiclib::BasicDeallocate(m_data);
+		}
+	}
 	//! 可读的字符串
 	void FormatMsgQueueToString(const std::function<void(const char* pData, int nLength)>& func){
 		char szBuf[128] = { 0 };
+#pragma warning (push)
+#pragma warning (disable: 4293)
 		func(szBuf, 
-			sprintf(szBuf, "C(%d) S(%x%x) T(%d) SZ(%d) D(%x%x)", m_nCtxID, (uint32_t)(m_session >> 32), (uint32_t)m_session, m_nType, sz, (uint32_t)((intptr_t)m_data >> 32), (uint32_t)m_data));
+			sprintf(szBuf, "C(%d) S(%x%x) T(%d) SZ(%d) F(%x%x) D(%x%x)", m_nSourceCtxID, 
+			(uint32_t)(m_session >> 32), (uint32_t)m_session, m_nType, sz, 
+			(uint32_t)((intptr_t)m_pFunc >> 32), (uint32_t)m_pFunc, 
+			(uint32_t)((intptr_t)m_data >> 32), (uint32_t)m_data));
+#pragma warning (pop)
 	}
 };
 #pragma	pack()

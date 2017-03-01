@@ -10,22 +10,26 @@
 
 #include "ctx_msgqueue.h"
 
+enum InitGetParamType
+{
+	InitGetParamType_Config = 0,
+};
+
 enum DispatchReturn
 {
 	DispatchReturn_Error = -1,
 	DispatchReturn_Success = 0, //代表包处理完成不需要保留
-	DispatchReturn_Release = 1,	//代表release
 	DispatchReturn_LockCtx = 1,	//代表锁定ctx，包内部释放	
 };
 
 #pragma warning (push)
 #pragma warning (disable: 4251)
 #pragma warning (disable: 4275)
-typedef const char*(*pInitGetParamFunc)(int, const char*, const char*);
 typedef fastdelegate::FastDelegate0<void> HandleOnTimer;			//错误消息
 typedef void(*pCallOnTimerFunc)();
 class CCoroutineCtx;
-typedef DispatchReturn(*pCallbackOnTimerFunc)(CCoroutineCtx* pCtx);
+class CCorutinePlusThreadData;
+typedef DispatchReturn(*pCallbackOnTimerFunc)(CCoroutineCtx* pCtx, CCorutinePlusThreadData* pData);
 class _SCBASIC_DLL_API CCoroutineCtx : public basiclib::CBasicObject, public basiclib::EnableRefPtr<CCoroutineCtx>
 {
 public:
@@ -36,11 +40,11 @@ public:
 		回调参数
 		0 代表 从lua文件取
 	*/
-	virtual int InitCtx(pInitGetParamFunc pFunc, CMQMgr* pMQMgr);
+	virtual int InitCtx(CMQMgr* pMQMgr);
 	//! 不需要自己delete，只要调用release
 	virtual void ReleaseCtx();
 	/*	分配任务 <0代表出错*/
-	virtual DispatchReturn DispatchMsg(ctx_message& msg, CCorutinePlusThreadData& data);
+	virtual DispatchReturn DispatchMsg(ctx_message& msg, CCorutinePlusThreadData* pData);
 	//! 加入timer
 	bool AddOnTimer(int nTimes, pCallbackOnTimerFunc pCallback);
 	bool AddOnTimeOut(int nTimes, pCallbackOnTimerFunc pCallback);
@@ -54,7 +58,7 @@ public:
 public:
 	static uint32_t& GetTotalCreateCtx();
 
-	static bool PushMessageByID(ctx_message& msg);
+	static bool PushMessageByID(uint32_t nDstCtxID, ctx_message& msg);
 	bool PushMessage(ctx_message& msg);
 	///////////////////////////////////////////////////////////////////////////////////////////
 	//定义线程安全的函数

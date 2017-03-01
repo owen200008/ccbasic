@@ -15,6 +15,9 @@
     <ClCompile Include="..\src\scbasic\commu\ipverify.cpp">
       <Filter>scbasic\comm</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\scbasic\encode\rsaencode.cpp">
+      <Filter>scbasic\encode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -58,6 +61,9 @@
       <Filter>thread</Filter>
     </ClInclude>
     <ClInclude Include="headdefine.h" />
+    <ClInclude Include="..\src\scbasic\encode\rsaencode.h">
+      <Filter>scbasic\encode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -95,6 +101,9 @@
     </Filter>
     <Filter Include="thread">
       <UniqueIdentifier>{b7808ea6-f2cd-40ee-9062-ffd329c9d097}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scbasic\encode">
+      <UniqueIdentifier>{be0bcf40-fd28-490f-bc59-0b7831720e37}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

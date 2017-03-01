@@ -337,7 +337,6 @@ inline bool	operator == (LPCTSTR lhs, const CWBasicString& rhs)
 }
 
 __NS_BASIC_END
-
 namespace std{
 	template<>
 	struct hash<basiclib::CBasicString> : public std::unary_function<basiclib::CBasicString, std::size_t>{
@@ -345,18 +344,15 @@ namespace std{
 #ifdef __BASICWINDOWS
 			return _Hash_seq((const unsigned char*)key.c_str(), key.length());
 #else
+#ifdef __GNUC__
+			return std::_Hash_impl::hash(key.c_str(), key.length());
+#else
 			hash<const char*> hash_fn;
-			return hash_fn(key.c_str());
+			return hash_fn(key.c_str(), key.length());
+#endif
 #endif	
 		}
 	};
-	template <>
-	struct equal_to<basiclib::CBasicString> : public binary_function<basiclib::CBasicString, basiclib::CBasicString, bool>{
-		bool operator()(const basiclib::CBasicString& __x, const basiclib::CBasicString& __y) const{
-			return __x == __y;
-		}
-	};
 }
-
 #endif 
 

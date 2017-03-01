@@ -6,34 +6,31 @@
 #define TIMES_FORTEST 1000000
 void Foo(CCorutinePlus* pCorutine)
 {
-	int nThread = pCorutine->GetResumeParam<int>(0);
-	for (int i = 0; i < TIMES_FORTEST; i++)
-	{
-		pCorutine->YieldCorutine();
-		char* pData = pCorutine->GetResumeParamPoint<char>(1);
-		int n = pCorutine->GetResumeParam<int>(2);
-		char szBuf[16384];
-		memcpy(szBuf, pData, n);
-		if (n != 16384 || szBuf[0] != '\0')
-			basiclib::BasicLogEvent("1");
-	}
+	char* pData = pCorutine->GetResumeParamPoint<char>(1);
+	int n = pCorutine->GetResumeParam<int>(2);
+	char szBuf[16384];
+	memcpy(szBuf, pData, n);
+	if (n != 16384 || szBuf[0] != '\0')
+		basiclib::BasicLogEvent("1");
+	pCorutine->YieldCorutine();
 }
 
 void TestCoroutine(){
 	CCorutinePlusPool* S = new CCorutinePlusPool();
 	S->InitCorutine();
-	CCorutinePlus* pCorutine = S->GetCorutine();
-	pCorutine->ReInit(Foo);
+	
 	int nThread = 1;
-	pCorutine->Resume(S, nThread);
+	CCorutinePlus* pCorutine = S->GetCorutine();
 	//printf("Start(%d) %d\n", nThread, i);
 	{
-
 		clock_t begin = clock();
 		for (int i = 0; i < TIMES_FORTEST; i++){
 			char szBuf[16384] = {0};
 			int nLength = 16384;
+			
+			pCorutine->ReInit(Foo);
 			pCorutine->Resume(S, nThread, szBuf, nLength);
+			pCorutine->Resume(S, nThread);
 		}
 
 		clock_t end = clock();

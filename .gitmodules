@@ -19,3 +19,12 @@
 [submodule "3rd/libuv"]
 	path = 3rd/libuv
 	url = https://github.com/libuv/libuv.git
+[submodule "3rd/sphinxbase"]
+	path = 3rd/sphinxbase
+	url = https://github.com/cmusphinx/sphinxbase.git
+[submodule "3rd/pocketsphinx"]
+	path = 3rd/pocketsphinx
+	url = https://github.com/cmusphinx/pocketsphinx.git
+[submodule "3rd/openal-soft"]
+	path = 3rd/openal-soft
+	url = https://github.com/kcat/openal-soft.git

@@ -327,7 +327,7 @@ public:
 		return atoi(GetData(key1, key2, defval).c_str());
 	}
 
-	LONG64 __atoi64Char(const char* str, int nLen/* = -1*/)
+	int64_t __atoi64Char(const char* str, int nLen/* = -1*/)
 	{
 		char Buff[32];
 		if (nLen == -1)
@@ -413,6 +413,12 @@ public:
 		m_dic = ini.m_dic;
 		m_file = ini.m_file;
 		return *this;
+	}
+	template<typename F>
+	void Foreach(F f){
+		for (auto& keyvalue : m_dic){
+			f(keyvalue.first, keyvalue.second);
+		}
 	}
 protected:
 	//合并方式的ini解析

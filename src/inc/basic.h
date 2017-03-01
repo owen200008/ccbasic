@@ -51,7 +51,7 @@
 //同步对象定义
 #include "../thread/mt.h"
 //事件驱动
-#include "../thread/basicpoll.h"
+//#include "../thread/basicpoll.h"
 //
 //单态实现
 #include "../misc/singleton.h"

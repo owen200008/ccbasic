@@ -42,6 +42,7 @@
     <OutDir>Debug\</OutDir>
     <IntDir>Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>Release\</OutDir>
@@ -58,14 +59,14 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>../src/inc;../3rd/libevent/include;../3rd/libevent/WIN32-Code/nmake</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../src/inc;../3rd/libevent/include;../3rd/libevent/WIN32-Code/nmake;../3rd/cryptopp/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>../lib/basicD13.lib;../3rd/libevent/build/lib/Debug/event_core.lib;../3rd/libevent/build/lib/Debug/event.lib;../3rd/libevent/build/lib/Debug/event_extra.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)basic_Test.exe</OutputFile>
+      <AdditionalDependencies>../lib/basicD13.lib;../3rd/libevent/build/lib/Debug/event_core.lib;../3rd/libevent/build/lib/Debug/event.lib;../3rd/libevent/build/lib/Debug/event_extra.lib;../3rd/cryptopp/Win32/Output/Debug/cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)basic_TestD.exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)basic_Test.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)basic_TestD.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -79,6 +80,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>../src/inc;../3rd/libevent/include;../3rd/libevent/WIN32-Code/nmake</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)basic_Test.exe</OutputFile>
@@ -95,6 +97,7 @@
     <ClCompile Include="..\src\scbasic\commu\basicclient.cpp" />
     <ClCompile Include="..\src\scbasic\commu\ipverify.cpp" />
     <ClCompile Include="..\src\scbasic\commu\servertemplate.cpp" />
+    <ClCompile Include="..\src\scbasic\encode\rsaencode.cpp" />
     <ClCompile Include="basic_Test.cpp" />
     <ClCompile Include="dll\basictesthead.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -106,6 +109,7 @@
     <ClInclude Include="..\src\scbasic\commu\basicclient.h" />
     <ClInclude Include="..\src\scbasic\commu\ipverify.h" />
     <ClInclude Include="..\src\scbasic\commu\servertemplate.h" />
+    <ClInclude Include="..\src\scbasic\encode\rsaencode.h" />
     <ClInclude Include="comm\functionxiaolvtest.h" />
     <ClInclude Include="coroutine\coroutinetest.h" />
     <ClInclude Include="dll\basictesthead.h" />

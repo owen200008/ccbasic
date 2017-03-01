@@ -164,6 +164,7 @@
     <ClCompile Include="..\..\src\thread\mt.cpp" />
     <ClCompile Include="..\..\src\thread\mt_linux.cpp" />
     <ClCompile Include="..\..\src\thread\mt_spinlock.cpp" />
+    <ClCompile Include="..\..\src\thread\thread.cpp" />
     <ClCompile Include="..\..\src\thread\thread_linux.cpp" />
     <ClCompile Include="..\..\src\thread\thread_win.cpp" />
     <ClCompile Include="..\..\src\time\ontimer.cpp" />

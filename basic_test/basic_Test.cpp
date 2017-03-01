@@ -17,10 +17,12 @@ int _tmain(int argc, _TCHAR* argv[])
 		return 0;
 	}
 	//TestCoroutine();
+	//TestCoroutine();
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
-	TestContainExt();
+	//TestContainExt();
+	NetServerTest();
 	getchar();
 	return 0;
 }

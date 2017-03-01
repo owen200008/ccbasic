@@ -198,8 +198,13 @@ typedef const void	        *LPCVOID;
 #define __min(a,b)            (((a) < (b)) ? (a) : (b))
 #define __max(a,b)            (((a) > (b)) ? (a) : (b))
 
+#ifndef MAX
 #define MAX __max
+#endif
+
+#ifndef MIN
 #define MIN __min
+#endif
 
 #ifndef MAKELONG
 #define MAKELONG(a, b)      ((LONG)(((WORD)(a)) | ((DWORD)((WORD)(b))) << 16))

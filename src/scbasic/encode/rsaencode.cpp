@@ -41,23 +41,58 @@ void CSCBasicRSA::GenerateRSAKey(unsigned int keyLength, string& strPub, string&
 //设置publicfile
 void CSCBasicRSA::SetPublicFileName(const char* pPubFileName)
 {
-	m_pubEncode.AccessKey().Load(CryptoPP::FileSource(pPubFileName, true, new CryptoPP::HexDecoder));
-	m_pubDecode.AccessKey().Load(CryptoPP::FileSource(pPubFileName, true, new CryptoPP::HexDecoder));
+	//android编译出错无法转换FileSource to BufferedTransformation
+	{
+		CryptoPP::FileSource source(pPubFileName, true, new CryptoPP::HexDecoder);
+		CryptoPP::Filter& filter = source;
+		m_pubEncode.AccessKey().Load(filter);
+	}
+	{
+		CryptoPP::FileSource source(pPubFileName, true, new CryptoPP::HexDecoder);
+		CryptoPP::Filter& filter = source;
+		m_pubDecode.AccessKey().Load(filter);
+	}
+	
 }
 void CSCBasicRSA::SetPublicKey(const char* pData)
 {
-	m_pubEncode.AccessKey().Load(CryptoPP::StringSource(pData, true, new CryptoPP::HexDecoder));
-	m_pubDecode.AccessKey().Load(CryptoPP::StringSource(pData, true, new CryptoPP::HexDecoder));
+	//android编译出错无法转换FileSource to BufferedTransformation
+	{
+		CryptoPP::StringSource source(pData, true, new CryptoPP::HexDecoder);
+		CryptoPP::Filter& filter = source;
+		m_pubEncode.AccessKey().Load(filter);
+	}
+	{
+		CryptoPP::StringSource source(pData, true, new CryptoPP::HexDecoder);
+		CryptoPP::Filter& filter = source;
+		m_pubDecode.AccessKey().Load(filter);
+	}
 }
 void CSCBasicRSA::SetPrivateFileName(const char* pPrivateFileName)
 {
-	m_priDecode.AccessKey().Load(CryptoPP::FileSource(pPrivateFileName, true, new CryptoPP::HexDecoder));
-	m_priEncode.AccessKey().Load(CryptoPP::FileSource(pPrivateFileName, true, new CryptoPP::HexDecoder));
+	{
+		CryptoPP::FileSource source(pPrivateFileName, true, new CryptoPP::HexDecoder);
+		CryptoPP::Filter& filter = source;
+		m_priDecode.AccessKey().Load(filter);
+	}
+	{
+		CryptoPP::FileSource source(pPrivateFileName, true, new CryptoPP::HexDecoder);
+		CryptoPP::Filter& filter = source;
+		m_priEncode.AccessKey().Load(filter);
+	}
 }
 void CSCBasicRSA::SetPrivateKey(const char* pData)
 {
-	m_priDecode.AccessKey().Load(CryptoPP::StringSource(pData, true, new CryptoPP::HexDecoder));
-	m_priEncode.AccessKey().Load(CryptoPP::StringSource(pData, true, new CryptoPP::HexDecoder));
+	{
+		CryptoPP::StringSource source(pData, true, new CryptoPP::HexDecoder);
+		CryptoPP::Filter& filter = source;
+		m_priDecode.AccessKey().Load(filter);
+	}
+	{
+		CryptoPP::StringSource source(pData, true, new CryptoPP::HexDecoder);
+		CryptoPP::Filter& filter = source;
+		m_priEncode.AccessKey().Load(filter);
+	}
 }
 
 //! 计算加密所需的数据长度

@@ -11,7 +11,7 @@ CCtxMessageQueue::~CCtxMessageQueue()
 }
 
 //! ³õÊ¼»¯º¯Êý
-void CCtxMessageQueue£º£ºInitCtxMsgQueue(uint32_t nCtxID, CMQMgr* pMgr)
+void CCtxMessageQueue::InitCtxMsgQueue(uint32_t nCtxID, CMQMgr* pMgr)
 {
 	m_nCtxID = nCtxID;
 	m_pMgr = pMgr;

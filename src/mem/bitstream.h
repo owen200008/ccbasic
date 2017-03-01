@@ -27,8 +27,6 @@ class Net_Set : public basiclib::basic_set<T>
 
 __NS_BASIC_START
 
-#pragma pack(1)
-
 class CNetBasicValue;
 
 _BASIC_DLL_API int SerializeUChar(unsigned char* pBuffer, const uint8_t v);
@@ -382,7 +380,6 @@ inline bool operator!=(const CNetBasicValue& lhs, const int32_t rhs)
 	return lhs.CompareInt(rhs) != 0;
 }
 
-#pragma pack()
 __NS_BASIC_END
 /////////////////////////////////////////////////////////////////////////////////////////////
 //结构定义

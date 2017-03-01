@@ -1,0 +1,10 @@
+#ifndef BASICTEST_HEADDEFINE_H
+#define BASICTEST_HEADDEFINE_H
+
+#ifdef _DEBUG
+#define TIMES_FAST 500000
+#else
+#define TIMES_FAST 10000000
+#endif
+
+#endif

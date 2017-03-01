@@ -45,14 +45,12 @@ void SetNetInitializeGetParamFunc(pGetConfFunc func)
 #define EVF_INIT	0x004000
 #define EVF_REMOTE  0x010000
 
-#pragma	pack(1)
 struct CEventQueueItem
 {
 	CBasicSessionNet*								m_pRefNetSession;
 	CBasicSessionNet::pCallSameRefNetSessionFunc	m_pCallFunc;
 	intptr_t										m_lRevert;
 };
-#pragma	pack()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 typedef void(*pCallFuncForThread)(intptr_t lRevert);
 
@@ -264,7 +262,7 @@ void CBasicNetInitObject::Initialize(pGetConfFunc func)
 #endif
 	evdns_set_log_fn(LogLibeventDNS);
 
-	g_nEventThreadCount = atol(func("ThreadCount").c_str());
+	g_nEventThreadCount = atol(func("NetThreadCount").c_str());
 	if (g_nEventThreadCount <= 0)
 	{
 		//default one thread
@@ -359,8 +357,6 @@ void CBasicNetInitObject::CloseNetSocket()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 CBasicSessionNet::CBasicSessionNet(uint32_t nSessionID, bool bAddOnTimer)
 {
-	//init net
-	CBasicSingletonNetMgv::Instance();
 	m_refSelf = this;
 	m_pThread = &g_pEventThreads[nSessionID % g_nEventThreadCount];
 	m_pPreSend = nullptr;
@@ -939,10 +935,6 @@ void CBasicSessionNetClient::InitClientEvent(evutil_socket_t socketfd, bool bAdd
 		event_add(&m_wevent, NULL);
 	}
 }
-void CBasicSessionNetClient::AddWriteEvent()
-{
-	event_add(&m_wevent, NULL);
-}
 
 int32_t CBasicSessionNetClient::OnConnect(uint32_t dwNetCode)
 {
@@ -1271,7 +1263,7 @@ void CBasicSessionNetClient::SendDataFromQueue()
 			int nNumber = errno;
 			if (nNumber == EAGAIN)
 			{
-				AddWriteEvent();
+				event_add(&m_wevent, NULL);
 				break;
 			}
 			else if (nNumber == EINTR)
@@ -1287,7 +1279,7 @@ void CBasicSessionNetClient::SendDataFromQueue()
 					DWORD dwLastError = WSAGetLastError();   //I know this
 					if (dwLastError == WSAEWOULDBLOCK)
 					{
-						AddWriteEvent();
+						event_add(&m_wevent, NULL);
 					}
 					else if (dwLastError != WSA_IO_PENDING)
 					{

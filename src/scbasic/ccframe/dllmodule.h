@@ -97,14 +97,7 @@ struct CCoroutineCtxTemplateMessage
 		m_pTemplate = pTemplate;
 		m_pReleaseFunc = pRelease;
 	}
-	void Release(){
-		if (m_pTemplate && m_pReleaseFunc){
-			m_pReleaseFunc(m_pTemplate);
-		}
-		else{
-			basiclib::BasicLogEventErrorV("释放上下文模板对象出错(%s)", m_pTemplate->GetTemplateName().c_str());
-		}
-	}
+	void Release();
 };
 class _SCBASIC_DLL_API CDllRegisterCtxTemplateMgr : public basiclib::CBasicObject
 {

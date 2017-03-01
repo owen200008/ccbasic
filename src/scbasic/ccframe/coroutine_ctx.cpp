@@ -26,7 +26,7 @@ CCoroutineCtx::~CCoroutineCtx()
 }
 
 //初始化
-int CCoroutineCtx::InitCtx(pInitGetParamFunc pFunc, CMQMgr* pMQMgr)
+int CCoroutineCtx::InitCtx(CMQMgr* pMQMgr)
 {
 	if (m_ctxID != 0)
 		return 1;
@@ -54,41 +54,41 @@ int32_t CCoroutineCtx::GetNewSessionID()
 	return basiclib::BasicInterlockedIncrement((LONG*)&m_sessionID_Index);
 }
 
-bool CCoroutineCtx::PushMessageByID(ctx_message& msg)
+bool CCoroutineCtx::PushMessageByID(uint32_t nDstCtxID, ctx_message& msg)
 {
-	CRefCoroutineCtx pCtx = CSingletonCoroutineCtxHandle::Instance().GetContextByHandleID(msg.m_nCtxID);
+	CRefCoroutineCtx pCtx = CSingletonCoroutineCtxHandle::Instance().GetContextByHandleID(nDstCtxID);
 	if (pCtx == nullptr)
 		return false;
 	return pCtx->PushMessage(msg);
 }
 bool CCoroutineCtx::PushMessage(ctx_message& msg)
 {
-	m_pMsgQueue->MQPush(msg);
+	m_ctxMsgQueue.MQPush(msg);
 	return true;
 }
 
 //! 分配任务
-DispatchReturn CCoroutineCtx::DispatchMsg(ctx_message& msg, CCorutinePlusThreadData& data)
+DispatchReturn CCoroutineCtx::DispatchMsg(ctx_message& msg, CCorutinePlusThreadData* pData)
 {
 	DispatchReturn nRet = DispatchReturn_Success;
 	switch (msg.m_nType)
 	{
 		case CTXMESSAGE_TYPE_RUNFUNC:
 		{
-			pRunFuncCtxMessageCallback pFunc = (pRunFuncCtxMessageCallback)msg.m_data;
-			pFunc(this, msg.m_session);
+			pRunFuncCtxMessageCallback pFunc = (pRunFuncCtxMessageCallback)msg.m_pFunc;
+			pFunc(this, &msg, pData);
 		}
 		break;
 		case CTXMESSAGE_TYPE_RUNCOROUTINE:
 		{
-			CCorutinePlus* pCorutine = (CCorutinePlus*)msg.m_data;
-			pCorutine->Resume(&data.m_pool);
+			CCorutinePlus* pCorutine = (CCorutinePlus*)msg.m_pFunc;
+			pCorutine->Resume(&pData->m_pool, msg, pData);
 		}
 		break;
 		case CTXMESSAGE_TYPE_ONTIMER:
 		{
-			pCallbackOnTimerFunc pFunc = (pCallbackOnTimerFunc)msg.m_data;
-			nRet = (*pFunc)(this);
+			pCallbackOnTimerFunc pFunc = (pCallbackOnTimerFunc)msg.m_pFunc;
+			nRet = (*pFunc)(this, pData);
 		}
 		break;
 	}
@@ -97,29 +97,26 @@ DispatchReturn CCoroutineCtx::DispatchMsg(ctx_message& msg, CCorutinePlusThreadD
 
 void CCoroutineCtxOnTimer(Net_PtrInt nKey, Net_PtrInt pParam1)
 {
-	uint32_t nCtxID = pParam1;
-	ctx_message msg;
-	msg.m_nCtxID = nCtxID;
-	msg.m_nType = CTXMESSAGE_TYPE_ONTIMER;
-	msg.m_data = (void*)nKey;
-	int nRet = CCoroutineCtx::PushMessageByID(msg);
+	uint32_t nSourceCtxID = pParam1;
+	ctx_message msg(nSourceCtxID, nKey);
+	int nRet = CCoroutineCtx::PushMessageByID(nSourceCtxID, msg);
 	if (nRet == -1){
 		//失败删除定时器
-		GetCreateCtxThreadPool()->GetOnTimerModule().DelTimer(nKey);
+		CCtx_ThreadPool::GetThreadPool()->GetOnTimerModule().DelTimer(nKey);
 	}
 }
 
 //! 加入timer
 bool CCoroutineCtx::AddOnTimer(int nTimes, pCallbackOnTimerFunc pCallback)
 {
-	return GetCreateCtxThreadPool()->m_ontimerModule.AddOnTimer((Net_PtrInt)pCallback, CCoroutineCtxOnTimer, nTimes, m_ctxID);
+	return CCtx_ThreadPool::GetThreadPool()->m_ontimerModule.AddOnTimer((Net_PtrInt)pCallback, CCoroutineCtxOnTimer, nTimes, m_ctxID);
 }
 bool CCoroutineCtx::AddOnTimeOut(int nTimes, pCallbackOnTimerFunc pCallback)
 {
-	return GetCreateCtxThreadPool()->m_ontimerModule.AddTimeOut((Net_PtrInt)pCallback, CCoroutineCtxOnTimer, nTimes, m_ctxID);
+	return CCtx_ThreadPool::GetThreadPool()->m_ontimerModule.AddTimeOut((Net_PtrInt)pCallback, CCoroutineCtxOnTimer, nTimes, m_ctxID);
 }
 void CCoroutineCtx::DelTimer(pCallbackOnTimerFunc pCallback)
 {
-	return GetCreateCtxThreadPool()->m_ontimerModule.DelTimer((Net_PtrInt)pCallback);
+	return CCtx_ThreadPool::GetThreadPool()->m_ontimerModule.DelTimer((Net_PtrInt)pCallback);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
