@@ -1,9 +1,6 @@
 [submodule "3rd/jemalloc"]
 	path = 3rd/jemalloc
 	url = https://github.com/jemalloc/jemalloc.git
-[submodule "3rd/libevent"]
-	path = 3rd/libevent
-	url = https://github.com/libevent/libevent.git
 [submodule "3rd/rapidjson"]
 	path = 3rd/rapidjson
 	url = https://github.com/miloyip/rapidjson.git
@@ -25,3 +22,7 @@
 [submodule "3rd/pocketsphinx"]
 	path = 3rd/pocketsphinx
 	url = https://github.com/cmusphinx/pocketsphinx.git
+
+[submodule "3rd/libevent"]
+	path = 3rd/libevent
+	url = https://github.com/libevent/libevent.git
