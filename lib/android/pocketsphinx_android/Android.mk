@@ -5,11 +5,9 @@ LOCAL_PATH := $(call my-dir)
   
 include $(CLEAR_VARS)  
 
-$(call import-add-path,$(LOCAL_PATH)/../)
+$(call import-add-path,$(LOCAL_PATH)/../../../)
   
-LOCAL_MODULE := pocketsphinx_static  
-  
-LOCAL_MODULE_TAGS := optional   
+LOCAL_MODULE := pocketsphinx_dy
   
 LOCAL_SRC_FILES := ../../../3rd/pocketsphinx/src/libpocketsphinx/acmod.c\
     ../../../3rd/pocketsphinx/src/libpocketsphinx/allphone_search.c\
@@ -47,8 +45,8 @@ LOCAL_C_INCLUDES :=	$(LOCAL_PATH)/../../../3rd/pocketsphinx/include  \
 
 LOCAL_STATIC_LIBRARIES := sphinxbase_static
 
-LOCAL_CFLAGS := -DHAVE_CONFIG_H -DANDROID -fvisibility=hidden  
+LOCAL_CFLAGS := -fpic -DHAVE_CONFIG_H -DANDROID -fvisibility=hidden
   
-include $(BUILD_STATIC_LIBRARY) 
+include $(BUILD_SHARED_LIBRARY)
 
-$(call import-module,sphinxbase_android)
+$(call import-module,3rd/sphinxbase)
