@@ -529,16 +529,16 @@ DWORD BasicGetTickTime()
 	tms tm;
 	return (DWORD)(((double)times(&tm))/CLOCKS_PER_SEC*1000);
 */
-	struct timeval tp;
-	gettimeofday(&tp, NULL);
-	return tp.tv_sec*1000 + tp.tv_usec/1000;
+	struct timespec tp;
+		clock_gettime(CLOCK_MONOTONIC, &tp);
+	return tp.tv_sec*1000 + tp.tv_nsec/1000000;
 }
 
 double BasicGetTickTimeCount()
 {
-    struct timeval tp;
-    gettimeofday(&tp, NULL);
-    double dRet = tp.tv_sec*1000 + tp.tv_usec/1000;
+    struct timespec tp;
+	clock_gettime(CLOCK_MONOTONIC, &tp);
+    double dRet = tp.tv_sec*1000 + tp.tv_nsec/1000000;
     return dRet;
 }
 

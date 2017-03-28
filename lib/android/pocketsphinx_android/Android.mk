@@ -45,7 +45,7 @@ LOCAL_C_INCLUDES :=	$(LOCAL_PATH)/../../../3rd/pocketsphinx/include  \
 
 LOCAL_SHARED_LIBRARIES := sphinxbase_dy
 
-LOCAL_CFLAGS := -fpic -DHAVE_CONFIG_H -DANDROID -fvisibility=hidden
+LOCAL_CFLAGS := -fpic -DHAVE_CONFIG_H
   
 include $(BUILD_SHARED_LIBRARY)
 
