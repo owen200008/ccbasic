@@ -104,9 +104,39 @@ void TestCoroutine(int nType){
     }
     else if (nType == 1){
         //≤‚ ‘ÀŸ∂»
-        int nThread = 1;
+        for (int i = 0; i < 10; i++)
+        {
+            CCorutinePlus* pCorutine = S->GetCorutine();
+            pCorutine->ReInit([](CCorutinePlus* pCorutine)->void{
+                CCorutinePlusPool* pRunPool = pCorutine->GetRunPool();
+                for (int i = 0; i <= TIMES_FORTEST; i++){
+                    pCorutine->YieldCorutine();
+                }
+            });
+            clock_t begin = clock();
+            pCorutine->Resume(S);
+            for (int i = 0; i <= TIMES_FORTEST; i++){
+                pCorutine->Resume(S);
+            }
+            clock_t end = clock();
+            printf("TestCoroutine RY %d:%d items %d/%d StackSize:%d\n", TIMES_FORTEST, end - begin, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetStackCreateTimes());
+        }
+        for (int i = 0; i < 10; i++)
+        {
+            clock_t begin = clock();
+            for (int i = 0; i <= TIMES_FORTEST; i++){
+                CCorutinePlus* pCorutine = S->GetCorutine();
+                pCorutine->ReInit([](CCorutinePlus* pCorutine)->void{
+                    return;
+                });
+                pCorutine->Resume(S);
+            }
+            clock_t end = clock();
+            printf("TestCoroutine R %d:%d items %d/%d StackSize:%d\n", TIMES_FORTEST, end - begin, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetStackCreateTimes());
+        }
+        /*int nThread = 1;
         CCorutinePlus* pCorutine = S->GetCorutine();
-        //printf("Start(%d) %d\n", nThread, i);
+        for (int i = 0; i < 10;i++)
         {
             clock_t begin = clock();
             for (int i = 0; i < TIMES_FORTEST; i++){
@@ -121,28 +151,28 @@ void TestCoroutine(int nType){
             clock_t end = clock();
             printf("TestCoroutine %d:%d\n", TIMES_FORTEST, end - begin);
         }
-    {
-        basiclib::CMutex spinlock;
-        basiclib::CSingleLock lock(&spinlock);
-        clock_t begin = clock();
-        for (int i = 0; i < TIMES_FORTEST; i++){
-            lock.Lock();
-            lock.Unlock();
-        }
+        {
+            basiclib::CMutex spinlock;
+            basiclib::CSingleLock lock(&spinlock);
+            clock_t begin = clock();
+            for (int i = 0; i < TIMES_FORTEST; i++){
+                lock.Lock();
+                lock.Unlock();
+            }
 
-        clock_t end = clock();
-        printf("mutex %d:%d\n", TIMES_FORTEST, end - begin);
-    }
-    {
-        clock_t begin = clock();
-        for (int i = 0; i < TIMES_FORTEST; i++){
-            void* pBuffer = basiclib::BasicAllocate(16384);
-            basiclib::BasicDeallocate(pBuffer);
+            clock_t end = clock();
+            printf("mutex %d:%d\n", TIMES_FORTEST, end - begin);
         }
+        {
+            clock_t begin = clock();
+            for (int i = 0; i < TIMES_FORTEST; i++){
+                void* pBuffer = basiclib::BasicAllocate(16384);
+                basiclib::BasicDeallocate(pBuffer);
+            }
 
-        clock_t end = clock();
-        printf("malloc %d:%d\n", TIMES_FORTEST, end - begin);
-    }
+            clock_t end = clock();
+            printf("malloc %d:%d\n", TIMES_FORTEST, end - begin);
+        }*/
     }
 	
 	getchar();

@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="basic_Test.cpp" />
-    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="dll\basictesthead.cpp">
       <Filter>dll</Filter>
     </ClCompile>
@@ -18,9 +17,11 @@
     <ClCompile Include="..\src\scbasic\encode\rsaencode.cpp">
       <Filter>scbasic\encode</Filter>
     </ClCompile>
+    <ClCompile Include="coroutine\coroutinetest.cpp">
+      <Filter>coroutine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h" />
     <ClInclude Include="net\nettest.h">
       <Filter>net</Filter>
     </ClInclude>

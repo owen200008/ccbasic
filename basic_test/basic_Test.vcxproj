@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>../src/inc;../3rd/libevent/include;../3rd/libevent/WIN32-Code/nmake</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../src/inc;../3rd/libevent/include;../3rd/libevent/WIN32-Code/nmake;../3rd/cryptopp/</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
@@ -89,7 +89,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>../lib/basic13.lib;../3rd/libevent/build/lib/Release/event_core.lib;../3rd/libevent/build/lib/Release/event.lib;../3rd/libevent/build/lib/Release/event_extra.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../lib/basic13.lib;../3rd/libevent/libevent.lib;../3rd/cryptopp/Win32/Output/Release/cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
@@ -99,11 +99,8 @@
     <ClCompile Include="..\src\scbasic\commu\servertemplate.cpp" />
     <ClCompile Include="..\src\scbasic\encode\rsaencode.cpp" />
     <ClCompile Include="basic_Test.cpp" />
+    <ClCompile Include="coroutine\coroutinetest.cpp" />
     <ClCompile Include="dll\basictesthead.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\scbasic\commu\basicclient.h" />
@@ -118,7 +115,6 @@
     <ClInclude Include="headdefine.h" />
     <ClInclude Include="misc\fastdelegatetest.h" />
     <ClInclude Include="net\nettest.h" />
-    <ClInclude Include="stdafx.h" />
     <ClInclude Include="thread\threadtest.h" />
     <ClInclude Include="time\ontimertest.h" />
     <ClInclude Include="util\containerexttest.h" />

@@ -16,15 +16,6 @@
 * limitations under the License.
 */
 
-#define _esp 0
-#define _eip 4
-/* ------ */
-#define _rsp 0
-#define _rip 8
-#define _rbx 16
-#define _rdi 24
-#define _rsi 32
-
 .globl coctx_swap 
 .type  coctx_swap, @function
 coctx_swap:
@@ -32,7 +23,7 @@ coctx_swap:
 #if defined(__i386__)
 	leal 4(%esp), %eax
 	movl 4(%esp), %esp 
-	leal 32(%esp), %esp
+	leal 24(%esp), %esp
 	pushl %eax
 	pushl -4(%eax)
 	pushl %ebp

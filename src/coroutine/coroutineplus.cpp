@@ -16,8 +16,8 @@ void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void* s1)
 	memset(ctx->regs, 0, sizeof(ctx->regs));
     int *sp = (int*)(ctx->ss_sp + ctx->ss_size);
     sp = (int*)((unsigned long)sp & -16L);
-    sp[0] = (int)s1;
-    sp -= 1;
+    sp -= 2;
+    sp[1] = (int)s1;
     ctx->regs[ESP] = (char*)sp;
     ctx->regs[EIP] = (char*)pfn;
 }
@@ -36,8 +36,8 @@ void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void* s1)
 	memset(ctx->regs, 0, sizeof(ctx->regs));
     int *sp = (int*)(ctx->ss_sp + ctx->ss_size);
     sp = (int*)((unsigned long)sp & -16L);
-    sp[0] = (int)s1;
-    sp -= 1;
+    sp -= 2;
+    sp[1] = (int)s1;
     ctx->regs[ESP] = (char*)sp;
     ctx->regs[EIP] = (char*)pfn;
 }
