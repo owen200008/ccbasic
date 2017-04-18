@@ -8,9 +8,11 @@ linux : MakeLinux
 
 UpdateSubModuleLinux : 
 	 git submodule update --init
-	
-MakeLinux : UpdateSubModuleLinux
+MakeBasicLib:
 	cd lib/linux && $(MAKE)
+
+MakeLinux : UpdateSubModuleLinux MakeBasicLib
+	cd basic_test && $(MAKE)
 
 
 LIBEVENT_PATH := 3rd/libevent
