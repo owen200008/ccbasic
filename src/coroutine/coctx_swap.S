@@ -30,64 +30,57 @@
 coctx_swap:
 
 #if defined(__i386__)
-	movl 4(%esp), %eax
-	movl (%esp), %ecx
-	movl %ecx, _eip(%eax)
-	leal 4(%esp), %ecx
-	movl %ecx, _esp(%eax)
-	movl %ebp, 8(%eax)
-	movl %ebx, 12(%eax)
-	movl %esi, 16(%eax)
-	movl %edi, 20(%eax)
+	leal 4(%esp), %eax
+	movl 4(%esp), %esp 
+	leal 32(%esp), %esp
+	pushl %eax
+	pushl -4(%eax)
+	pushl %ebp
+	pushl %esi
+	pushl %edi
+	pushl %ebx
 
-	movl 8(%esp), %eax
-	movl _eip(%eax), %ecx
-	movl _esp(%eax), %esp
-	pushl %ecx
-
-	movl 8(%eax), %ebp
-	movl 12(%eax), %ebx
-	movl 16(%eax), %esi
-	movl 20(%eax), %edi
+	movl 4(%eax), %esp
+	popl %ebx  
+	popl %edi
+	popl %esi
+	popl %ebp
+	popl %eax  //ret func addr
+	popl %esp
+	pushl %eax //set ret func addr
 
 	ret
 
 #elif defined(__x86_64__)
-	movq 8(%rsp), %rax
-	movq (%rsp), %rcx
-	movq %rcx, _rip(%rax)
-	leaq 8(%esp), %rcx
-	movq %rcx, _rsp(%rax)
-	movq %rbx, _rbx(%rax)
-	movq %rdi, _rdi(%rax)
-	movq %rsi, _rsi(%rax)
+	leaq 8(%rsp),%rax //default rsp 
+	leaq 96(%rdi),%rsp //rsp point to param a
+	pushq %rax
+	pushq -8(%rax) //ret func addr rip
+	pushq %rdi
+	pushq %rbx
+	pushq %rdx
+	pushq %rbp
+	pushq %r8
+	pushq %r9
+	pushq %r12
+	pushq %r13
+	pushq %r14
+	pushq %r15
 
-	movq %rbp, 40(%rax)
-	movq %rdx, 48(%rax)
-	movq %r8, 56(%rax)
-	movq %r9, 64(%rax)
-	movq %r12, 72(%rax)
-	movq %r13, 80(%rax)
-	movq %r14, 88(%rax)
-	movq %r15, 96(%rax)
+	movq %rsi, %rsp // rsp point to param b
+	popq %r15
+	popq %r14
+	popq %r13
+	popq %r12
+	popq %r9
+	popq %r8
+	popq %rbp
+	popq %rdx
+	popq %rbx
+	popq %rdi //read need
+	popq %rax
+	popq %rsp
+	pushq %rax
 
-	/* sp */
-	movq _rip(%rsi), %rcx
-	movq _rsp(%rsi), %rsp
-	pushq %rcx
-
-	movq _rbx(%rsi),%rbx
-	movq _rdi(%rsi),%rdi
-	movq _rsi(%rsi),%rsi
-	
-	movq 40(%rax), %rbp
-	movq 48(%rax), %rdx
-	movq 56(%rax), %r8
-	movq 64(%rax), %r9
-	movq 72(%rax), %r12
-	movq 80(%rax), %r13
-	movq 88(%rax), %r14
-	movq 96(%rax), %r15
-	
 	ret
 #endif

@@ -11,6 +11,6 @@ public:
 	virtual void CallFunc();
 };
 
-__declspec(dllexport) CTestHead* GetTestHead();
+_BASIC_DLL_API CTestHead* GetTestHead();
 
 #endif

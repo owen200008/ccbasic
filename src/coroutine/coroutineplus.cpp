@@ -4,30 +4,20 @@
 #include <string.h>
 #include <stdint.h>
 
-
-#define ESP 0
-#define EIP 1
-// -----------
-#define RSP 0
-#define RIP 1
-#define RBX 2
-#define RDI 3
-#define RSI 4
-
 #ifdef __BASICWINDOWS
 extern "C"
 {
     extern void coctx_swap(coctx_t *, coctx_t*);
 }
+#define EIP 4
+#define ESP 5
 void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void* s1)
 {
-    int *sp = (int*)((uintptr_t)ctx->ss_sp + ctx->ss_size);
-    sp -= 1;
+	memset(ctx->regs, 0, sizeof(ctx->regs));
+    int *sp = (int*)(ctx->ss_sp + ctx->ss_size);
     sp = (int*)((unsigned long)sp & -16L);
     sp[0] = (int)s1;
     sp -= 1;
-    sp[0] = 0;
-
     ctx->regs[ESP] = (char*)sp;
     ctx->regs[EIP] = (char*)pfn;
 }
@@ -39,33 +29,29 @@ extern "C"
 #endif
 
 #if defined(__i386__)
+#define EIP 4
+#define ESP 5
 void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void* s1)
 {
-    int *sp = (int*)((uintptr_t)ctx->ss_sp + ctx->ss_size);
-    sp -= 1;
-    sp = (char*)((unsigned long)sp & -16L);
+	memset(ctx->regs, 0, sizeof(ctx->regs));
+    int *sp = (int*)(ctx->ss_sp + ctx->ss_size);
+    sp = (int*)((unsigned long)sp & -16L);
     sp[0] = (int)s1;
     sp -= 1;
-    sp[0] = 0;
-
     ctx->regs[ESP] = (char*)sp;
     ctx->regs[EIP] = (char*)pfn;
 }
 #elif defined(__x86_64__)
+#define RDI 9
+#define RIP 10
+#define RSP 11
 void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void *s1)
 {
-    char *stack = ctx->ss_sp;
-
-    long long int *sp = (long long int*)((uintptr_t)stack + ctx->ss_size);
-    sp -= 1;
-    sp = (long long int*)((((uintptr_t)sp) & -16L) - 8);
-    ctx->regs[RBX] = &sp[1];
-    ctx->regs[RSP] = (char*)sp;
+	memset(ctx->regs, 0, sizeof(ctx->regs));
+    char* sp = ctx->ss_sp + ctx->ss_size;
+    sp = (char*)((unsigned long)sp & -16LL);
+    ctx->regs[RSP] = sp - 8;
     ctx->regs[RIP] = (char*)pfn;
-
-    sp[0] = 0;
-    sp[1] = 0;
-
     ctx->regs[RDI] = (char*)s1;
 }
 #endif
@@ -146,11 +132,27 @@ void CCorutinePlus::SaveStack()
 {
     int nLength = 0;
     char* pTop = m_pUseRunPoolStack + STACK_SIZE;
+#ifdef __BASICWINDOWS
     __asm{
         mov         eax, dword ptr[pTop]
         sub         eax, esp
         mov         dword ptr[nLength], eax
     }
+#else
+#if defined(__i386__) 
+	__asm __volatile(
+	"mov %1,%%eax\nsub %%esp,%%eax\nmov %%eax, %0"
+	: "=r"(nLength)
+	: "r" (pTop)
+	: "memory");
+#elif defined(__x86_64__)
+	__asm __volatile(
+	"mov %1, %%rax\n\tsub %%rsp,%%rax\n\tmov %%eax,%0"
+	: "=r"(nLength)
+	: "r"(pTop)
+	);
+#endif
+#endif
     CheckStackSize(nLength);
     m_nSize = nLength;
     memcpy(m_stack, pTop - nLength, m_nSize);

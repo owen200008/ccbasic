@@ -4,14 +4,10 @@
 typedef void(*coctx_pfn_t)(const char* s);
 struct coctx_t
 {
-#ifdef __BASICWINDOWS
-    void *regs[6];
+#if defined(__x86_64__)
+    void *regs[12];
 #else
-#if defined(__i386__)
-    void *regs[6];
-#elif defined(__x86_64__)
-    void *regs[13];
-#endif
+	void *regs[6];
 #endif
 
     size_t ss_size;
