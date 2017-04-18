@@ -87,15 +87,15 @@ namespace __private
 
 	struct html_specical_char_a
 	{
-		char*	spec_char;
-		char*	spec_string;
-		char*	spec_key_spec;
+		const char*	spec_char;
+		const char*	spec_string;
+		const char*	spec_key_spec;
 	};
 	struct html_specical_char_w
 	{
-		WCHAR*	spec_char;
-		WCHAR*	spec_string;
-		WCHAR*	spec_key_spec;
+		const WCHAR*	spec_char;
+		const WCHAR*	spec_string;
+		const WCHAR*	spec_key_spec;
 	};
 
 	const html_specical_char_a g_c_html_specialchars[] =
@@ -111,12 +111,12 @@ namespace __private
 
 	const html_specical_char_w g_w_html_specialchars[] =
 	{
-		{(WCHAR*)L"&",	(WCHAR*)L"&amp;",	(WCHAR*)L"amp"},
-		{(WCHAR*)L"\"",	(WCHAR*)L"&quot;",	(WCHAR*)L"quot"},
-		{(WCHAR*)L"'",	(WCHAR*)L"&#039;",	(WCHAR*)L"#039"},
-		{(WCHAR*)L"<",	(WCHAR*)L"&lt;",	(WCHAR*)L"lt"},
-		{(WCHAR*)L">",	(WCHAR*)L"&gt;",	(WCHAR*)L"gt"},
-		{(WCHAR*)L" ",	(WCHAR*)L"&#032;",	(WCHAR*)L"#032"},
+		{(const WCHAR*)L"&",	(const WCHAR*)L"&amp;",		(const WCHAR*)L"amp"},
+		{(const WCHAR*)L"\"",	(const WCHAR*)L"&quot;",	(const WCHAR*)L"quot"},
+		{(const WCHAR*)L"'",	(const WCHAR*)L"&#039;",	(const WCHAR*)L"#039"},
+		{(const WCHAR*)L"<",	(const WCHAR*)L"&lt;",		(const WCHAR*)L"lt"},
+		{(const WCHAR*)L">",	(const WCHAR*)L"&gt;",		(const WCHAR*)L"gt"},
+		{(const WCHAR*)L" ",	(const WCHAR*)L"&#032;",	(const WCHAR*)L"#032"},
 		{NULL,	NULL}
 	};
 

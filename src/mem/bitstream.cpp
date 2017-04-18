@@ -209,7 +209,7 @@ void CNetBasicValue::SetString(const char* value, size_t len)
 
 int32_t CNetBasicValue::GetLong() const
 {
-	int32_t ret = DTE_LONG_NULL;
+	int32_t ret = (int32_t)DTE_LONG_NULL;
 	toData(ret);
 	return ret;
 }
@@ -266,7 +266,7 @@ const char* CNetBasicValue::GetStringRef() const
 
 void CNetBasicValue::toData(int32_t& lValue) const
 {
-	lValue = DTE_LONG_NULL;
+	lValue = (int32_t)DTE_LONG_NULL;
 	if (!IsNull())
 	{
 		switch (m_type)
