@@ -321,7 +321,7 @@ void NetServerTest()
 		if (bFalse)
 		{
 			m_checknorelease.Dump([](LONG, stacktrace::call_stack& stack)->void{
-				basiclib::BasicLogEvent(stack.to_string().c_str());
+                basiclib::BasicLogEvent(basiclib::DebugLevel_Info, stack.to_string().c_str());
 			});
 		}
 		basiclib::BasicSleep(1000);

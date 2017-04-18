@@ -13,6 +13,7 @@
 enum InitGetParamType
 {
 	InitGetParamType_Config = 0,
+    InitGetParamType_CreateUser = 1,
 };
 
 enum DispatchReturn
@@ -33,14 +34,14 @@ typedef DispatchReturn(*pCallbackOnTimerFunc)(CCoroutineCtx* pCtx, CCorutinePlus
 class _SCBASIC_DLL_API CCoroutineCtx : public basiclib::CBasicObject, public basiclib::EnableRefPtr<CCoroutineCtx>
 {
 public:
-	CCoroutineCtx(const char* pName = nullptr);
+    CCoroutineCtx(const char* pClassName, const char* pName = nullptr);
 	virtual ~CCoroutineCtx();
 
 	/*  初始化0代表成功
 		回调参数
 		0 代表 从lua文件取
 	*/
-	virtual int InitCtx(CMQMgr* pMQMgr);
+    virtual int InitCtx(CMQMgr* pMQMgr, const std::function<const char*(InitGetParamType, const char* pKey, const char* pDefault)>& func);
 	//! 不需要自己delete，只要调用release
 	virtual void ReleaseCtx();
 	/*	分配任务 <0代表出错*/
@@ -51,8 +52,8 @@ public:
 	void DelTimer(pCallbackOnTimerFunc pCallback);
 public:
 	uint32_t GetCtxID(){ return m_ctxID; }
-	basiclib::CBasicString& GetCtxName(){ return m_strCtxName; }
-	basiclib::CBasicString& GetCtxSignName(){ return m_strSignName; }
+    const char* GetCtxName(){ return m_pCtxName; }
+    const char* GetCtxClassName(){ return m_pClassName; }
 	//分配一个新的sessionid
 	int32_t GetNewSessionID();
 public:
@@ -65,11 +66,14 @@ public:
 public:
 	bool IsReleaseCtx(){ return m_bRelease; }
 protected:
+    //socket消息
+    virtual DispatchReturn DispatchMsgSocket(ctx_message& msg, CCorutinePlusThreadData* pData);
+protected:
 	bool										m_bRelease;
 	uint32_t									m_ctxID;
 	int32_t										m_sessionID_Index;
-	basiclib::CBasicString						m_strCtxName;
-	basiclib::CBasicString						m_strSignName;
+	const char*						            m_pCtxName;
+    const char*                                 m_pClassName;
 	CCtxMessageQueue							m_ctxMsgQueue;
 	moodycamel::ConsumerToken					m_Ctoken;		//优化读取
 

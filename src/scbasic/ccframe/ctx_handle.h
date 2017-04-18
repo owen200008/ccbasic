@@ -10,17 +10,16 @@
 
 #include "coroutine_ctx.h"
 
-#pragma warning (push)
-#pragma warning (disable: 4251)
-#pragma warning (disable: 4275)
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // reserve high 8 bits for remote id
 //
 #define HANDLE_ID_BEGIN				0xff
 #define HANDLE_ID_ALLOCATE_LOG		0xffffff
-class _SCBASIC_DLL_API CCoroutineCtxHandle : public basiclib::CBasicObject
+class CCoroutineCtxHandle : public basiclib::CBasicObject
 {
 public:
+    static CCoroutineCtxHandle* GetInstance();
+
 	CCoroutineCtxHandle();
 	virtual ~CCoroutineCtxHandle();
 
@@ -33,6 +32,17 @@ public:
 
 	bool GrabContext(uint32_t handle, const std::function<void(CCoroutineCtx*)>& func);
 	CRefCoroutineCtx GetContextByHandleID(uint32_t handle);
+
+    //! 根据名字查找ctxid
+    uint32_t GetCtxIDByName(const char* pName);
+    //! 遍历
+    void Foreach(const std::function<bool(CRefCoroutineCtx)>& func){
+        basiclib::CRWLockFunc lock(&m_lock, false, true);
+        for (auto& iter : m_mapIDToCtx){
+            if (!func(iter.second))
+                return;
+        }
+    }
 protected:
 	uint32_t GetNewHandleID();
 protected:
@@ -47,8 +57,6 @@ protected:
 	MapNameToCtx		m_mapNameToCtx;
 	MapHandleIDToCtx	m_mapIDToCtx;
 };
-typedef basiclib::CBasicSingleton<CCoroutineCtxHandle> CSingletonCoroutineCtxHandle;
 
-#pragma warning (pop)
 
 #endif

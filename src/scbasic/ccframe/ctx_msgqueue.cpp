@@ -27,7 +27,7 @@ bool CCtxMessageQueue::MQPush(moodycamel::ProducerToken& token, ctx_message& mes
 {
 	enqueue(token, std::move(message));
 	uint32_t nRet = m_nAddTimes.fetch_add(1);
-	if (nRet == 1){
+	if (nRet == 0){
 		m_pMgr->GlobalMQPush(this);
 		return true;
 	}

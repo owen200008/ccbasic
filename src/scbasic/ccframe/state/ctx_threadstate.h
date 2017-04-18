@@ -6,12 +6,12 @@
 class _SCBASIC_DLL_API CCtx_ThreadState : public CCoroutineCtx
 {
 public:
-	CCtx_ThreadState();
+    CCtx_ThreadState();
 	virtual ~CCtx_ThreadState();
 
 	CreateTemplateHeader(CCtx_ThreadState);
 	
-	virtual int InitCtx(CMQMgr* pMQMgr);
+    virtual int InitCtx(CMQMgr* pMQMgr, const std::function<const char*(InitGetParamType, const char* pKey, const char* pDefault)>& func);
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	//业务类, 全部使用静态函数

@@ -13,7 +13,7 @@ int32_t CNetServerControlClient::OnConnect(uint32_t dwNetCode)
 {
 	if (!m_server->m_ipTrust.IsIpTrust(m_szPeerAddr))
 	{
-		basiclib::BasicLogEventV("地址：%s 不在白名单内!", m_szPeerAddr);
+		basiclib::BasicLogEventErrorV("地址：%s 不在白名单内!", m_szPeerAddr);
 		Close();
 		return BASIC_NET_OK;
 	}
@@ -22,7 +22,7 @@ int32_t CNetServerControlClient::OnConnect(uint32_t dwNetCode)
 	{
 		if (m_server->GetOnlineSessionCount() > m_server->m_nSessionMaxCount)
 		{
-			basiclib::BasicLogEventV("地址：%s 超过最大连接数 %d!", m_szPeerAddr, m_server->m_nSessionMaxCount);
+            basiclib::BasicLogEventErrorV("地址：%s 超过最大连接数 %d!", m_szPeerAddr, m_server->m_nSessionMaxCount);
 			Close();
 			return BASIC_NET_OK;
 		}
@@ -77,7 +77,7 @@ BOOL CNetServerControl::IsListen()
 
 		if (BASIC_NET_OK == lRet)
 		{
-			basiclib::BasicLogEventV("ListenPort: [%s] Success!", m_strListenAddr.c_str());
+            basiclib::BasicLogEventV(basiclib::DebugLevel_Info, "ListenPort: [%s] Success!", m_strListenAddr.c_str());
 			bRet = TRUE;
 		}
 		else if (BASIC_NET_ALREADY_LISTEN != lRet)
@@ -101,12 +101,12 @@ int32_t CNetServerControl::StartServer(const char* lpszAddress, basiclib::CBasic
 	int32_t nRet = Listen(lpszAddress, true);
 	if (nRet == BASIC_NET_OK)
 	{
-		basiclib::BasicLogEventV("ListenPort: %s Success!", lpszAddress);
+        basiclib::BasicLogEventV(basiclib::DebugLevel_Info, "ListenPort: %s Success!", lpszAddress);
 	}
 	else
 	{
 		Close();
-		basiclib::BasicLogEventV("ListenPort: %s Error!", lpszAddress);
+        basiclib::BasicLogEventV(basiclib::DebugLevel_Info, "ListenPort: %s Error!", lpszAddress);
 	}
 	return nRet;
 }
@@ -157,7 +157,7 @@ basiclib::CBasicSessionNetClient* CNetServerControl::ConstructSession(uint32_t n
 
 basiclib::CBasicSessionNetClient* CNetServerControl::CreateServerClientSession(uint32_t nSessionID)
 {
-	basiclib::CBasicSessionNetClient* pRet = ConstructSession(nSessionID);
+    basiclib::CBasicSessionNetClient* pRet = CBasicSessionNetServer::CreateServerClientSession(nSessionID);
 	pRet->bind_rece(MakeFastFunction(this, &CNetServerControl::OnUserVerify));
 	return pRet;
 }

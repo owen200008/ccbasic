@@ -12,12 +12,12 @@ public:
 	}
 	void Register(CTestHead* pHead)
 	{
-		basiclib::BasicLogEvent("CTestHeadMgr::Register()");
+        basiclib::BasicLogEvent(basiclib::DebugLevel_Info, "CTestHeadMgr::Register()");
 		m_pHead = pHead;
 	}
 	void Release()
 	{
-		basiclib::BasicLogEvent("CTestHeadMgr::Release()");
+        basiclib::BasicLogEvent(basiclib::DebugLevel_Info, "CTestHeadMgr::Release()");
 		m_pHead = nullptr;
 	}
 	CTestHead* GetHead(){ return m_pHead; }
@@ -39,7 +39,7 @@ CTestHead::~CTestHead()
 
 void CTestHead::CallFunc()
 {
-	basiclib::BasicLogEvent("CTestHead::CallFunc");
+    basiclib::BasicLogEvent(basiclib::DebugLevel_Info, "CTestHead::CallFunc");
 }
 
 CTestHead* GetTestHead()

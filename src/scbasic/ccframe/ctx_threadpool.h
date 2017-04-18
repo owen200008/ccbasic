@@ -13,6 +13,9 @@
 #include "dllmodule.h"
 #include "log/ctx_log.h"
 
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
 //call in the thread create
 class basiclib::CBasicThreadTLS;
 class CCtx_ThreadPool;
@@ -28,9 +31,6 @@ public:
 	void ExecThreadOnWork();
 
 	//! 封装执行一个协程
-
-protected:
-	CCtxMessageQueue* DispathCtxMsg(CMQMgr* pMgrQueue, CCtxMessageQueue* pQ, uint32_t& usPacketNumber);
 public:
 	CCtx_ThreadPool*									m_pThreadPool;
 	//全局消息消费者token
@@ -39,6 +39,7 @@ public:
 	DWORD												m_dwThreadID;
 	CCorutinePlusPool									m_pool;
 	CMQMgr												m_threadMgrQueue;
+    moodycamel::ConsumerToken							m_threadCToken;
 	void*												m_pParam;
 };
 CCorutinePlusThreadData* GetCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS);
@@ -59,20 +60,25 @@ public:
 
 	//! 初始化
 	virtual bool Init(const std::function<void*(CCorutinePlusThreadData*)>& pCreateFunc, 
-		const std::function<void*(void*)>& pReleaseParamFunc);
+		const std::function<void(void*)>& pReleaseParamFunc);
 	//! 等待退出
 	void Wait();
 public:
 	basiclib::CBasicThreadTLS& GetTLS(){ return m_threadIndexTLS; }
-	CBasicOnTimer& GetOnTimerModule();
+    CBasicOnTimer& GetOnTimerModule(){ return m_ontimerModule; }
 	CMQMgr& GetGlobalMQMgr(){ return m_globalMQMgrModule; }
+public:
+    //创建ctx相关
 	CDllRegisterCtxTemplateMgr& GetCtxTemplateRegister(){ return m_mgtDllCtx; }
+    uint32_t CreateTemplateObjectCtx(const char* pName, const std::function<const char*(InitGetParamType, const char* pKey, const char* pDefault)>& func, CMQMgr* pMQMgr = nullptr);
+    void ReleaseObjectCtxByCtxID(uint32_t nCtxID);
 protected:
 	friend THREAD_RETURN ThreadOnWork(void*);
 	
 	friend THREAD_RETURN ThreadOnMonitor(void*);
 	void ExecThreadOnMonitor();
 protected:
+    std::function<const char*(InitGetParamType, const char* pKey, const char* pDefault)> m_defaultFuncGetConfig;
 	bool														m_bRunning;
 	basiclib::CBasicThreadTLS									m_threadIndexTLS;
 	CBasicOnTimer												m_ontimerModule;			//执行ontimer callback
@@ -83,7 +89,7 @@ protected:
 	uint32_t													m_nDPacketNumPerTime;
 
 	std::function<void*(CCorutinePlusThreadData*)>				m_pCreateFunc;
-	std::function<void*(void*)>									m_pReleaseFunc;
+	std::function<void(void*)>									m_pReleaseFunc;
 	//ctx管理
 	CDllRegisterCtxTemplateMgr									m_mgtDllCtx;
 protected:
@@ -93,5 +99,6 @@ protected:
 	friend class CCoroutineCtx;
 	friend class CCorutinePlusThreadData;
 };
+#pragma warning (pop)
 
 #endif

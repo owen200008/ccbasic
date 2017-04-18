@@ -124,7 +124,7 @@ size_t CSCBasicRSA::Decrypt(const char* pDecode, int nLength, byte* pOutput, int
 	{
 		size_t len = fixedLen < (nLength - i) ? fixedLen : (nLength - i);
 		CryptoPP::ArraySink *dstArr = new CryptoPP::ArraySink(pOutput + putLen, nOutputLength - putLen);
-		CryptoPP::ArraySource((byte*)(pDecode + i), len, true, new CryptoPP::PK_DecryptorFilter(m_rng, m_priDecode, dstArr));
+        CryptoPP::ArraySource source((byte*)(pDecode + i), len, true, new CryptoPP::PK_DecryptorFilter(m_rng, m_priDecode, dstArr));
 		putLen += dstArr->TotalPutLength();
 	}
 	return putLen;
@@ -137,7 +137,7 @@ size_t CSCBasicRSA::Sign(const char* pEncode, int nLength, byte* pOutput, int nO
 		return 0;
 	size_t len = nLength;
 	CryptoPP::ArraySink *dstArr = new CryptoPP::ArraySink(pOutput + putLen, nOutputLength - putLen);
-	CryptoPP::ArraySource((byte*)pEncode, len, true, new CryptoPP::SignerFilter(m_rng, m_priEncode, dstArr));
+	CryptoPP::ArraySource arraySource((byte*)pEncode, len, true, new CryptoPP::SignerFilter(m_rng, m_priEncode, dstArr));
 	putLen += dstArr->TotalPutLength();
 	return putLen;
 }
@@ -150,6 +150,6 @@ bool CSCBasicRSA::Verify(const char* pDecode, int nLength, const char* pVerify, 
 		return false;
 	CryptoPP::VerifierFilter *pVerifierFilter = new CryptoPP::VerifierFilter(m_pubDecode);
 	pVerifierFilter->Put((byte*)pDecode, nLength);
-	CryptoPP::ArraySource((byte*)pVerify, nVerifyLength, true, pVerifierFilter);
+    CryptoPP::ArraySource source((byte*)pVerify, nVerifyLength, true, pVerifierFilter);
 	return pVerifierFilter->GetLastResult();
 }

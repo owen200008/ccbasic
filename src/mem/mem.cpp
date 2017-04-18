@@ -242,7 +242,7 @@ void BasicShowCurrentMemInfo()
 	sprintf(szBuf, "+total: %zdkb", total);
 	smBuf.AppendString(szBuf);
 
-	BasicLogEvent(smBuf.GetDataBuffer());
+    BasicLogEvent(DebugLevel_Info, smBuf.GetDataBuffer());
 }
 
 long BasicGetHandleIDMemInfo(uint32_t nHandleID)
@@ -301,7 +301,7 @@ void DumpRunMemCheck()
 	g_nCheckMemMode = 0;
 	basiclib::CSingleLock lock(&g_lockCheck, TRUE);
 	for (auto& checkData : g_mapCheck){
-		basiclib::BasicLogEvent(checkData.second.to_string().c_str());
+        basiclib::BasicLogEvent(DebugLevel_Info, checkData.second.to_string().c_str());
 	}
 }
 void* BasicAllocate(size_t size){

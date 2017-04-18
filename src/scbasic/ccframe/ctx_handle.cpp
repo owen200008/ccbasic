@@ -1,5 +1,11 @@
 #include "ctx_handle.h"
-#include "log/ccframelog.h"
+#include "log/ctx_log.h"
+
+static CCoroutineCtxHandle m_gHandle;
+CCoroutineCtxHandle* CCoroutineCtxHandle::GetInstance()
+{
+    return &m_gHandle;
+}
 
 CCoroutineCtxHandle::CCoroutineCtxHandle()
 {
@@ -14,13 +20,13 @@ CCoroutineCtxHandle::~CCoroutineCtxHandle()
 
 uint32_t CCoroutineCtxHandle::Register(CCoroutineCtx* pCtx)
 {
-	basiclib::CBasicString& strCtxName = pCtx->GetCtxName();
+	const char* pCtxName = pCtx->GetCtxName();
 	basiclib::CRWLockFunc lock(&m_lock, true, false);
-	if (!strCtxName.IsEmpty()){
-		if (m_mapNameToCtx.find(strCtxName) != m_mapNameToCtx.end()){
+    if (pCtxName){
+        if (m_mapNameToCtx.find(pCtxName) != m_mapNameToCtx.end()){
 			return 0;
 		}
-		m_mapNameToCtx[strCtxName] = pCtx;
+        m_mapNameToCtx[pCtxName] = pCtx;
 	}
 	uint32_t uHandleID = GetNewHandleID();
 	m_mapIDToCtx[uHandleID] = pCtx;
@@ -42,9 +48,9 @@ int CCoroutineCtxHandle::UnRegister(uint32_t uHandleID)
 	if (iter != m_mapIDToCtx.end())
 	{
 		CRefCoroutineCtx ctx = iter->second;
-		basiclib::CBasicString& strName = ctx->GetCtxName();
-		if (!strName.IsEmpty())
-			m_mapNameToCtx.erase(strName);
+		const char* pCtxName = ctx->GetCtxName();
+        if (pCtxName)
+            m_mapNameToCtx.erase(pCtxName);
 		m_mapIDToCtx.erase(iter);
 		
 		m_releaseHandleID.push_back(uHandleID);
@@ -52,6 +58,16 @@ int CCoroutineCtxHandle::UnRegister(uint32_t uHandleID)
 		ret = 1;
 	}
 	return ret;
+}
+
+//! 根据名字查找ctxid
+uint32_t CCoroutineCtxHandle::GetCtxIDByName(const char* pName)
+{
+    basiclib::CRWLockFunc lock(&m_lock, false, true);
+    MapNameToCtx::iterator iter = m_mapNameToCtx.find(pName);
+    if (iter != m_mapNameToCtx.end())
+        return iter->second->GetCtxID();
+    return 0;
 }
 
 bool CCoroutineCtxHandle::GrabContext(uint32_t handle, const std::function<void(CCoroutineCtx*)>& func)
@@ -89,7 +105,7 @@ uint32_t CCoroutineCtxHandle::GetNewHandleID()
 		if (uRetHandleID % 10000 == 0)
 		{
 			//100 log
-			CCFrameSCBasicLogEventErrorV("HandleID Allocate warning %d, need restart!!", uRetHandleID);
+            CCFrameSCBasicLogEventErrorV(nullptr, "HandleID Allocate warning %d, need restart!!", uRetHandleID);
 		}
 	}
 

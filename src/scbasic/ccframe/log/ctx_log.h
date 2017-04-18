@@ -7,12 +7,12 @@ class CCorutinePlusThreadData;
 class _SCBASIC_DLL_API CCoroutineCtx_Log : public CCoroutineCtx
 {
 public:
-	CCoroutineCtx_Log();
+    CCoroutineCtx_Log();
 	virtual ~CCoroutineCtx_Log();
 
 	CreateTemplateHeader(CCoroutineCtx_Log);
 
-	virtual int InitCtx(CMQMgr* pMQMgr);
+    virtual int InitCtx(CMQMgr* pMQMgr, const std::function<const char*(InitGetParamType, const char* pKey, const char* pDefault)>& func);
 
 	void LogEvent(CCorutinePlusThreadData* pThreadData, int nChannel, const char* pszLog);
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -29,14 +29,6 @@ protected:
  _SCBASIC_DLL_API void CCFrameSCBasicLogEventError(CCorutinePlusThreadData* pThreadData, const char* pszLog);
  _SCBASIC_DLL_API void CCFrameSCBasicLogEvent(const char* pszLog);
  _SCBASIC_DLL_API void CCFrameSCBasicLogEventError(const char* pszLog);
-template<class... _Types>
-void CCFrameSCBasicLogEventV(const char* pszLog, _Types&&... _Args){
-	CCFrameSCBasicLogEventV(nullptr, pszLog, std::forward<_Types>(_Args)...);
-}
-template<class... _Types>
-void CCFrameSCBasicLogEventErrorV(const char* pszLog, _Types&&... _Args){
-	CCFrameSCBasicLogEventErrorV(nullptr, pszLog, std::forward<_Types>(_Args)...);
-}
 
 
 #endif

@@ -26,7 +26,6 @@
     <ClInclude Include="..\..\src\algorithm\zip\zconf.h" />
     <ClInclude Include="..\..\src\algorithm\zip\zlib.h" />
     <ClInclude Include="..\..\src\coroutine\coroutineplus.h" />
-    <ClInclude Include="..\..\src\coroutine\libco_coroutine.h" />
     <ClInclude Include="..\..\src\datastruct\array.h" />
     <ClInclude Include="..\..\src\datastruct\basic_string.h" />
     <ClInclude Include="..\..\src\datastruct\extern.h" />
@@ -118,7 +117,6 @@
     <ClCompile Include="..\..\src\algorithm\zip\tlgzip.cpp" />
     <ClCompile Include="..\..\src\algorithm\zip\tlzipfile.cpp" />
     <ClCompile Include="..\..\src\coroutine\coroutineplus.cpp" />
-    <ClCompile Include="..\..\src\coroutine\libco_coroutine.cpp" />
     <ClCompile Include="..\..\src\datastruct\basic_string.cpp" />
     <ClCompile Include="..\..\src\datastruct\key_value.cpp" />
     <ClCompile Include="..\..\src\datastruct\pbzk.cpp" />
@@ -329,7 +327,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>FLzlib13.lib;../3rd/libevent/build/lib/Debug/event.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FLzlib13.lib;../3rd/libevent/libevent.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\$(ProjectName)D13.dll</OutputFile>
       <AdditionalLibraryDirectories>..\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

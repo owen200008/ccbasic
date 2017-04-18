@@ -1,17 +1,35 @@
 #ifndef INC_COROUTINEPLUS_H
 #define INC_COROUTINEPLUS_H
 
-#include "libco_coroutine.h"
+typedef void(*coctx_pfn_t)(const char* s);
+struct coctx_t
+{
+#ifdef __BASICWINDOWS
+    void *regs[6];
+#else
+#if defined(__i386__)
+    void *regs[6];
+#elif defined(__x86_64__)
+    void *regs[13];
+#endif
+#endif
+
+    size_t ss_size;
+    char *ss_sp;
+    coctx_t(){
+        memset(this, 0, sizeof(coctx_t));
+    }
+};
 
 enum CoroutineState
 {
-	CoroutineState_Dead 	= 0,
+    CoroutineState_Death    = 0,
 	CoroutineState_Ready 	= 1,
 	CoroutineState_Running	= 2,
 	CoroutineState_Suspend	= 3,
 };
 
-#define STACK_SIZE 			(1024*1024)
+#define STACK_SIZE 			(512*1024)
 #define DEFAULT_COROUTINE 	16
 #define RESUME_MAXPARAM		4
 class CCorutinePlus;
@@ -27,7 +45,6 @@ public:
 	CCorutinePlus();
 	virtual ~CCorutinePlus();
 	
-	void CheckStackSize(int nDefaultStackSize);
 	void ReInit(coroutine_func func);
 	void YieldCorutine();
 	template<class T>
@@ -92,56 +109,72 @@ public:
 		return m_bSysHook;
 	}
 protected:
+    void CheckStackSize(int nDefaultStackSize);
+    void SaveStack();
+    void ResumeStack();
+protected:
 	CoroutineState							m_state;
 	coroutine_func 							m_func;
-#ifdef USE_UCONTEXT
-	ucontext_t 								m_ctx;
-#else
 	coctx_t									m_ctx;
-#endif
+
 	char*									m_stack;
 	int										m_nCap;
 	int										m_nSize;
 
+    //使用的pool stack
+    char*                                   m_pUseRunPoolStack;
 	//resume param
 	CCorutinePlusPool*						m_pRunPool;
 	void*									m_pResumeParam[RESUME_MAXPARAM];
 
 	//是否hook sys io函数,默认是true
 	bool									m_bSysHook;
+
+    friend class CCorutinePlusPool;
 };
 
 //thread not safe
-#define CorutinePlus_Max_Stack	128
+#define CorutinePlus_Max_Stack	32
 class _BASIC_DLL_API CCorutinePlusPool : public basiclib::CBasicObject
 {
 public:
 	CCorutinePlusPool();
 	virtual ~CCorutinePlusPool();
 
-	bool InitCorutine(int nDefaultSize = DEFAULT_COROUTINE, int nDefaultStackSize = 1024 * 16);
+	bool InitCorutine(int nDefaultSize = DEFAULT_COROUTINE, int nDefaultStackSize = 1024 * 16, int nShareStackSize = 2);
 	
 	CCorutinePlus* GetCorutine();
 
 	int GetVTCorutineSize(){ return m_vtCorutinePlus.size(); }
-	int GetCreateCorutineTimes(){return m_usCreateTimes;}
-
-	CCorutinePlus* GetCurrentCorutinePlus(){ return m_pStackRunCorutine[m_usRunCorutineStack - 1]; }
+    uint32_t GetCreateCorutineTimes(){ return m_nCreateTimes; }
+    uint16_t GetStackCreateTimes(){ return m_usStackSize; }
 protected:
-	CCorutinePlus* CreateCorutine(bool bPush);
+    void ResumeFunc(CCorutinePlus* pNext);
+    void YieldFunc(CCorutinePlus* pCorutine);
+    void FinishFunc(CCorutinePlus* pCorutine);
+protected:
+	CCorutinePlus* CreateCorutine();
 	void ReleaseCorutine(CCorutinePlus* pPTR);
-protected:
-	char 								m_stack[STACK_SIZE];
+
+    char* GetStack(int nIndex);
+private:
+    typedef basiclib::basic_vector<char*>	VTSTACKS;
+    VTSTACKS                            m_vtStacks;
+    uint16_t                            m_usStackSize;
+
 	typedef basiclib::basic_vector<CCorutinePlus*>	VTCorutinePlus;
 	VTCorutinePlus						m_vtCorutinePlus;
-	unsigned short						m_usCreateTimes;
+	uint32_t						    m_nCreateTimes;
+    uint32_t                            m_nCorutineSize;
+    uint32_t                            m_nRealVTCorutineSize;
+    
 	int									m_nDefaultStackSize;
 
 	CCorutinePlus*						m_pStackRunCorutine[CorutinePlus_Max_Stack];
 	unsigned short						m_usRunCorutineStack;
 	CCorutinePlus						m_selfPlus;
 
-	friend class CCorutinePlus;
+    friend class CCorutinePlus;
 };
 
 

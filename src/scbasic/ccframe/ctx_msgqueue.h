@@ -16,6 +16,7 @@
 #define CTXMESSAGE_TYPE_RUNCOROUTINE			2		//唤醒协程
 #define CTXMESSAGE_TYPE_ONTIMER					3		//ontimer
 #define CTXMESSAGE_TYPE_SOCKETMSG				4		//socketmsg
+#define CTXMESSAGE_TYPE_USERTYPEDEFINEBEGIN     100000
 
 //执行函数的定义
 class CCoroutineCtx;

@@ -32,9 +32,13 @@ function sproto.sharenew(cobj)
 	return setmetatable(self, sproto_nogc)
 end
 
-function sproto.parse(ptext)
+function sproto.parse(ptext, filename)
 	local parser = require "sprotoparser"
 	local pbin = parser.parse(ptext)
+    if filename then
+        os.remove(filename)
+        io.writefile(filename, pbin, "wb+")
+    end
 	return sproto.new(pbin)
 end
 
@@ -67,14 +71,14 @@ function sproto:exist_type(typename)
 	end
 end
 
-function sproto:encode(typename, tbl)
+function sproto:encode(smbuf, typename, tbl)
 	local st = querytype(self, typename)
-	return core.encode(st, tbl)
+	return core.encode(smbuf, st, tbl)
 end
 
-function sproto:decode(typename, ...)
+function sproto:decode(smbuf, typename)
 	local st = querytype(self, typename)
-	return core.decode(st, ...)
+	return core.decode(smbuf, st)
 end
 
 function sproto:pencode(typename, tbl)

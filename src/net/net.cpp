@@ -189,7 +189,7 @@ THREAD_RETURN WorkerThread(void *arg)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 static void LogLibeventDNS(int is_warn, const char *msg) 
 {
-	basiclib::BasicLogEventV("%s: %s", is_warn ? "WARN" : "INFO", msg);
+    basiclib::BasicLogEventV(DebugLevel_Info, "%s: %s", is_warn ? "WARN" : "INFO", msg);
 }
 
 void NetOnTimer(evutil_socket_t fd, short event, void *arg)
@@ -602,7 +602,7 @@ void CBasicSessionNetServer::InitListenEvent(evutil_socket_t socketfd)
 {
 	m_socketfd = socketfd;
 	event_set(&m_revent, m_socketfd, EV_READ | EV_PERSIST, OnLinkListenRead, this);
-	event_base_set(m_pThread->m_base, &m_revent);
+    event_base_set(m_pThread->m_base, &m_revent);
 	event_add(&m_revent, NULL);
 }
 
@@ -691,7 +691,7 @@ void CBasicSessionNetServer::OnTimer(uint32_t nTick)
 			int32_t lRet = Listen(m_strListenAddr.c_str());
 			if (BASIC_NET_OK == lRet)
 			{
-				basiclib::BasicLogEventV("ListenPort [%s] OK", m_strListenAddr.c_str());
+                basiclib::BasicLogEventV(DebugLevel_Info, "ListenPort [%s] OK", m_strListenAddr.c_str());
 			}
 			else if (BASIC_NET_ALREADY_LISTEN != lRet)
 			{
@@ -920,18 +920,21 @@ void CBasicSessionNetClient::Accept(evutil_socket_t s, sockaddr_storage& addr)
 
 void CBasicSessionNetClient::InitClientEvent(evutil_socket_t socketfd, bool bAddWrite, bool bAddRead)
 {
-	m_socketfd = socketfd;
+    if (m_socketfd != socketfd){
+        m_socketfd = socketfd;
+        event_set(&m_revent, m_socketfd, EV_READ | EV_PERSIST, OnLinkRead, this);
+        event_base_set(m_pThread->m_base, &m_revent);
+        event_set(&m_wevent, m_socketfd, EV_WRITE, OnLinkWrite, this);
+        event_base_set(m_pThread->m_base, &m_wevent);
+    }
+
 	//read data
 	if (bAddRead){
-		event_set(&m_revent, m_socketfd, EV_READ | EV_PERSIST, OnLinkRead, this);
-		event_base_set(m_pThread->m_base, &m_revent);
 		event_add(&m_revent, NULL);
 	}
 
 	if (bAddWrite){
 		//write data
-		event_set(&m_wevent, m_socketfd, EV_WRITE, OnLinkWrite, this);
-		event_base_set(m_pThread->m_base, &m_wevent);
 		event_add(&m_wevent, NULL);
 	}
 }
@@ -1060,7 +1063,7 @@ void CBasicSessionNetClient::_OnIdle()
 	uint32_t nState = GetSessionStatus(TIL_SS_SHAKEHANDLE_MASK);
 	if (nState == TIL_SS_SHAKEHANDLE_TRANSMIT)
 		OnIdle(m_unIdleCount);
-	if (m_unIdleCount > m_usTimeoutShakeHandle)
+	else if (m_unIdleCount > m_usTimeoutShakeHandle)
 	{
 		Close();
 		return;

@@ -219,9 +219,6 @@
     <ClInclude Include="..\..\src\coroutine\coroutineplus.h">
       <Filter>coroutine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\coroutine\libco_coroutine.h">
-      <Filter>coroutine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\file\inifile.h">
       <Filter>file</Filter>
     </ClInclude>
@@ -472,9 +469,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\time\ontimer.cpp">
       <Filter>time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\coroutine\libco_coroutine.cpp">
-      <Filter>coroutine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\coroutine\coroutineplus.cpp">
       <Filter>coroutine</Filter>

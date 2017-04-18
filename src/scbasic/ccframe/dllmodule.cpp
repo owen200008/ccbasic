@@ -25,7 +25,7 @@ bool CKernelLoadDll::LoadKernelDll(const char* pLoadDll, bool bReplace)
 {
 	if (m_dll.LoadLibrary(pLoadDll) != 0)
 	{
-		CCFrameSCBasicLogEventErrorV("加载动态库失败%s", pLoadDll);
+		CCFrameSCBasicLogEventErrorV(nullptr, "加载动态库失败%s", pLoadDll);
 		return false;
 	}
 
@@ -141,7 +141,7 @@ bool CDllRegisterCtxTemplateMgr::Register(CCoroutineCtxTemplateCreateFunc pCreat
 		CCFrameSCBasicLogEventError("注册上下文失败创建和释放函数是空");
 #ifdef _DEBUG
 		stacktrace::call_stack stack(0);
-		CCFrameSCBasicLogEventErrorV("%s", stack.to_string());
+        CCFrameSCBasicLogEventErrorV(nullptr, "%s", stack.to_string());
 #endif
 		return false;
 	}
@@ -150,7 +150,7 @@ bool CDllRegisterCtxTemplateMgr::Register(CCoroutineCtxTemplateCreateFunc pCreat
 		CCFrameSCBasicLogEventError("注册上下文创建模板失败");
 #ifdef _DEBUG
 		stacktrace::call_stack stack(0);
-		CCFrameSCBasicLogEventErrorV("%s", stack.to_string());
+        CCFrameSCBasicLogEventErrorV(nullptr, "%s", stack.to_string());
 #endif
 		return false;
 	}
@@ -158,7 +158,7 @@ bool CDllRegisterCtxTemplateMgr::Register(CCoroutineCtxTemplateCreateFunc pCreat
 		CCFrameSCBasicLogEventError("注册上下文模板创建后参数异常");
 #ifdef _DEBUG
 		stacktrace::call_stack stack(0);
-		CCFrameSCBasicLogEventErrorV("%s", stack.to_string());
+        CCFrameSCBasicLogEventErrorV(nullptr, "%s", stack.to_string());
 #endif
 		return false;
 	}
@@ -187,7 +187,7 @@ void CCoroutineCtxTemplateMessage::Release(){
 		m_pReleaseFunc(m_pTemplate);
 	}
 	else{
-		CCFrameSCBasicLogEventErrorV("释放上下文模板对象出错(%s)", m_pTemplate->GetTemplateName().c_str());
+		CCFrameSCBasicLogEventErrorV(nullptr, "释放上下文模板对象出错(%s)", m_pTemplate->GetTemplateName().c_str());
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////////////////

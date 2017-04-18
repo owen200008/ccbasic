@@ -66,8 +66,8 @@ static void GetTodayString(char* szToday)
 	sprintf(szToday, "%d%02d%02d_000", cur.GetYear(), cur.GetMonth(), cur.GetDay());
 }
 
-
 //日志文件属性结构
+typedef basiclib::basic_vector<WriteLogDataBuffer> vector_logdata;
 class CBasicLogChannel : public basiclib::CBasicObject
 {
 public:
@@ -82,7 +82,7 @@ public:
 
 		m_pSynLogFile = NULL;
 	}
-	~CBasicLogChannel(){
+	virtual ~CBasicLogChannel(){
 		if (m_pSynLogFile){
 			delete m_pSynLogFile;
 		}
@@ -93,7 +93,7 @@ public:
 	void CheckChannel(const char* lpszToday);						//定时检查，比如隔天重新生成文件名，判断文件大小等。
 
 	long WriteLogData(const char* lpszText);	//写日志数据
-	void WriteLogDataWithBuffer(WriteLogDataBuffer& logData);
+	void WriteLogDataWithBuffer(WriteLogDataBuffer& logData, bool bThreadSafe);
 
 	void WriteLogBuffer();
 	static void SetLockChannel(bool bLock){
@@ -173,19 +173,20 @@ private:
 
 	CCriticalSection* m_pSynLogFile;		//操作成员变量的临界区
 
-	typedef std::vector<WriteLogDataBuffer> vector_logdata;
 	vector_logdata		m_vLogData;			//缓冲的数据
+    basiclib::SpinLock  m_lock;
 };
 
 long	CBasicLogChannel::m_lLastFileNo = 0;		//对于当天多个文件自动生成的文件编号。
 bool	CBasicLogChannel::m_bInitLock = true;		//默认上锁
-
+static  bool m_bInitLogFunc = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define MAX_LOG_CHANNEL		8			//日志文件个数
 
 static long g_nCurrentChannel = 0;
 
-CBasicLogChannel* g_pLogChannel[MAX_LOG_CHANNEL] = { 0 };
+static CBasicLogChannel* g_pLogChannel[MAX_LOG_CHANNEL] = { 0 };
+static DebugLevel g_DebugLevel = DebugLevel_Info;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class CWriteLogThread : public CBasic_Thread
 {
@@ -319,21 +320,23 @@ void CBasicLogChannel::CheckChannel(const char* lpszToday)
 
 void CBasicLogChannel::WriteLogBuffer()
 {
-	CSingleLock lock(m_pSynLogFile);
-	lock.Lock();
+    vector_logdata tmpVt;
 
-	if (!m_vLogData.empty())
-	{
-		int nCount = m_vLogData.size();
-		for (int i = 0; i < nCount; i++)
-		{
-			WriteLogDataBuffer& log = m_vLogData[i];
-			_WriteLogDataBuffer(log);
-
-			log.ClearLogData();
-		}
-		m_vLogData.clear();
-	}
+    tmpVt.resize(2);
+    tmpVt.clear();
+    {
+        CSingleLock lock(m_pSynLogFile);
+        lock.Lock();
+        basiclib::CSpinLockFuncNoSameThreadSafe spinLock(&m_lock, TRUE);
+        swap(tmpVt, m_vLogData);
+    }
+    int nCount = tmpVt.size();
+    for (int i = 0; i < nCount; i++)
+    {
+        WriteLogDataBuffer& log = tmpVt[i];
+        _WriteLogDataBuffer(log);
+        log.ClearLogData();
+    }
 }
 
 long CBasicLogChannel::WriteLogData(const char* lpszText)
@@ -346,28 +349,43 @@ long CBasicLogChannel::WriteLogData(const char* lpszText)
 	CSingleLock lock(m_pSynLogFile);
 	lock.Lock();
 
-	if (m_nLogOption & LOG_BY_BUFFER && g_LogThread)
-	{
-		_AddLogDataBuffer(logData);
-	}
-	else
-	{
-		return _WriteLogDataBuffer(logData);
-	}
+    if (g_LogThread){
+        if (m_nLogOption & LOG_BY_BUFFER){
+            _AddLogDataBuffer(logData);
+        }
+        else{
+            return _WriteLogDataBuffer(logData);
+        }
+    }
+    else{
+        //来自不同线程才会进入这里
+        basiclib::CSpinLockFuncNoSameThreadSafe spinLock(&m_lock, TRUE);
+        _AddLogDataBuffer(logData);
+    }
 	return 0;
 }
-void CBasicLogChannel::WriteLogDataWithBuffer(WriteLogDataBuffer& logData)
+void CBasicLogChannel::WriteLogDataWithBuffer(WriteLogDataBuffer& logData, bool bThreadSafe)
 {
-	CSingleLock lock(m_pSynLogFile);
-	lock.Lock();
-	if (m_nLogOption & LOG_BY_BUFFER && g_LogThread)
-	{
-		_AddLogDataBuffer(logData);
-	}
-	else
-	{
-		_WriteLogDataBuffer(logData);
-	}
+    if (g_LogThread){
+        CSingleLock lock(m_pSynLogFile);
+        lock.Lock();
+        if (m_nLogOption & LOG_BY_BUFFER){
+            _AddLogDataBuffer(logData);
+        }
+        else{
+            _WriteLogDataBuffer(logData);
+        }
+    }
+    else{
+        if (bThreadSafe){
+            _WriteLogDataBuffer(logData);
+        }
+        else{
+            //来自不同线程才会进入这里
+            basiclib::CSpinLockFuncNoSameThreadSafe spinLock(&m_lock, TRUE);
+            _AddLogDataBuffer(logData);
+        }
+    }
 }
 
 void CBasicLogChannel::_FillLogDataBuffer(WriteLogDataBuffer& logData)
@@ -388,7 +406,7 @@ void CBasicLogChannel::_AddLogDataBuffer(WriteLogDataBuffer& logData)
 	WriteLogDataBuffer thisLogData;
 	thisLogData.CopyLogData(logData);
 
-	m_vLogData.push_back(thisLogData);
+    m_vLogData.push_back(thisLogData);
 }
 
 long CBasicLogChannel::_WriteLogDataBuffer(WriteLogDataBuffer& logData)
@@ -471,6 +489,8 @@ CBasicLogChannel* _GetChannel(int nIndex)
 
 long BasicSetLogEventMode(long nOption, const char* pszLogFile)
 {
+    //默认自己启动线程，线程安全
+    InitBasicLog(true);
 	if (g_nCurrentChannel < 0 || g_nCurrentChannel >= MAX_LOG_CHANNEL)
 	{
 		return LOG_ERROR_FULL;
@@ -479,7 +499,6 @@ long BasicSetLogEventMode(long nOption, const char* pszLogFile)
 	{
 		return LOG_ERROR_NAME_EMPTY;
 	}
-
 
 	int nIndex = BasicInterlockedIncrement(&g_nCurrentChannel);
 	if (nIndex >= MAX_LOG_CHANNEL)
@@ -494,12 +513,15 @@ long BasicSetLogEventMode(long nOption, const char* pszLogFile)
 
 long BasicSetDefaultLogEventErrorMode(long nOption, const char* pszLogFile)
 {
+    //默认自己启动线程，线程安全
+    InitBasicLog(true);
 	if (pszLogFile == NULL || pszLogFile[0] == '\0')
 	{
 		return LOG_ERROR_NAME_EMPTY;
-	}
+	}  
 	if (g_pLogChannel[1] == NULL)
 	{
+        BasicInterlockedIncrement(&g_nCurrentChannel);
 		g_pLogChannel[1] = _CreateLogChannel(nOption, pszLogFile);
 	}
 	else
@@ -511,12 +533,15 @@ long BasicSetDefaultLogEventErrorMode(long nOption, const char* pszLogFile)
 
 long BasicSetDefaultLogEventMode(long nOption, const char* pszLogFile)
 {
+    //默认自己启动线程，线程安全
+    InitBasicLog(true);
 	if (pszLogFile == NULL || pszLogFile[0] == '\0')
 	{
 		return LOG_ERROR_NAME_EMPTY;
 	}
 	if (g_pLogChannel[0] == NULL)
 	{
+        BasicInterlockedIncrement(&g_nCurrentChannel);
 		g_pLogChannel[0] = _CreateLogChannel(nOption, pszLogFile);
 	}
 	else
@@ -564,7 +589,7 @@ void BasicLogEventErrorV(const char* pszLog, ...)
 	va_end(argList);
 	if (len >= 0 && len < LOG_MESSAGE_SIZE)
 	{
-		BasicLogEvent(1, tmp);
+        BasicLogEvent(DebugLevel_Error, 1, tmp);
 	}
 	else
 	{
@@ -572,10 +597,10 @@ void BasicLogEventErrorV(const char* pszLog, ...)
 		va_start(argList, pszLog);
 		strLog.FormatV(pszLog, argList);
 		va_end(argList);
-		BasicLogEvent(1, strLog.c_str());
+        BasicLogEvent(DebugLevel_Error, 1, strLog.c_str());
 	}
 }
-void BasicLogEventV(const char* pszLog, ...)
+void BasicLogEventV(DebugLevel level, const char* pszLog, ...)
 {
 	char tmp[LOG_MESSAGE_SIZE];
 	va_list argList;
@@ -584,7 +609,7 @@ void BasicLogEventV(const char* pszLog, ...)
 	va_end(argList);
 	if (len >= 0 && len < LOG_MESSAGE_SIZE)
 	{
-		BasicLogEvent(0, tmp);
+        BasicLogEvent(level, 0, tmp);
 	}
 	else
 	{
@@ -592,23 +617,23 @@ void BasicLogEventV(const char* pszLog, ...)
 		va_start(argList, pszLog);
 		strLog.FormatV(pszLog, argList);
 		va_end(argList);
-		BasicLogEvent(0, strLog.c_str());
+        BasicLogEvent(level, 0, strLog.c_str());
 	}
 }
 
 void BasicLogEventError(const char* pszLog)
 {
-	BasicLogEvent(1, pszLog);
+    BasicLogEvent(DebugLevel_Error, 1, pszLog);
 }
-void BasicLogEvent(const char* pszLog)
+void BasicLogEvent(DebugLevel level, const char* pszLog)
 {
-	BasicLogEvent(0, pszLog);
+    BasicLogEvent(level, 0, pszLog);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 
-void BasicLogEventV(long lLogChannel, const char* pszLog, ...)
+void BasicLogEventV(DebugLevel level, long lLogChannel, const char* pszLog, ...)
 {
 	char tmp[LOG_MESSAGE_SIZE];
 	va_list argList;
@@ -617,7 +642,7 @@ void BasicLogEventV(long lLogChannel, const char* pszLog, ...)
 	va_end(argList);
 	if (len >= 0 && len < LOG_MESSAGE_SIZE)
 	{
-		BasicLogEvent(lLogChannel, tmp);
+        BasicLogEvent(level, lLogChannel, tmp);
 	}
 	else
 	{
@@ -625,7 +650,7 @@ void BasicLogEventV(long lLogChannel, const char* pszLog, ...)
 		va_start(argList, pszLog);
 		strLog.FormatV(pszLog, argList);
 		va_end(argList);
-		BasicLogEvent(lLogChannel, strLog.c_str());
+        BasicLogEvent(level, lLogChannel, strLog.c_str());
 	}
 }
 
@@ -633,7 +658,7 @@ void BasicLogEventV(long lLogChannel, const char* pszLog, ...)
 //
 //事件记录（写到日志文件）
 //
-void BasicLogEvent(long lLogChannel, const char* pszLog)
+void BasicLogEvent(DebugLevel level, long lLogChannel, const char* pszLog)
 {
 	if (pszLog == NULL || pszLog[0] == '\0')
 	{
@@ -642,27 +667,42 @@ void BasicLogEvent(long lLogChannel, const char* pszLog)
 
 	TRACE("LOG%d:%s\r\n", lLogChannel, pszLog);
 
+    if (level > g_DebugLevel)
+        return;
 	//如果找不到直接让他崩溃掉
 	_GetChannel(lLogChannel)->WriteLogData(pszLog);
 }
 
-void BasicWriteByLogDataBuffer(long lLogChannel, WriteLogDataBuffer& data)
+void BasicWriteByLogDataBuffer(long lLogChannel, WriteLogDataBuffer& data, bool bThreadSafe)
 {
-	_GetChannel(lLogChannel)->WriteLogDataWithBuffer(data);
+    _GetChannel(lLogChannel)->WriteLogDataWithBuffer(data, bThreadSafe);
 }
 
-//设置是否启动锁，启动锁的话日志变成线程安全，不然就是单线程使用, 自动启动检测线程，只有在lock情况下才开启
-void InitBasicLog(bool bLock, bool bThreadCheckSelf)
+void InitBasicLogLevel(DebugLevel level)
 {
-	CBasicLogChannel::SetLockChannel(bLock);
-	if (bLock){
-		if (bThreadCheckSelf){
-			if (g_LogThread == NULL)
-			{
-				g_LogThread = new CWriteLogThread;
-				g_LogThread->Start();
-			}
-		}
+    g_DebugLevel = level;
+}
+DebugLevel GetBasicLogLevel()
+{
+    return g_DebugLevel;
+}
+
+//! bThreadCheckSelf true 不启动锁(无法实时记录) false启动锁 线程安全(不开启buffer模式实时)
+bool InitBasicLog(bool bThreadCheckSelf)
+{
+
+    if (m_bInitLogFunc){
+        return false;
+    }
+
+    m_bInitLogFunc = true;
+    CBasicLogChannel::SetLockChannel(bThreadCheckSelf);
+    if (bThreadCheckSelf){
+        if (g_LogThread == NULL)
+        {
+            g_LogThread = new CWriteLogThread;
+            g_LogThread->Start();
+        }
 	}
 	else{
 		if (g_LogThread){
@@ -670,6 +710,7 @@ void InitBasicLog(bool bLock, bool bThreadCheckSelf)
 			delete g_LogThread;
 		}
 	}
+    return true;
 }
 
 //! 如果不是自己线程需要30s调用一次
@@ -692,6 +733,45 @@ void OnTimerBasicLog()
 			}
 		}
 	}
+}
+
+WriteLogDataBuffer::WriteLogDataBuffer()
+{
+    InitMember();
+}
+WriteLogDataBuffer::~WriteLogDataBuffer()
+{
+}
+void WriteLogDataBuffer::InitLogData(const char* lpszText)
+{
+    m_pText = (char*)lpszText;
+}
+void WriteLogDataBuffer::CopyLogData(WriteLogDataBuffer& logData)
+{
+    if (logData.m_pText != NULL)
+    {
+        int nLen = __tcslen(logData.m_pText);
+        m_pText = (char*)BasicAllocate((nLen + 1) * sizeof(char));
+        __tcscpy(m_pText, logData.m_pText);
+    }
+    m_lCurTime = logData.m_lCurTime;
+    m_dwProcessId = logData.m_dwProcessId;
+    m_dwThreadId = logData.m_dwThreadId;
+}
+void WriteLogDataBuffer::ClearLogData()
+{
+    if (m_pText != NULL)
+    {
+        BasicDeallocate(m_pText);
+    }
+    InitMember();
+}
+void WriteLogDataBuffer::InitMember()
+{
+    m_pText = nullptr;
+    m_lCurTime = 0;
+    m_dwProcessId = 0;
+    m_dwThreadId = 0;
 }
 
 __NS_BASIC_END

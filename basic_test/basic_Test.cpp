@@ -16,13 +16,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		getchar();
 		return 0;
 	}
-	//TestCoroutine();
+	TestCoroutine();
 	//TestCoroutine();
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
 	//TestContainExt();
-	NetServerTest();
+	//NetServerTest();
 	getchar();
 	return 0;
 }

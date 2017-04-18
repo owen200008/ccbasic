@@ -63,7 +63,7 @@ struct SendDataToSendThread
 		return 0;
 	}
 	BOOL IsEmpty(){
-		return m_nIndex >= m_cbData && m_pData != nullptr;
+        return (m_nIndex >= m_cbData && m_pData != nullptr) || (m_pData == nullptr);
 	}
 	char* ResetDataLength(int32_t cbData){
 		if (m_pData){

@@ -4,6 +4,72 @@
 #include <string.h>
 #include <stdint.h>
 
+
+#define ESP 0
+#define EIP 1
+// -----------
+#define RSP 0
+#define RIP 1
+#define RBX 2
+#define RDI 3
+#define RSI 4
+
+#ifdef __BASICWINDOWS
+extern "C"
+{
+    extern void coctx_swap(coctx_t *, coctx_t*);
+}
+void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void* s1)
+{
+    int *sp = (int*)((uintptr_t)ctx->ss_sp + ctx->ss_size);
+    sp -= 1;
+    sp = (int*)((unsigned long)sp & -16L);
+    sp[0] = (int)s1;
+    sp -= 1;
+    sp[0] = 0;
+
+    ctx->regs[ESP] = (char*)sp;
+    ctx->regs[EIP] = (char*)pfn;
+}
+#else
+extern "C"
+{
+    extern void coctx_swap(coctx_t *, coctx_t*) asm("coctx_swap");
+}
+#endif
+
+#if defined(__i386__)
+void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void* s1)
+{
+    int *sp = (int*)((uintptr_t)ctx->ss_sp + ctx->ss_size);
+    sp -= 1;
+    sp = (char*)((unsigned long)sp & -16L);
+    sp[0] = (int)s1;
+    sp -= 1;
+    sp[0] = 0;
+
+    ctx->regs[ESP] = (char*)sp;
+    ctx->regs[EIP] = (char*)pfn;
+}
+#elif defined(__x86_64__)
+void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void *s1)
+{
+    char *stack = ctx->ss_sp;
+
+    long long int *sp = (long long int*)((uintptr_t)stack + ctx->ss_size);
+    sp -= 1;
+    sp = (long long int*)((((uintptr_t)sp) & -16L) - 8);
+    ctx->regs[RBX] = &sp[1];
+    ctx->regs[RSP] = (char*)sp;
+    ctx->regs[RIP] = (char*)pfn;
+
+    sp[0] = 0;
+    sp[1] = 0;
+
+    ctx->regs[RDI] = (char*)s1;
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 void MakeContextFunc(uint32_t low32, uint32_t hi32)
 {
@@ -24,8 +90,10 @@ CCorutinePlus::CCorutinePlus()
 	m_nSize = 0;
 	m_stack = nullptr;
 	m_pRunPool = nullptr;
+    m_pUseRunPoolStack = nullptr;
 	memset(m_pResumeParam, 0, sizeof(void*) * RESUME_MAXPARAM);
 	m_bSysHook = true;
+    m_ctx.ss_size = STACK_SIZE;
 }
 
 CCorutinePlus::~CCorutinePlus()
@@ -60,132 +128,81 @@ void CCorutinePlus::ReInit(coroutine_func func)
 
 void CCorutinePlus::YieldCorutine()
 {
-	char* pTop = m_pRunPool->m_stack + STACK_SIZE;
-	char dummy = 0;
-	int nLength = pTop - &dummy;
-	CheckStackSize(nLength);
-	m_nSize = nLength;
-	memcpy(m_stack, &dummy, m_nSize);
-
-	m_state = CoroutineState_Suspend;
-
-	m_pRunPool->m_usRunCorutineStack--;
-#ifdef USE_UCONTEXT
-	swapcontext(&m_ctx, &m_pRunPool->m_pStackRunCorutine[m_pRunPool->m_usRunCorutineStack - 1]->m_ctx);
-#else
-	coctx_swapcontext(&m_ctx, &m_pRunPool->m_pStackRunCorutine[m_pRunPool->m_usRunCorutineStack - 1]->m_ctx);
-#endif
+    m_pRunPool->YieldFunc(this);
 }
 
 void CCorutinePlus::StartFunc()
 {
 	m_func(this);
-	m_state = CoroutineState_Dead;
 }
 void CCorutinePlus::StartFuncLibco()
 {
 	StartFunc();
 
-	m_pRunPool->m_usRunCorutineStack--;
-	//exit no need to save stack
-#ifndef USE_UCONTEXT
-	coctx_swapcontext(&m_ctx, &m_pRunPool->m_pStackRunCorutine[m_pRunPool->m_usRunCorutineStack - 1]->m_ctx);
-	printf("error, much resume...\n");
-#endif
+    m_pRunPool->FinishFunc(this);
+}
+
+void CCorutinePlus::SaveStack()
+{
+    int nLength = 0;
+    char* pTop = m_pUseRunPoolStack + STACK_SIZE;
+    __asm{
+        mov         eax, dword ptr[pTop]
+        sub         eax, esp
+        mov         dword ptr[nLength], eax
+    }
+    CheckStackSize(nLength);
+    m_nSize = nLength;
+    memcpy(m_stack, pTop - nLength, m_nSize);
+}
+
+void CCorutinePlus::ResumeStack()
+{
+    m_ctx.ss_sp = m_pUseRunPoolStack;
+    if (m_state == CoroutineState_Ready)
+        coctx_make(&m_ctx, (coctx_pfn_t)MakeContextFuncLibco, this);
+    else if (m_state == CoroutineState_Suspend)
+        memcpy(m_ctx.ss_sp + STACK_SIZE - m_nSize, m_stack, m_nSize);
 }
 
 void CCorutinePlus::Resume(CCorutinePlusPool* pPool)
 {
 	m_pRunPool = pPool;
-	switch(m_state)
-	{
-	case CoroutineState_Ready:
-		{
-			CCorutinePlus* pRunCorutine = pPool->GetCurrentCorutinePlus();
-#ifdef USE_UCONTEXT
-			getcontext(&m_ctx);
-			m_ctx.uc_stack.ss_sp = pPool->m_stack;
-			m_ctx.uc_stack.ss_size = STACK_SIZE;
-			m_ctx.uc_link = &pRunCorutine->m_ctx;
-			m_state = CoroutineState_Running;
-			uintptr_t ptr = (uintptr_t)this;
-			makecontext(&m_ctx, (void (*)(void))MakeContextFunc, 2, (uint32_t)ptr, (uint32_t)(ptr>>32));
-			swapcontext(&pRunCorutine->m_ctx, &m_ctx);
-#else
-			m_ctx.ss_sp = pPool->m_stack;
-			m_ctx.ss_size = STACK_SIZE;
-			m_state = CoroutineState_Running;
-			coctx_make(&m_ctx, (coctx_pfn_t)MakeContextFuncLibco, this);
-
-			m_pRunPool->m_pStackRunCorutine[m_pRunPool->m_usRunCorutineStack++] = this;
-			coctx_swapcontext(&pRunCorutine->m_ctx, &m_ctx);
-#endif
-			if(m_state == CoroutineState_Dead)
-			{
-				pPool->ReleaseCorutine(this);
-			}
-		}
-		break;
-	case CoroutineState_Suspend:
-		{
-			CCorutinePlus* pRunCorutine = pPool->GetCurrentCorutinePlus();
-#ifdef USE_UCONTEXT
-			m_ctx.uc_stack.ss_sp = pPool->m_stack;
-			m_ctx.uc_stack.ss_size = STACK_SIZE;
-			m_ctx.uc_link = &pRunCorutine->m_ctx;
-			
-			memcpy(pPool->m_stack + STACK_SIZE - m_nSize, m_stack, m_nSize);
-			m_state = CoroutineState_Running;
-			swapcontext(&pRunCorutine->m_ctx, &m_ctx);
-#else
-			m_ctx.ss_sp = pPool->m_stack;
-			m_ctx.ss_size = STACK_SIZE;
-
-			memcpy(pPool->m_stack + STACK_SIZE - m_nSize, m_stack,m_nSize);
-			m_state = CoroutineState_Running;
-
-			m_pRunPool->m_pStackRunCorutine[m_pRunPool->m_usRunCorutineStack++] = this;
-			coctx_swapcontext(&pRunCorutine->m_ctx, &m_ctx);
-#endif
-			if(m_state == CoroutineState_Dead)
-			{
-				 pPool->ReleaseCorutine(this);
-			}
-		}
-		break;
-	case CoroutineState_Dead:
-		{
-			//do nothing
-		}
-		break;
-	default:
-		assert(0);
-		break;
-	}
+    m_pRunPool->ResumeFunc(this);
 	m_pRunPool = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////
 CCorutinePlusPool::CCorutinePlusPool()
 {
-	m_usCreateTimes = 0;
+	m_nCreateTimes = 0;
 	m_usRunCorutineStack = 0;
 	for (int i = 0; i < CorutinePlus_Max_Stack; i++){
 		m_pStackRunCorutine[i] = nullptr;
 	}
 	m_pStackRunCorutine[m_usRunCorutineStack++] = &m_selfPlus;
+    m_selfPlus.m_pRunPool = this;
+    m_vtStacks.reserve(5);
+    //first is null, use for system
+    m_vtStacks.push_back(nullptr);
+    m_usStackSize = m_vtStacks.size();
+    m_nCorutineSize = 0;
+    m_nRealVTCorutineSize = 0;
 }
 
 CCorutinePlusPool::~CCorutinePlusPool()
 {
-	for(auto& c : m_vtCorutinePlus)
-	{
+	for(auto& c : m_vtCorutinePlus){
 		delete c;
 	}
 	m_vtCorutinePlus.clear();
+    for (auto& c : m_vtStacks){
+        basiclib::BasicDeallocate(c);
+    }
+    m_vtStacks.clear();
 }
 
-bool CCorutinePlusPool::InitCorutine(int nDefaultSize, int nDefaultStackSize)
+bool CCorutinePlusPool::InitCorutine(int nDefaultSize, int nDefaultStackSize, int nShareStackSize)
 {
 	if(nDefaultSize <= 0 || nDefaultStackSize < 1024)
 	{
@@ -193,38 +210,106 @@ bool CCorutinePlusPool::InitCorutine(int nDefaultSize, int nDefaultStackSize)
 	}
 	m_nDefaultStackSize = nDefaultStackSize;
 	m_vtCorutinePlus.reserve(nDefaultSize * 2);
-	for(int i = 0;i < nDefaultSize;i++)
-	{
-		CreateCorutine(true);
+	for(int i = 0;i < nDefaultSize;i++){
+        m_vtCorutinePlus.push_back(CreateCorutine());
 	}
+    m_nCorutineSize = m_vtCorutinePlus.size();
+    m_nRealVTCorutineSize = m_vtCorutinePlus.size();
+    m_vtStacks.reserve(nShareStackSize * 2 + 1);
+    for (int i = 0; i < nShareStackSize; i++){
+        m_vtStacks.push_back((char*)basiclib::BasicAllocate(STACK_SIZE));
+    }
+    m_usStackSize = m_vtStacks.size();
 	return true;
 }
 
 CCorutinePlus* CCorutinePlusPool::GetCorutine()
 {
-	int nSize = m_vtCorutinePlus.size();
-	if(nSize == 0)
+    if (m_nCorutineSize == 0)
 	{
-		return CreateCorutine(false);
+		return CreateCorutine();
 	}
-	CCorutinePlus* pRet = m_vtCorutinePlus[nSize - 1];
-	m_vtCorutinePlus.pop_back();
+    CCorutinePlus* pRet = m_vtCorutinePlus[m_nCorutineSize - 1];
+    m_nCorutineSize--;
 	return pRet;
 }
 
 void CCorutinePlusPool::ReleaseCorutine(CCorutinePlus* pPTR)
 {
-	m_vtCorutinePlus.push_back(pPTR);
+    if (m_nCorutineSize >= m_nRealVTCorutineSize){
+        m_vtCorutinePlus.push_back(pPTR);
+        m_nRealVTCorutineSize++;
+    }
+    else{
+        m_vtCorutinePlus[m_nCorutineSize] = pPTR;
+    }
+    m_nCorutineSize++;
 }
 
-CCorutinePlus* CCorutinePlusPool::CreateCorutine(bool bPush)
+CCorutinePlus* CCorutinePlusPool::CreateCorutine()
 {
 	CCorutinePlus* pRet = new CCorutinePlus();	
 	pRet->CheckStackSize(m_nDefaultStackSize);
-	m_usCreateTimes++;
-	if(bPush)
-		m_vtCorutinePlus.push_back(pRet);
+	m_nCreateTimes++;
 	return pRet;
 }
 
+void CCorutinePlusPool::YieldFunc(CCorutinePlus* pCorutine)
+{
+    m_usRunCorutineStack--;
+    CCorutinePlus* pChange = m_pStackRunCorutine[m_usRunCorutineStack - 1];
+
+    //进入函数会多保存一个栈(SaveStack的栈),不影响使用,必须在coctx_swap之前实现
+    pCorutine->SaveStack();
+    pCorutine->m_state = CoroutineState_Suspend;
+#ifdef _DEBUG
+    pCorutine->m_pUseRunPoolStack = nullptr;
+#endif
+    //不需要恢复栈
+    coctx_swap(&pCorutine->m_ctx, &pChange->m_ctx);
+}
+
+void CCorutinePlusPool::FinishFunc(CCorutinePlus* pCorutine)
+{
+    pCorutine->m_state = CoroutineState_Death;
+    m_usRunCorutineStack--;
+#ifdef _DEBUG
+    pCorutine->m_pUseRunPoolStack = nullptr;
+#endif
+    ReleaseCorutine(pCorutine);
+    coctx_swap(&pCorutine->m_ctx, &m_pStackRunCorutine[m_usRunCorutineStack - 1]->m_ctx);
+    basiclib::BasicLogEventError("error, much resume...");
+}
+
+void CCorutinePlusPool::ResumeFunc(CCorutinePlus* pNext)
+{
+#ifdef _DEBUG
+    if (pNext->m_state != CoroutineState_Ready && pNext->m_state != CoroutineState_Suspend){
+        ASSERT(0);
+        return;
+    }
+#endif
+    CCorutinePlus* pRunCorutine = m_pStackRunCorutine[m_usRunCorutineStack - 1];
+
+    pNext->m_pUseRunPoolStack = GetStack(m_usRunCorutineStack);
+    pNext->ResumeStack();
+    m_pStackRunCorutine[m_usRunCorutineStack++] = pNext;
+    pNext->m_state = CoroutineState_Running;
+    coctx_swap(&pRunCorutine->m_ctx, &pNext->m_ctx);
+}
+char* CCorutinePlusPool::GetStack(int nIndex)
+{
+    if (m_usStackSize > nIndex){
+        return m_vtStacks[nIndex];
+    }
+    else if (nIndex == m_usStackSize){
+        m_vtStacks.push_back((char*)basiclib::BasicAllocate(STACK_SIZE));
+        m_usStackSize += 1;
+        return m_vtStacks[nIndex];
+    }
+    else{
+        ASSERT(0);
+    }
+    return nullptr;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////

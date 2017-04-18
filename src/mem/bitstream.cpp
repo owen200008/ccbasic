@@ -2,20 +2,20 @@
 
 __NS_BASIC_START
 
-inline int SerializeUChar(unsigned char* pBuffer, const uint8_t v)
+int SerializeUChar(unsigned char* pBuffer, const uint8_t v)
 {
 	pBuffer[0] = v;
 	return 1;
 }
 
-inline int SerializeUShort(unsigned char* pBuffer, const uint16_t v)
+int SerializeUShort(unsigned char* pBuffer, const uint16_t v)
 {
 	pBuffer[0] = (v)& 0xFF;
 	pBuffer[1] = (v >> 8) & 0xFF;
 	return 2;
 }
 
-inline int SerializeUInt(unsigned char* pBuffer, const uint32_t v)
+int SerializeUInt(unsigned char* pBuffer, const uint32_t v)
 {
 	pBuffer[0] = (v)& 0xFF;
 	pBuffer[1] = (v >> 8) & 0xFF;
@@ -23,7 +23,7 @@ inline int SerializeUInt(unsigned char* pBuffer, const uint32_t v)
 	pBuffer[3] = (v >> 24) & 0xFF;
 	return 4;
 }
-inline int SerializeUInt3Bit(unsigned char* pBuffer, const uint32_t v)
+int SerializeUInt3Bit(unsigned char* pBuffer, const uint32_t v)
 {
 	pBuffer[0] = (v)& 0xFF;
 	pBuffer[1] = (v >> 8) & 0xFF;
@@ -31,7 +31,7 @@ inline int SerializeUInt3Bit(unsigned char* pBuffer, const uint32_t v)
 	return 3;
 }
 
-inline int SerializeLONGLONG(unsigned char* pBuffer, const int64_t v)
+int SerializeLONGLONG(unsigned char* pBuffer, const int64_t v)
 {
 	pBuffer[0] = (v)& 0xFF;
 	pBuffer[1] = (v >> 8) & 0xFF;
@@ -43,7 +43,7 @@ inline int SerializeLONGLONG(unsigned char* pBuffer, const int64_t v)
 	pBuffer[7] = (v >> 56) & 0xFF;
 	return 8;
 }
-inline int SerializeCBasicString(unsigned char* pBuffer, const int8_t* v, uint16_t usLength)
+int SerializeCBasicString(unsigned char* pBuffer, const int8_t* v, uint16_t usLength)
 {
 	int nRetSize = 0;
 	nRetSize = SerializeUShort(pBuffer, usLength);
@@ -54,50 +54,50 @@ inline int SerializeCBasicString(unsigned char* pBuffer, const int8_t* v, uint16
 	return nRetSize + usLength;
 }
 
-inline int UnSerializeUChar(unsigned char* pBuffer, uint8_t& v)
+int UnSerializeUChar(unsigned char* pBuffer, uint8_t& v)
 {
 	v = pBuffer[0];
 	return 1;
 }
-inline int UnSerializeChar(unsigned char* pBuffer, int8_t& v)
+int UnSerializeChar(unsigned char* pBuffer, int8_t& v)
 {
 	v = pBuffer[0];
 	return 1;
 }
 
-inline int UnSerializeUShort(unsigned char* pBuffer, uint16_t& v)
+int UnSerializeUShort(unsigned char* pBuffer, uint16_t& v)
 {
 	v = pBuffer[0] | pBuffer[1] << 8;
 	return 2;
 }
-inline int UnSerializeShort(unsigned char* pBuffer, int16_t& v)
+int UnSerializeShort(unsigned char* pBuffer, int16_t& v)
 {
 	v = pBuffer[0] | pBuffer[1] << 8;
 	return 2;
 }
-inline int UnSerializeUInt3Bit(unsigned char* pBuffer, uint32_t& v)
+int UnSerializeUInt3Bit(unsigned char* pBuffer, uint32_t& v)
 {
 	v = pBuffer[0] | pBuffer[1] << 8 | pBuffer[2] << 16;
 	return 3;
 }
-inline int UnSerializeUInt(unsigned char* pBuffer, uint32_t& v)
+int UnSerializeUInt(unsigned char* pBuffer, uint32_t& v)
 {
 	v = pBuffer[0] | pBuffer[1] << 8 | pBuffer[2] << 16 | pBuffer[3] << 24;
 	return 4;
 }
-inline int UnSerializeInt(unsigned char* pBuffer, int32_t& v)
+int UnSerializeInt(unsigned char* pBuffer, int32_t& v)
 {
 	v = pBuffer[0] | pBuffer[1] << 8 | pBuffer[2] << 16 | pBuffer[3] << 24;
 	return 4;
 }
-inline int UnSerializeLONGLONG(unsigned char* pBuffer, int64_t& v)
+int UnSerializeLONGLONG(unsigned char* pBuffer, int64_t& v)
 {
 	int64_t vHigh = pBuffer[4] << 0 | pBuffer[5] << 8 | pBuffer[6] << 16 | pBuffer[7] << 24;
 	int64_t vLow = pBuffer[0] | pBuffer[1] << 8 | pBuffer[2] << 16 | pBuffer[3] << 24;
 	v = vLow | vHigh << 32;
 	return 8;
 }
-inline int UnSerializeCBasicString(unsigned char* pBuffer, basiclib::CBasicString& str)
+int UnSerializeCBasicString(unsigned char* pBuffer, basiclib::CBasicString& str)
 {
 	int nRet = 0;
 	uint16_t usLength = 0;
@@ -562,7 +562,7 @@ int CNetBasicValue::ComparePointString(const char* rhs, size_t len) const
 	return ret;
 }
 
-//»ñÈ¡ÐòÁÐ»¯³¤¶È
+//ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½
 int CNetBasicValue::GetSeriazeLength() const
 {
 	int nRetSize = 1;
@@ -645,7 +645,7 @@ int CNetBasicValue::UnSeriaze(const char* pData, int nLength)
 {
 	if (nLength < 1)
 		return -1;
-	//¶ÁÈ¡ÀàÐÍ
+	//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½
 	m_type = pData[0];
 	switch (m_type)
 	{
@@ -706,7 +706,7 @@ int CNetBasicValue::UnSeriaze(const char* pData, int nLength)
 
 void CNetBasicValue::SeriazeSMBuf(basiclib::CBasicSmartBuffer& smBuf) const
 {
-	//ÀàÐÍ
+	//ï¿½ï¿½ï¿½ï¿½
 	smBuf.AppendData((const char*)&m_type, 1);
 	switch (m_type)
 	{
@@ -752,7 +752,7 @@ void CNetBasicValue::SeriazeSMBuf(basiclib::CBasicSmartBuffer& smBuf) const
 }
 void CNetBasicValue::UnSeriazeSMBuf(basiclib::CBasicSmartBuffer& smBuf)
 {
-	//¶ÁÈ¡ÀàÐÍ
+	//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½
 	smBuf.ReadData(&m_type, 1);
 	switch (m_type)
 	{

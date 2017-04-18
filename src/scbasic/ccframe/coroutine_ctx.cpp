@@ -8,14 +8,15 @@ uint32_t& CCoroutineCtx::GetTotalCreateCtx()
 	return m_nTotalCtx; 
 }
 //////////////////////////////////////////////////////////////////////////////
-CCoroutineCtx::CCoroutineCtx(const char* pName)
+CCoroutineCtx::CCoroutineCtx(const char* pClassName, const char* pName)
 {
 	m_sessionID_Index = 0;
 	m_ctxID = 0;
-	if (pName)
-	{
-		m_strCtxName = pName;
-	}
+    if (pName)
+        m_pCtxName = pName;
+    else
+        m_pCtxName = nullptr;
+    m_pClassName = pClassName;
 	basiclib::BasicInterlockedIncrement((LONG*)&m_nTotalCtx);
 }
 
@@ -26,11 +27,11 @@ CCoroutineCtx::~CCoroutineCtx()
 }
 
 //≥ı ºªØ
-int CCoroutineCtx::InitCtx(CMQMgr* pMQMgr)
+int CCoroutineCtx::InitCtx(CMQMgr* pMQMgr, const std::function<const char*(InitGetParamType, const char* pKey, const char* pDefault)>& func)
 {
 	if (m_ctxID != 0)
 		return 1;
-	if (0 == CSingletonCoroutineCtxHandle::Instance().Register(this)){
+    if (0 == CCoroutineCtxHandle::GetInstance()->Register(this)){
 		return 1;
 	}
 	m_ctxMsgQueue.InitCtxMsgQueue(m_ctxID, pMQMgr);
@@ -56,7 +57,7 @@ int32_t CCoroutineCtx::GetNewSessionID()
 
 bool CCoroutineCtx::PushMessageByID(uint32_t nDstCtxID, ctx_message& msg)
 {
-	CRefCoroutineCtx pCtx = CSingletonCoroutineCtxHandle::Instance().GetContextByHandleID(nDstCtxID);
+    CRefCoroutineCtx pCtx = CCoroutineCtxHandle::GetInstance()->GetContextByHandleID(nDstCtxID);
 	if (pCtx == nullptr)
 		return false;
 	return pCtx->PushMessage(msg);
@@ -91,8 +92,18 @@ DispatchReturn CCoroutineCtx::DispatchMsg(ctx_message& msg, CCorutinePlusThreadD
 			nRet = (*pFunc)(this, pData);
 		}
 		break;
+        case CTXMESSAGE_TYPE_SOCKETMSG:
+        {
+            nRet = DispatchMsgSocket(msg, pData);
+        }
+        break;
 	}
 	return nRet;
+}
+
+DispatchReturn CCoroutineCtx::DispatchMsgSocket(ctx_message& msg, CCorutinePlusThreadData* pData)
+{
+    return DispatchReturn_Success;
 }
 
 void CCoroutineCtxOnTimer(Net_PtrInt nKey, Net_PtrInt pParam1)

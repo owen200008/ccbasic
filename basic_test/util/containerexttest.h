@@ -109,7 +109,7 @@ public:
 		m_nNextQueueSize *= BASICQUEUE_ALLOCMULTYTIMES;
 	}
 	virtual ~CBasicQueueArray(){
-		for (int i = 0; i <= BASICQUEUE_MAX_ALLOCTIMES; i++){
+		for (int i = 0; i < BASICQUEUE_MAX_ALLOCTIMES; i++){
 			if (m_pMaxAllocTimes[i])
 				delete m_pMaxAllocTimes[i];
 		}

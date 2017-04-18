@@ -11,13 +11,20 @@
 
 __NS_BASIC_START
 
+//定义debuglevel
+enum DebugLevel
+{
+    DebugLevel_None = 0,
+    DebugLevel_Error = 1,
+    DebugLevel_Info = 2,
+};
 //!事件记录
 /*!
  * 写到默认日志文件
  *\remarks 日志文件默认路径可通过BasicSetLogEventMode设置
  *\remarks 可格式化参数
  */
-_BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventV(const char* pszLog, ...);
+_BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventV(DebugLevel level, const char* pszLog, ...);
 _BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventErrorV(const char* pszLog, ...);
 
 //!事件记录
@@ -25,7 +32,7 @@ _BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventErrorV(const char* pszLog, ..
 * 写到默认日志文件
 *\remarks 日志文件默认路径可通过BasicSetLogEventMode设置
 */
-_BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEvent(const char* pszLog);
+_BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEvent(DebugLevel level, const char* pszLog);
 _BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventError(const char* pszLog);
 //////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -51,8 +58,11 @@ _BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventError(const char* pszLog);
 #define LOG_ERROR_OPEN_FILE			-2	//!< 打开文件失败
 #define LOG_ERROR_FULL				-3	//!< 日志记录通道已经满了。
 
-//! 设置是否启动锁，启动锁的话日志变成线程安全，不然就是单线程使用, 自动启动检测线程，只有在lock情况下才开启
-_BASIC_DLL_API_C  _BASIC_DLL_API void InitBasicLog(bool bLock, bool bThreadCheckSelf);
+//! 设置日志记录的级别
+_BASIC_DLL_API_C  _BASIC_DLL_API void InitBasicLogLevel(DebugLevel level);
+_BASIC_DLL_API_C  _BASIC_DLL_API DebugLevel GetBasicLogLevel();
+//! bThreadCheckSelf true 不启动锁(无法实时记录) false启动锁 线程安全(不开启buffer模式实时)
+_BASIC_DLL_API_C  _BASIC_DLL_API bool InitBasicLog(bool bThreadCheckSelf);
 //! 如果不是自己线程需要30s调用一次
 _BASIC_DLL_API_C  _BASIC_DLL_API void OnTimerBasicLog();
 //
@@ -103,7 +113,7 @@ _BASIC_DLL_API_C  _BASIC_DLL_API long BasicCloseLogEvent(long lLogChannel);
  *\remarks 日志文件路径可通过BasicSetLogEventMode设置
  *\remarks 可格式化参数
  */
-_BASIC_DLL_API void BasicLogEventV(long lLogChannel, const char* pszLog, ...);
+_BASIC_DLL_API void BasicLogEventV(DebugLevel level, long lLogChannel, const char* pszLog, ...);
 //
 //
 //
@@ -115,58 +125,30 @@ _BASIC_DLL_API void BasicLogEventV(long lLogChannel, const char* pszLog, ...);
 /*
  *\remarks 日志文件路径可通过BasicSetLogEventMode设置
  */
-_BASIC_DLL_API void BasicLogEvent(long lLogChannel, const char* pszLog);
+_BASIC_DLL_API void BasicLogEvent(DebugLevel level, long lLogChannel, const char* pszLog);
 //
 //
 //
 
-struct _BASIC_DLL_API WriteLogDataBuffer : public basiclib::CBasicObject
+class _BASIC_DLL_API WriteLogDataBuffer : basiclib::CBasicObject
 {
 public:
-	WriteLogDataBuffer()
-	{
-		InitMember();
-	}
-public:
-	void InitLogData(const char* lpszText)
-	{
-		m_pText = (char*)lpszText;
-	}
+    WriteLogDataBuffer();
+    virtual ~WriteLogDataBuffer();
 
-	void CopyLogData(WriteLogDataBuffer& logData)
-	{
-		if (logData.m_pText != NULL)
-		{
-			int nLen = __tcslen(logData.m_pText);
-			m_pText = (char*)BasicAllocate((nLen + 1) * sizeof(char));
-			__tcscpy(m_pText, logData.m_pText);
-		}
-		m_lCurTime = logData.m_lCurTime;
-		m_dwProcessId = logData.m_dwProcessId;
-		m_dwThreadId = logData.m_dwThreadId;
-	}
+    void InitLogData(const char* lpszText);
+    void CopyLogData(WriteLogDataBuffer& logData);
 
-	void ClearLogData()
-	{
-		if (m_pText != NULL)
-		{
-			BasicDeallocate(m_pText);
-		}
-		InitMember();
-	}
+    void ClearLogData();
 protected:
-	void InitMember()
-	{
-		memset(this, 0, sizeof(*this));
-	}
-
+    void InitMember();
 public:
 	char*		m_pText;
 	time_t		m_lCurTime;
 	DWORD		m_dwProcessId;
 	DWORD		m_dwThreadId;
 };
-_BASIC_DLL_API_C  _BASIC_DLL_API void BasicWriteByLogDataBuffer(long lLogChannel, WriteLogDataBuffer& data);
+_BASIC_DLL_API_C  _BASIC_DLL_API void BasicWriteByLogDataBuffer(long lLogChannel, WriteLogDataBuffer& data, bool bThreadSafe);
 
 __NS_BASIC_END
 
