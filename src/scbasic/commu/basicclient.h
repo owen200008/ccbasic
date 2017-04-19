@@ -20,7 +20,7 @@
 class CCommonClientSession : public basiclib::CBasicSessionNetClient
 {
 public:
-	static CCommonClientSession* CreateCCommonClientSession(uint32_t nSessionID){ return new CCommonClientSession(nSessionID); }
+    static CCommonClientSession* CreateCCommonClientSession(uint32_t nSessionID = basiclib::CBasicSessionNet::GetDefaultCreateSessionID()){ return new CCommonClientSession(nSessionID); }
 
 protected:
 	CCommonClientSession(uint32_t nSessionID);

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <map>
 #include <basic.h>
-//#include "net/nettest.h"
+#include "net/nettest.h"
 //#include "misc/fastdelegatetest.h"
 //#include "exception/stackwalkcheck.h"
 //#include "util/containerexttest.h"
@@ -15,13 +15,13 @@ int main(int argc, char* argv[])
 		getchar();
 		return 0;
 	}
-	TestCoroutine(1);
+	//TestCoroutine(1);
 	//TestCoroutine();
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
 	//TestContainExt();
-	//NetServerTest();
+	NetServerTest();
 	getchar();
 	return 0;
 }

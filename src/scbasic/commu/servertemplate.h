@@ -14,7 +14,7 @@ class CNetServerControl : public basiclib::CBasicSessionNetServer
 public:
 	typedef fastdelegate::FastDelegate1<basiclib::CBasicSessionNetClient*, bool> HandleVerifySuccess;
 
-	static CNetServerControl* CreateNetServerControl(uint32_t nSessionID = 0){ return new CNetServerControl(nSessionID); }
+    static CNetServerControl* CreateNetServerControl(uint32_t nSessionID = basiclib::CBasicSessionNet::GetDefaultCreateSessionID()){ return new CNetServerControl(nSessionID); }
 protected:
 	CNetServerControl(uint32_t nSessionID);
 	virtual ~CNetServerControl();
@@ -54,7 +54,7 @@ typedef basiclib::CBasicRefPtr<CNetServerControl> CRefNetServerControl;
 class CNetServerControlClient : public basiclib::CBasicSessionNetClient
 {
 public:
-	static CNetServerControlClient* CreateControlClient(uint32_t nSessionID, CRefNetServerControl pServer){ return new CNetServerControlClient(nSessionID, pServer); }
+    static CNetServerControlClient* CreateControlClient(uint32_t nSessionID = basiclib::CBasicSessionNet::GetDefaultCreateSessionID(), CRefNetServerControl pServer = nullptr){ return new CNetServerControlClient(nSessionID, pServer); }
 protected:
 	CNetServerControlClient(uint32_t nSessionID, CRefNetServerControl pServer);
 	virtual ~CNetServerControlClient();

@@ -227,6 +227,7 @@ public:
 	void bind_idle(const HandleIdle& func){ m_funcIdle = func; }
 	void bind_error(const HandleError& func){ m_funcError = func; }
 	
+    static uint32_t GetDefaultCreateSessionID(){ return m_defaultCreateSession.fetch_add(1, memory_order_relaxed); }
 public:
 	//1s
 	virtual void OnTimer(uint32_t nTick) = 0;
@@ -274,6 +275,8 @@ protected:
 	evutil_socket_t			m_socketfd;
 	event					m_revent;
 
+    static std::atomic<uint32_t> m_defaultCreateSession;
+
 	friend class CNetThread;
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -293,7 +296,7 @@ typedef void(*pCallThreadSafeBeforeSendData)(SendDataToSendThread*);
 class _BASIC_DLL_API CBasicSessionNetClient : public CBasicSessionNet
 {
 public:
-	static CBasicSessionNetClient* CreateClient(uint32_t nSessionID, bool bAddOnTimer = true){ return new CBasicSessionNetClient(nSessionID, bAddOnTimer); }
+    static CBasicSessionNetClient* CreateClient(uint32_t nSessionID = basiclib::CBasicSessionNet::GetDefaultCreateSessionID(), bool bAddOnTimer = true){ return new CBasicSessionNetClient(nSessionID, bAddOnTimer); }
 protected:
 	CBasicSessionNetClient(uint32_t nSessionID, bool bAddOnTimer);//must be new object
 	virtual ~CBasicSessionNetClient();
@@ -381,7 +384,7 @@ typedef basiclib::basic_vector<CRefBasicSessionNetClient>					VTClientSession;
 class _BASIC_DLL_API CBasicSessionNetServer : public CBasicSessionNet
 {
 public:
-	static CBasicSessionNetServer* CreateServer(uint32_t nSessionID){ return new CBasicSessionNetServer(nSessionID); }
+    static CBasicSessionNetServer* CreateServer(uint32_t nSessionID = basiclib::CBasicSessionNet::GetDefaultCreateSessionID()){ return new CBasicSessionNetServer(nSessionID); }
 protected:
 	//must be new object
 	CBasicSessionNetServer(uint32_t nSessionID = 0);
