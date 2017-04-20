@@ -355,7 +355,7 @@ void CBasicNetInitObject::CloseNetSocket()
 	TRACE("End CloseSocket!");
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::atomic<uint32_t> CBasicSessionNet::m_defaultCreateSession = 0;
+std::atomic<uint32_t> CBasicSessionNet::m_defaultCreateSession(0);
 CBasicSessionNet::CBasicSessionNet(uint32_t nSessionID, bool bAddOnTimer)
 {
 	m_refSelf = this;

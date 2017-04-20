@@ -148,7 +148,7 @@ bool CSCBasicRSA::Verify(const char* pDecode, int nLength, const char* pVerify, 
 	size_t fixedLen = m_pubDecode.SignatureLength();
 	if (nLength != fixedLen)
 		return false;
-	CryptoPP::VerifierFilter *pVerifierFilter = new CryptoPP::VerifierFilter(m_pubDecode);
+	CryptoPP::SignatureVerificationFilter *pVerifierFilter = new CryptoPP::SignatureVerificationFilter(m_pubDecode);
 	pVerifierFilter->Put((byte*)pDecode, nLength);
     CryptoPP::ArraySource source((byte*)pVerify, nVerifyLength, true, pVerifierFilter);
 	return pVerifierFilter->GetLastResult();

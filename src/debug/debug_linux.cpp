@@ -14,9 +14,11 @@ __NS_BASIC_START
 
 void WBasicTraceDebugView(LPCTSTR lpszString)
 {
+	printf(lpszString);
 }
 void BasicTraceDebugView(const char* lpszString)
 {
+	printf(lpszString);
 }
 
 __NS_BASIC_END
