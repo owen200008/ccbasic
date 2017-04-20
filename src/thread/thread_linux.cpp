@@ -82,29 +82,12 @@ void BasicTerminateThread(HANDLE hThread)
 {
 }
 
-#if (defined(__LINUX)  || defined(__ANDROID))
-#define gettid() syscall(__NR_gettid)
-
-#define _syscall0(type,name)\
-		type name(void)\
-		{\
-			long __res;\
-			__asm__volatile("int $0x80"\
-			:"=a"(__res)\
-			:"0"(__NR_##name));\
-			__syscall_return(type,__res);\
-		}
 
 DWORD BasicGetCurrentThreadId()
 {
-	return (DWORD)gettid();
+    //统一使用用户态线程id
+    return (DWORD)pthread_self();
 }
-#else
-DWORD BasicGetCurrentThreadId()
-{
-        return (DWORD)pthread_self();
-}
-#endif
 
 HANDLE Basic_GetCurrentThread()
 {
