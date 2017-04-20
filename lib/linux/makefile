@@ -28,7 +28,7 @@ PROGRAM :=$(PROGRAMDIR)/basiclib.a
 else
 PROGRAMDIR := ..
 OBJDIR :=$(RELEASE_DIR)
-CPPFLAGS :=-g -O2 -shared -fPIC
+CPPFLAGS :=-O2 -shared -fPIC
 PROGRAM :=$(PROGRAMDIR)/basiclib.a
 endif
 

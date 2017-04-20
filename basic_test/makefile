@@ -1,5 +1,6 @@
 ROOTDIR := ./
 SRCDIRS :=$(ROOTDIR) $(ROOTDIR)/comm $(ROOTDIR)/coroutine $(ROOTDIR)/dll $(ROOTDIR)/exception $(ROOTDIR)/misc $(ROOTDIR)/net $(ROOTDIR)/thread $(ROOTDIR)/time $(ROOTDIR)/util
+SRCDIRS := $(SRCDIRS) $(ROOTDIR)/../src/scbasic/commu $(ROOTDIR)/../src/scbasic/encode 
 SRCEXTS :=.cpp .c .S
 
 CC := gcc
@@ -11,7 +12,7 @@ release := 0
 ifeq ($(release),1)
 RELEASEFLAG := -O2
 else
-RELEASEFLAG := -g
+RELEASEFLAG := -g -D_DEBUG
 endif
 
 all : compileproject
@@ -24,9 +25,18 @@ CCBASIC_INC := $(CCBASIC_PATH)/src/inc
 $(CCBASIC_STATICLIB) : 
 	cd $(CCBASIC_PATH)/lib/linux && $(MAKE)
 
-CFLAGS := $(RELEASEFLAG) -Wno-deprecated -D__LINUX -I$(CCBASIC_INC)
+CCBASIC_LIBEVENTLIB := $(CCBASIC_PATH)/3rd/libevent/.libs/libevent.a
+$(CCBASIC_LIBEVENTLIB):
+	cd $(CCBASIC_PATH)/3rd/libevent && ./autogen.sh && sh configure && $(MAKE)
+
+CCBASIC_LIBCRYPTOPPLIB :=  $(CCBASIC_PATH)/3rd/cryptopp/libcryptopp.a
+$(CCBASIC_LIBCRYPTOPPLIB):
+	cd  $(CCBASIC_PATH)/3rd/cryptopp && cmake -DDISABLE_NATIVE_ARCH=TRUE -DBUILD_TESTING=OFF && make -f Makefile
+
+
+CFLAGS := $(RELEASEFLAG) -Wno-deprecated -D__LINUX -I$(CCBASIC_INC) -I$(CCBASIC_INC) -I$(CCBASIC_INC)/../scbasic -I$(CCBASIC_PATH)/3rd/cryptopp
 CPPFLAGS := $(RELEASEFLAG) -Wno-deprecated -std=c++11 -D__LINUX -I$(CCBASIC_INC) -I$(CCBASIC_INC)/../scbasic -I$(CCBASIC_PATH)/3rd/cryptopp
-INLIBS := $(CCBASIC_STATICLIB) -pthread -lrt -ldl $(CCBASIC_PATH)/3rd/jemalloc/lib/libjemalloc_pic.a
+INLIBS := $(CCBASIC_STATICLIB) $(CCBASIC_LIBEVENTLIB) $(CCBASIC_LIBCRYPTOPPLIB) -pthread -lrt -ldl $(CCBASIC_PATH)/3rd/jemalloc/lib/libjemalloc_pic.a
 OUTPUT_PATH := ./
 COMPILEOBJDIR := ./obj/
 FULLSOURCES = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(SRCEXTS))))
@@ -54,7 +64,7 @@ MAKEFILEEIM := $(OUTPUT_PATH)/$(PROJECTNAME)
 $(MAKEFILEEIM) : config $(COMPILEOBJS)
 	$(CXX) -o $@ $(COMPILEFULLOBJS) $(INLIBS)
 
-compileall : UpdateSubModule $(CCBASIC_STATICLIB) $(MAKEFILEEIM)
+compileall : $(CCBASIC_STATICLIB) $(CCBASIC_LIBEVENTLIB) $(CCBASIC_LIBCRYPTOPPLIB) $(MAKEFILEEIM)
 compileproject : $(OUTPUT_PATH)/$(PROJECTNAME)
 
 clean :
