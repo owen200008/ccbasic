@@ -114,7 +114,7 @@
 //#include "../algorithm/base64.h"
 //
 //#include "../algorithm/algorithm.h"
-//#include "../algorithm/md5.h"
+#include "../algorithm/md5.h"
 //#include "../algorithm/aes/aes.h"
 #include "../algorithm/sha1/sha1.h"
 //Time

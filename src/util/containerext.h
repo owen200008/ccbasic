@@ -141,6 +141,16 @@ public:
 			return tail - head;
 		return tail + cap - head;
 	}
+    //必须保证nLength足够,并且是可以使用memcpy的
+    virtual void CopyAll(StructData* pQueue){
+        if (m_head <= m_tail){
+            memcpy(&(pQueue[0]), &(m_queue[m_head]), (m_tail - m_head) * sizeof(StructData));
+        }
+        else{
+            memcpy(&(pQueue[0]), &(m_queue[m_head]), (m_cap - m_head) * sizeof(StructData));
+            memcpy(&(pQueue[m_cap - m_head]), &(m_queue[m_head]), m_tail * sizeof(StructData));
+        }
+    }
 
 	//清空队列，依次回调
 	void Drop_Queue(const std::function<void(StructData *, void *)>& func, void *ud){
@@ -163,6 +173,13 @@ public:
 			m_tail = 0;
 		}
 	}
+    //单线程才能使用
+    StructData* FrontData(){
+        if (GetMQLength() > 0){
+            return &(m_queue[m_head]);
+        }
+        return nullptr;
+    }
 protected:
 	void expand_queue(){
 		StructData* new_queue = (StructData*)basiclib::BasicAllocate(m_cap * 2 * sizeof(StructData));
@@ -194,6 +211,7 @@ template<class StructData>
 class CMessageQueueLock : public CMessageQueue<StructData>
 {
 public:
+    typedef 
 	CMessageQueueLock(int nDefaultQueueSize = DEFAULT_QUEUE_SIZE, int nOverLoadLength = DEFAULT_QUEUE_OVERLOAD) :
 		CMessageQueue<StructData>(nDefaultQueueSize, nOverLoadLength){
 
@@ -213,7 +231,17 @@ public:
 		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
 		return CMessageQueue<StructData>::GetMQLength();
 	}
-
+    void SafeFuncCallback(const std::function<void()>& func){
+        basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+        func();
+    }
+    //必须在lock情况下调用
+    void SafeMQPush(StructData* message){
+        CMessageQueue<StructData>::MQPush(message);
+    }
+    int SafeMQPop(StructData* message){
+        return CMessageQueue<StructData>::MQPop(message);
+    }
 protected:
 	basiclib::SpinLock		m_lock;
 };

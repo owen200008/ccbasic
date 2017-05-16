@@ -13,6 +13,7 @@ public:
 	virtual ~CServerClient()
 	{
 	}
+
 protected:
 	int		m_nRecv;
 	basiclib::CBasicSmartBuffer m_smRecvBuf;
@@ -26,10 +27,10 @@ public:
 	static CServer* CreateServer(uint32_t nSessionID = 0){ return new CServer(nSessionID); }
 protected:
 	int32_t bind_connectfunc(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState){
-        
+        pNotify->bind_rece(MakeFastFunction(this, &CServer::OnUserVerify));
 		return BASIC_NET_HC_RET_HANDSHAKE;
 	}
-    virtual int32_t OnUserVerify(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetCode, int32_t cbData, const char *pszData){
+    int32_t OnUserVerify(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetCode, int32_t cbData, const char *pszData){
         if (memcmp(strInfo.c_str(), pszData, cbData) == 0 && cbData == strInfo.GetLength())
         {
             pNotify->Send((void*)pszData, cbData);
@@ -40,7 +41,10 @@ protected:
             pNotify->Close();
             return BASIC_NET_OK;
         }
-        return CNetServerControl::OnUserVerify(pNotify, dwNetCode, cbData, pszData);
+		CServerClient* pSession = (CServerClient*)pNotify;
+		pSession->SuccessLogin();
+        pNotify->bind_rece(MakeFastFunction(this, &CServer::bind_recefuncsuccess));
+        return BASIC_NET_HR_RET_HANDSHAKE;
     }
 	int32_t bind_recefuncsuccess(basiclib::CBasicSessionNetClient* pNotify, uint32_t dwNetState, int32_t cbData, const char* pData){
 		CServerClient* pSession = (CServerClient*)pNotify;
@@ -72,7 +76,6 @@ protected:
 	CServer(uint32_t nSessionID) : CNetServerControl(nSessionID)
 	{
 		bind_connect(MakeFastFunction(this, &CServer::bind_connectfunc));
-        bind_rece(MakeFastFunction(this, &CServer::bind_recefuncsuccess));
 		bind_disconnect(MakeFastFunction(this, &CServer::bind_disconnectfunc));
 		bind_idle(MakeFastFunction(this, &CServer::bind_idlefunc));
 	}

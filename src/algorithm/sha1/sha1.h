@@ -12,6 +12,7 @@
 __NS_BASIC_START
 
 _BASIC_DLL_API void SHA1_Perform(BYTE *indata, DWORD inlen, BYTE *outdata);
+_BASIC_DLL_API void SHA1_Perform2(BYTE *indata, DWORD inlen, BYTE *indata2, DWORD inlen2, BYTE *outdata);
 
 __NS_BASIC_END
 

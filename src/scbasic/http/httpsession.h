@@ -4,6 +4,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 #include "../commu/servertemplate.h"
 
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
+
 class HttpRequest;
 class HttpResponse;
 class CHttpParser;
@@ -11,10 +15,11 @@ class CHttpSession;
 
 typedef basiclib::CBasicRefPtr<CHttpSession>		RefHttpSession;
 typedef fastdelegate::FastDelegate3<RefHttpSession, HttpRequest*, HttpResponse&, long> OnHttpAskFunc;
-class CHttpSession : public CNetServerControlClient
+class _SCBASIC_DLL_API CHttpSession : public CNetServerControlClient
 {
 public:
 	static CHttpSession* CreateHttpClient(Net_UInt nSessionID, CRefNetServerControl pServer){ return new CHttpSession(nSessionID, pServer); }
+    void AsynSendResponse(HttpRequest*& pRequest, HttpResponse& response, basiclib::CBasicSmartBuffer& smBuf);
 protected:
 	CHttpSession(Net_UInt nSessionID, CRefNetServerControl pServer) : CNetServerControlClient(nSessionID, pServer){
 		m_pRequest = NULL;
@@ -34,7 +39,7 @@ protected:
 	friend class CHttpSessionServer;
 };
 
-class CHttpSessionServer : public CNetServerControl
+class _SCBASIC_DLL_API CHttpSessionServer : public CNetServerControl
 {
 public:
 	static CHttpSessionServer* CreateHttpServer(Net_UInt nSessionID){ return new CHttpSessionServer(nSessionID); }
@@ -53,45 +58,7 @@ protected:
 	OnHttpAskFunc	m_funcOnHttpAsk;
 };
 
-/*
-class HttpResponseHandler : public ResponseHandler
-{
-public:
-	HttpResponseHandler(RefHttpSession pSession)
-		:  m_pSession(pSession){}
-
-	virtual int HandleResponse(long lStatus, HttpResponse* pResponse)
-	{
-		if (!m_pSession->IsConnected())
-		{
-			return HTTP_SUCC;
-		}
-        if (lStatus == HTTP_SUCC)
-        {
-            basiclib::CBasicSmartBuffer buf;
-            pResponse->GetHeaderData(&buf);
-            pResponse->GetContent(&buf);
-            if (!buf.IsEmpty())
-            {
-                m_pSession->Send(buf.GetDataBuffer(), buf.GetDataLength());
-            }
-        }
-        else
-        {
-            pResponse->SetStatus((unsigned short)lStatus);
-        }
-		m_pSession->Close();
-		return HTTP_SUCC;
-	}
-
-	virtual void Release()
-	{
-		delete this;
-	}
-
-protected:
-	RefHttpSession	m_pSession;
-};*/
+#pragma warning (pop)
 
 #endif //_INC_HTTPSESSION_H
 

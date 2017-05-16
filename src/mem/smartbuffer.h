@@ -51,6 +51,9 @@ public:
 	//binddatatosmartbuffer,绑定的数据外部就不能使用了，里面的数据会被改变
 	void BindOutData(char* pData, int nLength);
 	bool ExportOutData(SmartBufferExportOutData& data);
+	//reset readerror
+	void ResetReadError(){ m_bReadError = false; }
+	bool IsReadError(){ return m_bReadError; }
 
 	BOOL IsEmpty() const { return m_pszBuffer == NULL; }
 	void Free();
@@ -80,7 +83,7 @@ public:
 		return *this;
 	}
 	//读取数据
-	void ReadData(void* pData, int nLength);
+	virtual void ReadData(void* pData, int nLength);
 
 	//设置和获取长度
 	long GetAllocBufferLength(){ return m_cbAlloc; }
@@ -89,6 +92,7 @@ protected:
 	void  EmptyBuffer();
 protected:
 	bool	m_bSelfBuf;
+	bool	m_bReadError;
 	char*	m_pszBuffer;
 	long	m_cbAlloc;
 	long	m_cbBuffer;

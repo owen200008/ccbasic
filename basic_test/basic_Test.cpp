@@ -15,8 +15,8 @@ int main(int argc, char* argv[])
 		getchar();
 		return 0;
 	}
-	//TestCoroutine(1);
-	//TestCoroutine();
+	TestCoroutine(1);
+	TestCoroutine();
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();

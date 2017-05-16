@@ -14,10 +14,11 @@
 #define BASIC_BASICCLIENT_H
 
 #include "../../inc/basic.h"
+#include "../scbasic_head.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //连接管理
-class CCommonClientSession : public basiclib::CBasicSessionNetClient
+class _SCBASIC_DLL_API CCommonClientSession : public basiclib::CBasicSessionNetClient
 {
 public:
     static CCommonClientSession* CreateCCommonClientSession(uint32_t nSessionID = basiclib::CBasicSessionNet::GetDefaultCreateSessionID()){ return new CCommonClientSession(nSessionID); }

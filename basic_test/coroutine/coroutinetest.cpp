@@ -25,7 +25,7 @@ void DieDaiTimes(CCorutinePlus* pCorutine)
         pPlus->ReInit(DieDaiTimes);
         pPlus->Resume(pRunPool, nTimes, nCreateTimes, nLimitTimes);
         if (nTimes == 1){
-            printf("Check %d tiems %d/%d StackSize:%d\r\n", i, pRunPool->GetVTCorutineSize(), pRunPool->GetCreateCorutineTimes(), pRunPool->GetStackCreateTimes());
+            printf("Check %d tiems %d/%d StackSize:%d/%d\r\n", i, pRunPool->GetVTCorutineSize(), pRunPool->GetCreateCorutineTimes(), pRunPool->GetVTShareStackCount(), pRunPool->GetCreateTimesShareStackCount());
         }
     }
 }
@@ -47,7 +47,7 @@ void TestCoroutine(int nType){
                     pCorutine->YieldCorutine();
                 }
             });
-            printf("Start Check %d tiems %d/%d StackSize:%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetStackCreateTimes());
+            printf("Start Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
             pCorutine->Resume(S);
             for (int i = 0; i <= CHECKCORUTINETIMES; i++){
                 if (i % (CHECKCORUTINETIMES / 10) == 0){
@@ -55,7 +55,7 @@ void TestCoroutine(int nType){
                 }
                 pCorutine->Resume(S);
             }
-            printf("end Check %d tiems %d/%d StackSize:%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetStackCreateTimes());
+            printf("end Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
         }
         {
 #define CHECKCORUTINETIMES 1000
@@ -79,7 +79,7 @@ void TestCoroutine(int nType){
                     pCorutine->YieldCorutine();
                 }
             });
-            printf("Start Check %d tiems %d/%d StackSize:%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetStackCreateTimes());
+            printf("Start Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
             pCorutine->Resume(S);
             for (int i = 0; i <= CHECKCORUTINETIMES; i++){
                 if (i % (CHECKCORUTINETIMES / 10) == 0){
@@ -87,19 +87,18 @@ void TestCoroutine(int nType){
                 }
                 pCorutine->Resume(S);
             }
-            printf("end Check %d tiems %d/%d StackSize:%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetStackCreateTimes());
+            printf("end Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
         }
         {
 #define CHECKCORUTINETIMES 1000
             CCorutinePlus* pCorutine = S->GetCorutine();
             pCorutine->ReInit(DieDaiTimes);
-            printf("Start Check %d tiems %d/%d StackSize:%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetStackCreateTimes());
+            printf("Start Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
             int nTime = 0;
             int nCreateTimes = 5;
             int nLimitTimes = 10;
             pCorutine->Resume(S, nTime, nCreateTimes, nLimitTimes);
-            ASSERT(nLimitTimes + 2 == S->GetStackCreateTimes());
-            printf("end Check %d tiems %d/%d StackSize:%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetStackCreateTimes());
+            printf("end Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
         }
     }
     else if (nType == 1){
@@ -119,7 +118,7 @@ void TestCoroutine(int nType){
                 pCorutine->Resume(S);
             }
             clock_t end = clock();
-            printf("TestCoroutine RY %d:%d items %d/%d StackSize:%d\n", TIMES_FORTEST, end - begin, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetStackCreateTimes());
+            printf("TestCoroutine RY %d:%d items %d/%d StackSize:%d/%d\n", TIMES_FORTEST, end - begin, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
         }
         for (int i = 0; i < 10; i++)
         {
@@ -132,7 +131,7 @@ void TestCoroutine(int nType){
                 pCorutine->Resume(S);
             }
             clock_t end = clock();
-            printf("TestCoroutine R %d:%d items %d/%d StackSize:%d\n", TIMES_FORTEST, end - begin, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetStackCreateTimes());
+            printf("TestCoroutine R %d:%d items %d/%d StackSize:%d/%d\n", TIMES_FORTEST, end - begin, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
         }
         /*int nThread = 1;
         CCorutinePlus* pCorutine = S->GetCorutine();

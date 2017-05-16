@@ -18,7 +18,7 @@ int gettimeofday(struct timeval *tp, void *tzp)
 	tm.tm_sec = wtm.wSecond;
 	tm.tm_isdst = -1;
 	clock = mktime(&tm);
-	tp->tv_sec = clock;
+	tp->tv_sec = (long)clock;
 	tp->tv_usec = wtm.wMilliseconds * 1000;
 
 	return (0);
@@ -105,7 +105,7 @@ void CBasicOnTimer::TimerUpdate()
 		uint32_t diff = (uint32_t)(cp - m_current_point);
 		m_current_point = cp;
 		m_current += diff;
-		for (int i = 0; i<diff; i++)
+		for (uint32_t i = 0; i<diff; i++)
 		{
 			basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
 
@@ -265,7 +265,7 @@ bool CBasicOnTimer::InitTimer()
 {
 	if (m_hThread)
 		return false;
-	int i, j;
+	int i;
 	for (i = 0; i < TIME_NEAR; i++)
 	{
 		link_clear(&m_near[i]);

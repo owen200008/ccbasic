@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\algorithm\md5.h" />
     <ClInclude Include="..\..\src\algorithm\sha1\sha1.h" />
     <ClInclude Include="..\..\src\algorithm\xtra.h" />
     <ClInclude Include="..\..\src\algorithm\zip\tlgzip.h" />
@@ -112,6 +113,7 @@
     <ClInclude Include="..\..\src\util\strutil\strutil.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\algorithm\md5.cpp" />
     <ClCompile Include="..\..\src\algorithm\sha1\sha1.cpp" />
     <ClCompile Include="..\..\src\algorithm\xtra.cpp" />
     <ClCompile Include="..\..\src\algorithm\zip\tlgzip.cpp" />

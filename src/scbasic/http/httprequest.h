@@ -3,9 +3,14 @@
 #define INC_CIFOX_HTTPREQUEST_H__
 
 #include "httpparser.h"
+#include "../scbasic_head.h"
+
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
 
 // 上下文的处理类 add by mojiayong
-class CContextHandle : public basiclib::CBasicObject
+class _SCBASIC_DLL_API CContextHandle : public basiclib::CBasicObject
 {
 public:
 	// param[in] pContent 需要处理内容
@@ -18,7 +23,7 @@ protected:
 };
 
 
-class HttpRequest : public IHttpParseHandler
+class _SCBASIC_DLL_API HttpRequest : public IHttpParseHandler
 {
 public:
 	typedef basiclib::basic_map<basiclib::char_string, basiclib::char_string>			HeaderContainer;
@@ -133,6 +138,7 @@ protected:
 	void*			m_pContext;
 	ContextHandleContainer m_conHandle;
 };
+#pragma warning (pop)
 
 #endif // INC_CIFOX_HTTPREQUEST_H__
 

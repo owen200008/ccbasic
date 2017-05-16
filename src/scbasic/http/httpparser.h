@@ -3,8 +3,13 @@
 #define INC_CIFOX_HTTPPARSER_H__
 
 #include "../../inc/basic.h"
+#include "../scbasic_head.h"
 
-class IHttpParseHandler : public basiclib::CBasicObject
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
+
+class _SCBASIC_DLL_API IHttpParseHandler : public basiclib::CBasicObject
 {
 public:
 	// 获取请求方式.
@@ -48,7 +53,7 @@ enum HttpParseStatus
 	PS_End
 };
 
-struct HttpParseContext
+struct _SCBASIC_DLL_API HttpParseContext
 {
 	HttpParseStatus	m_eStatus;
 	basiclib::CBasicSmartBuffer	m_bufTemp;	// 临时buffer，用于存储上个请求包未解析完部分
@@ -70,7 +75,7 @@ struct HttpParseContext
 };
 
 // http数据流的解析器
-class CHttpParser : public basiclib::CBasicObject
+class _SCBASIC_DLL_API CHttpParser : public basiclib::CBasicObject
 {
 public:
 	CHttpParser();
@@ -89,7 +94,7 @@ protected:
 解析URI信息，把key和value进行uri解码和utf8解码，放到map容器中。
 */
 template<class MapContainer>
-class FillURIParam
+class _SCBASIC_DLL_API FillURIParam
 {
 public:
 	FillURIParam(MapContainer& container) : __container(container) {}
@@ -104,7 +109,7 @@ public:
 protected:
 	MapContainer&	__container;
 };
-
+#pragma warning (pop)
 
 
 #endif //INC_CIFOX_HTTPPARSER_H__

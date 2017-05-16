@@ -3,9 +3,14 @@
 #define INC_CIFOX_HTTPRESPONSE_H__
 
 #include "../../inc/basic.h"
+#include "../scbasic_head.h"
+
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
 
 struct HttpStatus;
-class HttpResponse : public basiclib::CBasicObject
+class _SCBASIC_DLL_API HttpResponse : public basiclib::CBasicObject
 {
 public:
 	typedef basiclib::basic_map<basiclib::char_string, basiclib::char_string>		HeaderContainer;
@@ -137,7 +142,7 @@ protected:
 	basiclib::CBasicSmartBuffer		m_bufContent;
 	bool				m_bZipped;
 };
-
+#pragma warning (pop)
 
 #endif // INC_CIFOX_HTTPRESPONSE_H__
 

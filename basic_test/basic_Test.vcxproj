@@ -101,6 +101,7 @@
     <ClCompile Include="basic_Test.cpp" />
     <ClCompile Include="coroutine\coroutinetest.cpp" />
     <ClCompile Include="dll\basictesthead.cpp" />
+    <ClCompile Include="net\nettest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\scbasic\commu\basicclient.h" />

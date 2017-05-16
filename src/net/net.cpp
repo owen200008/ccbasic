@@ -68,9 +68,13 @@ public:
 	{
 		m_dwThreadID = 0;
 		m_base = nullptr;
+        m_dnsbase = nullptr;
 	}
 	virtual ~CNetThread()
 	{
+        if (m_dnsbase){
+            evdns_base_free(m_dnsbase, 0);
+        }
 		if (m_base){
 			event_del(&notify_event);
 			evutil_closesocket(m_pair[0]);
@@ -105,11 +109,30 @@ public:
 	{
 		pCallFunc(pSession, lRevert);
 	}
+    //! 异步dns解析
+    void DNSParse(const char* pName, evdns_getaddrinfo_cb pCallback, CBasicSessionNet* pSession){
+        struct  evutil_addrinfo  hints;
+        struct  evdns_getaddrinfo_request  *req;
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = AF_UNSPEC;
+        hints.ai_flags = EVUTIL_AI_CANONNAME;
+        /* Unless we specify a socktype, we'llget at least two entries for
+        * each address: one for TCP and onefor UDP. That's not what we
+        * want. */
+        hints.ai_socktype = SOCK_STREAM;
+        hints.ai_protocol = IPPROTO_TCP;
 
+        //引用+1避免被析构
+        pSession->AddRef();
+        req = evdns_getaddrinfo(
+            m_dnsbase, pName, NULL /* no service name given */,
+            &hints, pCallback, pSession);
+    }
 public:
 	DWORD				m_dwThreadID;
 	evutil_socket_t		m_pair[2];
 	struct event_base*	m_base;
+    struct evdns_base*  m_dnsbase;
 	struct event		notify_event;
 };
 
@@ -179,7 +202,7 @@ void ReadSelfOrder(int fd, short event, void *arg)
 
 THREAD_RETURN WorkerThread(void *arg)
 {
-	srand(time(NULL) + basiclib::BasicGetTickTime() + basiclib::BasicGetCurrentThreadId());
+	srand((unsigned int)(time(NULL) + basiclib::BasicGetTickTime() + basiclib::BasicGetCurrentThreadId()));
 	CNetThread *thr = (CNetThread*)arg;
 	basiclib::BasicInterlockedIncrement((LONG*)&g_nIntThreadCount);
 	event_base_loop(thr->m_base, 0);
@@ -289,6 +312,11 @@ void CBasicNetInitObject::Initialize(pGetConfFunc func)
 			basiclib::BasicLogEventError("libevent eventadd error");
 			exit(1);
 		}
+        pThread->m_dnsbase = evdns_base_new(pThread->m_base, 1);
+        if (!pThread->m_dnsbase){
+            basiclib::BasicLogEventError("libevent eventdns add error");
+            exit(1);
+        }
 		//create timer for 0 thread, all session shedule
 		if (i == 0)
 		{
@@ -487,6 +515,9 @@ void CBasicSessionNet::CloseCallback(BOOL bRemote, DWORD dwNetCode)
 		evutil_closesocket(m_socketfd);
 		InitMember();
 	}
+}
+void CBasicSessionNet::DNSParse(const char* pName, evdns_getaddrinfo_cb pCallback){
+    m_pThread->DNSParse(pName, pCallback, this);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void AcceptToSelf(CBasicSessionNetClient* p, evutil_socket_t s, sockaddr_storage& addr)
@@ -1071,111 +1102,205 @@ void CBasicSessionNetClient::_OnIdle()
 	}
 }
 
+void CBasicSessionNetClient::DNSParseConnect(CBasicSessionNet* pSession, intptr_t lRevert){
+    CBasicSessionNetClient* pClient = (CBasicSessionNetClient*)pSession;
+    pClient->DNSParse(pClient->m_strParseConnectAddr.c_str(), CBasicSessionNetClient::DNSParseConnectCallback);
+}
+
+void CBasicSessionNetClient::DNSParseConnectCallback(int errcode, struct  evutil_addrinfo* addr, void* ptr){
+    CBasicSessionNetClient* pClient = (CBasicSessionNetClient*)ptr;
+    if (errcode) {
+        basiclib::BasicLogEventErrorV("dns parse error(%s:%s)", pClient->m_strParseConnectAddr.c_str(), evutil_gai_strerror(errcode));
+    }
+    else{
+        sockaddr_storage storageaddr;
+        int addrlen = sizeof(sockaddr_storage);
+        struct evutil_addrinfo* ai = nullptr;
+        struct sockaddr_in* ai_ipv4 = nullptr;
+        struct sockaddr_in6* ai_ipv6 = nullptr;
+        bool bConnect = false;
+        for (ai = addr; ai; ai = ai->ai_next) {
+            const char* s = NULL;
+            if (ai->ai_family == AF_INET) {
+                ai_ipv4 = (struct sockaddr_in *)ai->ai_addr;
+            }
+            else if (ai->ai_family == AF_INET6) {
+                ai_ipv6 = (struct sockaddr_in6 *)ai->ai_addr;
+            }
+        }
+        if (ai_ipv6 && (pClient->m_bIPV6 || ai_ipv4 == nullptr)){
+            ai_ipv6->sin6_port = htons(pClient->m_nParseConnectPort);
+            memset((struct sockaddr*)&storageaddr, 0, addrlen);
+            memcpy((struct sockaddr*)&storageaddr, ai_ipv6, sizeof(sockaddr_in6));
+            addrlen = sizeof(sockaddr_in6);
+            pClient->RealOnConnect(&storageaddr, addrlen);
+        }
+        else if (ai_ipv4){
+            ai_ipv4->sin_port = htons(pClient->m_nParseConnectPort);
+            memset((struct sockaddr*)&storageaddr, 0, addrlen);
+            memcpy((struct sockaddr*)&storageaddr, ai_ipv4, sizeof(sockaddr_in));
+            addrlen = sizeof(sockaddr_in);
+            pClient->RealOnConnect(&storageaddr, addrlen);
+        }
+        evutil_freeaddrinfo(addr);
+    }
+    //需要减少一次，因为DNS解析的时候会自动+1
+    pClient->DelRef();
+}
+
+int32_t CBasicSessionNetClient::RealOnConnect(sockaddr_storage* pAddr, int addrlen){
+    uint32_t dwRelease = GetSessionStatus(TIL_SS_RELEASE_MASK);
+    uint32_t dwLinkNetStatus = GetSessionStatus(TIL_SS_LINK);
+    uint32_t dwCloseNetStatus = GetSessionStatus(TIL_SS_CLOSE);
+    if (dwRelease != 0)
+    {
+        return BASIC_NET_RELEASE_ERROR;
+    }
+    if (dwCloseNetStatus != TIL_SS_NORMAL)
+    {
+        int32_t lRet = BASIC_NET_GENERIC_ERROR;
+        switch (dwCloseNetStatus)
+        {
+        case TIL_SS_TOCLOSE:
+        {
+            lRet = BASIC_NET_TOCLOSE_ERROR;
+            break;
+        }
+        }
+        return lRet;
+    }
+    if (dwLinkNetStatus != TIL_SS_IDLE)
+    {
+        int32_t lRet = BASIC_NET_GENERIC_ERROR;
+        switch (dwLinkNetStatus)
+        {
+        case TIL_SS_CONNECTING:
+        {
+            lRet = BASIC_NET_CONNECTING_ERROR;
+            break;
+        }
+        case TIL_SS_CONNECTED:
+        {
+            lRet = BASIC_NET_ALREADY_CONNECT;
+            break;
+        }
+        }
+        return lRet;
+    }
+    if (m_strConnectAddr.IsEmpty())
+    {
+        return BASIC_NET_INVALID_ADDRESS;
+    }
+
+    int32_t lReturn = BASIC_NET_OK;
+    evutil_socket_t socketfd = -1;
+    do
+    {
+        if (pAddr == nullptr){
+            sockaddr_storage addr;
+            int addrlen = sizeof(addr);
+            if (evutil_parse_sockaddr_port(m_strConnectAddr.c_str(), (sockaddr*)&addr, &addrlen) != 0)
+            {
+                SetLibEvent(CBasicSessionNetClient::DNSParseConnect, -1);
+            }
+        }
+        if (pAddr != nullptr){
+            evutil_socket_t socketfd = socket(pAddr->ss_family, SOCK_STREAM, 0);
+            if (socketfd == -1)
+            {
+                lReturn = BASIC_NET_SOCKET_ERROR;
+                break;
+            }
+            evutil_make_socket_nonblocking(socketfd);
+            evutil_make_listen_socket_reuseable(socketfd);
+            evutil_make_listen_socket_reuseable_port(socketfd);
+
+            int nRet = connect(socketfd, (::sockaddr*)pAddr, addrlen);
+            if (nRet == 0)
+            {
+                SetLibEvent([](CBasicSessionNet* pSession, intptr_t lRevert)->void{
+                    evutil_socket_t socketfd = lRevert;
+                    int32_t nRet = ((CBasicSessionNetClient*)pSession)->OnConnect(BASIC_NETCODE_SUCC);
+                    if (nRet == BASIC_NET_OK || nRet == BASIC_NET_HC_RET_HANDSHAKE){
+                        if (((CBasicSessionNetClient*)pSession)->IsConnected())
+                            ((CBasicSessionNetClient*)pSession)->InitClientEvent(socketfd, false);
+                    }
+                }, socketfd);
+            }
+#ifdef __BASICWINDOWS
+            else if (errno == EINPROGRESS || WSAGetLastError() == WSAEWOULDBLOCK)
+#else
+            else if (errno == EINPROGRESS)
+#endif
+            {
+                SetSessionStatus(TIL_SS_CONNECTING, TIL_SS_LINK);
+                //wait for write onconnect
+                SetLibEvent([](CBasicSessionNet* pSession, intptr_t lRevert)->void{
+                    evutil_socket_t socketfd = lRevert;
+                    ((CBasicSessionNetClient*)pSession)->InitClientEvent(socketfd, true, false);
+                }, socketfd);
+            }
+            else
+            {
+                //int nRetErrorNo = errno;
+                lReturn = BASIC_NET_GENERIC_ERROR;
+            }
+        }
+        
+    } while (0);
+
+    if (lReturn != BASIC_NET_OK)
+    {
+        evutil_closesocket(socketfd);
+    }
+    return lReturn;
+}
+
 int32_t CBasicSessionNetClient::DoConnect()
 {
-	uint32_t dwRelease = GetSessionStatus(TIL_SS_RELEASE_MASK);
-	uint32_t dwLinkNetStatus = GetSessionStatus(TIL_SS_LINK);
-	uint32_t dwCloseNetStatus = GetSessionStatus(TIL_SS_CLOSE);
-	if (dwRelease != 0)
-	{
-		return BASIC_NET_RELEASE_ERROR;
-	}
-	if (dwCloseNetStatus != TIL_SS_NORMAL)
-	{
-		int32_t lRet = BASIC_NET_GENERIC_ERROR;
-		switch (dwCloseNetStatus)
-		{
-		case TIL_SS_TOCLOSE:
-		{
-			lRet = BASIC_NET_TOCLOSE_ERROR;
-			break;
-		}
-		}
-		return lRet;
-	}
-	if (dwLinkNetStatus != TIL_SS_IDLE)
-	{
-		int32_t lRet = BASIC_NET_GENERIC_ERROR;
-		switch (dwLinkNetStatus)
-		{
-		case TIL_SS_CONNECTING:
-		{
-			lRet = BASIC_NET_CONNECTING_ERROR;
-			break;
-		}
-		case TIL_SS_CONNECTED:
-		{
-			lRet = BASIC_NET_ALREADY_CONNECT;
-			break;
-		}
-		}
-		return lRet;
-	}
-	if (m_strConnectAddr.IsEmpty())
-	{
-		return BASIC_NET_INVALID_ADDRESS;
-	}
-	
-	int32_t lReturn = BASIC_NET_OK;
-	evutil_socket_t socketfd = -1;
-	do
-	{
-		sockaddr_storage addr;
-		int addrlen = sizeof(addr);
-		if (evutil_parse_sockaddr_port(m_strConnectAddr.c_str(), (sockaddr*)&addr, &addrlen) != 0)
-		{
-			lReturn = BASIC_NET_ADDRESS_ERROR;
-			break;
-		}
-		socketfd = socket(addr.ss_family, SOCK_STREAM, 0);
-		if (socketfd == -1)
-		{
-			lReturn = BASIC_NET_SOCKET_ERROR;
-			break;
-		}
+    return RealOnConnect(nullptr, 0);
+}
 
-		evutil_make_socket_nonblocking(socketfd);
-		evutil_make_listen_socket_reuseable(socketfd);
-		evutil_make_listen_socket_reuseable_port(socketfd);
 
-		int nRet = connect(socketfd, (::sockaddr*)&addr, addrlen);
-		if (nRet == 0)
-		{
-			SetLibEvent([](CBasicSessionNet* pSession, intptr_t lRevert)->void{
-				evutil_socket_t socketfd = lRevert;
-				int32_t nRet = ((CBasicSessionNetClient*)pSession)->OnConnect(BASIC_NETCODE_SUCC);
-				if (nRet == BASIC_NET_OK || nRet == BASIC_NET_HC_RET_HANDSHAKE){
-					if (((CBasicSessionNetClient*)pSession)->IsConnected())
-						((CBasicSessionNetClient*)pSession)->InitClientEvent(socketfd, false);
-				}
-			}, socketfd);
-		}
-#ifdef __BASICWINDOWS
-		else if (errno == EINPROGRESS || WSAGetLastError() == WSAEWOULDBLOCK)
-#else
-		else if (errno == EINPROGRESS)
-#endif
-		{
-			SetSessionStatus(TIL_SS_CONNECTING, TIL_SS_LINK);
-			//wait for write onconnect
-			SetLibEvent([](CBasicSessionNet* pSession, intptr_t lRevert)->void{
-				evutil_socket_t socketfd = lRevert;
-				((CBasicSessionNetClient*)pSession)->InitClientEvent(socketfd, true, false);
-			}, socketfd);
-		}
-		else
-		{
-			//int nRetErrorNo = errno;
-			lReturn = BASIC_NET_GENERIC_ERROR;
-		}
-		
-	} while (0);
-
-	if (lReturn != BASIC_NET_OK)
-	{
-		evutil_closesocket(socketfd);
-	}
-	return lReturn;
+bool ParseAddress(const char *ip_as_string, basiclib::CBasicString& strAddress, uint16_t& nPort, bool& bIPV6)
+{
+    /* recognized formats are:
+    * [ipv6]:port
+    * ipv4:port
+    */
+    char buf[128];
+    const char* cp = strchr(ip_as_string, ':');
+    if (*ip_as_string == '[') {
+        size_t len;
+        if (!(cp = strchr(ip_as_string, ']'))) {
+            return false;
+        }
+        len = (cp - (ip_as_string + 1));
+        if (len > sizeof(buf) - 1) {
+            return false;
+        }
+        memcpy(buf, ip_as_string + 1, len);
+        buf[len] = '\0';
+        strAddress = buf;
+        if (cp[1] == ':')
+            nPort = atoi(cp + 2);
+        else
+            return false;
+        bIPV6 = true;
+        return true;
+    }
+    else if (cp) {
+        if (cp - ip_as_string > (int)sizeof(buf) - 1) {
+            return false;
+        }
+        memcpy(buf, ip_as_string, cp - ip_as_string);
+        buf[cp - ip_as_string] = '\0';
+        strAddress = buf;
+        nPort = atoi(cp + 1);
+        bIPV6 = false;
+        return true;
+    }
+    return false;
 }
 
 int32_t CBasicSessionNetClient::Connect(const char* lpszAddress)
@@ -1184,8 +1309,13 @@ int32_t CBasicSessionNetClient::Connect(const char* lpszAddress)
 	{
 		return BASIC_NET_INVALID_ADDRESS;
 	}
-	m_strConnectAddr = lpszAddress;
-
+    if (m_strConnectAddr.CompareNoCase(lpszAddress) != 0){
+        m_strConnectAddr = lpszAddress;
+        //解析出port和地址
+        if (!ParseAddress(m_strConnectAddr.c_str(), m_strParseConnectAddr, m_nParseConnectPort, m_bIPV6)){
+            return BASIC_NET_INVALID_ADDRESS;
+        }
+    }
 	return DoConnect();
 }
 

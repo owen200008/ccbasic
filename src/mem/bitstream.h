@@ -162,7 +162,7 @@ public:
 		*this >> uSize;
 		for (uint16_t i = 0; i < uSize; i++)
 		{
-			A intKey = 0;
+			A intKey;
 			*this >> intKey;
 			*this >> data[intKey];
 		}
@@ -394,6 +394,7 @@ typedef double						Net_Double;											//8字节
 typedef intptr_t					Net_PtrInt;											//same with point size
 typedef basiclib::CBasicString		Net_CBasicString;                                   //define the cstring
 typedef basiclib::CNetBasicValue	Net_CNetBasicValue;                                 //define the cstring
+typedef basiclib::CBasicBitstream	Net_CBasicBitstream;                                //define the cstring
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //支持序列化的map和vector定义
 typedef Net_Vector<Net_Int>													VTNetInt;

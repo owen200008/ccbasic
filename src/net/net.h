@@ -257,6 +257,7 @@ protected:
 	void SetLibEvent(pCallSameRefNetSessionFunc pCallback, intptr_t lRevert = 0);
 	virtual void ReleaseCallback();
 	virtual void CloseCallback(BOOL bRemote, DWORD dwNetCode = 0);
+    void DNSParse(const char* pName, evdns_getaddrinfo_cb pCallback);
 protected:
 	bool					m_bAddOnTimer;
 	CRefBasicSessionNet		m_refSelf;
@@ -351,6 +352,10 @@ protected:
 	void SetSendBusy(BOOL bBusy);		//设置是否在发送
 	BOOL CheckSendBusy();				//检查是否在发送状态，如果不是，设置为发送状态，返回TRUE。否则返回FALSE。
 protected:
+    static void DNSParseConnect(CBasicSessionNet* pSession, intptr_t lRevert);
+    static void DNSParseConnectCallback(int errcode, struct  evutil_addrinfo* addr, void* ptr);
+    int32_t RealOnConnect(sockaddr_storage* pAddr, int addrlen);
+protected:
 	int32_t PreReceiveData(uint32_t dwNetCode, const char *pszData, int32_t cbData);//过滤器接受数据
 	void ResetPreSend();//\brief 重置过滤器状态
 protected:
@@ -362,6 +367,10 @@ protected:
 	char					m_szPeerAddr[ADDRESS_MAX_LENGTH];
 	uint32_t				m_nPeerPort;
 	basiclib::CBasicString	m_strConnectAddr;
+    bool                    m_bIPV6;
+    basiclib::CBasicString  m_strParseConnectAddr;
+    uint16_t                m_nParseConnectPort;
+
 	BasicNetStat			m_stNet;
 	BasicNetStat			m_lastNet;
 	//真正加入发送队列之前回调，比如加入序号包

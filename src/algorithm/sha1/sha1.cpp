@@ -169,6 +169,13 @@ void SHA1_Perform(BYTE *indata, DWORD inlen, BYTE *outdata) //¼ÆËãSHA-1µÄAPI
 	SHA1Input(&sha, indata, inlen);    
 	SHA1Result(&sha, outdata); 
 }
+void SHA1_Perform2(BYTE *indata, DWORD inlen, BYTE *indata2, DWORD inlen2, BYTE *outdata){
+    SHA1_CTX sha;
+    SHA1Reset(&sha);
+    SHA1Input(&sha, indata, inlen);
+    SHA1Input(&sha, indata2, inlen2);
+    SHA1Result(&sha, outdata);
+}
 
 __NS_BASIC_END
 

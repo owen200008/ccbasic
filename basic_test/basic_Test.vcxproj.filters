@@ -20,6 +20,9 @@
     <ClCompile Include="coroutine\coroutinetest.cpp">
       <Filter>coroutine</Filter>
     </ClCompile>
+    <ClCompile Include="net\nettest.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="net\nettest.h">

@@ -4,7 +4,8 @@
 #ifdef __BASICWINDOWS
 #ifdef __EXPORTSCBASIC
 #define _SCBASIC_DLL_API 	__declspec(dllexport)
-#else
+#endif
+#ifdef __IMPORTSCBASIC
 #define _SCBASIC_DLL_API 	__declspec(dllimport)
 #endif
 #endif

@@ -55,6 +55,7 @@ void CBasicSmartBuffer::EmptyBuffer()
 	m_pszBuffer = NULL;
 	m_cbAlloc = 0;
 	m_cbBuffer = 0;
+	m_bReadError = false;
 }
 
 void CBasicSmartBuffer::Free()
@@ -235,9 +236,9 @@ bool operator == (CBasicSmartBuffer& b1, CBasicSmartBuffer& b2)
 //¶ÁÈ¡Êý¾Ý
 void CBasicSmartBuffer::ReadData(void* pBuffer, int nLength)
 {
-	if (m_cbBuffer < nLength || nLength <= 0)
-	{
+	if (m_cbBuffer < nLength || nLength <= 0){
 		ASSERT(FALSE);
+		m_bReadError = true;
 		return;
 	}
 	if (pBuffer)

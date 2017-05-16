@@ -2,6 +2,11 @@
 #define INC_IPVERIFY_H_
 
 #include "../../inc/basic.h"
+#include "../scbasic_head.h"
+
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
 /////////////////////////////////////////////////////////////////////////////////////////////
 // 1、支持IP列表及子网认证
 // 2、调用接口时传入的IP内部自动认证是否为有效IP地址
@@ -12,7 +17,7 @@
 
 #define MAX_IP_ITEM			(int)4				// 
 
-struct _IPRuler
+struct _SCBASIC_DLL_API _IPRuler
 {
 	BYTE		m_szIP[MAX_IP_ITEM];			// IP地址
 	BYTE		m_szMask[MAX_IP_ITEM];			// 子网掩码
@@ -24,9 +29,8 @@ struct _IPRuler
 	}
 };
 
-
 //支持IP地址认证
-class CIpVerify : public basiclib::CBasicObject
+class _SCBASIC_DLL_API CIpVerify : public basiclib::CBasicObject
 {
 public:
 	CIpVerify();
@@ -53,7 +57,7 @@ protected:
       172.20.0.153:8601;172.20.0.*:8601;*:8601;www.abcd.com:1234
 *************************************************************************************************/
 //字符串匹配规则
-class CBasicStringCmpInfo : public basiclib::CBasicObject
+class _SCBASIC_DLL_API CBasicStringCmpInfo : public basiclib::CBasicObject
 {
 public:
 	CBasicStringCmpInfo();
@@ -79,7 +83,7 @@ protected:
 };
 
 //基于字符串匹配规则的,整型匹配
-class CIpDomainVerify: public CBasicStringCmpInfo
+class _SCBASIC_DLL_API CIpDomainVerify : public CBasicStringCmpInfo
 {
 public:
 	CIpDomainVerify();
@@ -104,7 +108,7 @@ protected:
 	ContainNumber                                m_ayRuleExtre;
 	BOOL                                         m_bTrustAll;  //信任所有
 };
-
+#pragma warning (pop)
 #endif
 
 

@@ -67,10 +67,14 @@ local alpha = R"az" + R"AZ" + "_"
 local alnum = alpha + R"09"
 local word = alpha * alnum ^ 0
 local name = C(word)
+local alphaChild = alpha + "."
+local alnumChild = alphaChild + R"09"
+local wordChild = alphaChild * alnumChild ^ 0
+local nameChild = C(wordChild)
 local typename = C(word * ("." * word) ^ 0)
 local typedefword = C(word * ("<" * word * (blank0 * "," * blank0 * word) ^ 0 * ">") ^ 0)
 local tag = S'-'^-1 * R"09" ^ 1 / tonumber
-local mainkey = "(" * blank0 * typename * blank0 * ")"
+local endCCode = lpeg.Cmt((P";") * lpeg.Carg(1) ,count_lines)
 
 local function multipat(pat)
 	return Ct(blank0 * (pat * blanks) ^ 0 * pat^0 * blank0)
@@ -87,7 +91,9 @@ local typedef = P {
     FIELD = namedpat("field", (typename * blank0 * (C"*")^-1 * blank0 * name * blank0 * ";")),
     TYPEDEFFIELD = namedpat("typedeffield", (P"typedef" * blanks * typedefword * blanks * typename * blank0 * ";")),
     DEFAULTVALUE = namedpat("defaultvalue", (name * blank0 * "=" * blank0 * tag * blank0 * ";")),
-    DEFAULTSTRUCT = P"{" * multipat(V"DEFAULTVALUE") * P"}",
+	DEFAULTNULLPTR = namedpat("defaultnullptr", (name * blank0 * "=" * blank0 * (1 - endCCode) ^1 * blank0 * ";")),
+	DEFAULTVALUECHILD = namedpat("defaultvaluechild", (nameChild * blank0 * "=" * blank0 * (1 - endCCode) ^1 * blank0 * ";")),
+    DEFAULTSTRUCT = P"{" * multipat(V"DEFAULTVALUE" + V"DEFAULTNULLPTR" + V"DEFAULTVALUECHILD") * P"}",
     DEFAULT = namedpat("default", (name * P"()" * blank0 * V"DEFAULTSTRUCT")),
 	STRUCT = P"{" * multipat(V"FIELD" + V"COMMENTSTAR" + V"TYPEDEFFIELD") * blank0 * V"DEFAULT"^0 * blank0 * P"};",
 	TYPE = namedpat("type", P"struct"* blanks * name * blank0 * V"STRUCT" ),
@@ -154,7 +160,6 @@ function convert.type(all, obj, set)
                     break
                 end
             end
-            assert(bFind == true, "no find default value " .. defaultvalue[1])
         end
     end
 	return result
@@ -203,8 +208,10 @@ local buildin_types = {
     Net_UShort = 16,
     Net_UInt = 17,
     Net_CBasicString = 18,
+	Net_CBasicBitstream = 18,
     --外置的类型
     Net_CNetBasicValue = 100,
+	
 }
 
 local function checktype(types, ptype, t)

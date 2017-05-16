@@ -27,14 +27,21 @@ CHttpParser* CHttpSession::GetParser()
 		m_pParser = new CHttpParser();
 	return m_pParser;
 }
+void CHttpSession::AsynSendResponse(HttpRequest*& pRequest, HttpResponse& response, basiclib::CBasicSmartBuffer& smBuf){
+    smBuf.SetDataLength(0);
+    response.GetHeaderData(&smBuf);
+    response.GetContent(&smBuf);
+    Send(smBuf.GetDataBuffer(), smBuf.GetDataLength());
+    delete pRequest;
+    pRequest = nullptr;
+}
 
 Net_Int CHttpSession::OnReceive(Net_UInt dwNetCode, const char *pszData, Net_Int cbData)
 {
 	m_tLastRequest = time(NULL);
 	CHttpParser* pParser = GetParser();
 	int ret = 0;
-	do
-	{
+	do{
 		if (NULL == m_pRequest)
 			m_pRequest = new HttpRequest();
 		size_t remain = 0;
@@ -46,38 +53,29 @@ Net_Int CHttpSession::OnReceive(Net_UInt dwNetCode, const char *pszData, Net_Int
 			if (m_funcOnHttpAsk)
 			{
 				long lRet = m_funcOnHttpAsk(this, m_pRequest, response);
-				if (lRet == HTTP_ASYNC)
-				{
+				if (lRet == HTTP_ASYNC){
 					m_pRequest = NULL;
 				}
-				else if (lRet == HTTP_SUCC)
-				{
-					response.GetHeaderData(&m_smCacheBuf);
-					response.GetContent(&m_smCacheBuf);
-					Send(m_smCacheBuf.GetDataBuffer(), m_smCacheBuf.GetDataLength());
-					m_smCacheBuf.SetDataLength(0);
+				else if (lRet == HTTP_SUCC){
+                    AsynSendResponse(m_pRequest, response, m_smCacheBuf);
 				}
-				else if (lRet == HTTP_INTERNAL_ERROR)
-				{
+				else if (lRet == HTTP_INTERNAL_ERROR){
 					ret = HTTP_ERROR_GENERIC;
 					Close();
 				}
 			}
-			if (m_pRequest)
-			{
+			if (m_pRequest){
 				delete m_pRequest;
 				m_pRequest = NULL;
 			}
 
-			if (ret == HTTP_ERROR_NEWREQUEST)
-			{
+			if (ret == HTTP_ERROR_NEWREQUEST){
 				ASSERT(cbData > (long)remain);
 				pszData += (cbData - (long)remain);
 				cbData = remain;
 			}
 		}
-		else if (ret < 0)
-		{
+		else if (ret < 0){
 			Close();
 			return BASIC_NET_GENERIC_ERROR;
 		}
