@@ -10,13 +10,13 @@
 #include <io.h>
 #include <direct.h>
 #include <time.h>
+#include <mbstring.h>
 #pragma comment(lib, "shell32.lib")
 #else
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "file_linux.h"
 #endif
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 DWORD ChangeFileAttributes(struct _stat& st)
@@ -729,9 +729,6 @@ BOOL Basic_PathMatchSpec(const char* pszFile, const char* pszSpec)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#ifdef __BASICWINDOWS
-#include <mbstring.h>
-#endif
 char* Basic_FindFileName(const char* lpszPathName)
 {
 	char* lpszTemp = (char*)lpszPathName;

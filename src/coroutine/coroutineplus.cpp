@@ -145,10 +145,9 @@ CCorutinePlusPool::~CCorutinePlusPool()
 		delete c;
 	}
 	m_vtCorutinePlus.clear();
-    for (auto& c : m_vtStacks){
-        basiclib::BasicDeallocate(c);
-    }
-    m_vtStacks.clear();
+    m_vtCreateStack.Drop_Queue([&](char** c)->void{
+        basiclib::BasicDeallocate(*c);
+    });
 }
 
 bool CCorutinePlusPool::InitCorutine(int nDefaultSize, int nLimitCorutineCount, uint16_t nShareStackSize, uint16_t nMaxShareStackSize)
@@ -343,8 +342,24 @@ char* CCorutinePlusPool::GetShareStack(bool bGlobal){
 }
 
 char* CCorutinePlusPool::CreateShareStack(){
-    char* pRet = (char*)basiclib::BasicAllocate(STACK_SIZE);
-    m_nCreateTimesShareStack++;
+    char* pRet = nullptr;
+    if (m_vtCreateStack.MQPop(&pRet) == 0){
+        return pRet;
+    }
+    
+    int nCreateDefaultSize = m_usRealShareStackSize;
+    if (nCreateDefaultSize > 1024)
+        nCreateDefaultSize = 1024;
+    else if (nCreateDefaultSize < 10)
+        nCreateDefaultSize = 10;
+    pRet = (char*)basiclib::BasicAllocate(nCreateDefaultSize * STACK_SIZE);
+    //第一个返回
+    char* pAddBegin = pRet + STACK_SIZE;
+    for (int i = 1; i < nCreateDefaultSize; i++){
+        m_vtCreateStack.MQPush(&pAddBegin);
+        pAddBegin += STACK_SIZE;
+    }
+    m_nCreateTimesShareStack += nCreateDefaultSize;
     return pRet;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////

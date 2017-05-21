@@ -73,17 +73,14 @@
 #include "../util/strutil/strutil.h"
 #include "../util/strutil/charset.h"
 #include "../datastruct/basic_string.h"
-//#include "../datastruct/stringex.h"
+#include "../datastruct/stringex.h"
 #include "../datastruct/extern.h"
-//#include "../datastruct/tllong.h"
-//#include "../datastruct/tlvalue.h"
 
 
 //智能指针
 #include "../misc/tlrefptr.h"
 //扩展的数据类型
 #include "../datastruct/key_value.h"
-//#include "../datastruct/tlcoll.h"
 
 // 容器
 #include "../util/container.h"
@@ -142,8 +139,6 @@
 #include "../net/net.h"
 #endif
 //
-//CRC16
-//#include "../algorithm/crc16.h"
 //RC5
 //#include "../algorithm/rc5/rc5.h"
 
@@ -158,9 +153,9 @@
 //#include "../util/xml/xmloutput.h"
 
 //正则表达式
-//#if !defined(__MAC) //regex not implement
+#if !defined(__MAC) //regex not implement
 #include "../util/regex/cgnuregexp.h"
-//#endif
+#endif
 
 //dll加载
 #include "../dll/loaddll.h"
@@ -169,6 +164,8 @@
 #include "../sqlite/sqlite3.h"
 #include "../sqlite/sqlite3db.h"
 
+//获取版本号
+_BASIC_DLL_API basiclib::CBasicString& GetBasicLibVersion();
 //判断basic库是否可用
 _BASIC_DLL_API bool IsSupportBasiclib();
 

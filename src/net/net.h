@@ -309,8 +309,9 @@ public:
 	BOOL IsConnected() { return GetSessionStatus(TIL_SS_LINK) == TIL_SS_CONNECTED; }
 	BOOL IsTransmit(){ return GetSessionStatus(TIL_SS_SHAKEHANDLE_MASK) == TIL_SS_SHAKEHANDLE_TRANSMIT; }
 	virtual int32_t Send(void *pData, int32_t cbData, uint32_t dwFlag = 0);
-	int32_t Send(basiclib::CBasicSmartBuffer& smBuf, uint32_t dwFlag = 0);
+	virtual int32_t Send(basiclib::CBasicSmartBuffer& smBuf, uint32_t dwFlag = 0);
 	void GetNetAddress(basiclib::CBasicString& strAddr){ strAddr = m_szPeerAddr; }
+    const char* GetNetAddress(){ return m_szPeerAddr; }
 	uint32_t GetNetAddressPort(){ return m_nPeerPort; }
 	virtual void OnTimer(uint32_t nTickTime);
 	BOOL IsRecTimeout(time_t tmNow, uint16_t nTimeoutSecond);

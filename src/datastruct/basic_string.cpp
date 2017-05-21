@@ -15,7 +15,9 @@
 #if defined(__LINUX)  || defined(__ANDROID)
 #include <stdarg.h>
 #endif
-
+#ifdef __BASICWINDOWS
+#include <mbstring.h>
+#endif
 #ifdef _WIN32
 #pragma warning(disable: 4996)
 #pragma warning(disable: 4267)
@@ -205,9 +207,6 @@ struct _AFX_FLOAT   { BYTE floatBits[sizeof(float)]; };
 #define FORCE_ANSI      0x10000
 #define FORCE_UNICODE   0x20000
 #define FORCE_INT64     0x40000
-#ifdef __BASICWINDOWS
-#include <mbstring.h>
-#endif
 void CBasicString::FormatV(const char* lpszFormat, va_list argList)
 {
 #if defined(__MAC) || defined(__LINUX)

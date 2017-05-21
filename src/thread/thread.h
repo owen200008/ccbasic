@@ -9,6 +9,23 @@
 #ifndef BASIC_THREAD_H
 #define BASIC_THREAD_H
 
+#if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
+#define HAVE_PTHREAD_H
+#endif
+
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#else
+#ifdef __BASICWINDOWS
+#include <windows.h>
+#include <process.h>
+#endif
+#endif
+
+#if defined HAVE_PTHREAD_H
+#define CRFPP_USE_THREAD 1
+#endif
+
 __NS_BASIC_START
 //////////////////////////////////////////////////////////////////////////////////////////
 //!线程的函数操作模型
@@ -76,24 +93,6 @@ _BASIC_DLL_API_C  _BASIC_DLL_API void BasicSleep( DWORD dwMilliseconds );
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //!线程的类操作模型
-
-#if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
-#define HAVE_PTHREAD_H
-#endif
-
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#else
-#ifdef __BASICWINDOWS
-#include <windows.h>
-#include <process.h>
-#endif
-#endif
-
-#if defined HAVE_PTHREAD_H
-#define CRFPP_USE_THREAD 1
-#endif
-
 #if(defined(_WIN32) && ! defined (__CYGWIN__))
 #define CRFPP_USE_THREAD 1
 #define BEGINTHREAD(src, stack, func, arg, flag, id) \

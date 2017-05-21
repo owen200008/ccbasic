@@ -244,6 +244,7 @@ protected:
 private:
     bool                                m_bInit;
     typedef basiclib::basic_vector<char*>	VTSTACKS;
+    basiclib::CMessageQueue<char*>      m_vtCreateStack;
     VTSTACKS                            m_vtStacks;
     uint16_t                            m_usShareStackSize;
     uint16_t                            m_usRealShareStackSize;
@@ -277,6 +278,8 @@ public:
 
     DWORD GetThreadID(){ return m_dwThreadID; }
     CCorutinePlusPool* GetCorutinePlusPool(){ return &m_pool; }
+
+    void* GetRevertParam(){ return m_pParam; }
 protected:
     CCorutinePlusPool									    m_pool;
     DWORD												    m_dwThreadID;

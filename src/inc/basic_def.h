@@ -9,11 +9,6 @@
 #ifndef BASIC_BASIC_DEF_H
 #define BASIC_BASIC_DEF_H
 
-//定义使用基础库的宏
-#ifndef __USE_BASIC
-#define __USE_BASIC
-#endif
-
 #ifdef __BASICWINDOWS
 #define __WINDOWS		// windows平台
 #ifndef _WIN64
@@ -32,11 +27,6 @@
 #define __LINUX			// linux平台
 #endif
 #endif
-#if defined(_WIN32) || defined (_WIN64)
-
-
-
-#endif
 
 #ifdef __GNUC__
 #define __GCC		// gcc编译器
@@ -50,45 +40,30 @@
 #ifdef BASIC_DLL_EXPORTS	//动态库版本
 #ifdef __BASICWINDOWS
 #define _BASIC_DLL_API 	__declspec(dllexport)
-#ifdef BASIC_DLL_EXPORTS_C
-#define _BASIC_DLL_API_C	extern "C"
-#else
-#define _BASIC_DLL_API_C
 #endif
-#else
-#ifdef BASIC_DLL_EXPORTS_C
-#define _BASIC_DLL_API	extern "C"
-#define _BASIC_DLL_API_C
-#endif
-#endif
-#define _BASIC_DLL
 #endif	//BASIC_DLL_EXPORTS
 
 #ifdef BASIC_DLL_IMPORTS	//动态库版本（应用程序需要定义的宏）
 #ifdef __BASICWINDOWS
 #define _BASIC_DLL_API __declspec(dllimport)
-#ifdef BASIC_DLL_IMPORTS_C
-#define _BASIC_DLL_API_C	extern "C" 
-#else
-#define _BASIC_DLL_API_C
-#endif
 #else
 #ifdef BASIC_DLL_IMPORTS_C
 #define _BASIC_DLL_API	__declspec(dllimport)
-#define _BASIC_DLL_API_C
 #endif
 #endif
-#define _BASIC_DLL
 #endif	//BASIC_DLL_IMPORTS
 
 #ifndef _BASIC_DLL_API
+#ifdef basicdll_EXPORTS
+#ifdef __BASICWINDOWS
+#define _BASIC_DLL_API 	__declspec(dllexport)
+#endif
+#else
 #define _BASIC_DLL_API
 #endif
-
-#ifndef _BASIC_DLL_API_C
-#define _BASIC_DLL_API_C
 #endif
 
+#define _BASIC_DLL_API_C extern "C"
 
 //定义命名空间
 #define __NS_BASIC_START	namespace basiclib{

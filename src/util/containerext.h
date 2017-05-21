@@ -60,7 +60,7 @@ class CMessageQueue : public basiclib::CBasicObject
 {
 public:
 	typedef fastdelegate::FastDelegate1<int, void> OverLoadLengthCallback;
-	typedef fastdelegate::FastDelegate2<StructData*, void*, void> DefaultReleaseFunc;
+	typedef fastdelegate::FastDelegate1<StructData*, void> DefaultReleaseFunc;
 
 	CMessageQueue(int nDefaultQueueSize = DEFAULT_QUEUE_SIZE, int nOverLoadLength = DEFAULT_QUEUE_OVERLOAD){
 		m_cap = nDefaultQueueSize;
@@ -76,7 +76,7 @@ public:
 		if(m_queue)
 		{
 			if (m_defaultReleaseFunc != nullptr)
-				Drop_Queue(m_defaultReleaseFunc, nullptr);
+				Drop_Queue(m_defaultReleaseFunc);
 			basiclib::BasicDeallocate(m_queue);
 			m_queue = nullptr;
 		}
@@ -153,13 +153,27 @@ public:
     }
 
 	//清空队列，依次回调
-	void Drop_Queue(const std::function<void(StructData *, void *)>& func, void *ud){
+	void Drop_Queue(const std::function<void(StructData *)>& func){
 		StructData msg;
 		while (!MQPop(&msg))
 		{
-			func(&msg, ud);
+			func(&msg);
 		}
 	}
+    //遍历
+    virtual void ForeachData(const std::function<void(StructData *)>& func){
+        int head = m_head;
+        int tail = m_tail;
+        StructData msg;
+        while (head != tail){
+            msg = m_queue[head++];
+            if (head >= m_cap)
+            {
+                head = 0;
+            }
+            func(&msg);
+        }
+    }
 	//直接清空队列
 	void ClearQueue()
 	{
@@ -231,6 +245,16 @@ public:
 		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
 		return CMessageQueue<StructData>::GetMQLength();
 	}
+    //必须保证nLength足够,并且是可以使用memcpy的
+    virtual void CopyAll(StructData* pQueue){
+        basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+        CMessageQueue<StructData>::CopyAll(pQueue);
+    }
+    //遍历
+    virtual void ForeachData(const std::function<void(StructData *)>& func){
+        basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+        CMessageQueue<StructData>::ForeachData(func);
+    }
     void SafeFuncCallback(const std::function<void()>& func){
         basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
         func();

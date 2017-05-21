@@ -1,4 +1,3 @@
-
 #include "../inc/basic.h"
 
 #ifdef __BASICWINDOWS

@@ -154,7 +154,7 @@ function convert.type(all, obj, set)
         for _,defaultvalue in pairs(obj[3][2]) do
             local bFind = false
             for _, field in pairs(result) do
-                if field.name == defaultvalue[1] then
+                if field.name == defaultvalue[1] and defaultvalue[2] then
                     field.defaultvalue = defaultvalue[2]
                     bFind = true
                     break
@@ -396,7 +396,17 @@ function sparser.parse(text, name)
 	return data
 end
 
-local function encodetocpp(r, filename)
+local function encodetocpp(r, filename, storefilename)
+	local encodeData = encodeall(r)
+	if storefilename then
+        os.remove(storefilename)
+		local mode = "w+b"
+		local file = io.open(storefilename, mode)
+		if file then
+			if file:write(encodeData) == nil then return false end
+			io.close(file)
+		end
+    end
     local headfileformat = [[
 #ifndef AUTO_SPROTOPROTOCAL_H
 #define AUTO_SPROTOPROTOCAL_H
@@ -470,12 +480,11 @@ basiclib::CBasicBitstream& operator>>(basiclib::CBasicBitstream& os, %s& data){
 
     writeheadfp:close()
     writecppfp:close()
-
 end
 
-function sparser.parsetocpp(text, filename)
+function sparser.parsetocpp(text, filename, storefilename)
      local r = parser(text, filename)
-     encodetocpp(r, filename)
+     encodetocpp(r, filename, storefilename)
 end
 
 return sparser

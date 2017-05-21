@@ -1,4 +1,5 @@
 #include "../inc/basic.h"
+#include <stdint.h>
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_START
 CBasicLoadDll::CBasicLoadDll()
@@ -104,8 +105,6 @@ long GetOldIndexBinerySearch(DWORD dwIndex, PCSTR pstrFunctionName, void* pModul
 }
 
 #endif
-
-#include <stdint.h>
 
 #define LOGMAXSIZE 1024
 

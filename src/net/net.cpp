@@ -217,6 +217,7 @@ static void LogLibeventDNS(int is_warn, const char *msg)
 
 void NetOnTimer(evutil_socket_t fd, short event, void *arg)
 {
+    static unsigned int g_nTick = 0;
 	if (g_bTimeToKill)
 	{
 		//delete timer
@@ -238,7 +239,7 @@ void NetOnTimer(evutil_socket_t fd, short event, void *arg)
 	}
 	m_gNetMgrPoint->m_vtDelList.clear();
 	for (auto&session : m_gNetMgrPoint->m_vtOnTimerList){
-		session->OnTimer(0);
+        session->OnTimer(g_nTick++);
 	}
 	//ÑÓ³ÙÉ¾³ý
 	m_gNetMgrPoint->m_vtDeathSession.clear();
@@ -1196,12 +1197,15 @@ int32_t CBasicSessionNetClient::RealOnConnect(sockaddr_storage* pAddr, int addrl
     evutil_socket_t socketfd = -1;
     do
     {
+        sockaddr_storage addr;
         if (pAddr == nullptr){
-            sockaddr_storage addr;
-            int addrlen = sizeof(addr);
+            addrlen = sizeof(addr);
             if (evutil_parse_sockaddr_port(m_strConnectAddr.c_str(), (sockaddr*)&addr, &addrlen) != 0)
             {
                 SetLibEvent(CBasicSessionNetClient::DNSParseConnect, -1);
+            }
+            else{
+                pAddr = &addr;
             }
         }
         if (pAddr != nullptr){

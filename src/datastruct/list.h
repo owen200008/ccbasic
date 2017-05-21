@@ -29,6 +29,7 @@ public:
 	typedef typename list<TYPE, DEFAULT_ALLOCATOR<TYPE> >::iterator iterator;
 	typedef typename list<TYPE, DEFAULT_ALLOCATOR<TYPE> >::const_iterator const_iterator;
 	typedef CList<TYPE, ARG_TYPE> _Self;
+	typedef typename list<TYPE, DEFAULT_ALLOCATOR<TYPE> >::_Nodeptr _Nodeptr;
 // Construction
 	CList();
 
@@ -136,7 +137,7 @@ protected:
 		typedef typename iterator::_Node* _Nodeptr;
 		return iterator((_Nodeptr)position);
 #else // P.J. °æ±¾ÊµÏÖ
-		return iterator((_Nodeptr)position, this);
+		return iterator((_Nodeptr)position, _STD addressof(this->_Get_data()));
 #endif
 	}
 
@@ -146,7 +147,7 @@ protected:
 		typedef typename const_iterator::_Node* _Nodeptr;
 		return iterator((_Nodeptr)position);
 #else
-		return const_iterator((_Nodeptr)position, this);
+		return const_iterator((_Nodeptr)position, _STD addressof(this->_Get_data()));
 #endif
 	}
 

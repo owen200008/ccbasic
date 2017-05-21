@@ -2,6 +2,11 @@
 //
 
 #include "../inc/basic.h"
+#ifndef _USE_SYS_MALLOC
+extern "C" {
+#include "jemalloc.h"
+}
+#endif
 __NS_BASIC_START
 
 //这里不能用自旋锁，会恶化
@@ -169,9 +174,6 @@ inline void* Clean_prefix(char* ptr)
 #define Fast_reallocate realloc
 #define Fast_deallocate free
 #else	//_USE_SYS_MALLOC
-extern "C"{
-	#include "jemalloc.h"
-}
 #define Fast_allocate je_malloc
 #define Fast_reallocate je_realloc
 #define Fast_deallocate je_free

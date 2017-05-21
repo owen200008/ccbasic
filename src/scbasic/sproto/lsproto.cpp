@@ -8,7 +8,7 @@ extern "C" {
 }
 
 #include "sproto.h"
-#include <basic.h>
+#include "lsproto.h"
 
 #define MAX_GLOBALSPROTO 16
 #define ENCODE_BUFFERSIZE 2050
@@ -315,6 +315,17 @@ encode(const struct sproto_arg *args)
 				*args->m_pMapKeyValue = v;
 			}
 			break;
+            case SPROTO_CC_STRING:{
+                if (!lua_isstring(L, -1)){
+                    return luaL_error(L, ".%s[%d] is not an string (Is a %s)",
+                        args->tagname, args->index, lua_typename(L, lua_type(L, -1)));
+                }
+                size_t nSize = 0;
+                sproto_arg* pArg = (sproto_arg*)args;
+                pArg->m_pMapKeyString = lua_tolstring(L, -1, &nSize);
+                *args->m_pMapKeyValue = nSize;
+                break;
+            }
 			default:
 				assert(0);
 				return luaL_error(L, "key not support type %d", args->m_nMapKeyType);
@@ -551,9 +562,9 @@ static int
 lencode(lua_State *L) 
 {
 	struct encode_ud self;
-	basiclib::CBasicBitstream* m_pSMBuf = (basiclib::CBasicBitstream*)*((void**)lua_touserdata(L, 1));
-	void * buffer = m_pSMBuf->GetDataBuffer();
-	int sz = m_pSMBuf->GetAllocBufferLength();
+	basiclib::CBasicBitstream* pSMBuf = (basiclib::CBasicBitstream*)*((void**)lua_touserdata(L, 1));
+	void * buffer = pSMBuf->GetDataBuffer();
+	int sz = pSMBuf->GetAllocBufferLength();
 	int tbl_index = 3;
 	struct sproto_type * st = (struct sproto_type *)lua_touserdata(L, 2);
 	if (st == NULL) 
@@ -580,9 +591,9 @@ lencode(lua_State *L)
 		{
 			if (r == -1)
 			{
-				m_pSMBuf->SetDataLength(sz * 2);
-				buffer = m_pSMBuf->GetDataBuffer();
-				sz = m_pSMBuf->GetAllocBufferLength();
+				pSMBuf->SetDataLength(sz * 2);
+				buffer = pSMBuf->GetDataBuffer();
+				sz = pSMBuf->GetAllocBufferLength();
 			}
 			else
 			{
@@ -592,7 +603,7 @@ lencode(lua_State *L)
 		} 
 		else 
 		{
-			m_pSMBuf->SetDataLength(r);
+			pSMBuf->SetDataLength(r);
 			//lua_pushlightuserdata(L, st);
 			//lua_pushlstring(L, (const char*)buffer, r);
 			return 1;
@@ -681,6 +692,11 @@ decode(const struct sproto_arg *args)
 				lua_pushnumber(L, v);
 			}
 			break;
+            case SPROTO_CC_STRING:{
+                uint64_t vValue = *args->m_pMapKeyValue;
+                lua_pushlstring(L, args->m_pMapKeyString, vValue);
+                break;
+            }
 			default:
 				assert(0);
 				return luaL_error(L, "key not support type %d", args->m_nMapKeyType);
@@ -845,6 +861,52 @@ getbuffer(lua_State *L, int index, size_t *sz)
 	return buffer;
 }
 
+int SprotoDecodeFunc(lua_State *L, basiclib::CBasicBitstream* pSMBuf, struct sproto_type* st){
+    const void * buffer;
+    struct decode_ud self;
+    size_t sz;
+    int r;
+    if (st == NULL){
+        return luaL_argerror(L, 1, "Need a sproto_type object");
+    }
+    sz = 0;
+
+    buffer = pSMBuf->GetDataBuffer(); //getbuffer(L, 2, &sz);
+    sz = pSMBuf->GetDataLength();
+    if (!lua_istable(L, -1))
+    {
+        lua_newtable(L);
+    }
+    luaL_checkstack(L, ENCODE_DEEPLEVEL * 3 + 8, NULL);
+    self.L = L;
+    self.result_index = lua_gettop(L);
+    self.array_index = 0;
+    self.array_tag = NULL;
+    self.deep = 0;
+    self.key_index = 0;
+    r = sproto_decode(st, buffer, (int)sz, decode, &self);
+    if (r < 0)
+    {
+        if (pSMBuf->GetDataLength() > 8)
+        {
+            const unsigned char* pBegin = (const unsigned char*)pSMBuf->GetDataBuffer();
+            //解析协议,读取前面8个字节
+            Net_UInt nFlopKey = pBegin[0] | pBegin[1] << 8 | pBegin[2] << 16 | pBegin[3] << 24;
+            Net_UInt nMethod = pBegin[4] | pBegin[5] << 8 | pBegin[6] << 16 | pBegin[7] << 24;
+            char szBuf[32] = { 0 };
+            sprintf(szBuf, "decode error %d %d", nFlopKey, nMethod);
+            return luaL_error(L, szBuf);
+        }
+        else
+        {
+            return luaL_error(L, "decode error");
+        }
+    }
+    lua_settop(L, self.result_index);
+    lua_pushinteger(L, r);
+    return 2;
+}
+
 /*
 	lightuserdata sproto_type
 	string source	/  (lightuserdata , integer)
@@ -853,53 +915,7 @@ getbuffer(lua_State *L, int index, size_t *sz)
 static int
 ldecode(lua_State *L) 
 {
-	basiclib::CBasicBitstream* m_pSMBuf = (basiclib::CBasicBitstream*)*((void**)lua_touserdata(L, 1));
-
-	struct sproto_type * st = (struct sproto_type *)lua_touserdata(L, 2);
-	const void * buffer;
-	struct decode_ud self;
-	size_t sz;
-	int r;
-	if (st == NULL) 
-	{
-		return luaL_argerror(L, 1, "Need a sproto_type object");
-	}
-	sz = 0;
-	
-	buffer = m_pSMBuf->GetDataBuffer(); //getbuffer(L, 2, &sz);
-	sz = m_pSMBuf->GetDataLength();
-	if (!lua_istable(L, -1)) 
-	{
-		lua_newtable(L);
-	}
-	luaL_checkstack(L, ENCODE_DEEPLEVEL*3 + 8, NULL);
-	self.L = L;
-	self.result_index = lua_gettop(L);
-	self.array_index = 0;
-	self.array_tag = NULL;
-	self.deep = 0;
-	self.key_index = 0;
-	r = sproto_decode(st, buffer, (int)sz, decode, &self);
-	if (r < 0) 
-	{
-		if (m_pSMBuf->GetDataLength() > 8)
-		{
-			const unsigned char* pBegin = (const unsigned char*)m_pSMBuf->GetDataBuffer();
-			//解析协议,读取前面8个字节
-			Net_UInt nFlopKey = pBegin[0] | pBegin[1] << 8 | pBegin[2] << 16 | pBegin[3] << 24;
-			Net_UInt nMethod = pBegin[4] | pBegin[5] << 8 | pBegin[6] << 16 | pBegin[7] << 24;
-			char szBuf[32] = { 0 };
-			sprintf(szBuf, "decode error %d %d", nFlopKey, nMethod);
-			return luaL_error(L, szBuf);
-		}
-		else
-		{
-			return luaL_error(L, "decode error");
-		}
-	}
-	lua_settop(L, self.result_index);
-	lua_pushinteger(L, r);
-	return 2;
+    return SprotoDecodeFunc(L, (basiclib::CBasicBitstream*)*((void**)lua_touserdata(L, 1)), (struct sproto_type *)lua_touserdata(L, 2));
 }
 
 static int
@@ -1097,8 +1113,11 @@ luaopen_sproto_core(lua_State *L) {
 		{ "default", ldefault },
 		{ NULL, NULL },
 	};
+#if LUA_VERSION_NUM < 503
 	luaL_register(L, "sproto.core", l);
-	//luaL_newlib(L,l);
+#else
+    luaL_newlib(L, l);
+#endif
 	pushfunction_withbuffer(L, "encode", lencode);
 	pushfunction_withbuffer(L, "pack", lpack);
 	pushfunction_withbuffer(L, "unpack", lunpack);

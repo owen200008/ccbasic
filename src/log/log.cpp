@@ -1,10 +1,10 @@
 #include "../inc/basic.h"
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <iostream>
-#include <stdlib.h>
-#include <vector>
+//#include <stdio.h>
+//#include <stdarg.h>
+//#include <iostream>
+//#include <stdlib.h>
+//#include <vector>
 
 #if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
 #include <syslog.h>
@@ -12,7 +12,7 @@
 
 #ifdef __BASICWINDOWS
 //?? for access
-#include <io.h>
+//#include <io.h>
 #endif
 
 using namespace std;
@@ -775,27 +775,3 @@ void WriteLogDataBuffer::InitMember()
 }
 
 __NS_BASIC_END
-
-#define CHECKSUPPORTATOMIC(a) \
-	{\
-		std::atomic<a> tmp;\
-		if (!tmp.is_lock_free())\
-			return false;\
-	}
-//≈–∂œbasicø‚ «∑Òø…”√
-_BASIC_DLL_API bool IsSupportBasiclib()
-{
-	CHECKSUPPORTATOMIC(bool);
-	CHECKSUPPORTATOMIC(char);
-	CHECKSUPPORTATOMIC(signed char);
-	CHECKSUPPORTATOMIC(unsigned char);
-	CHECKSUPPORTATOMIC(short);
-	CHECKSUPPORTATOMIC(unsigned short);
-	CHECKSUPPORTATOMIC(int);
-	CHECKSUPPORTATOMIC(unsigned int);
-	CHECKSUPPORTATOMIC(unsigned int);
-	CHECKSUPPORTATOMIC(long long);
-	CHECKSUPPORTATOMIC(unsigned long long);
-	CHECKSUPPORTATOMIC(void*);
-	return true;
-}

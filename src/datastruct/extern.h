@@ -21,8 +21,6 @@
 
 __NS_BASIC_START
  
- //参考execl中的说明
-
 typedef CArray<unsigned char, unsigned char>	CByteArray;
 typedef CArray<unsigned short, unsigned short>	CWordArray;
 typedef CArray<unsigned long, unsigned long>	CDWordArray;

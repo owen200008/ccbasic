@@ -19,37 +19,8 @@ inline bool IsStarMiss(int bStar, int nSZ){
 	return nSZ == 0 && bStar;
 }
 
-struct field {
-	int m_bStar;
-	int type;
-	const char * name;
-	struct sproto_type * st;
-	int			m_nKeyType;
-	uint64_t	m_nDefaultValue;
-};
 
-struct sproto_type {
-	const char * name;
-	int n;
-	//int base;
-	struct field *f;
-};
 
-struct chunk {
-	struct chunk * next;
-};
-
-struct pool {
-	struct chunk * header;
-	struct chunk * current;
-	int current_used;
-};
-
-struct sproto {
-	struct pool memory;
-	int type_n;
-	struct sproto_type * type;
-};
 
 static void
 pool_init(struct pool *p) {
@@ -260,7 +231,7 @@ import_field(struct sproto *s, struct field *f, const uint8_t * stream) {
 		{
 			if ((array & SPROTO_TARRAY) && value != 0)
 			{
-				if (!(value >= SPROTO_CC_CHAR && value <= SPROTO_CC_UINT))
+                if (!(value >= SPROTO_CC_CHAR && value <= SPROTO_CC_STRING))
 					return NULL;	// invalid buildin type
 				f->m_nKeyType = value;
 			}
@@ -468,8 +439,7 @@ sproto_dump(struct sproto *s)
 	}
 }
 
-struct sproto_type *
-sproto_type(const struct sproto *sp, const char * type_name) {
+struct sproto_type* sproto_type(const struct sproto *sp, const char * type_name) {
 	int i;
 	for (i=0;i<sp->type_n;i++) {
 		if (strcmp(type_name, sp->type[i].name) == 0) {
@@ -603,274 +573,535 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
 		return -1;
 	size -= CC_SIZE_LENGTH;
 	buffer = data + CC_SIZE_LENGTH;
-	uint64_t uKeyValue = 0;
-	args->m_pMapKeyValue = &uKeyValue;
-	encode_mapkey keyencode = NULL;
-	int nKeyLength = 8;
-	if (args->m_nMapKeyType == SPROTO_CC_CHAR || args->m_nMapKeyType == SPROTO_CC_UCHAR)
-	{
-		keyencode = encodemapkey_ccchar;
-		nKeyLength = SPROTO_CC_CHAR_SIZE;
-	}
-	else if (args->m_nMapKeyType == SPROTO_CC_SHORT || args->m_nMapKeyType == SPROTO_CC_USHORT)
-	{
-		keyencode = encodemapkey_ccshrot;
-		nKeyLength = SPROTO_CC_SHORT_SIZE;
-	}
-	else if (args->m_nMapKeyType == SPROTO_CC_INT || args->m_nMapKeyType == SPROTO_CC_UINT)
-	{
-		keyencode = encodemapkey_ccint;
-		nKeyLength = SPROTO_CC_INT_SIZE;
-	}
-	else if (args->m_nMapKeyType == SPROTO_CC_LONGLONG)
-	{
-		keyencode = encodemapkey_cclonglong;
-		nKeyLength = SPROTO_CC_LONGLONG_SIZE;
-	}
-	else if (args->m_nMapKeyType == SPROTO_CC_DOUBLE)
-	{
-		keyencode = encodemapkey_ccdouble;
-		nKeyLength = SPROTO_CC_DOUBLE_SIZE;
-	}
-	else
-	{
-		assert(0);
-		return 0;
-	}
+    uint64_t uKeyValue = 0;
+    args->m_pMapKeyValue = &uKeyValue;
+    if (args->m_nMapKeyType == SPROTO_CC_STRING){
+        switch (args->type)
+        {
+        case SPROTO_CC_CHAR:
+        case SPROTO_CC_UCHAR:
+        {
+            int nNeedLength = SPROTO_CC_CHAR_SIZE + CC_SIZE_LENGTH;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                int v = 0;
+                args->value = &v;
+                args->length = sizeof(v);
+                sz = cb(args);
+                if (sz < 0){
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                assert(sz == SPROTO_CC_CHAR_SIZE);
+                if (size < uKeyValue + nNeedLength)
+                    return -1;
+                buffer[0] = uKeyValue & 0xff;
+                buffer[1] = (uKeyValue >> 8) & 0xff;
+                if (uKeyValue > 0)
+                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
+                int nLength = uKeyValue + CC_SIZE_LENGTH;
+                buffer[nLength] = v & 0xFF;
+                size -= nNeedLength + uKeyValue;
+                buffer += nNeedLength + uKeyValue;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_SHORT:
+        case SPROTO_CC_USHORT:
+        {
+            int nNeedLength = SPROTO_CC_SHORT_SIZE + CC_SIZE_LENGTH;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                int v = 0;
+                args->value = &v;
+                args->length = sizeof(v);
+                sz = cb(args);
+                if (sz < 0){
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                assert(sz == SPROTO_CC_SHORT_SIZE);
+                if (size < uKeyValue + nNeedLength)
+                    return -1;
+                buffer[0] = uKeyValue & 0xff;
+                buffer[1] = (uKeyValue >> 8) & 0xff;
+                if (uKeyValue > 0)
+                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
+                int nLength = uKeyValue + CC_SIZE_LENGTH;
+                buffer[nLength] = v & 0xFF;
+                buffer[nLength + 1] = (v >> 8) & 0xFF;
+                size -= nNeedLength + uKeyValue;
+                buffer += nNeedLength + uKeyValue;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_INT:
+        case SPROTO_CC_UINT:
+        {
+            int nNeedLength = SPROTO_CC_INT_SIZE + CC_SIZE_LENGTH;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                int v = 0;
+                args->value = &v;
+                args->length = sizeof(v);
+                sz = cb(args);
+                if (sz < 0){
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                assert(sz == SPROTO_CC_INT_SIZE);
+                if (size < uKeyValue + nNeedLength)
+                    return -1;
+                buffer[0] = uKeyValue & 0xff;
+                buffer[1] = (uKeyValue >> 8) & 0xff;
+                if (uKeyValue > 0)
+                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
+                int nLength = uKeyValue + CC_SIZE_LENGTH;
+                buffer[nLength] = v & 0xFF;
+                buffer[nLength + 1] = (v >> 8) & 0xFF;
+                buffer[nLength + 2] = (v >> 16) & 0xFF;
+                buffer[nLength + 3] = (v >> 24) & 0xFF;
+                size -= nNeedLength + uKeyValue;
+                buffer += nNeedLength + uKeyValue;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_LONGLONG:
+        {
+            int nNeedLength = SPROTO_CC_LONGLONG_SIZE + CC_SIZE_LENGTH;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                int v = 0;
+                args->value = &v;
+                args->length = sizeof(v);
+                sz = cb(args);
+                if (sz < 0){
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                assert(sz == SPROTO_CC_LONGLONG_SIZE);
+                if (size < uKeyValue + nNeedLength)
+                    return -1;
+                buffer[0] = uKeyValue & 0xff;
+                buffer[1] = (uKeyValue >> 8) & 0xff;
+                if (uKeyValue > 0)
+                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
+                int nLength = uKeyValue + CC_SIZE_LENGTH;
+                buffer[nLength] = v & 0xFF;
+                buffer[nLength + 1] = (v >> 8) & 0xFF;
+                buffer[nLength + 2] = (v >> 16) & 0xFF;
+                buffer[nLength + 3] = (v >> 24) & 0xFF;
+                buffer[nLength + 4] = (v >> 32) & 0xFF;
+                buffer[nLength + 5] = (v >> 40) & 0xFF;
+                buffer[nLength + 6] = (v >> 48) & 0xFF;
+                buffer[nLength + 7] = (v >> 56) & 0xFF;
+                size -= nNeedLength + uKeyValue;
+                buffer += nNeedLength + uKeyValue;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_DOUBLE:
+        {
+            int nNeedLength = SPROTO_CC_LONGLONG_SIZE + CC_SIZE_LENGTH;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                int v = 0;
+                args->value = &v;
+                args->length = sizeof(v);
+                sz = cb(args);
+                if (sz < 0){
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                assert(sz == SPROTO_CC_DOUBLE_SIZE);
+                if (size < uKeyValue + nNeedLength)
+                    return -1;
+                buffer[0] = uKeyValue & 0xff;
+                buffer[1] = (uKeyValue >> 8) & 0xff;
+                if (uKeyValue > 0)
+                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
+                int nLength = uKeyValue + CC_SIZE_LENGTH;
+                buffer[nLength] = (*(uint64_t*)&v) & 0xFF;
+                buffer[nLength + 1] = (*(uint64_t*)&v >> 8) & 0xFF;
+                buffer[nLength + 2] = (*(uint64_t*)&v >> 16) & 0xFF;
+                buffer[nLength + 3] = (*(uint64_t*)&v >> 24) & 0xFF;
+                buffer[nLength + 4] = (*(uint64_t*)&v >> 32) & 0xFF;
+                buffer[nLength + 5] = (*(uint64_t*)&v >> 40) & 0xFF;
+                buffer[nLength + 6] = (*(uint64_t*)&v >> 48) & 0xFF;
+                buffer[nLength + 7] = (*(uint64_t*)&v >> 56) & 0xFF;
+                size -= nNeedLength + uKeyValue;
+                buffer += nNeedLength + uKeyValue;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_STRING:
+        {
+            int nNeedLength = CC_SIZE_LENGTH + CC_SIZE_LENGTH;
+            args->index = 1;
+            for (;;) {
+                if (size < nNeedLength)
+                    return -1;
+                args->value = buffer;
+                args->length = size;
+                sz = cb(args);
+                if (sz < 0)
+                {
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                int nTotalSize = uKeyValue + sz + nNeedLength;
+                if (size < nTotalSize)
+                    return -1;
+                int nCopy = uKeyValue + nNeedLength;
+                if (sz > 0)
+                    memmove(buffer + nCopy, buffer, sz);
+                buffer[uKeyValue + CC_SIZE_LENGTH] = sz & 0xff;
+                buffer[uKeyValue + CC_SIZE_LENGTH + 1] = (sz >> 8) & 0xff;
+                buffer[0] = uKeyValue & 0xff;
+                buffer[1] = (uKeyValue >> 8) & 0xff;
+                if (uKeyValue > 0)
+                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
 
+                buffer += nTotalSize;
+                size -= nTotalSize;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_STRUCT:
+        case SPROTO_CC_EXA_CNETBASICVALUE:
+        {
+            int nNeedLength = CC_SIZE_LENGTH;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                args->value = buffer;
+                args->length = size;
+                sz = cb(args);
+                if (sz < 0)
+                {
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                int nTotalSize = uKeyValue + sz + nNeedLength;
+                if (size < nTotalSize)
+                    return -1;
+                int nCopy = uKeyValue + nNeedLength;
+                if (sz > 0)
+                    memmove(buffer + nCopy, buffer, sz);
+                buffer[0] = uKeyValue & 0xff;
+                buffer[1] = (uKeyValue >> 8) & 0xff;
+                if (uKeyValue > 0)
+                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
 
-	switch (args->type)
-	{
-	case SPROTO_CC_CHAR:
-	case SPROTO_CC_UCHAR:
-	{
-		int nNeedLength = SPROTO_CC_CHAR_SIZE + nKeyLength;
-		args->index = 1;
-		for (;;)
-		{
-			if (size < nNeedLength)
-				return -1;
-			int v = 0;
-			args->value = &v;
-			args->length = sizeof(v);
-			sz = cb(args);
-			if (sz < 0)
-			{
-				if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
-					break;
-				return -1;	// sz == SPROTO_CB_ERROR
-			}
-			assert(sz == SPROTO_CC_CHAR_SIZE);
-			int nLength = keyencode(uKeyValue, buffer);
-			buffer[nLength] = v & 0xFF;
-			size -= nNeedLength;
-			buffer += nNeedLength;
-			++args->index;
-			nCount++;
-		}
-		break;
-	}
-	case SPROTO_CC_SHORT:
-	case SPROTO_CC_USHORT:
-	{
-		int nNeedLength = SPROTO_CC_SHORT_SIZE + nKeyLength;
-		args->index = 1;
-		for (;;)
-		{
-			if (size < nNeedLength)
-				return -1;
-			int v = 0;
-			args->value = &v;
-			args->length = sizeof(v);
-			sz = cb(args);
-			if (sz < 0)
-			{
-				if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
-					break;
-				return -1;	// sz == SPROTO_CB_ERROR
-			}
-			int nLength = keyencode(uKeyValue, buffer);
-			assert(sz == SPROTO_CC_SHORT_SIZE);
-			buffer[nLength] = v & 0xFF;
-			buffer[nLength + 1] = (v >> 8) & 0xFF;
-			size -= nNeedLength;
-			buffer += nNeedLength;
-			++args->index;
-			nCount++;
-		}
-		break;
-	}
-	case SPROTO_CC_INT:
-	case SPROTO_CC_UINT:
-	{
-		int nNeedLength = SPROTO_CC_INT_SIZE + nKeyLength;
-		args->index = 1;
-		for (;;)
-		{
-			if (size < nNeedLength)
-				return -1;
-			int v = 0;
-			args->value = &v;
-			args->length = sizeof(v);
-			sz = cb(args);
-			if (sz < 0)
-			{
-				if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
-					break;
-				return -1;	// sz == SPROTO_CB_ERROR
-			}
-			int nLength = keyencode(uKeyValue, buffer);
-			assert(sz == SPROTO_CC_INT_SIZE);
-			buffer[nLength] = v & 0xFF;
-			buffer[nLength + 1] = (v >> 8) & 0xFF;
-			buffer[nLength + 2] = (v >> 16) & 0xFF;
-			buffer[nLength + 3] = (v >> 24) & 0xFF;
-			size -= nNeedLength;
-			buffer += nNeedLength;
-			++args->index;
-			nCount++;
-		}
-		break;
-	}
-	case SPROTO_CC_LONGLONG:
-	{
-		int nNeedLength = SPROTO_CC_LONGLONG_SIZE + nKeyLength;
-		args->index = 1;
-		for (;;)
-		{
-			if (size < nNeedLength)
-				return -1;
-			uint64_t v = 0;
-			args->value = &v;
-			args->length = sizeof(v);
-			sz = cb(args);
-			if (sz < 0)
-			{
-				if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
-					break;
-				return -1;	// sz == SPROTO_CB_ERROR
-			}
-			int nLength = keyencode(uKeyValue, buffer);
-			assert(nLength == sz - SPROTO_CC_LONGLONG_SIZE);
-			buffer[nLength] = v & 0xFF;
-			buffer[nLength + 1] = (v >> 8) & 0xFF;
-			buffer[nLength + 2] = (v >> 16) & 0xFF;
-			buffer[nLength + 3] = (v >> 24) & 0xFF;
-			buffer[nLength + 4] = (v >> 32) & 0xFF;
-			buffer[nLength + 5] = (v >> 40) & 0xFF;
-			buffer[nLength + 6] = (v >> 48) & 0xFF;
-			buffer[nLength + 7] = (v >> 56) & 0xFF;
-			size -= nNeedLength;
-			buffer += nNeedLength;
-			++args->index;
-			nCount++;
-		}
-		break;
-	}
-	case SPROTO_CC_DOUBLE:
-	{
-		int nNeedLength = SPROTO_CC_LONGLONG_SIZE + nKeyLength;
-		args->index = 1;
-		for (;;)
-		{
-			if (size < nNeedLength)
-				return -1;
-			double v = 0;
-			args->value = &v;
-			args->length = sizeof(v);
-			sz = cb(args);
-			if (sz < 0)
-			{
-				if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
-					break;
-				return -1;	// sz == SPROTO_CB_ERROR
-			}
-			int nLength = keyencode(uKeyValue, buffer);
-			assert(sz == SPROTO_CC_DOUBLE_SIZE);
-			buffer[nLength] = (*(uint64_t*)&v) & 0xFF;
-			buffer[nLength + 1] = (*(uint64_t*)&v >> 8) & 0xFF;
-			buffer[nLength + 2] = (*(uint64_t*)&v >> 16) & 0xFF;
-			buffer[nLength + 3] = (*(uint64_t*)&v >> 24) & 0xFF;
-			buffer[nLength + 4] = (*(uint64_t*)&v >> 32) & 0xFF;
-			buffer[nLength + 5] = (*(uint64_t*)&v >> 40) & 0xFF;
-			buffer[nLength + 6] = (*(uint64_t*)&v >> 48) & 0xFF;
-			buffer[nLength + 7] = (*(uint64_t*)&v >> 56) & 0xFF;
-			size -= nNeedLength;
-			buffer += nNeedLength;
-			++args->index;
-			nCount++;
-		}
-		break;
-	}
-	case SPROTO_CC_STRING:
-	{
-		int nNeedLength = CC_SIZE_LENGTH + nKeyLength;
-		args->index = 1;
-		for (;;) {
-			if (size < nNeedLength)
-				return -1;
-			size -= nNeedLength;
-			args->value = buffer + nNeedLength;
-			args->length = size;
-			sz = cb(args);
-			if (sz < 0)
-			{
-				if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
-					break;
-				return -1;	// sz == SPROTO_CB_ERROR
-			}
-			if (size < sz)
-				return -1;
-			int nLength = keyencode(uKeyValue, buffer);
-			buffer[nLength] = sz & 0xff;
-			buffer[nLength + 1] = (sz >> 8) & 0xff;
+                buffer += nTotalSize;
+                size -= nTotalSize;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        break;
+        default:
+            assert(0);
+            break;
+        }
+    }
+    else{
+        encode_mapkey keyencode = NULL;
+        int nKeyLength = 8;
+        if (args->m_nMapKeyType == SPROTO_CC_CHAR || args->m_nMapKeyType == SPROTO_CC_UCHAR){
+            keyencode = encodemapkey_ccchar;
+            nKeyLength = SPROTO_CC_CHAR_SIZE;
+        }
+        else if (args->m_nMapKeyType == SPROTO_CC_SHORT || args->m_nMapKeyType == SPROTO_CC_USHORT){
+            keyencode = encodemapkey_ccshrot;
+            nKeyLength = SPROTO_CC_SHORT_SIZE;
+        }
+        else if (args->m_nMapKeyType == SPROTO_CC_INT || args->m_nMapKeyType == SPROTO_CC_UINT){
+            keyencode = encodemapkey_ccint;
+            nKeyLength = SPROTO_CC_INT_SIZE;
+        }
+        else if (args->m_nMapKeyType == SPROTO_CC_LONGLONG){
+            keyencode = encodemapkey_cclonglong;
+            nKeyLength = SPROTO_CC_LONGLONG_SIZE;
+        }
+        else if (args->m_nMapKeyType == SPROTO_CC_DOUBLE){
+            keyencode = encodemapkey_ccdouble;
+            nKeyLength = SPROTO_CC_DOUBLE_SIZE;
+        }
+        else{
+            assert(0);
+            return 0;
+        }
 
-			buffer += nNeedLength + sz;
-			size -= sz;
-			++args->index;
-			nCount++;
-		}
-		break;
-	}
-	case SPROTO_CC_STRUCT:
-	case SPROTO_CC_EXA_CNETBASICVALUE:
-	{
-		int nNeedLength = nKeyLength;
-		args->index = 1;
-		for (;;)
-		{
-			if (size < nNeedLength)
-				return -1;
-			size -= nNeedLength;
-			args->value = buffer + nNeedLength;
-			args->length = size;
-			sz = cb(args);
-			if (sz < 0)
-			{
-				if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
-					break;
-				return -1;	// sz == SPROTO_CB_ERROR
-			}
-			if (size < sz)
-				return -1;
-			int nLength = keyencode(uKeyValue, buffer);
+        switch (args->type)
+        {
+        case SPROTO_CC_CHAR:
+        case SPROTO_CC_UCHAR:
+        {
+            int nNeedLength = SPROTO_CC_CHAR_SIZE + nKeyLength;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                int v = 0;
+                args->value = &v;
+                args->length = sizeof(v);
+                sz = cb(args);
+                if (sz < 0)
+                {
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                assert(sz == SPROTO_CC_CHAR_SIZE);
+                int nLength = keyencode(uKeyValue, buffer);
+                buffer[nLength] = v & 0xFF;
+                size -= nNeedLength;
+                buffer += nNeedLength;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_SHORT:
+        case SPROTO_CC_USHORT:
+        {
+            int nNeedLength = SPROTO_CC_SHORT_SIZE + nKeyLength;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                int v = 0;
+                args->value = &v;
+                args->length = sizeof(v);
+                sz = cb(args);
+                if (sz < 0)
+                {
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                int nLength = keyencode(uKeyValue, buffer);
+                assert(sz == SPROTO_CC_SHORT_SIZE);
+                buffer[nLength] = v & 0xFF;
+                buffer[nLength + 1] = (v >> 8) & 0xFF;
+                size -= nNeedLength;
+                buffer += nNeedLength;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_INT:
+        case SPROTO_CC_UINT:
+        {
+            int nNeedLength = SPROTO_CC_INT_SIZE + nKeyLength;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                int v = 0;
+                args->value = &v;
+                args->length = sizeof(v);
+                sz = cb(args);
+                if (sz < 0)
+                {
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                int nLength = keyencode(uKeyValue, buffer);
+                assert(sz == SPROTO_CC_INT_SIZE);
+                buffer[nLength] = v & 0xFF;
+                buffer[nLength + 1] = (v >> 8) & 0xFF;
+                buffer[nLength + 2] = (v >> 16) & 0xFF;
+                buffer[nLength + 3] = (v >> 24) & 0xFF;
+                size -= nNeedLength;
+                buffer += nNeedLength;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_LONGLONG:
+        {
+            int nNeedLength = SPROTO_CC_LONGLONG_SIZE + nKeyLength;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                uint64_t v = 0;
+                args->value = &v;
+                args->length = sizeof(v);
+                sz = cb(args);
+                if (sz < 0)
+                {
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                int nLength = keyencode(uKeyValue, buffer);
+                assert(nLength == sz - SPROTO_CC_LONGLONG_SIZE);
+                buffer[nLength] = v & 0xFF;
+                buffer[nLength + 1] = (v >> 8) & 0xFF;
+                buffer[nLength + 2] = (v >> 16) & 0xFF;
+                buffer[nLength + 3] = (v >> 24) & 0xFF;
+                buffer[nLength + 4] = (v >> 32) & 0xFF;
+                buffer[nLength + 5] = (v >> 40) & 0xFF;
+                buffer[nLength + 6] = (v >> 48) & 0xFF;
+                buffer[nLength + 7] = (v >> 56) & 0xFF;
+                size -= nNeedLength;
+                buffer += nNeedLength;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_DOUBLE:
+        {
+            int nNeedLength = SPROTO_CC_LONGLONG_SIZE + nKeyLength;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                double v = 0;
+                args->value = &v;
+                args->length = sizeof(v);
+                sz = cb(args);
+                if (sz < 0)
+                {
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                int nLength = keyencode(uKeyValue, buffer);
+                assert(sz == SPROTO_CC_DOUBLE_SIZE);
+                buffer[nLength] = (*(uint64_t*)&v) & 0xFF;
+                buffer[nLength + 1] = (*(uint64_t*)&v >> 8) & 0xFF;
+                buffer[nLength + 2] = (*(uint64_t*)&v >> 16) & 0xFF;
+                buffer[nLength + 3] = (*(uint64_t*)&v >> 24) & 0xFF;
+                buffer[nLength + 4] = (*(uint64_t*)&v >> 32) & 0xFF;
+                buffer[nLength + 5] = (*(uint64_t*)&v >> 40) & 0xFF;
+                buffer[nLength + 6] = (*(uint64_t*)&v >> 48) & 0xFF;
+                buffer[nLength + 7] = (*(uint64_t*)&v >> 56) & 0xFF;
+                size -= nNeedLength;
+                buffer += nNeedLength;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_STRING:
+        {
+            int nNeedLength = CC_SIZE_LENGTH + nKeyLength;
+            args->index = 1;
+            for (;;) {
+                if (size < nNeedLength)
+                    return -1;
+                size -= nNeedLength;
+                args->value = buffer + nNeedLength;
+                args->length = size;
+                sz = cb(args);
+                if (sz < 0)
+                {
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                if (size < sz)
+                    return -1;
+                int nLength = keyencode(uKeyValue, buffer);
+                buffer[nLength] = sz & 0xff;
+                buffer[nLength + 1] = (sz >> 8) & 0xff;
 
-			buffer += nNeedLength + sz;
-			size -= sz;
-			++args->index;
-			nCount++;
-		}
-		break;
-	}
-	break;
-	default:
-		assert(0);
-		break;
-	}
-	//存的是count
-	data[0] = nCount & 0xff;
-	data[1] = (nCount >> 8) & 0xff;
+                buffer += nNeedLength + sz;
+                size -= sz;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        case SPROTO_CC_STRUCT:
+        case SPROTO_CC_EXA_CNETBASICVALUE:
+        {
+            int nNeedLength = nKeyLength;
+            args->index = 1;
+            for (;;)
+            {
+                if (size < nNeedLength)
+                    return -1;
+                size -= nNeedLength;
+                args->value = buffer + nNeedLength;
+                args->length = size;
+                sz = cb(args);
+                if (sz < 0)
+                {
+                    if (sz == SPROTO_CB_NIL || sz == SPROTO_CB_NOARRAY)		// nil object , end of array
+                        break;
+                    return -1;	// sz == SPROTO_CB_ERROR
+                }
+                if (size < sz)
+                    return -1;
+                int nLength = keyencode(uKeyValue, buffer);
 
+                buffer += nNeedLength + sz;
+                size -= sz;
+                ++args->index;
+                nCount++;
+            }
+            break;
+        }
+        break;
+        default:
+            assert(0);
+            break;
+        }
+    }
+    //存的是count
+    data[0] = nCount & 0xff;
+    data[1] = (nCount >> 8) & 0xff;
 	return buffer - data;
 }
 
@@ -1296,192 +1527,366 @@ decode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t * stream, int 
 		return stream - pResStream;
 	}
 
-	int type = args->type;
-	int i;
-	decode_keymap keydecode = NULL;
-	int nKeyLength = 8;
-	if (args->m_nMapKeyType == SPROTO_CC_CHAR || args->m_nMapKeyType == SPROTO_CC_UCHAR)
-	{
-		keydecode = chartokey;
-		nKeyLength = SPROTO_CC_CHAR_SIZE;
-	}
-	else if (args->m_nMapKeyType == SPROTO_CC_SHORT || args->m_nMapKeyType == SPROTO_CC_USHORT)
-	{
-		keydecode = shorttokey;
-		nKeyLength = SPROTO_CC_SHORT_SIZE;
-	}
-	else if (args->m_nMapKeyType == SPROTO_CC_INT || args->m_nMapKeyType == SPROTO_CC_UINT)
-	{
-		keydecode = inttokey;
-		nKeyLength = SPROTO_CC_INT_SIZE;
-	}
-	else if (args->m_nMapKeyType == SPROTO_CC_LONGLONG)
-	{
-		keydecode = longlongtokey;
-		nKeyLength = SPROTO_CC_LONGLONG_SIZE;
-	}
-	else if (args->m_nMapKeyType == SPROTO_CC_DOUBLE)
-	{
-		keydecode = doubletokey;
-		nKeyLength = SPROTO_CC_DOUBLE_SIZE;
-	}
-	else
-	{
-		assert(0);
-		return 0;
-	}
-	switch (type)
-	{
-	case SPROTO_CC_CHAR:
-	case SPROTO_CC_UCHAR:
-	{
-		int nEveryItemSize = nKeyLength + SPROTO_CC_CHAR_SIZE;
-		int nArraySize = nCount * nEveryItemSize;
-		if (nSize < nArraySize)
-			return -1;
-		for (i = 0; i<nCount; i++)
-		{
-			uint64_t mapkeyvalue = keydecode(stream + i * nEveryItemSize);
-			uint64_t value = stream[i * nEveryItemSize + nKeyLength];
-			args->index = i + 1;
-			args->value = &value;
-			args->m_pMapKeyValue = &mapkeyvalue;
-			cb(args);
-		}
-		stream += nArraySize;
-		break;
-	}
-	case SPROTO_CC_SHORT:
-	case SPROTO_CC_USHORT:
-	{
-		int nEveryItemSize = nKeyLength + SPROTO_CC_SHORT_SIZE;
-		int nArraySize = nCount * nEveryItemSize;
-		if (nSize < nArraySize)
-			return -1;
-		for (i = 0; i<nCount; i++)
-		{
-			uint64_t mapkeyvalue = keydecode(stream + i * nEveryItemSize);
-			uint64_t value = toword(stream + i * nEveryItemSize + nKeyLength);
-			args->index = i + 1;
-			args->value = &value;
-			args->m_pMapKeyValue = &mapkeyvalue;
-			cb(args);
-		}
-		stream += nArraySize;
-		break;
-	}
-	case SPROTO_CC_INT:
-	case SPROTO_CC_UINT:
-	{
-		int nEveryItemSize = nKeyLength + SPROTO_CC_INT_SIZE;
-		int nArraySize = nCount * nEveryItemSize;
-		if (nSize < nArraySize)
-			return -1;
-		for (i = 0; i<nCount; i++)
-		{
-			uint64_t mapkeyvalue = keydecode(stream + i * nEveryItemSize);
-			uint64_t value = todword(stream + i * nEveryItemSize + nKeyLength);
-			args->index = i + 1;
-			args->value = &value;
-			args->m_pMapKeyValue = &mapkeyvalue;
-			cb(args);
-		}
-		stream += nArraySize;
-		break;
-	}
-	case SPROTO_CC_LONGLONG:
-	{
-		int nEveryItemSize = nKeyLength + SPROTO_CC_LONGLONG_SIZE;
-		int nArraySize = nCount * nEveryItemSize;
-		if (nSize < nArraySize)
-			return -1;
-		for (i = 0; i<nCount; i++)
-		{
-			uint64_t mapkeyvalue = keydecode(stream + i * nEveryItemSize);
-			uint64_t value = longlongtokey(stream + i * nEveryItemSize + nKeyLength);
-			args->index = i + 1;
-			args->value = &value;
-			args->m_pMapKeyValue = &mapkeyvalue;
-			cb(args);
-		}
-		stream += nArraySize;
-		break;
-	}
-	case SPROTO_CC_DOUBLE:
-	{
-		int nEveryItemSize = nKeyLength + SPROTO_CC_DOUBLE_SIZE;
-		int nArraySize = nCount * nEveryItemSize;
-		if (nSize < nArraySize)
-			return -1;
-		for (i = 0; i<nCount; i++)
-		{
-			uint64_t mapkeyvalue = keydecode(stream + i * nEveryItemSize);
-			uint64_t value = longlongtokey(stream + i * nEveryItemSize + nKeyLength);
-			double dValue = *(double*)&value;
-			args->index = i + 1;
-			args->value = &dValue;
-			args->m_pMapKeyValue = &mapkeyvalue;
-			cb(args);
-		}
-		stream += nArraySize;
-		break;
-	}
-	case SPROTO_CC_STRING:
-	{
-		int nEveryItemSize = nKeyLength + CC_SIZE_LENGTH;
-		uint32_t hsz;
-		int index = 1;
-		for (int i = 0; i < nCount; i++)
-		{
-			if (nSize < nEveryItemSize)
-				return -1;
-			uint64_t mapkeyvalue = keydecode(stream);
 
-			hsz = toword(stream);
-			stream += nEveryItemSize;
-			nSize -= nEveryItemSize;
+    if (args->m_nMapKeyType == SPROTO_CC_STRING){
+        switch (args->type)
+        {
+        case SPROTO_CC_CHAR:
+        case SPROTO_CC_UCHAR:
+        {
+            uint64_t nKeyLength = 0;
+            for (int i = 0; i<nCount; i++){
+                if (nSize < CC_SIZE_LENGTH)
+                    return -1;
+                nKeyLength = toword(stream);
+                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + SPROTO_CC_CHAR_SIZE;
+                if (nSize < nTotalLength)
+                    return -1;
+                args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
+                
+                uint64_t value = stream[nKeyLength + CC_SIZE_LENGTH];
+                args->index = i + 1;
+                args->value = &value;
+                args->m_pMapKeyValue = &nKeyLength;
+                cb(args);
+                stream += nTotalLength;
+                nSize -= nTotalLength;
+            }
+            break;
+        }
+        case SPROTO_CC_SHORT:
+        case SPROTO_CC_USHORT:
+        {
+            uint64_t nKeyLength = 0;
+            for (int i = 0; i<nCount; i++){
+                if (nSize < CC_SIZE_LENGTH)
+                    return -1;
+                nKeyLength = toword(stream);
+                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + SPROTO_CC_SHORT_SIZE;
+                if (nSize < nTotalLength)
+                    return -1;
+                args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
 
-			args->index = index;
-			args->value = stream;
-			args->length = hsz;
-			args->m_pMapKeyValue = &mapkeyvalue;
-			if (cb(args))
-				return -1;
-			stream += hsz;
-			nSize -= hsz;
-			++index;
-		}
-		break;
-	}
-	case SPROTO_CC_STRUCT:
-	case SPROTO_CC_EXA_CNETBASICVALUE:
-	{
-		int index = 1;
-		for (int i = 0; i < nCount; i++)
-		{
-			if (nSize < nKeyLength)
-				return -1;
-			uint64_t mapkeyvalue = keydecode(stream);
-			stream += nKeyLength;
-			nSize -= nKeyLength;
+                uint64_t value = toword(stream + nKeyLength + CC_SIZE_LENGTH);
+                args->index = i + 1;
+                args->value = &value;
+                args->m_pMapKeyValue = &nKeyLength;
+                cb(args);
+                stream += nTotalLength;
+                nSize -= nTotalLength;
+            }
+            break;
+        }
+        case SPROTO_CC_INT:
+        case SPROTO_CC_UINT:
+        {
+            uint64_t nKeyLength = 0;
+            for (int i = 0; i<nCount; i++){
+                if (nSize < CC_SIZE_LENGTH)
+                    return -1;
+                nKeyLength = toword(stream);
+                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + SPROTO_CC_INT_SIZE;
+                if (nSize < nTotalLength)
+                    return -1;
+                args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
 
-			args->index = index;
-			args->value = stream;
-			args->length = nSize;
-			args->m_pMapKeyValue = &mapkeyvalue;
-			int nReadSize = cb(args);
-			//特殊处理
-			if (nReadSize < 0)
-				return -1;
-			stream += nReadSize;
-			nSize -= nReadSize;
-			++index;
-		}
-		break;
-	}
-	default:
-		return -1;
-	}
+                uint64_t value = todword(stream + nKeyLength + CC_SIZE_LENGTH);
+                args->index = i + 1;
+                args->value = &value;
+                args->m_pMapKeyValue = &nKeyLength;
+                cb(args);
+                stream += nTotalLength;
+                nSize -= nTotalLength;
+            }
+            break;
+        }
+        case SPROTO_CC_LONGLONG:
+        {
+            uint64_t nKeyLength = 0;
+            for (int i = 0; i<nCount; i++){
+                if (nSize < CC_SIZE_LENGTH)
+                    return -1;
+                nKeyLength = toword(stream);
+                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + SPROTO_CC_LONGLONG_SIZE;
+                if (nSize < nTotalLength)
+                    return -1;
+                args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
+
+                uint64_t value = longlongtokey(stream + nKeyLength + CC_SIZE_LENGTH);
+                args->index = i + 1;
+                args->value = &value;
+                args->m_pMapKeyValue = &nKeyLength;
+                cb(args);
+                stream += nTotalLength;
+                nSize -= nTotalLength;
+            }
+            break;
+        }
+        case SPROTO_CC_DOUBLE:
+        {
+            uint64_t nKeyLength = 0;
+            for (int i = 0; i<nCount; i++){
+                if (nSize < CC_SIZE_LENGTH)
+                    return -1;
+                nKeyLength = toword(stream);
+                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + SPROTO_CC_DOUBLE_SIZE;
+                if (nSize < nTotalLength)
+                    return -1;
+                args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
+
+                uint64_t value = longlongtokey(stream + nKeyLength + CC_SIZE_LENGTH);
+                double dValue = *(double*)&value;
+                args->index = i + 1;
+                args->value = &dValue;
+                args->m_pMapKeyValue = &nKeyLength;
+                cb(args);
+                stream += nTotalLength;
+                nSize -= nTotalLength;
+            }
+            break;
+        }
+        case SPROTO_CC_STRING:
+        {
+            uint64_t nKeyLength = 0;
+            for (int i = 0; i<nCount; i++){
+                if (nSize < CC_SIZE_LENGTH)
+                    return -1;
+                nKeyLength = toword(stream);
+                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + CC_SIZE_LENGTH;
+                if (nSize < nTotalLength)
+                    return -1;
+                args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
+                uint32_t hsz = toword(stream + CC_SIZE_LENGTH + nKeyLength);
+                if (nSize < nTotalLength + hsz)
+                    return -1;
+
+                args->index = i + 1;
+                args->value = stream + nTotalLength;
+                args->length = hsz;
+                args->m_pMapKeyValue = &nKeyLength;
+                if (cb(args))
+                    return -1;
+                stream += nTotalLength + hsz;
+                nSize -= nTotalLength + hsz;
+            }
+            break;
+        }
+        case SPROTO_CC_STRUCT:
+        case SPROTO_CC_EXA_CNETBASICVALUE:
+        {
+            uint64_t nKeyLength = 0;
+            for (int i = 0; i<nCount; i++){
+                if (nSize < CC_SIZE_LENGTH)
+                    return -1;
+                nKeyLength = toword(stream);
+                int nTotalLength = CC_SIZE_LENGTH + nKeyLength;
+                if (nSize < nTotalLength)
+                    return -1;
+                args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
+                
+                args->index = i + 1;
+                args->value = stream + nTotalLength;
+                args->length = nSize - nTotalLength;
+                args->m_pMapKeyValue = &nKeyLength;
+                int nReadSize = cb(args);
+                //特殊处理
+                if (nReadSize < 0)
+                    return -1;
+                stream += nTotalLength + nReadSize;
+                nSize -= nTotalLength + nReadSize;
+            }
+            break;
+        }
+        default:
+            return -1;
+        }
+    }
+    else{
+        decode_keymap keydecode = NULL;
+        int nKeyLength = 8;
+        if (args->m_nMapKeyType == SPROTO_CC_CHAR || args->m_nMapKeyType == SPROTO_CC_UCHAR)
+        {
+            keydecode = chartokey;
+            nKeyLength = SPROTO_CC_CHAR_SIZE;
+        }
+        else if (args->m_nMapKeyType == SPROTO_CC_SHORT || args->m_nMapKeyType == SPROTO_CC_USHORT)
+        {
+            keydecode = shorttokey;
+            nKeyLength = SPROTO_CC_SHORT_SIZE;
+        }
+        else if (args->m_nMapKeyType == SPROTO_CC_INT || args->m_nMapKeyType == SPROTO_CC_UINT)
+        {
+            keydecode = inttokey;
+            nKeyLength = SPROTO_CC_INT_SIZE;
+        }
+        else if (args->m_nMapKeyType == SPROTO_CC_LONGLONG)
+        {
+            keydecode = longlongtokey;
+            nKeyLength = SPROTO_CC_LONGLONG_SIZE;
+        }
+        else if (args->m_nMapKeyType == SPROTO_CC_DOUBLE)
+        {
+            keydecode = doubletokey;
+            nKeyLength = SPROTO_CC_DOUBLE_SIZE;
+        }
+        else
+        {
+            assert(0);
+            return 0;
+        }
+        switch (args->type)
+        {
+        case SPROTO_CC_CHAR:
+        case SPROTO_CC_UCHAR:
+        {
+            int nEveryItemSize = nKeyLength + SPROTO_CC_CHAR_SIZE;
+            int nArraySize = nCount * nEveryItemSize;
+            if (nSize < nArraySize)
+                return -1;
+            for (int i = 0; i<nCount; i++)
+            {
+                uint64_t mapkeyvalue = keydecode(stream + i * nEveryItemSize);
+                uint64_t value = stream[i * nEveryItemSize + nKeyLength];
+                args->index = i + 1;
+                args->value = &value;
+                args->m_pMapKeyValue = &mapkeyvalue;
+                cb(args);
+            }
+            stream += nArraySize;
+            break;
+        }
+        case SPROTO_CC_SHORT:
+        case SPROTO_CC_USHORT:
+        {
+            int nEveryItemSize = nKeyLength + SPROTO_CC_SHORT_SIZE;
+            int nArraySize = nCount * nEveryItemSize;
+            if (nSize < nArraySize)
+                return -1;
+            for (int i = 0; i<nCount; i++)
+            {
+                uint64_t mapkeyvalue = keydecode(stream + i * nEveryItemSize);
+                uint64_t value = toword(stream + i * nEveryItemSize + nKeyLength);
+                args->index = i + 1;
+                args->value = &value;
+                args->m_pMapKeyValue = &mapkeyvalue;
+                cb(args);
+            }
+            stream += nArraySize;
+            break;
+        }
+        case SPROTO_CC_INT:
+        case SPROTO_CC_UINT:
+        {
+            int nEveryItemSize = nKeyLength + SPROTO_CC_INT_SIZE;
+            int nArraySize = nCount * nEveryItemSize;
+            if (nSize < nArraySize)
+                return -1;
+            for (int i = 0; i<nCount; i++)
+            {
+                uint64_t mapkeyvalue = keydecode(stream + i * nEveryItemSize);
+                uint64_t value = todword(stream + i * nEveryItemSize + nKeyLength);
+                args->index = i + 1;
+                args->value = &value;
+                args->m_pMapKeyValue = &mapkeyvalue;
+                cb(args);
+            }
+            stream += nArraySize;
+            break;
+        }
+        case SPROTO_CC_LONGLONG:
+        {
+            int nEveryItemSize = nKeyLength + SPROTO_CC_LONGLONG_SIZE;
+            int nArraySize = nCount * nEveryItemSize;
+            if (nSize < nArraySize)
+                return -1;
+            for (int i = 0; i<nCount; i++)
+            {
+                uint64_t mapkeyvalue = keydecode(stream + i * nEveryItemSize);
+                uint64_t value = longlongtokey(stream + i * nEveryItemSize + nKeyLength);
+                args->index = i + 1;
+                args->value = &value;
+                args->m_pMapKeyValue = &mapkeyvalue;
+                cb(args);
+            }
+            stream += nArraySize;
+            break;
+        }
+        case SPROTO_CC_DOUBLE:
+        {
+            int nEveryItemSize = nKeyLength + SPROTO_CC_DOUBLE_SIZE;
+            int nArraySize = nCount * nEveryItemSize;
+            if (nSize < nArraySize)
+                return -1;
+            for (int i = 0; i<nCount; i++)
+            {
+                uint64_t mapkeyvalue = keydecode(stream + i * nEveryItemSize);
+                uint64_t value = longlongtokey(stream + i * nEveryItemSize + nKeyLength);
+                double dValue = *(double*)&value;
+                args->index = i + 1;
+                args->value = &dValue;
+                args->m_pMapKeyValue = &mapkeyvalue;
+                cb(args);
+            }
+            stream += nArraySize;
+            break;
+        }
+        case SPROTO_CC_STRING:
+        {
+            int nEveryItemSize = nKeyLength + CC_SIZE_LENGTH;
+            uint32_t hsz;
+            for (int i = 0; i < nCount; i++)
+            {
+                if (nSize < nEveryItemSize)
+                    return -1;
+                uint64_t mapkeyvalue = keydecode(stream);
+
+                hsz = toword(stream);
+                stream += nEveryItemSize;
+                nSize -= nEveryItemSize;
+                if (nSize < hsz)
+                    return -1;
+
+                args->index = i + 1;
+                args->value = stream;
+                args->length = hsz;
+                args->m_pMapKeyValue = &mapkeyvalue;
+                if (cb(args))
+                    return -1;
+                stream += hsz;
+                nSize -= hsz;
+            }
+            break;
+        }
+        case SPROTO_CC_STRUCT:
+        case SPROTO_CC_EXA_CNETBASICVALUE:
+        {
+            int index = 1;
+            for (int i = 0; i < nCount; i++)
+            {
+                if (nSize < nKeyLength)
+                    return -1;
+                uint64_t mapkeyvalue = keydecode(stream);
+                stream += nKeyLength;
+                nSize -= nKeyLength;
+
+                args->index = index;
+                args->value = stream;
+                args->length = nSize;
+                args->m_pMapKeyValue = &mapkeyvalue;
+                int nReadSize = cb(args);
+                //特殊处理
+                if (nReadSize < 0)
+                    return -1;
+                stream += nReadSize;
+                nSize -= nReadSize;
+                ++index;
+            }
+            break;
+        }
+        default:
+            return -1;
+        }
+    }
 	return stream - pResStream;
 }
 
