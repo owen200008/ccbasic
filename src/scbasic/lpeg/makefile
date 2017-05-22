@@ -1,5 +1,5 @@
 LIBNAME = lpeg
-LUADIR = ../lua/
+LUADIR = ../../../3rd/lua/src
 
 COPT = -O2
 # COPT = -DLPEG_DEBUG -g

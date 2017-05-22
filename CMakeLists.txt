@@ -1,50 +1,37 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 2.8)
 
 project(basiclib)
 
-include_directories(${PROJECT_SOURCE_DIR}/src/inc)
-include_directories(${PROJECT_SOURCE_DIR}/src/scbasic)
-include_directories(${PROJECT_SOURCE_DIR}/3rd/cryptopp)
-set(VERSION_MAJOR 1)
-set(VERSION_MINOR 0)
-set(VERSION_BUGOR 0)
-configure_file(
-    "${PROJECT_SOURCE_DIR}/src/inc/basicversion.h.in"
-    "${PROJECT_SOURCE_DIR}/src/inc/basicversion.h"
-)
-add_subdirectory(${PROJECT_SOURCE_DIR}/3rd/cryptopp ${PROJECT_SOURCE_DIR}/3rd/cryptopp/build)
-option(BUILD_ANDROID "Build android library" OFF)
-option(BUILD_IOS "Build android library" OFF)
-option(BUILD_STATIC "Build static library" ON)
-option(BUILD_SHARED "Build shared library" ON)
+function(buildcryptopp)
+	set(DISABLE_SSSE3 ON CACHE BOOL "flags")
+	add_subdirectory(${PROJECT_SOURCE_DIR}/3rd/cryptopp ${PROJECT_SOURCE_DIR}/3rd/cryptopp/build)
+endfunction()
 
-#system set
-add_definitions(-DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA )
-if(MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP" CACHE STRING "flags" FORCE)
-	set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} /MP" CACHE STRING "flags" FORCE)
-	enable_language(ASM_MASM)
-	add_definitions(-D_USE_SYS_MALLOC -DUNICODE -D_UNICODE -D__BASICWINDOWS)
-	include_directories(${PROJECT_SOURCE_DIR}/3rd/libevent/include)
-	include_directories(${PROJECT_SOURCE_DIR}/3rd/libevent/WIN32-Code/nmake)
-else()
-	enable_language(ASM_ATT)
-	if(BUILD_ANDROID)
-		add_definitions(-D_USE_SYS_MALLOC -D__ANDROID -DANDROID)
+function(buildbasiclib)
+	#system set
+	add_definitions(-DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA )
+	if(MSVC)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+		add_definitions(-D_USE_SYS_MALLOC -DUNICODE -D_UNICODE -D__BASICWINDOWS)
+		include_directories(${PROJECT_SOURCE_DIR}/3rd/libevent/include)
+		include_directories(${PROJECT_SOURCE_DIR}/3rd/libevent/WIN32-Code/nmake)
 	else()
-		if(BUILD_IOS)
-			add_definitions(-D_USE_SYS_MALLOC -D__MAC -DMAC)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
+		if(BUILD_ANDROID)
+			add_definitions(-D_USE_SYS_MALLOC -D__ANDROID -DANDROID)
 		else()
-		add_definitions(-DLINUX -D__LINUX)
-			include_directories(${PROJECT_SOURCE_DIR}/3rd/jemalloc/include)
+			if(BUILD_IOS)
+				add_definitions(-D_USE_SYS_MALLOC -D__MAC -DMAC)
+			else()
+				add_definitions(-DLINUX -D__LINUX)
+				include_directories(${PROJECT_SOURCE_DIR}/3rd/jemalloc/include)
+			endif()
 		endif()
 	endif()
-endif()
+	set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/libs)
 
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/libs)
-
-set(basiclib_SOURCES
-	${PROJECT_SOURCE_DIR}/src/inc/basic_func.cpp
+	set(basiclib_SOURCES ${PROJECT_SOURCE_DIR}/src/inc/basic_func.cpp
 	${PROJECT_SOURCE_DIR}/src/algorithm/md5.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/sha1/sha1.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/xtra.cpp
@@ -125,17 +112,20 @@ set(basiclib_SOURCES
 	${PROJECT_SOURCE_DIR}/src/coroutine/coctx_swap_win.asm
 		)
 
-if (BUILD_STATIC)
-	add_library(basiclib STATIC ${basiclib_SOURCES})
-endif()
-if (BUILD_SHARED)
-	add_library(basicdll SHARED ${basiclib_SOURCES})
-	set_target_properties(basicdll PROPERTIES LINK_FLAGS "/SAFESEH:NO")
-	target_link_libraries(basicdll ${PROJECT_SOURCE_DIR}/libs/FLzlib13.lib) 
-	target_link_libraries(basicdll ${PROJECT_SOURCE_DIR}/3rd/libevent/libevent.lib)
-endif()
+	if (BUILD_STATIC)
+		add_library(basiclib STATIC ${basiclib_SOURCES})
+	endif()
+	if (BUILD_SHARED)
+		add_library(basicdll SHARED ${basiclib_SOURCES})
+		set_target_properties(basicdll PROPERTIES LINK_FLAGS "/SAFESEH:NO")
+		target_link_libraries(basicdll ${PROJECT_SOURCE_DIR}/libs/FLzlib13.lib) 
+		target_link_libraries(basicdll ${PROJECT_SOURCE_DIR}/3rd/libevent/libevent.lib)
+	endif()
+endfunction()
 
-set(basicTest_SOURCES
+function(buildbasictest)
+
+	set(basicTest_SOURCES
 	${PROJECT_SOURCE_DIR}/src/scbasic/commu/basicclient.cpp
     ${PROJECT_SOURCE_DIR}/src/scbasic/commu/ipverify.cpp
     ${PROJECT_SOURCE_DIR}/src/scbasic/commu/servertemplate.cpp
@@ -146,11 +136,39 @@ set(basicTest_SOURCES
     ${PROJECT_SOURCE_DIR}/basic_test/net/nettest.cpp
 		)
 
-if (BUILD_STATIC)
-	add_executable(basicTest ${basicTest_SOURCES}) 
-	target_link_libraries(basicTest basiclib)
-	target_link_libraries(basicTest ${PROJECT_SOURCE_DIR}/libs/FLzlib13.lib) 
-	target_link_libraries(basicTest ${PROJECT_SOURCE_DIR}/3rd/libevent/libevent.lib)
-	target_link_libraries(basicTest cryptopp-static)
-	set_target_properties(basicTest PROPERTIES LINK_FLAGS "/SAFESEH:NO")
+	if (BUILD_STATIC)
+		add_executable(basicTest ${basicTest_SOURCES}) 
+		target_link_libraries(basicTest basiclib)
+		target_link_libraries(basicTest ${PROJECT_SOURCE_DIR}/libs/FLzlib13.lib) 
+		target_link_libraries(basicTest ${PROJECT_SOURCE_DIR}/3rd/libevent/libevent.lib)
+		target_link_libraries(basicTest cryptopp-static)
+		set_target_properties(basicTest PROPERTIES LINK_FLAGS "/SAFESEH:NO")
+	endif()
+endfunction()
+
+include_directories(${PROJECT_SOURCE_DIR}/src/inc)
+include_directories(${PROJECT_SOURCE_DIR}/src/scbasic)
+include_directories(${PROJECT_SOURCE_DIR}/3rd/cryptopp)
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 0)
+set(VERSION_BUGOR 0)
+configure_file(
+    "${PROJECT_SOURCE_DIR}/src/inc/basicversion.h.in"
+    "${PROJECT_SOURCE_DIR}/src/inc/basicversion.h"
+)
+option(BUILD_ANDROID "Build android library" OFF)
+option(BUILD_IOS "Build android library" OFF)
+option(BUILD_STATIC "Build static library" ON)
+option(BUILD_SHARED "Build shared library" ON)
+if(MSVC)
+	enable_language(ASM_MASM)
+else()
+	enable_language(ASM)
 endif()
+
+
+buildcryptopp()
+buildbasiclib()
+buildbasictest()
+
+

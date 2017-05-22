@@ -71,6 +71,9 @@ extern const byte numsiblings[];
 #ifdef __BASICWINDOWS
 #define _LPEG_DLL_API 	__declspec(dllexport)
 #endif
+#ifndef _LPEG_DLL_API
+#define _LPEG_DLL_API
+#endif
 int _LPEG_DLL_API luaopen_lpeg(lua_State *L);
 
 
