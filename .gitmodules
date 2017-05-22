@@ -20,9 +20,6 @@
 	path = 3rd/pocketsphinx
 	url = https://github.com/cmusphinx/pocketsphinx.git
 
-[submodule "3rd/libevent"]
-	path = 3rd/libevent
-	url = https://github.com/libevent/libevent.git
 [submodule "3rd/cryptopp"]
 	path = 3rd/cryptopp
 	url = https://github.com/weidai11/cryptopp.git

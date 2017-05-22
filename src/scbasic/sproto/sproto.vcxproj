@@ -120,7 +120,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <OutputFile>../../../lib/$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>../../../lib/lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../../../lib/lua53.lib;../../../lib/basic13.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_5.1|Win32'">

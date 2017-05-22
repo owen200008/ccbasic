@@ -4,10 +4,12 @@ ccbasic是一个C++的基础库，目的是跨手机（ios，android），pc（l
 ## 编译 
 ```
 For Windows：
-basic.sln vs2013以上的版本
+mkdir build & cd build
+cmake ..
 
 For Linux
-make -f makefile
+mkdir build & cd build
+cmake ..
 
 For Mac
 目前没有用到

@@ -7,6 +7,15 @@ function(buildcryptopp)
 	add_subdirectory(${PROJECT_SOURCE_DIR}/3rd/cryptopp ${PROJECT_SOURCE_DIR}/3rd/cryptopp/build)
 endfunction()
 
+function(buildlibevent)
+	set(EVENT__DISABLE_OPENSSL ON CACHE BOOL "flags")
+	add_subdirectory(${PROJECT_SOURCE_DIR}/3rd/libevent ${PROJECT_SOURCE_DIR}/3rd/libevent/build)
+endfunction()
+
+function(buildsproto)
+	add_subdirectory(${PROJECT_SOURCE_DIR}/src/scbasic/sproto ${PROJECT_SOURCE_DIR}/3rd/src/scbasic/sproto/build)
+endfunction()
+
 function(buildbasiclib)
 	#system set
 	add_definitions(-DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA )
@@ -166,9 +175,10 @@ else()
 	enable_language(ASM)
 endif()
 
-
+buildlibevent()
 buildcryptopp()
 buildbasiclib()
 buildbasictest()
+buildsproto()
 
 
