@@ -129,7 +129,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <OutputFile>../../../lib/$(TargetName)51$(TargetExt)</OutputFile>
-      <AdditionalDependencies>$(SolutionDir)/../../cocos2d-x/external/lua/luajit/prebuilt/win32/lua51-2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)/../../cocos2d-x/external/lua/luajit/prebuilt/win32/lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

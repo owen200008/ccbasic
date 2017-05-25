@@ -24,3 +24,5 @@
 /src/util/concurrentqueue2
 /build/CMakeFiles
 /build
+*.stamp
+/3rd/src/scbasic/sproto/build

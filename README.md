@@ -1,23 +1,18 @@
 ## ccbasic
-ccbasic是一个C++的基础库，目的是跨手机（ios，android），pc（linux，windows，mac）的通用基础库
+ccbasic is c++ basic lib. make it support ios, android, linux, windows.
 
-## 编译 
+## compile
 ```
-For Windows：
-basic.sln vs2013以上的版本
+It support cmake compile. it contain cryptopp so please make sure your cpu support SSSE3 or AES-NI and so on. If not support please add param to disable. 
 
-For Linux
-make -f makefile
+For windows, please open the Native Tools Command and run
+mkdir build && cd build
+cmake ..
 
-For Mac
-目前没有用到
+For others
+mkdir build && cd build
+cmake ..
 
-For Android
-Android.mk
-
-For IOS
-lib/mac
-```
 ## 功能
 ```
 1.内存池的管理
