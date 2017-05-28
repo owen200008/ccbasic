@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.1)
+if (WIN32 OR APPLE)
+    cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+else()
+    cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
+endif()
 
 project(basiclibTest)
 
