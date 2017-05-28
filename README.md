@@ -3,7 +3,9 @@ ccbasic is c++ basic lib. make it support ios, android, linux, windows.
 
 ## compile
 ```
-It support cmake compile. it contain cryptopp so please make sure your cpu support SSSE3 or AES-NI and so on. If not support please add param to disable. 
+It support cmake compile. 
+It contain cryptopp so please make sure your cpu support SSSE3 or AES-NI and so on. 
+If not support please add param to disable. 
 
 For windows, please open the Native Tools Command and run
 mkdir build && cd build
@@ -12,8 +14,8 @@ cmake ..
 For others
 mkdir build && cd build
 cmake ..
-
-## 功能
+```
+## modules
 ```
 1.内存池的管理
 2.基础字符串
@@ -31,7 +33,7 @@ cmake ..
 14.通用日志和错误模块
 15.文件处理，压缩
 ```
-## 附加功能
+## extra modules
 ```
 1.通用网络框架实现（C,S）
 2.通用http框架实现

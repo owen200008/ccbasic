@@ -26,3 +26,4 @@
 /build
 *.stamp
 /3rd/src/scbasic/sproto/build
+/src/build

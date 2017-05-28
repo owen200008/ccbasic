@@ -14,6 +14,7 @@
 #define BASIC_BASICCLIENT_H
 
 #include "../../inc/basic.h"
+#include "../scbasic/net/net.h"
 #include "../scbasic_head.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

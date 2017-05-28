@@ -133,11 +133,6 @@
 #include "../coroutine/coroutineplus.h"
 #include "../mem/bitstream.h"
 
-//通讯定义
-#ifndef BASIC_NO_ADD_NET
-#include "../net/sendbuffer.h"
-#include "../net/net.h"
-#endif
 //
 //RC5
 //#include "../algorithm/rc5/rc5.h"

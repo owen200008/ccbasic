@@ -8,6 +8,7 @@
 #define INC_SERVERTEMPLATE_H
 
 #include "ipverify.h"
+#include "../scbasic/net/net.h"
 
 #pragma warning (push)
 #pragma warning (disable: 4251)

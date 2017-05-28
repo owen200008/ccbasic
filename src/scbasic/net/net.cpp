@@ -1,8 +1,6 @@
 #include "../inc/basic.h"
-#include "sendbuffer.h"
 #include "net.h"
 #ifdef __BASICWINDOWS
-#pragma comment(lib, "ws2_32.lib")
 #elif defined(__LINUX)
 #include <signal.h>
 #endif

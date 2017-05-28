@@ -29,32 +29,32 @@ if(BASICLIB_BUILD_JEMALLOC)
 endif()
 
 #extra src
-set(BasicLibExtra_Src "")
+set(BasicLibExtra_Src)
 #flags
 set(BasicLibCMakeCXX_FLAGS ${CMAKE_CXX_FLAGS})
 set(BasicLibCMakeC_FLAGS ${CMAKE_C_FLAGS})
 #define
-set(BasicLibDefinitions "-DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA")
+set(BasicLibDefinitions -DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA)
 #link
-set(BasicLibLinks "")
+set(BasicLibLinks)
 if(MSVC)
 	enable_language(ASM_MASM)
-	set(BasicLibExtra_Src, "${BasicLibExtra_Src} ${BasicLibSrcPath}/coroutine/coctx_swap_win.asm")
+	set(BasicLibExtra_Src ${BasicLibExtra_Src} ${BasicLibSrcPath}/coroutine/coctx_swap_win.asm)
 	set(BasicLibCMakeCXX_FLAGS "${BasicLibCMakeCXX_FLAGS} /MP")
 	set(BasicLibCMakeC_FLAGS "${BasicLibCMakeC_FLAGS} /MP")
-	set(BasicLibDefinitions "${BasicLibDefinitions} -D_USE_SYS_MALLOC -DUNICODE -D_UNICODE -D__BASICWINDOWS")
-	set(BasicLibLinks "${BasicLibLinks} ${BasicLibSrcPath}/../libs/FLzlib13.lib")
+	set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC -DUNICODE -D_UNICODE -D__BASICWINDOWS)
+	set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../libs/FLzlib13.lib)
 else()
 	enable_language(ASM)
-	set(BasicLibExtra_Src, "${BasicLibExtra_Src} ${BasicLibSrcPath}/coroutine/coctx_swap.S")
+	set(BasicLibExtra_Src "${BasicLibExtra_Src} ${BasicLibSrcPath}/coroutine/coctx_swap.S")
 	set(BasicLibCMakeCXX_FLAGS "${BasicLibCMakeCXX_FLAGS} --std=c++11")
 	if(BASICLIB_BUILD_ANDROID)
-		set(BasicLibDefinitions "${BasicLibDefinitions} -D_USE_SYS_MALLOC -D__ANDROID -DANDROID")
+		set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC -D__ANDROID -DANDROID)
 	else()
 		if(BASICLIB_BUILD_IOS)
-			set(BasicLibDefinitions "${BasicLibDefinitions} -D_USE_SYS_MALLOC -D__MAC -DMAC")
+			set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC -D__MAC -DMAC)
 		else()
-			set(BasicLibDefinitions "${BasicLibDefinitions} -DLINUX -D__LINUX")
+			set(BasicLibDefinitions ${BasicLibDefinitions} -DLINUX -D__LINUX)
 		endif()
 	endif()
 endif()
@@ -65,7 +65,9 @@ add_definitions(${BasicLibDefinitions})
 set(CMAKE_CXX_FLAGS ${BasicLibCMakeCXX_FLAGS})
 set(CMAKE_C_FLAGS ${BasicLibCMakeC_FLAGS})
 #output
-set(LIBRARY_OUTPUT_PATH ${BasicLibSrcPath}/../libs)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BasicLibSrcPath}/../libs)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${BasicLibSrcPath}/../libs)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${BasicLibSrcPath}/../libs)
 
 #src
 set(basiclib_SOURCES ${BasicLibSrcPath}/inc/basic_func.cpp
@@ -104,8 +106,6 @@ set(basiclib_SOURCES ${BasicLibSrcPath}/inc/basic_func.cpp
    ${BasicLibSrcPath}/mem/mem.cpp
    ${BasicLibSrcPath}/mem/smartbuffer.cpp
    ${BasicLibSrcPath}/mem/tlstaticbuffer.cpp
-   ${BasicLibSrcPath}/net/net.cpp
-   ${BasicLibSrcPath}/net/sendbuffer.cpp
    ${BasicLibSrcPath}/sqlite/shell.c
    ${BasicLibSrcPath}/sqlite/sqlite3db.cpp
    ${BasicLibSrcPath}/sqlite/sqlite3dbquery.cpp
@@ -153,7 +153,7 @@ if (BASICLIB_BUILD_STATIC)
 endif()
 
 if(BASICLIB_BUILD_SHARED)
-	add_library(basicdll SHARED ${basiclib_SOURCES} ${BasicLibExtra_Src})
+	add_library(basicdll SHARED ${basiclib_SOURCES}  ${BasicLibExtra_Src})
 	set_target_properties(basicdll PROPERTIES LINK_FLAGS "/SAFESEH:NO")
 	target_link_libraries(basicdll ${BasicLibLinks}) 
 endif()
