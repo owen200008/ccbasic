@@ -1,0 +1,16 @@
+CC  = gcc
+CXX = g++
+AR=ar
+
+JEMALLOC_PATH := ../../3rd/jemalloc
+JEMALLOC_STATICLIB := $(JEMALLOC_PATH)/lib/libjemalloc_pic.a
+JEMALLOC_INC := $(JEMALLOC_PATH)/include/jemalloc
+$(JEMALLOC_STATICLIB) : $(JEMALLOC_PATH)/Makefile
+	cd $(JEMALLOC_PATH) && $(MAKE) CC=$(CC)
+$(JEMALLOC_PATH)/Makefile :
+	cd $(JEMALLOC_PATH) && ./autogen.sh --with-jemalloc-prefix=je_ --disable-valgrind
+	
+all : $(JEMALLOC_STATICLIB)
+
+
+
