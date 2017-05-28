@@ -225,10 +225,8 @@ template<class StructData>
 class CMessageQueueLock : public CMessageQueue<StructData>
 {
 public:
-    typedef 
 	CMessageQueueLock(int nDefaultQueueSize = DEFAULT_QUEUE_SIZE, int nOverLoadLength = DEFAULT_QUEUE_OVERLOAD) :
 		CMessageQueue<StructData>(nDefaultQueueSize, nOverLoadLength){
-
 	}
 	virtual ~CMessageQueueLock(){
 
