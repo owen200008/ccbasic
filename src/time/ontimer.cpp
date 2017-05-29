@@ -23,6 +23,8 @@ int gettimeofday(struct timeval *tp, void *tzp)
 
 	return (0);
 }
+#else
+#include<sys/time.h>
 #endif
 
 // centisecond: 1/100 second

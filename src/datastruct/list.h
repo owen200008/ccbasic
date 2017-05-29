@@ -29,7 +29,6 @@ public:
 	typedef typename list<TYPE, DEFAULT_ALLOCATOR<TYPE> >::iterator iterator;
 	typedef typename list<TYPE, DEFAULT_ALLOCATOR<TYPE> >::const_iterator const_iterator;
 	typedef CList<TYPE, ARG_TYPE> _Self;
-	typedef typename list<TYPE, DEFAULT_ALLOCATOR<TYPE> >::_Nodeptr _Nodeptr;
 // Construction
 	CList();
 
