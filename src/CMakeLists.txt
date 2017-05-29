@@ -67,13 +67,15 @@ add_definitions(${BasicLibDefinitions})
 #flags
 set(CMAKE_CXX_FLAGS ${BasicLibCMakeCXX_FLAGS})
 set(CMAKE_C_FLAGS ${BasicLibCMakeC_FLAGS})
-#output
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BasicLibSrcPath}/../libs)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${BasicLibSrcPath}/../libs)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${BasicLibSrcPath}/../libs)
 
 #src
-set(basiclib_SOURCES ${BasicLibSrcPath}/inc/basic_func.cpp
+set(basiclib_SOURCES 
+	${BasicLibSrcPath}/inc/basic.h
+	${BasicLibSrcPath}/inc/basic_def.h
+	${BasicLibSrcPath}/algorithm/md5.h
+	${BasicLibSrcPath}/coroutine/libco_coroutine.h
+	${BasicLibSrcPath}/coroutine/coroutineplus.h
+   ${BasicLibSrcPath}/inc/basic_func.cpp
    ${BasicLibSrcPath}/algorithm/md5.cpp
    ${BasicLibSrcPath}/algorithm/sha1/sha1.cpp
    ${BasicLibSrcPath}/algorithm/xtra.cpp

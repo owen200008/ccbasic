@@ -145,9 +145,19 @@ CCorutinePlusPool::~CCorutinePlusPool()
 		delete c;
 	}
 	m_vtCorutinePlus.clear();
-    m_vtCreateStack.Drop_Queue([&](char** c)->void{
-        basiclib::BasicDeallocate(*c);
-    });
+	char* pBuf[1024] = { 0 };
+	int nIndex = 0;
+	for (auto& c : m_vtStacks) {
+		pBuf[nIndex++] = c;
+		//返还堆栈
+		if (nIndex == 1024) {
+			m_balance.ReleaseExtraStack(pBuf, nIndex);
+			nIndex = 0;
+		}
+	}
+	if (nIndex > 0) {
+		m_balance.ReleaseExtraStack(pBuf, nIndex);
+	}
 }
 
 bool CCorutinePlusPool::InitCorutine(int nDefaultSize, int nLimitCorutineCount, uint16_t nShareStackSize, uint16_t nMaxShareStackSize)
@@ -174,9 +184,9 @@ bool CCorutinePlusPool::InitCorutine(int nDefaultSize, int nLimitCorutineCount, 
     {
         //创建堆栈
         m_vtStacks.reserve(nShareStackSize * 2 + 1);
-        for (int i = 0; i < nShareStackSize; i++){
-            m_vtStacks.push_back(CreateShareStack());
-        }
+		for (int i = 0; i < nShareStackSize; i++) {
+			m_vtStacks.push_back(CreateShareStack());
+		}
         m_usShareStackSize = m_vtStacks.size();
         m_usRealShareStackSize = m_usShareStackSize;
     }
@@ -186,6 +196,7 @@ bool CCorutinePlusPool::InitCorutine(int nDefaultSize, int nLimitCorutineCount, 
 void CCorutinePlus::InitStackAndPool(CCorutinePlusPool* pPool, char* pStack){
     m_pCreatePool = pPool;
     m_ctx.ss_sp = pStack;
+	ASSERT(pStack != nullptr);
 }
 
 
@@ -334,42 +345,35 @@ char* CCorutinePlusPool::GetShareStack(bool bGlobal){
             for (int i = 0; i < nGetCount; i++){
                 m_vtStacks[m_usShareStackSize++] = pBuf[i];
             }
-            return GetShareStack(false);
+			return GetShareStack(false);
         }
-        return CreateShareStack();
+		return CreateShareStack();
     }
     return m_vtStacks[--m_usShareStackSize];
 }
 
 char* CCorutinePlusPool::CreateShareStack(){
-    char* pRet = nullptr;
-    if (m_vtCreateStack.MQPop(&pRet) == 0){
-        return pRet;
-    }
-    
-    int nCreateDefaultSize = m_usRealShareStackSize;
-    if (nCreateDefaultSize > 1024)
-        nCreateDefaultSize = 1024;
-    else if (nCreateDefaultSize < 10)
-        nCreateDefaultSize = 10;
-    pRet = (char*)basiclib::BasicAllocate(nCreateDefaultSize * STACK_SIZE);
-    //第一个返回
-    char* pAddBegin = pRet + STACK_SIZE;
-    for (int i = 1; i < nCreateDefaultSize; i++){
-        m_vtCreateStack.MQPush(&pAddBegin);
-        pAddBegin += STACK_SIZE;
-    }
-    m_nCreateTimesShareStack += nCreateDefaultSize;
-    return pRet;
+	char* pRet = nullptr;
+	if (m_vtCreateStack.MQPop(&pRet) == 0)
+		return pRet;
+
+	int nCreateSize = 0;
+	pRet = m_balance.GetNewCreateStack(m_nCreateTimesShareStack, nCreateSize);
+	char* pAddBegin = pRet + STACK_SIZE;
+	for (int i = 1; i < nCreateSize; i++) {
+		m_vtCreateStack.MQPush(&pAddBegin);
+		pAddBegin += STACK_SIZE;
+	}
+	m_nCreateTimesShareStack++;
+	return pRet;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
-CCorutinePlusPoolBalance::CCorutinePlusPoolBalance()
-{
-
+CCorutinePlusPoolBalance::CCorutinePlusPoolBalance(){
 }
-CCorutinePlusPoolBalance::~CCorutinePlusPoolBalance()
-{
-
+CCorutinePlusPoolBalance::~CCorutinePlusPoolBalance(){
+	m_queueCreateStack.Drop_Queue([](char**c)->void {
+		basiclib::BasicDeallocate(*c);
+	});
 }
 //! 获取多余的corutine
 int CCorutinePlusPoolBalance::GetCorutineMore(CCorutinePlus* pPTR[], int nCount){
@@ -412,6 +416,17 @@ int CCorutinePlusPoolBalance::GetExtraCorutineCount(){
 }
 int CCorutinePlusPoolBalance::GetExtraShareStackCount(){
     return m_queueExtraStack.GetMQLength();
+}
+//! 获取创建的堆栈
+char* CCorutinePlusPoolBalance::GetNewCreateStack(int nTimes, int& nCreateSize) {
+	nCreateSize = pow(16, nTimes + 1);
+	if (nCreateSize < 16)
+		nCreateSize = 16;
+	else if (nCreateSize > 1024)
+		nCreateSize = 1024;
+	char* pRet = (char*)basiclib::BasicAllocate(nCreateSize * STACK_SIZE);
+	m_queueCreateStack.MQPush(&pRet);
+	return pRet;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 CCorutinePlusPoolMgr::CCorutinePlusPoolMgr()

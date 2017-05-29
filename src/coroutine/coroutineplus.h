@@ -190,9 +190,13 @@ protected:
 
     int GetExtraCorutineCount();
     int GetExtraShareStackCount();
+
+	//! 获取创建的堆栈
+	char* GetNewCreateStack(int nTimes, int& nCreateSize);
 protected:
     basiclib::CMessageQueueLock<char*>              m_queueExtraStack;
     basiclib::CMessageQueueLock<CCorutinePlus*>     m_queueExtraCorutine;
+	basiclib::CMessageQueueLock<char*>              m_queueCreateStack;
     friend class CCorutinePlusPool;
 };
 
