@@ -692,7 +692,7 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
             {
                 if (size < nNeedLength)
                     return -1;
-                int v = 0;
+                uint64_t v = 0;
                 args->value = &v;
                 args->length = sizeof(v);
                 sz = cb(args);
@@ -732,7 +732,7 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
             {
                 if (size < nNeedLength)
                     return -1;
-                int v = 0;
+                double v = 0;
                 args->value = &v;
                 args->length = sizeof(v);
                 sz = cb(args);

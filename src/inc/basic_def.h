@@ -57,6 +57,8 @@
 #ifdef basicdll_EXPORTS
 #ifdef __BASICWINDOWS
 #define _BASIC_DLL_API 	__declspec(dllexport)
+#else
+#define _BASIC_DLL_API
 #endif
 #else
 #define _BASIC_DLL_API

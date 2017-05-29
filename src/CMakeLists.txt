@@ -19,15 +19,8 @@ option(BASICLIB_BUILD_STATIC "Build static library" ON)
 option(BASICLIB_BUILD_SHARED "Build shared library" ON)
 option(BASICLIB_BUILD_JEMALLOC "Build Use JEMALLOC" OFF)
 
-if(BASICLIB_BUILD_JEMALLOC)
-    if(MSVC)
-	message(WARNING, "windows not support jemalloc")
-    else()
-	execute_process(COMMAND make -f makefile_jemalloc -j4
-			WORKING_DIRECTORY ${BasicLibSrcPath}/script/)
-    endif()
-endif()
-
+#include 
+include_directories(${BasicLibJemallocSrcPath}/include/jemalloc)
 #extra src
 set(BasicLibExtra_Src)
 #flags
@@ -37,9 +30,16 @@ set(BasicLibCMakeC_FLAGS ${CMAKE_C_FLAGS})
 set(BasicLibDefinitions -DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA)
 #link
 set(BasicLibLinks)
+
 if(MSVC)
+	if(BASICLIB_BUILD_JEMALLOC)
+		message(WARNING, "windows not support jemalloc")
+	endif()
 	enable_language(ASM_MASM)
-	set(BasicLibExtra_Src ${BasicLibExtra_Src} ${BasicLibSrcPath}/coroutine/coctx_swap_win.asm)
+	set(BasicLibExtra_Src ${BasicLibExtra_Src} 
+		${BasicLibSrcPath}/coroutine/coctx_swap_win.asm
+   		${BasicLibSrcPath}/exception/call_stack_msvc.cpp
+   		${BasicLibSrcPath}/exception/StackWalker.cpp)
 	set(BasicLibCMakeCXX_FLAGS "${BasicLibCMakeCXX_FLAGS} /MP")
 	set(BasicLibCMakeC_FLAGS "${BasicLibCMakeC_FLAGS} /MP")
 	set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC -DUNICODE -D_UNICODE -D__BASICWINDOWS)
@@ -54,6 +54,8 @@ else()
 		if(BASICLIB_BUILD_IOS)
 			set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC -D__MAC -DMAC)
 		else()
+			execute_process(COMMAND make -f makefile_jemalloc -j4
+				WORKING_DIRECTORY ${BasicLibSrcPath}/script/)
 			set(BasicLibDefinitions ${BasicLibDefinitions} -DLINUX -D__LINUX)
 		endif()
 	endif()
@@ -88,11 +90,9 @@ set(basiclib_SOURCES ${BasicLibSrcPath}/inc/basic_func.cpp
    ${BasicLibSrcPath}/debug/debug_win.cpp
    ${BasicLibSrcPath}/dll/loaddll.cpp
    ${BasicLibSrcPath}/exception/call_stack_gcc.cpp
-   ${BasicLibSrcPath}/exception/call_stack_msvc.cpp
    ${BasicLibSrcPath}/exception/exception.cpp
    ${BasicLibSrcPath}/exception/exception_linux.cpp
    ${BasicLibSrcPath}/exception/exception_win.cpp
-   ${BasicLibSrcPath}/exception/StackWalker.cpp
    ${BasicLibSrcPath}/file/diskfile.cpp
    ${BasicLibSrcPath}/file/filefind.cpp
    ${BasicLibSrcPath}/file/fileman.cpp
