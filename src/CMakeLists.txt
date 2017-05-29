@@ -13,6 +13,24 @@ configure_file(
     "${BasicLibSrcPath}/inc/basicversion.h"
 )
 
+macro(source_group_by_dir source_files)
+    if(MSVC)
+        set(sgbd_cur_dir ${PROJECT_SOURCE_DIR})
+        foreach(sgbd_file ${${source_files}})
+            string(REGEX REPLACE "${sgbd_cur_dir}/" "" sgbd_fpath ${sgbd_file})
+			string(REGEX REPLACE "(.*)/" "" sgbd_group_name ${sgbd_fpath})
+			string(COMPARE EQUAL ${sgbd_fpath} ${sgbd_group_name} sgbd_nogroup)
+			if(sgbd_nogroup)
+				set(sgbd_group_name "//")
+			else()
+				string(REGEX REPLACE "/${sgbd_group_name}" "" sgbd_real_group_name ${sgbd_fpath})
+				string(REPLACE "/" "\\" sgbd_real_group_name ${sgbd_real_group_name})
+			endif()
+			source_group(${sgbd_real_group_name} FILES ${sgbd_file})
+        endforeach(sgbd_file)
+    endif(MSVC)
+endmacro(source_group_by_dir)
+
 option(BASICLIB_BUILD_ANDROID "Build android library" OFF)
 option(BASICLIB_BUILD_IOS "Build android library" OFF)
 option(BASICLIB_BUILD_STATIC "Build static library" ON)
@@ -33,7 +51,7 @@ set(BasicLibLinks)
 
 if(MSVC)
 	if(BASICLIB_BUILD_JEMALLOC)
-		message(WARNING, "windows not support jemalloc")
+		message(WARNING "windows not support jemalloc")
 	endif()
 	enable_language(ASM_MASM)
 	set(BasicLibExtra_Src ${BasicLibExtra_Src} 
@@ -70,11 +88,96 @@ set(CMAKE_C_FLAGS ${BasicLibCMakeC_FLAGS})
 
 #src
 set(basiclib_SOURCES 
-	${BasicLibSrcPath}/inc/basic.h
-	${BasicLibSrcPath}/inc/basic_def.h
 	${BasicLibSrcPath}/algorithm/md5.h
-	${BasicLibSrcPath}/coroutine/libco_coroutine.h
-	${BasicLibSrcPath}/coroutine/coroutineplus.h
+    ${BasicLibSrcPath}/algorithm/sha1/sha1.h
+    ${BasicLibSrcPath}/algorithm/xtra.h
+    ${BasicLibSrcPath}/algorithm/zip/tlgzip.h
+    ${BasicLibSrcPath}/algorithm/zip/tlzipfile.h
+    ${BasicLibSrcPath}/algorithm/zip/zconf.h
+    ${BasicLibSrcPath}/algorithm/zip/zlib.h
+    ${BasicLibSrcPath}/coroutine/coroutineplus.h
+    ${BasicLibSrcPath}/datastruct/array.h
+    ${BasicLibSrcPath}/datastruct/basic_string.h
+    ${BasicLibSrcPath}/datastruct/extern.h
+    ${BasicLibSrcPath}/datastruct/key_value.h
+    ${BasicLibSrcPath}/datastruct/list.h
+    ${BasicLibSrcPath}/datastruct/map.h
+    ${BasicLibSrcPath}/datastruct/pbzk.h
+    ${BasicLibSrcPath}/datastruct/stringex.h
+    ${BasicLibSrcPath}/debug/debug.h
+    ${BasicLibSrcPath}/dll/loaddll.h
+    ${BasicLibSrcPath}/exception/call_stack.hpp
+    ${BasicLibSrcPath}/exception/exception.h
+    ${BasicLibSrcPath}/exception/exception_linux.h
+    ${BasicLibSrcPath}/exception/exception_win.h
+    ${BasicLibSrcPath}/exception/StackWalker.h
+    ${BasicLibSrcPath}/exception/stack_exception.hpp
+    ${BasicLibSrcPath}/file/filebase.h
+    ${BasicLibSrcPath}/file/filedefine.h
+    ${BasicLibSrcPath}/file/fileman.h
+    ${BasicLibSrcPath}/file/filenotify.h
+    ${BasicLibSrcPath}/file/fileobj.h
+    ${BasicLibSrcPath}/file/file_linux.h
+    ${BasicLibSrcPath}/file/inifile.h
+    ${BasicLibSrcPath}/inc/basic.h
+    ${BasicLibSrcPath}/inc/basic_def.h
+    ${BasicLibSrcPath}/inc/error.h
+    ${BasicLibSrcPath}/log/log.h
+    ${BasicLibSrcPath}/mem/basicallocator.h
+    ${BasicLibSrcPath}/mem/bitstream.h
+    ${BasicLibSrcPath}/mem/mem.h
+    ${BasicLibSrcPath}/mem/smartbuffer.h
+    ${BasicLibSrcPath}/mem/tlstaticbuffer.h
+    ${BasicLibSrcPath}/misc/fastdelegate.h
+    ${BasicLibSrcPath}/misc/fastdelegatebind.h
+    ${BasicLibSrcPath}/misc/singleton.h
+    ${BasicLibSrcPath}/misc/tlrefptr.h
+    ${BasicLibSrcPath}/sqlite/sqlite3.h
+    ${BasicLibSrcPath}/sqlite/sqlite3db.h
+    ${BasicLibSrcPath}/sqlite/sqlite3dbquery.h
+    ${BasicLibSrcPath}/sqlite/sqlite3dbtable.h
+    ${BasicLibSrcPath}/sqlite/sqlite3ext.h
+    ${BasicLibSrcPath}/sys/syserror.h
+    ${BasicLibSrcPath}/sys/sysinfo.h
+    ${BasicLibSrcPath}/thread/basicpoll.h
+    ${BasicLibSrcPath}/thread/mt.h
+    ${BasicLibSrcPath}/thread/mt_linux.h
+    ${BasicLibSrcPath}/thread/mt_spinlock.h
+    ${BasicLibSrcPath}/thread/thread.h
+    ${BasicLibSrcPath}/time/ontimer.h
+    ${BasicLibSrcPath}/time/timelib/astro.h
+    ${BasicLibSrcPath}/time/timelib/config.w32.h
+    ${BasicLibSrcPath}/time/timelib/fallbackmap.h
+    ${BasicLibSrcPath}/time/timelib/timelib.h
+    ${BasicLibSrcPath}/time/timelib/timelib_config.h
+    ${BasicLibSrcPath}/time/timelib/timelib_structs.h
+    ${BasicLibSrcPath}/time/timelib/timezonedb.h
+    ${BasicLibSrcPath}/time/timelib/timezonemap.h
+    ${BasicLibSrcPath}/time/timeutil.h
+    ${BasicLibSrcPath}/time/tltime.h
+    ${BasicLibSrcPath}/types/basicobj.h
+    ${BasicLibSrcPath}/types/linux.h
+    ${BasicLibSrcPath}/types/types.h
+    ${BasicLibSrcPath}/util/auto_cast.h
+    ${BasicLibSrcPath}/util/concurrentqueue/blockingconcurrentqueue.h
+    ${BasicLibSrcPath}/util/concurrentqueue/concurrentqueue.h
+    ${BasicLibSrcPath}/util/container.h
+    ${BasicLibSrcPath}/util/containerext.h
+    ${BasicLibSrcPath}/util/functor.h
+    ${BasicLibSrcPath}/util/private.h
+    ${BasicLibSrcPath}/util/regex/cclass.h
+    ${BasicLibSrcPath}/util/regex/cgnuregexp.h
+    ${BasicLibSrcPath}/util/regex/cname.h
+    ${BasicLibSrcPath}/util/regex/regex.h
+    ${BasicLibSrcPath}/util/regex/regex2.h
+    ${BasicLibSrcPath}/util/regex/regex_extra.h
+    ${BasicLibSrcPath}/util/regex/utils.h
+    ${BasicLibSrcPath}/util/strutil/charset.h
+    ${BasicLibSrcPath}/util/strutil/charset/charset_def.h
+    ${BasicLibSrcPath}/util/strutil/charset/charset_win.h
+    ${BasicLibSrcPath}/util/strutil/cppstring.h
+    ${BasicLibSrcPath}/util/strutil/maa.h
+    ${BasicLibSrcPath}/util/strutil/strutil.h
    ${BasicLibSrcPath}/inc/basic_func.cpp
    ${BasicLibSrcPath}/algorithm/md5.cpp
    ${BasicLibSrcPath}/algorithm/sha1/sha1.cpp
@@ -150,6 +253,8 @@ set(basiclib_SOURCES
    ${BasicLibSrcPath}/util/strutil/strmisc.cpp
    ${BasicLibSrcPath}/util/strutil/strutil.cpp
 	)
+set(TotalSourceData ${basiclib_SOURCES} ${BasicLibExtra_Src})
+source_group_by_dir(TotalSourceData)
 
 if (BASICLIB_BUILD_STATIC)
 	add_library(basiclib STATIC ${basiclib_SOURCES} ${BasicLibExtra_Src})
