@@ -33,7 +33,7 @@ __NS_BASIC_START
 *\warning 1、不能检测全路径是否存在 2、与当前工作目录相关
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long Basic_GetFileFullPath(char* lpszPathOut, const char* lpszFileIn);
+long _BASIC_DLL_API Basic_GetFileFullPath(char* lpszPathOut, const char* lpszFileIn);
 
 //! 获得文件状态
 /*! 
@@ -44,7 +44,7 @@ long Basic_GetFileFullPath(char* lpszPathOut, const char* lpszFileIn);
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long Basic_GetFileStatus(const char* lpszFileName, TLFileStatus& rStatus);
+long _BASIC_DLL_API Basic_GetFileStatus(const char* lpszFileName, TLFileStatus& rStatus);
 //! 获得文件名
 /*! 
 *\param lpszPathName 文件路径
@@ -55,7 +55,7 @@ long Basic_GetFileStatus(const char* lpszFileName, TLFileStatus& rStatus);
 *\warning 第二个参数不能为NULL
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */	
-long Basic_GetFileName(const char* lpszPathName, char* lpszName, int nMax);
+long _BASIC_DLL_API Basic_GetFileName(const char* lpszPathName, char* lpszName, int nMax);
 
 //! 获得不带扩展名的文件名
 /*! 
@@ -67,7 +67,7 @@ long Basic_GetFileName(const char* lpszPathName, char* lpszName, int nMax);
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long Basic_GetFileTitle(const char* lpszPathName, char* lpszTitle, int nMax);
+long _BASIC_DLL_API Basic_GetFileTitle(const char* lpszPathName, char* lpszTitle, int nMax);
 //! 从全路径文件名中，取得路径
 /*! 
 *\param lpszPathName 文件路径
@@ -78,7 +78,7 @@ long Basic_GetFileTitle(const char* lpszPathName, char* lpszTitle, int nMax);
 *\warning 第二个参数不能为NULL
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long Basic_GetFileDirPath(const char* lpszPathName, char* lpszDirPath, int nMax);
+long _BASIC_DLL_API Basic_GetFileDirPath(const char* lpszPathName, char* lpszDirPath, int nMax);
 //! 取文件属性
 /*! 
 *\param lpszFileName 文件路径
@@ -87,8 +87,8 @@ long Basic_GetFileDirPath(const char* lpszPathName, char* lpszDirPath, int nMax)
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-DWORD WBasic_GetFileAttributes(LPCTSTR lpszFileName);	
-DWORD Basic_GetFileAttributes(const char* lpszFileName);
+DWORD _BASIC_DLL_API WBasic_GetFileAttributes(LPCTSTR lpszFileName);
+DWORD _BASIC_DLL_API Basic_GetFileAttributes(const char* lpszFileName);
 
 //! 设置文件状态
 /*! 
@@ -99,8 +99,8 @@ DWORD Basic_GetFileAttributes(const char* lpszFileName);
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>//!!!等待再析
 */
-long WBasic_SetFileStatus(LPCTSTR lpszFileName, const TLFileStatusW& rStatus);
-long Basic_SetFileStatus(const char* lpszFileName, const TLFileStatus& rStatus);
+long _BASIC_DLL_API WBasic_SetFileStatus(LPCTSTR lpszFileName, const TLFileStatusW& rStatus);
+long _BASIC_DLL_API Basic_SetFileStatus(const char* lpszFileName, const TLFileStatus& rStatus);
 //! 重命名文件或者文件夹
 /*! 
 *\param lpszOldName 要被重命名的文件或者文件夹的名字
@@ -110,8 +110,8 @@ long Basic_SetFileStatus(const char* lpszFileName, const TLFileStatus& rStatus);
 *\warning 1、新文件或文件夹不能已经存在 2、新文件可以在不同的文件系统下，但是新文件夹必须在与老文件夹在相同的驱动盘下
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long WBasic_RenameFile(LPCTSTR lpszOldName, LPCTSTR lpszNewName);		
-long Basic_RenameFile(const char* lpszOldName, const char* lpszNewName);
+long _BASIC_DLL_API WBasic_RenameFile(LPCTSTR lpszOldName, LPCTSTR lpszNewName);
+long _BASIC_DLL_API Basic_RenameFile(const char* lpszOldName, const char* lpszNewName);
 //! 删除文件
 /*! 
 *\param lpszFileName 要被删除的文件名
@@ -120,8 +120,8 @@ long Basic_RenameFile(const char* lpszOldName, const char* lpszNewName);
 *\warning 1、不可删除只读文件
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long WBasic_DeleteFile(LPCTSTR lpszFileName);		
-long Basic_DeleteFile(const char* lpszFileName);
+long _BASIC_DLL_API WBasic_DeleteFile(LPCTSTR lpszFileName);
+long _BASIC_DLL_API Basic_DeleteFile(const char* lpszFileName);
 //! 复制文件
 /*! 
 *\param lpExistingFileName 已经存在的文件
@@ -132,8 +132,8 @@ long Basic_DeleteFile(const char* lpszFileName);
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long WBasic_CopyFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists);
-long Basic_CopyFile(const char* lpExistingFileName, const char* lpNewFileName, BOOL bFailIfExists);
+long _BASIC_DLL_API WBasic_CopyFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists);
+long _BASIC_DLL_API Basic_CopyFile(const char* lpExistingFileName, const char* lpNewFileName, BOOL bFailIfExists);
 
 //! 判断是否通配符
 /*! 
@@ -144,8 +144,8 @@ long Basic_CopyFile(const char* lpExistingFileName, const char* lpNewFileName, B
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-BOOL WBasic_PathMatchSpec(LPCTSTR pszFile, LPCTSTR pszSpec);		
-BOOL Basic_PathMatchSpec(const char* pszFile, const char* pszSpec);
+BOOL _BASIC_DLL_API WBasic_PathMatchSpec(LPCTSTR pszFile, LPCTSTR pszSpec);
+BOOL _BASIC_DLL_API Basic_PathMatchSpec(const char* pszFile, const char* pszSpec);
 //! 取得文件名指针
 /*! 
 *\param lpszPathName 文件路径
@@ -154,7 +154,7 @@ BOOL Basic_PathMatchSpec(const char* pszFile, const char* pszSpec);
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */	
-char* Basic_FindFileName(const char* lpszPathName);
+_BASIC_DLL_API char* Basic_FindFileName(const char* lpszPathName);
 
 //! 创建目录
 /*! 
@@ -165,10 +165,10 @@ char* Basic_FindFileName(const char* lpszPathName);
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long Basic_mkdir(const char* lpszPath);
-long WBasic_mkdir(LPCTSTR lpszPath);
+long _BASIC_DLL_API Basic_mkdir(const char* lpszPath);
+long _BASIC_DLL_API WBasic_mkdir(LPCTSTR lpszPath);
 
-char* Basic_TempFileName(const char* lpszDir, const char* lpszHead, const char* lpszExt, char* lpszBuffer, int nMax);
+_BASIC_DLL_API char* Basic_TempFileName(const char* lpszDir, const char* lpszHead, const char* lpszExt, char* lpszBuffer, int nMax);
 
 #define BASIC_FO_MOVE           0x0001			//!< 文件移动
 #define BASIC_FO_COPY           0x0002			//!< 文件复制
@@ -194,7 +194,7 @@ char* Basic_TempFileName(const char* lpszDir, const char* lpszHead, const char* 
 *\warning  支持删除单个文件
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long Basic_FileOperation(uint32_t wFunc, const char* pFrom, const char* pTo);		
+long _BASIC_DLL_API Basic_FileOperation(uint32_t wFunc, const char* pFrom, const char* pTo);
 
 #define BASIC_FIND_SUBDIR			0x0001			//!< 查找子目录
 #define BASIC_FIND_DIR				0x0002			//!< 返回目录的名称
@@ -211,7 +211,7 @@ long Basic_FileOperation(uint32_t wFunc, const char* pFrom, const char* pTo);
 *\warning
 */
 
-long Basic_FindAllFileInPath(const char* lpszFilePath, const char* lpszFileName, DWORD dwFindMode, const std::function<long(const char*, time_t, time_t, long, BYTE)>& f);
+long _BASIC_DLL_API Basic_FindAllFileInPath(const char* lpszFilePath, const char* lpszFileName, DWORD dwFindMode, const std::function<long(const char*, time_t, time_t, long, BYTE)>& f);
 
 //! 查找目录里面的所有文件
 /*! 
@@ -224,10 +224,10 @@ long Basic_FindAllFileInPath(const char* lpszFilePath, const char* lpszFileName,
 *\warning
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long Basic_FindAllFileInPath(const char* lpszFilePath, const char* lpszFileName, CBasicStringArray& ayFile, DWORD dwFindMode);	
+long _BASIC_DLL_API Basic_FindAllFileInPath(const char* lpszFilePath, const char* lpszFileName, CBasicStringArray& ayFile, DWORD dwFindMode);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-class CBasicFileFind : public CBasicObject
+class _BASIC_DLL_API CBasicFileFind : public CBasicObject
 {
 public:
 	//! 构造函数
@@ -459,13 +459,13 @@ protected:
 /*! 
 *\param strPath 路径
 */
-void Basic_RegulatePathString(CBasicString& strPath);
+void _BASIC_DLL_API Basic_RegulatePathString(CBasicString& strPath);
 
 //! 格式化文件名
 /*! 
 *\param strFileName 文件名
 */
-void Basic_RegulateFileNameString(CBasicString& strFileName);
+void _BASIC_DLL_API Basic_RegulateFileNameString(CBasicString& strFileName);
 __NS_BASIC_END
 /////////////////////////////////////////////////////////////////////////////////////////////
 

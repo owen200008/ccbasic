@@ -11,10 +11,25 @@ extern "C" {
 }
 #endif
 #include <basic.h>
-#include "../scbasic_head.h"
 
-_SCBASIC_EXTERNC int _SCBASIC_DLL_API luaopen_sproto_core(lua_State *L);
-_SCBASIC_EXTERNC int _SCBASIC_DLL_API SprotoDecodeFunc(lua_State *L, basiclib::CBasicBitstream* pSMBuf, struct sproto_type* st);
+#ifdef sproto_EXPORTS
+#define __EXPORTSSPROTO
+#endif
+#ifdef __BASICWINDOWS
+#ifdef __EXPORTSSPROTO
+#define _SCBASIC_SPROTO_DLL_API 	__declspec(dllexport)
+#endif
+#ifdef __IMPORTSSPROTO
+#define _SCBASIC_SPROTO_DLL_API 	__declspec(dllimport)
+#endif
+#endif
+
+#ifndef _SCBASIC_SPROTO_DLL_API
+#define _SCBASIC_SPROTO_DLL_API
+#endif
+
+extern "C" int _SCBASIC_SPROTO_DLL_API luaopen_sproto_core(lua_State *L);
+extern "C" int _SCBASIC_SPROTO_DLL_API SprotoDecodeFunc(lua_State *L, basiclib::CBasicBitstream* pSMBuf, struct sproto_type* st);
 
 #endif // __cocos2dx_xmqxz_lsproto_h__
 

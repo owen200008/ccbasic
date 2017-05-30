@@ -9,7 +9,7 @@ __NS_BASIC_START
 // CTimeSpan and CTime
 class CTime;
 
-class CTimeSpan
+class _BASIC_DLL_API CTimeSpan
 {
 public:
 
@@ -54,7 +54,7 @@ private:
 	friend class basiclib::CTime;
 };
 
-class CTime
+class _BASIC_DLL_API CTime
 {
 public:
 
@@ -137,8 +137,11 @@ struct BasicTimeSplite
     CTime                   m_tmEnd;
 };
 
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
 //定义两端时间的管理
-class CBasicTimeSplite
+class _BASIC_DLL_API CBasicTimeSplite
 {
 public:
     CBasicTimeSplite();
@@ -171,7 +174,7 @@ public:
 };
 
 //支持单时间的时间点判断类
-class CStatisticsTime
+class _BASIC_DLL_API CStatisticsTime
 {
 public:
 	CStatisticsTime(void);
@@ -204,7 +207,7 @@ protected:
 	int														m_nCycle;		//表示第几个周期了
 	CBasicString											m_strFormat;
 };
-
+#pragma warning (pop)
 // CTime and CTimeSpan
 inline CTimeSpan::CTimeSpan()
 { m_timeSpan = 0; }

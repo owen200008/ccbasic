@@ -76,10 +76,10 @@ struct BasicNetStat;		//发送接收的统计信息
 * \remarks 在使用通信类以前必须调用该函数
 */
 typedef basiclib::CBasicString(*pGetConfFunc)(const char* pParam);
-_BASIC_DLL_API void SetNetInitializeGetParamFunc(pGetConfFunc func);
+_SCBASIC_DLL_API void SetNetInitializeGetParamFunc(pGetConfFunc func);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class _BASIC_DLL_API CBasicPreSend : public CBasicObject
+class _SCBASIC_DLL_API CBasicPreSend : public CBasicObject
 {
 public:
 	CBasicPreSend() {}
@@ -105,7 +105,7 @@ public:
 /*!
 *  用在统计发送接收的字节数和次数。溢出后从零开始。
 */
-struct _BASIC_DLL_API  BasicNetStat
+struct _SCBASIC_DLL_API  BasicNetStat
 {
 	uint32_t	m_dwSendBytes;		/*!< 发送的字节数 */
 	uint32_t	m_dwSendTimes;		/*!< 发送的次数 */
@@ -208,7 +208,7 @@ public:
 	static void CloseNetSocket();
 };
 
-class _BASIC_DLL_API CBasicSessionNet : public CBasicNetInitObject
+class _SCBASIC_DLL_API CBasicSessionNet : public CBasicNetInitObject
 {
 public:
 	typedef basiclib::CBasicRefPtr<CBasicSessionNet> CRefBasicSessionNet;
@@ -295,7 +295,7 @@ struct SendBuffer
 };
 
 typedef void(*pCallThreadSafeBeforeSendData)(SendDataToSendThread*);
-class _BASIC_DLL_API CBasicSessionNetClient : public CBasicSessionNet
+class _SCBASIC_DLL_API CBasicSessionNetClient : public CBasicSessionNet
 {
 public:
     static CBasicSessionNetClient* CreateClient(uint32_t nSessionID = basiclib::CBasicSessionNet::GetDefaultCreateSessionID(), bool bAddOnTimer = true){ return new CBasicSessionNetClient(nSessionID, bAddOnTimer); }
@@ -392,7 +392,7 @@ typedef basiclib::CBasicRefPtr<CBasicSessionNetClient> CRefBasicSessionNetClient
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 typedef basiclib::basic_map<uint32_t, CRefBasicSessionNetClient>			MapClientSession;
 typedef basiclib::basic_vector<CRefBasicSessionNetClient>					VTClientSession;
-class _BASIC_DLL_API CBasicSessionNetServer : public CBasicSessionNet
+class _SCBASIC_DLL_API CBasicSessionNetServer : public CBasicSessionNet
 {
 public:
     static CBasicSessionNetServer* CreateServer(uint32_t nSessionID = basiclib::CBasicSessionNet::GetDefaultCreateSessionID()){ return new CBasicSessionNetServer(nSessionID); }

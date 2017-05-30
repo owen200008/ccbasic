@@ -24,6 +24,7 @@ set(EVENT__DISABLE_THREAD_SUPPORT ON CACHE BOOL "flags")
 #add_subdirectory(${PROJECT_SOURCE_DIR}/3rd/libevent)
 #build cryptopp
 set(BUILD_TESTING OFF CACHE BOOL "flags")
+set(BUILD_SHARED OFF CACHE BOOL "flags")
 add_subdirectory(${PROJECT_SOURCE_DIR}/3rd/cryptopp)
 #build sproto
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/scbasic/sproto)
