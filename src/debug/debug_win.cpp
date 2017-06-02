@@ -13,12 +13,10 @@ __NS_BASIC_START
 
 void WBasicTraceDebugView(LPCTSTR lpszString)
 {
-	OutputDebugString(lpszString);
 	wprintf(lpszString);
 }
 void BasicTraceDebugView(const char* lpszString)
 {
-	OutputDebugStringA(lpszString);
 	printf(lpszString);
 }
 

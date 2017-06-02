@@ -10,9 +10,6 @@
 [submodule "3rd/concurrentqueue"]
 	path = 3rd/concurrentqueue
 	url = https://github.com/cameron314/concurrentqueue.git
-[submodule "3rd/libuv"]
-	path = 3rd/libuv
-	url = https://github.com/libuv/libuv.git
 [submodule "3rd/sphinxbase"]
 	path = 3rd/sphinxbase
 	url = https://github.com/owen200008/sphinxbase.git
@@ -25,3 +22,4 @@
 [submodule "3rd/libevent"]
 	path = 3rd/libevent
 	url = https://github.com/libevent/libevent.git
+

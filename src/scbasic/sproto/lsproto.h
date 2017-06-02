@@ -10,7 +10,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#include <basic.h>
 
 #ifdef sproto_EXPORTS
 #define __EXPORTSSPROTO
@@ -29,7 +28,6 @@ extern "C" {
 #endif
 
 extern "C" int _SCBASIC_SPROTO_DLL_API luaopen_sproto_core(lua_State *L);
-extern "C" int _SCBASIC_SPROTO_DLL_API SprotoDecodeFunc(lua_State *L, basiclib::CBasicBitstream* pSMBuf, struct sproto_type* st);
 
 #endif // __cocos2dx_xmqxz_lsproto_h__
 

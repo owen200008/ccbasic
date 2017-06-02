@@ -4,7 +4,10 @@
 #include "sqlite3.h"
 #include <string>
 
-class CCQLite3DBQuery : public basiclib::CBasicObject
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
+class _BASIC_DLL_API CCQLite3DBQuery : public basiclib::CBasicObject
 {
 public:
 	CCQLite3DBQuery();
@@ -53,5 +56,6 @@ private:
 	int							m_nCols;
 	std::string					m_strLastError;
 };
+#pragma warning (pop)
 
 #endif

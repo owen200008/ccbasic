@@ -6,6 +6,7 @@ set(basiclibdst ${PROJECT_SOURCE_DIR}/../../../)
 
 include_directories(${basiclibdst}/src/inc)
 include_directories(${basiclibdst}/3rd/lua/src)
+include_directories(${basiclibdst}/3rd/kaguya/include)
 if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 	set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} /MP")

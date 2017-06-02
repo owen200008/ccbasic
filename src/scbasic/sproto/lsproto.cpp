@@ -9,6 +9,7 @@ extern "C" {
 
 #include "sproto.h"
 #include "lsproto.h"
+#include "../scbasic/lua/ccbasiclib_lua.h"
 
 #define MAX_GLOBALSPROTO 16
 #define ENCODE_BUFFERSIZE 2050
@@ -556,13 +557,12 @@ expand_buffer(lua_State *L, int osz, int nsz) {
 
 	return string
  */
-#include <basic.h>
 
 static int
 lencode(lua_State *L) 
 {
 	struct encode_ud self;
-	basiclib::CBasicBitstream* pSMBuf = (basiclib::CBasicBitstream*)*((void**)lua_touserdata(L, 1));
+	basiclib::CBasicBitstream* pSMBuf = GetBasicLibClass<basiclib::CBasicBitstream>(L, 1);
 	void * buffer = pSMBuf->GetDataBuffer();
 	int sz = pSMBuf->GetAllocBufferLength();
 	int tbl_index = 3;
@@ -915,7 +915,7 @@ int SprotoDecodeFunc(lua_State *L, basiclib::CBasicBitstream* pSMBuf, struct spr
 static int
 ldecode(lua_State *L) 
 {
-    return SprotoDecodeFunc(L, (basiclib::CBasicBitstream*)*((void**)lua_touserdata(L, 1)), (struct sproto_type *)lua_touserdata(L, 2));
+    return SprotoDecodeFunc(L, GetBasicLibClass<basiclib::CBasicBitstream>(L, 1), (struct sproto_type *)lua_touserdata(L, 2));
 }
 
 static int

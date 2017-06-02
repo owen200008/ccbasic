@@ -1349,5 +1349,5 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
 
 void StackWalker::OnOutput(LPCSTR buffer)
 {
-  OutputDebugStringA(buffer);
+  printf(buffer);
 }

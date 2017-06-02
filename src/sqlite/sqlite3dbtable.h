@@ -1,7 +1,7 @@
 #ifndef BASIC_SQLITE3DBTABLE_H
 #define BASIC_SQLITE3DBTABLE_H
 
-class CCQLite3DBTable : public basiclib::CBasicObject
+class _BASIC_DLL_API CCQLite3DBTable : public basiclib::CBasicObject
 {
 public:
 	CCQLite3DBTable();
