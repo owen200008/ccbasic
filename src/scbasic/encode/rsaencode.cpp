@@ -106,12 +106,12 @@ size_t CSCBasicRSA::Encrypt(const char* pEncode, int nLength, byte* pOutput, int
 {
 	size_t putLen = 0;
 	size_t fixedLen = m_pubEncode.FixedMaxPlaintextLength();
-	for (size_t i = 0; i < nLength; i += fixedLen)
+	for (int i = 0; i < nLength; i += fixedLen)
 	{
 		size_t len = fixedLen < (nLength - i) ? fixedLen : (nLength - i);
 		CryptoPP::ArraySink *dstArr = new CryptoPP::ArraySink(pOutput + putLen, nOutputLength - putLen);
 		CryptoPP::ArraySource source((byte*)(pEncode + i), len, true, new CryptoPP::PK_EncryptorFilter(m_rng, m_pubEncode, dstArr));
-		putLen += dstArr->TotalPutLength();
+		putLen += (size_t)dstArr->TotalPutLength();
 	}
 	return putLen;
 }
@@ -120,25 +120,25 @@ size_t CSCBasicRSA::Decrypt(const char* pDecode, int nLength, byte* pOutput, int
 {
 	size_t putLen = 0;
 	size_t fixedLen = m_priDecode.FixedCiphertextLength();
-	for (size_t i = 0; i < nLength; i += fixedLen)
+	for (int i = 0; i < nLength; i += fixedLen)
 	{
 		size_t len = fixedLen < (nLength - i) ? fixedLen : (nLength - i);
 		CryptoPP::ArraySink *dstArr = new CryptoPP::ArraySink(pOutput + putLen, nOutputLength - putLen);
         CryptoPP::ArraySource source((byte*)(pDecode + i), len, true, new CryptoPP::PK_DecryptorFilter(m_rng, m_priDecode, dstArr));
-		putLen += dstArr->TotalPutLength();
+		putLen += (size_t)dstArr->TotalPutLength();
 	}
 	return putLen;
 }
 size_t CSCBasicRSA::Sign(const char* pEncode, int nLength, byte* pOutput, int nOutputLength)
 {
 	size_t putLen = 0;
-	size_t fixedLen = m_priEncode.MaxSignatureLength();
+	int fixedLen = (int)m_priEncode.MaxSignatureLength();
 	if (nLength > fixedLen)
 		return 0;
 	size_t len = nLength;
 	CryptoPP::ArraySink *dstArr = new CryptoPP::ArraySink(pOutput + putLen, nOutputLength - putLen);
 	CryptoPP::ArraySource arraySource((byte*)pEncode, len, true, new CryptoPP::SignerFilter(m_rng, m_priEncode, dstArr));
-	putLen += dstArr->TotalPutLength();
+	putLen += (size_t)dstArr->TotalPutLength();
 	return putLen;
 }
 

@@ -134,19 +134,19 @@ encode_xmdefault(const struct sproto_arg *args)
 		case SPROTO_CC_CHAR:
 		case SPROTO_CC_UCHAR:
 		{
-			*(unsigned char *)args->value = args->m_nDefaultValue;
+			*(unsigned char *)args->value = (unsigned char)args->m_nDefaultValue;
 			return SPROTO_CC_CHAR_SIZE;
 		}
 		case SPROTO_CC_SHORT:
 		case SPROTO_CC_USHORT:
 		{
-			*(unsigned short *)args->value = args->m_nDefaultValue;
+			*(unsigned short *)args->value = (unsigned short)args->m_nDefaultValue;
 			return SPROTO_CC_SHORT_SIZE;
 		}
 		case SPROTO_CC_INT:
 		case SPROTO_CC_UINT:
 		{
-			*(uint32_t *)args->value = args->m_nDefaultValue;
+			*(uint32_t *)args->value = (uint32_t)args->m_nDefaultValue;
 			return SPROTO_CC_INT_SIZE;
 		}
 		case SPROTO_CC_LONGLONG:
@@ -156,7 +156,7 @@ encode_xmdefault(const struct sproto_arg *args)
 		}
 		case SPROTO_CC_DOUBLE:
 		{
-			*(double *)args->value = args->m_nDefaultValue;
+			*(double *)args->value = (double)args->m_nDefaultValue;
 			return SPROTO_CC_DOUBLE_SIZE;
 		}
 		case SPROTO_CC_STRING:

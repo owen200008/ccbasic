@@ -87,7 +87,7 @@ public:
 	template<class A>
 	CBasicBitstream& operator << (const Net_Vector<A>& data)
 	{
-		uint16_t uSize = data.size();
+		uint16_t uSize = (uint16_t)data.size();
 		*this << uSize;
 		for (auto& key : data)
 		{
@@ -97,7 +97,7 @@ public:
 	}
 	template<class A, class B>
 	CBasicBitstream& operator << (const Net_Map<A, B>& data){
-		uint16_t uSize = data.size();
+		uint16_t uSize = (uint16_t)data.size();
 		*this << uSize;
 		for (auto& key : data)
 		{

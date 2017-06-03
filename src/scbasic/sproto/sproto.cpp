@@ -460,7 +460,7 @@ sproto_name(struct sproto_type * st) {
 
 static inline int
 encodemapkey_ccchar(uint64_t v, uint8_t * data) {
-	data[0] = v;
+	data[0] = (uint8_t)v;
 	return SPROTO_CC_CHAR_SIZE;
 }
 
@@ -602,10 +602,10 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
                 buffer[0] = uKeyValue & 0xff;
                 buffer[1] = (uKeyValue >> 8) & 0xff;
                 if (uKeyValue > 0)
-                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
-                int nLength = uKeyValue + CC_SIZE_LENGTH;
+                    memcpy(buffer + 2, args->m_pMapKeyString, (size_t)uKeyValue);
+                int nLength = (int)uKeyValue + CC_SIZE_LENGTH;
                 buffer[nLength] = v & 0xFF;
-                size -= nNeedLength + uKeyValue;
+                size -= nNeedLength + (int)uKeyValue;
                 buffer += nNeedLength + uKeyValue;
                 ++args->index;
                 nCount++;
@@ -636,11 +636,11 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
                 buffer[0] = uKeyValue & 0xff;
                 buffer[1] = (uKeyValue >> 8) & 0xff;
                 if (uKeyValue > 0)
-                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
-                int nLength = uKeyValue + CC_SIZE_LENGTH;
+                    memcpy(buffer + 2, args->m_pMapKeyString, (size_t)uKeyValue);
+                int nLength = (int)uKeyValue + CC_SIZE_LENGTH;
                 buffer[nLength] = v & 0xFF;
                 buffer[nLength + 1] = (v >> 8) & 0xFF;
-                size -= nNeedLength + uKeyValue;
+                size -= nNeedLength + (int)uKeyValue;
                 buffer += nNeedLength + uKeyValue;
                 ++args->index;
                 nCount++;
@@ -671,13 +671,13 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
                 buffer[0] = uKeyValue & 0xff;
                 buffer[1] = (uKeyValue >> 8) & 0xff;
                 if (uKeyValue > 0)
-                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
-                int nLength = uKeyValue + CC_SIZE_LENGTH;
+                    memcpy(buffer + 2, args->m_pMapKeyString, (size_t)uKeyValue);
+                int nLength = (int)uKeyValue + CC_SIZE_LENGTH;
                 buffer[nLength] = v & 0xFF;
                 buffer[nLength + 1] = (v >> 8) & 0xFF;
                 buffer[nLength + 2] = (v >> 16) & 0xFF;
                 buffer[nLength + 3] = (v >> 24) & 0xFF;
-                size -= nNeedLength + uKeyValue;
+                size -= nNeedLength + (int)uKeyValue;
                 buffer += nNeedLength + uKeyValue;
                 ++args->index;
                 nCount++;
@@ -707,8 +707,8 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
                 buffer[0] = uKeyValue & 0xff;
                 buffer[1] = (uKeyValue >> 8) & 0xff;
                 if (uKeyValue > 0)
-                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
-                int nLength = uKeyValue + CC_SIZE_LENGTH;
+                    memcpy(buffer + 2, args->m_pMapKeyString, (size_t)uKeyValue);
+                int nLength = (int)uKeyValue + CC_SIZE_LENGTH;
                 buffer[nLength] = v & 0xFF;
                 buffer[nLength + 1] = (v >> 8) & 0xFF;
                 buffer[nLength + 2] = (v >> 16) & 0xFF;
@@ -717,7 +717,7 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
                 buffer[nLength + 5] = (v >> 40) & 0xFF;
                 buffer[nLength + 6] = (v >> 48) & 0xFF;
                 buffer[nLength + 7] = (v >> 56) & 0xFF;
-                size -= nNeedLength + uKeyValue;
+                size -= nNeedLength + (int)uKeyValue;
                 buffer += nNeedLength + uKeyValue;
                 ++args->index;
                 nCount++;
@@ -747,8 +747,8 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
                 buffer[0] = uKeyValue & 0xff;
                 buffer[1] = (uKeyValue >> 8) & 0xff;
                 if (uKeyValue > 0)
-                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
-                int nLength = uKeyValue + CC_SIZE_LENGTH;
+                    memcpy(buffer + 2, args->m_pMapKeyString, (size_t)uKeyValue);
+                int nLength = (int)uKeyValue + CC_SIZE_LENGTH;
                 buffer[nLength] = (*(uint64_t*)&v) & 0xFF;
                 buffer[nLength + 1] = (*(uint64_t*)&v >> 8) & 0xFF;
                 buffer[nLength + 2] = (*(uint64_t*)&v >> 16) & 0xFF;
@@ -757,7 +757,7 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
                 buffer[nLength + 5] = (*(uint64_t*)&v >> 40) & 0xFF;
                 buffer[nLength + 6] = (*(uint64_t*)&v >> 48) & 0xFF;
                 buffer[nLength + 7] = (*(uint64_t*)&v >> 56) & 0xFF;
-                size -= nNeedLength + uKeyValue;
+                size -= nNeedLength + (int)uKeyValue;
                 buffer += nNeedLength + uKeyValue;
                 ++args->index;
                 nCount++;
@@ -780,10 +780,10 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
                         break;
                     return -1;	// sz == SPROTO_CB_ERROR
                 }
-                int nTotalSize = uKeyValue + sz + nNeedLength;
+                int nTotalSize = (int)uKeyValue + sz + nNeedLength;
                 if (size < nTotalSize)
                     return -1;
-                int nCopy = uKeyValue + nNeedLength;
+                int nCopy = (int)uKeyValue + nNeedLength;
                 if (sz > 0)
                     memmove(buffer + nCopy, buffer, sz);
                 buffer[uKeyValue + CC_SIZE_LENGTH] = sz & 0xff;
@@ -791,7 +791,7 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
                 buffer[0] = uKeyValue & 0xff;
                 buffer[1] = (uKeyValue >> 8) & 0xff;
                 if (uKeyValue > 0)
-                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
+                    memcpy(buffer + 2, args->m_pMapKeyString, (size_t)uKeyValue);
 
                 buffer += nTotalSize;
                 size -= nTotalSize;
@@ -818,16 +818,16 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
                         break;
                     return -1;	// sz == SPROTO_CB_ERROR
                 }
-                int nTotalSize = uKeyValue + sz + nNeedLength;
+                int nTotalSize = (int)uKeyValue + sz + nNeedLength;
                 if (size < nTotalSize)
                     return -1;
-                int nCopy = uKeyValue + nNeedLength;
+                int nCopy = (int)uKeyValue + nNeedLength;
                 if (sz > 0)
                     memmove(buffer + nCopy, buffer, sz);
                 buffer[0] = uKeyValue & 0xff;
                 buffer[1] = (uKeyValue >> 8) & 0xff;
                 if (uKeyValue > 0)
-                    memcpy(buffer + 2, args->m_pMapKeyString, uKeyValue);
+                    memcpy(buffer + 2, args->m_pMapKeyString, (size_t)uKeyValue);
 
                 buffer += nTotalSize;
                 size -= nTotalSize;
@@ -1539,7 +1539,7 @@ decode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t * stream, int 
                 if (nSize < CC_SIZE_LENGTH)
                     return -1;
                 nKeyLength = toword(stream);
-                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + SPROTO_CC_CHAR_SIZE;
+                int nTotalLength = CC_SIZE_LENGTH + (int)nKeyLength + SPROTO_CC_CHAR_SIZE;
                 if (nSize < nTotalLength)
                     return -1;
                 args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
@@ -1562,7 +1562,7 @@ decode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t * stream, int 
                 if (nSize < CC_SIZE_LENGTH)
                     return -1;
                 nKeyLength = toword(stream);
-                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + SPROTO_CC_SHORT_SIZE;
+                int nTotalLength = CC_SIZE_LENGTH + (int)nKeyLength + SPROTO_CC_SHORT_SIZE;
                 if (nSize < nTotalLength)
                     return -1;
                 args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
@@ -1585,7 +1585,7 @@ decode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t * stream, int 
                 if (nSize < CC_SIZE_LENGTH)
                     return -1;
                 nKeyLength = toword(stream);
-                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + SPROTO_CC_INT_SIZE;
+                int nTotalLength = CC_SIZE_LENGTH + (int)nKeyLength + SPROTO_CC_INT_SIZE;
                 if (nSize < nTotalLength)
                     return -1;
                 args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
@@ -1607,7 +1607,7 @@ decode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t * stream, int 
                 if (nSize < CC_SIZE_LENGTH)
                     return -1;
                 nKeyLength = toword(stream);
-                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + SPROTO_CC_LONGLONG_SIZE;
+                int nTotalLength = CC_SIZE_LENGTH + (int)nKeyLength + SPROTO_CC_LONGLONG_SIZE;
                 if (nSize < nTotalLength)
                     return -1;
                 args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
@@ -1629,7 +1629,7 @@ decode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t * stream, int 
                 if (nSize < CC_SIZE_LENGTH)
                     return -1;
                 nKeyLength = toword(stream);
-                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + SPROTO_CC_DOUBLE_SIZE;
+                int nTotalLength = CC_SIZE_LENGTH + (int)nKeyLength + SPROTO_CC_DOUBLE_SIZE;
                 if (nSize < nTotalLength)
                     return -1;
                 args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
@@ -1652,7 +1652,7 @@ decode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t * stream, int 
                 if (nSize < CC_SIZE_LENGTH)
                     return -1;
                 nKeyLength = toword(stream);
-                int nTotalLength = CC_SIZE_LENGTH + nKeyLength + CC_SIZE_LENGTH;
+                int nTotalLength = CC_SIZE_LENGTH + (int)nKeyLength + CC_SIZE_LENGTH;
                 if (nSize < nTotalLength)
                     return -1;
                 args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;
@@ -1679,7 +1679,7 @@ decode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t * stream, int 
                 if (nSize < CC_SIZE_LENGTH)
                     return -1;
                 nKeyLength = toword(stream);
-                int nTotalLength = CC_SIZE_LENGTH + nKeyLength;
+                int nTotalLength = CC_SIZE_LENGTH + (int)nKeyLength;
                 if (nSize < nTotalLength)
                     return -1;
                 args->m_pMapKeyString = (const char*)stream + CC_SIZE_LENGTH;

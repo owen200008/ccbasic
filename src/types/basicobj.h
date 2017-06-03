@@ -29,7 +29,9 @@ public:
 
 	// Diagnostic allocations
 	void* operator new(size_t nSize);
+	void* operator new(size_t nSize, void* pPoint);
 	void operator delete(void* p);
+	void operator delete(void* p, void* pPont);
 };
 __NS_BASIC_END
 
