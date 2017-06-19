@@ -27,10 +27,10 @@ int basic_gcompress(unsigned char *dest, unsigned long *destLen, const unsigned 
 	time(&now);
 #ifdef __MSVC
 	_snprintf((char*)dest, *destLen, "%c%c%c%c%d%c%c", 0x1f, 0x8b,
-		Z_DEFLATED, 0 /*flags*/, now /*time*/, 0 /*xflags*/, 0x0b);
+		Z_DEFLATED, 0 /*flags*/, (uint32_t)now /*time*/, 0 /*xflags*/, 0x0b);
 #else
 	sprintf((char*)dest, "%c%c%c%c%d%c%c", 0x1f, 0x8b,
-		Z_DEFLATED, 0 /*flags*/, now /*time*/, 0 /*xflags*/, 0x0b);
+		Z_DEFLATED, 0 /*flags*/, (uint32_t)now /*time*/, 0 /*xflags*/, 0x0b);
 #endif
 	stream.next_out = dest + 10;
 	stream.avail_out = (uInt)*destLen;

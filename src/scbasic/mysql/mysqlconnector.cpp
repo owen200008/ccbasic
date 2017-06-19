@@ -89,7 +89,18 @@ bool MysqlResultData::GetColCString(const char* pColName, basiclib::CBasicString
     strRet.assign(m_smRowData.GetDataBuffer() + pRowColData->m_nPos, pRowColData->m_nLength);
     return true;
 }
-bool MysqlResultData::GetColUInt(const char* pColName, Net_UInt& nValue){
+bool MysqlResultData::GetColSmartBuffer(const char* pColName, basiclib::CBasicSmartBuffer& strRet) {
+	MapMysqlCol::iterator iter = m_mapCol.find(pColName);
+	if (iter == m_mapCol.end())
+		return false;
+	MysqlRowColData* pRowColData = GetCurrentRowDataByIndex(iter->second);
+	if (nullptr == pRowColData)
+		return false;
+	strRet.AppendData(m_smRowData.GetDataBuffer() + pRowColData->m_nPos, pRowColData->m_nLength);
+	return true;
+}
+
+bool MysqlResultData::GetColUIntData(const char* pColName, Net_UInt& nValue){
     MapMysqlCol::iterator iter = m_mapCol.find(pColName);
     if (iter == m_mapCol.end())
         return false;
@@ -101,7 +112,14 @@ bool MysqlResultData::GetColUInt(const char* pColName, Net_UInt& nValue){
     nValue = atol(szBuf);
     return true;
 }
-bool MysqlResultData::GetColInt(const char* pColName, Net_Int& nValue){
+Net_UInt MysqlResultData::GetColUInt(const char* pColName, Net_UInt nDefault) {
+	if (GetColUIntData(pColName, nDefault)) {
+		return nDefault;
+	}
+	return nDefault;
+}
+
+bool MysqlResultData::GetColIntData(const char* pColName, Net_Int& nValue){
     MapMysqlCol::iterator iter = m_mapCol.find(pColName);
     if (iter == m_mapCol.end())
         return false;
@@ -113,7 +131,14 @@ bool MysqlResultData::GetColInt(const char* pColName, Net_Int& nValue){
     nValue = atol(szBuf);
     return true;
 }
-bool MysqlResultData::GetColDouble(const char* pColName, Net_Double& dValue){
+Net_Int MysqlResultData::GetColInt(const char* pColName, Net_Int nDefault) {
+	if (GetColIntData(pColName, nDefault)) {
+		return nDefault;
+	}
+	return nDefault;
+}
+
+bool MysqlResultData::GetColDoubleData(const char* pColName, Net_Double& dValue){
     MapMysqlCol::iterator iter = m_mapCol.find(pColName);
     if (iter == m_mapCol.end())
         return false;
@@ -125,7 +150,14 @@ bool MysqlResultData::GetColDouble(const char* pColName, Net_Double& dValue){
     dValue = atof(szBuf);
     return true;
 }
-bool MysqlResultData::GetColLongLong(const char* pColName, Net_LONGLONG& llValue){
+Net_Double MysqlResultData::GetColDouble(const char* pColName, Net_Double dDefault) {
+	if (GetColDoubleData(pColName, dDefault)) {
+		return dDefault;
+	}
+	return dDefault;
+}
+
+bool MysqlResultData::GetColLongLongData(const char* pColName, Net_LONGLONG& llValue){
     MapMysqlCol::iterator iter = m_mapCol.find(pColName);
     if (iter == m_mapCol.end())
         return false;
@@ -136,5 +168,11 @@ bool MysqlResultData::GetColLongLong(const char* pColName, Net_LONGLONG& llValue
     memcpy(szBuf, m_smRowData.GetDataBuffer() + pRowColData->m_nPos, pRowColData->m_nLength);
     llValue = atoll(szBuf);
     return true;
+}
+Net_LONGLONG MysqlResultData::GetColLongLong(const char* pColName, Net_LONGLONG llDefault) {
+	if (GetColLongLongData(pColName, llDefault)) {
+		return llDefault;
+	}
+	return llDefault;
 }
 

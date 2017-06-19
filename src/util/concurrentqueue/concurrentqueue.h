@@ -748,7 +748,8 @@ public:
 		producerCount(0),
 		initialBlockPoolIndex(0),
 		nextExplicitConsumerId(0),
-		globalExplicitConsumerOffset(0)
+		globalExplicitConsumerOffset(0),
+		m_lock(0)
 	{
 		implicitProducerHashResizeInProgress.clear(std::memory_order_relaxed);
 		populate_initial_implicit_producer_hash();
@@ -762,6 +763,7 @@ public:
 		explicitProducers.store(nullptr, std::memory_order_relaxed);
 		implicitProducers.store(nullptr, std::memory_order_relaxed);
 #endif
+		m_nAllocateIndex = 0;
 	}
 	
 	// Computes the correct amount of pre-allocated blocks for you based
@@ -772,7 +774,8 @@ public:
 		producerCount(0),
 		initialBlockPoolIndex(0),
 		nextExplicitConsumerId(0),
-		globalExplicitConsumerOffset(0)
+		globalExplicitConsumerOffset(0),
+		m_lock(0)
 	{
 		implicitProducerHashResizeInProgress.clear(std::memory_order_relaxed);
 		populate_initial_implicit_producer_hash();
@@ -783,6 +786,7 @@ public:
 		explicitProducers.store(nullptr, std::memory_order_relaxed);
 		implicitProducers.store(nullptr, std::memory_order_relaxed);
 #endif
+		m_nAllocateIndex = 0;
 	}
 	
 	// Note: The queue should not be accessed concurrently while it's
@@ -829,6 +833,10 @@ public:
 		
 		// Destroy initial free list
 		destroy_array(initialBlockPool, initialBlockPoolSize);
+
+		for (auto& allocateData : m_vtAllocateIndexData) {
+			delete allocateData;
+		}
 	}
 
 	// Disable copying and copy assignment
@@ -3555,6 +3563,31 @@ private:
 		(Traits::free)(p);
 	}
 
+	struct AllocateIndexData
+	{
+		std::atomic<size_t> initialBlockPoolIndex;
+		Block* initialBlockPool;
+		size_t initialBlockPoolSize;
+		AllocateIndexData(int blockCount) : initialBlockPoolIndex(0) {
+			initialBlockPoolSize = blockCount;
+			initialBlockPool = create_array(blockCount);
+			for (size_t i = 0; i < initialBlockPoolSize; ++i) {
+				initialBlockPool[i].dynamicallyAllocated = false;
+			}
+		}
+		~AllocateIndexData() {
+			destroy_array(initialBlockPool, initialBlockPoolSize);
+		}
+		Block* GetBlock() {
+			if (initialBlockPoolIndex.load(std::memory_order_relaxed) >= initialBlockPoolSize) {
+				return nullptr;
+			}
+
+			auto index = initialBlockPoolIndex.fetch_add(1, std::memory_order_relaxed);
+
+			return index < initialBlockPoolSize ? (initialBlockPool + index) : nullptr;
+		}
+	};
 protected:
 	std::atomic<ProducerBase*> producerListTail;
 	std::atomic<std::uint32_t> producerCount;
@@ -3562,6 +3595,11 @@ protected:
 	std::atomic<size_t> initialBlockPoolIndex;
 	Block* initialBlockPool;
 	size_t initialBlockPoolSize;
+
+	//new add
+	int															m_nAllocateIndex;
+	typename basiclib::basic_vector<AllocateIndexData*>			m_vtAllocateIndexData;
+	std::atomic<char>											m_lock;
 	
 #if !MCDBGQ_USEDEBUGFREELIST
 	FreeList<Block> freeList;

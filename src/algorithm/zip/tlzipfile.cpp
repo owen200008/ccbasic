@@ -511,7 +511,7 @@ bool CBasicZipFile::SetComment(const char* comment)
 	if (IsReadOnly())
 		return false;
 	m_strComment = comment;
-	m_end.size_comment = m_strComment.length();
+	m_end.size_comment = (uint16)m_strComment.length();
 
 	Seek(m_end.offset_dir_to_first_disk + m_end.size_dir, BASIC_FILE_BEGIN);
 	Write(&m_end, sizeof(zip_file_end));
@@ -596,7 +596,7 @@ zip_dir_info*  CBasicZipFile::__addpath(file_container* dir, CBasicSmartBuffer& 
 	ulg dost = unix2dostime(&dirinfo->time_lastmodify);
 	block.modify_date = HIWORD(dost);
 	block.modify_time = LOWORD(dost);
-	block.size_filename = filename.length();
+	block.size_filename = (uint16)filename.length();
 	Write(&block, sizeof(zip_file_data_block));
 	Write(filename.c_str(), block.size_filename);
 
@@ -607,7 +607,7 @@ zip_dir_info*  CBasicZipFile::__addpath(file_container* dir, CBasicSmartBuffer& 
 	dirblock.property_outer_file = property_outer_file_dir;	// path
 	dirblock.local_header_offset = m_end.offset_dir_to_first_disk;
 	dirblock.size_filename = block.size_filename;
-	dirblock.size_comment = dirinfo->comment.length();
+	dirblock.size_comment = (uint16)dirinfo->comment.length();
 	bufIndex.AppendData((char*)&dirblock, sizeof(zip_file_dir_block));
 	bufIndex.AppendData(filename.c_str(), dirblock.size_filename);
 	bufIndex.AppendData(dirinfo->comment.c_str(), dirblock.size_comment);
@@ -623,7 +623,7 @@ zip_file_info* CBasicZipFile::__addfile(CBasicStaticBuffer* dataBuffer, file_con
 	ulg dost = unix2dostime(&fileinfo->time_lastmodify);
 	block.modify_date = HIWORD(dost);
 	block.modify_time = LOWORD(dost);
-	block.size_filename = fileinfo->file_name.length();
+	block.size_filename = (uint16)fileinfo->file_name.length();
 	block.zip_type = 0x08;
 	block.size_unzipped = dataBuffer->GetLength();
 
@@ -632,7 +632,7 @@ zip_file_info* CBasicZipFile::__addfile(CBasicStaticBuffer* dataBuffer, file_con
 	dirblock.modify_time = block.modify_time;
 	dirblock.size_filename = block.size_filename;
 	dirblock.zip_type = block.zip_type;
-	dirblock.size_comment = fileinfo->comment.length();
+	dirblock.size_comment = (uint16)fileinfo->comment.length();
 	dirblock.size_unzipped = block.size_unzipped;
 	dirblock.property_outer_file = property_outer_file_file;
 	dirblock.local_header_offset = m_end.offset_dir_to_first_disk;

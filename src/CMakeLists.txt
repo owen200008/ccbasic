@@ -95,6 +95,10 @@ set(basiclib_SOURCES
     ${BasicLibSrcPath}/algorithm/zip/tlzipfile.h
     ${BasicLibSrcPath}/algorithm/zip/zconf.h
     ${BasicLibSrcPath}/algorithm/zip/zlib.h
+	${BasicLibSrcPath}/algorithm/base64.h
+    ${BasicLibSrcPath}/algorithm/base64.cpp
+	${BasicLibSrcPath}/algorithm/crc32.h
+    ${BasicLibSrcPath}/algorithm/crc32.cpp
     ${BasicLibSrcPath}/coroutine/coroutineplus.h
     ${BasicLibSrcPath}/datastruct/array.h
     ${BasicLibSrcPath}/datastruct/basic_string.h

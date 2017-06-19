@@ -119,10 +119,15 @@ struct _SCBASIC_DLL_API MysqlResultData : public basiclib::CBasicObject{
     MysqlRowColData* GetCurrentRowDataByIndex(int nIndex);
     //获取数据
     bool GetColCString(const char* pColName, basiclib::CBasicString& strRet);
-    bool GetColUInt(const char* pColName, Net_UInt& nValue);
-    bool GetColInt(const char* pColName, Net_Int& nValue);
-    bool GetColDouble(const char* pColName, Net_Double& dValue);
-    bool GetColLongLong(const char* pColName, Net_LONGLONG& llValue);
+	bool GetColSmartBuffer(const char* pColName, basiclib::CBasicSmartBuffer& strRet);
+    bool GetColUIntData(const char* pColName, Net_UInt& nValue);
+	Net_UInt GetColUInt(const char* pColName, Net_UInt nDefault = 0);
+    bool GetColIntData(const char* pColName, Net_Int& nValue);
+	Net_Int GetColInt(const char* pColName, Net_Int nDefault = 0);
+    bool GetColDoubleData(const char* pColName, Net_Double& dValue);
+	Net_Double GetColDouble(const char* pColName, Net_Double dDefault);
+    bool GetColLongLongData(const char* pColName, Net_LONGLONG& llValue);
+	Net_LONGLONG GetColLongLong(const char* pColName, Net_LONGLONG llDefault);
     bool GetColCStringByIndex(int nIndex, basiclib::CBasicString& strRet);
     
 };

@@ -106,9 +106,9 @@
 
 //CRC16
 //#include "../algorithm/crc16.h"
-//#include "../algorithm/crc32.h"
+#include "../algorithm/crc32.h"
 //base64
-//#include "../algorithm/base64.h"
+#include "../algorithm/base64.h"
 //
 //#include "../algorithm/algorithm.h"
 #include "../algorithm/md5.h"

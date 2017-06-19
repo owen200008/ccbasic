@@ -1128,4 +1128,22 @@ void Basic_RegulateFileNameString(CBasicString& strFileName)
 	}
 }
 
+//! ¶ÁÈ¡ÎÄ¼þ
+bool _BASIC_DLL_API Basic_ReadTotalFile(const char* pFileName, basiclib::CBasicSmartBuffer& smBuf) {
+	FILE* fp = fopen(pFileName, "r");
+	if (fp) {
+		fseek(fp, 0, SEEK_END);
+		long lLength = ftell(fp);
+		fseek(fp, 0, SEEK_SET);
+		if (lLength > 0) {
+			smBuf.SetDataLength(lLength);
+			char* pBuffer = smBuf.GetDataBuffer();
+			fread(pBuffer, sizeof(char), lLength, fp);
+		}
+		fclose(fp);
+		return true;
+	}
+	return false;
+}
+
 __NS_BASIC_END

@@ -60,26 +60,31 @@ void CBasicSmartBuffer::EmptyBuffer()
 
 void CBasicSmartBuffer::Free()
 {
-	if (m_bSelfBuf)
-	{
-		if (m_pszBuffer)
-		{
-			BasicDeallocate(m_pszBuffer);
-		}
+	if (m_bSelfBuf && m_pszBuffer){
+		BasicDeallocate(m_pszBuffer);
 	}
 	EmptyBuffer();
 }
 
 bool CBasicSmartBuffer::ExportOutData(SmartBufferExportOutData& data)
 {
-	if (m_bSelfBuf)
-	{
-		data.ReleaseData();
+	data.ReleaseData();
+	if (m_bSelfBuf){
 		data.m_pExport = m_pszBuffer;
 		data.m_nLength = m_cbBuffer;
-
 		EmptyBuffer();
 		return true;
+	}
+	else {
+		if (m_cbBuffer > 0) {
+			data.m_pExport = (char*)basiclib::BasicAllocate(m_cbBuffer);
+			memcpy(data.m_pExport, m_pszBuffer, m_cbBuffer);
+		}
+		else{
+			data.m_pExport = nullptr;
+		}
+		data.m_nLength = m_cbBuffer;
+		EmptyBuffer();
 	}
 	return false;
 }
@@ -244,7 +249,11 @@ void CBasicSmartBuffer::ReadData(void* pBuffer, int nLength)
 	if (pBuffer)
 		memcpy(pBuffer, m_pszBuffer, nLength);
 	m_cbBuffer -= nLength;
-	memmove(m_pszBuffer, m_pszBuffer + nLength, m_cbBuffer);
+	if (m_bSelfBuf)
+		memmove(m_pszBuffer, m_pszBuffer + nLength, m_cbBuffer);
+	else
+		//尽量不改变原来的内存块
+		m_pszBuffer += nLength;
 }
 //binddatatosmartbuffer
 void CBasicSmartBuffer::BindOutData(char* pData, int nLength)
@@ -252,8 +261,8 @@ void CBasicSmartBuffer::BindOutData(char* pData, int nLength)
 	Free();
 	m_bSelfBuf = false;
 	m_pszBuffer = pData;
-	m_cbAlloc = nLength;
-	m_cbBuffer = m_cbAlloc;
+	m_cbAlloc = 0;
+	m_cbBuffer = nLength;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -83,6 +83,17 @@ void CCorutinePlus::ReInit(coroutine_func func)
 
 void CCorutinePlus::YieldCorutine()
 {
+#ifdef _DEBUG
+	char sStackSize = 0;
+	int nLength = m_ctx.ss_sp + STACK_SIZE - &sStackSize;
+	//预留10K的空间
+	ASSERT(nLength < STACK_SIZE - 10 * 1024);
+	static int nTotalUseStackSize = 0;
+	if (nLength > nTotalUseStackSize) {
+		basiclib::BasicLogEventV(basiclib::DebugLevel_Info, "CCorutinePlus::YieldCorutine MaxStack Size %dK", (int)(nLength / 1024));
+		nTotalUseStackSize = nLength;
+	}
+#endif
     m_pRunPool->YieldFunc(this);
 }
 
@@ -99,6 +110,11 @@ void CCorutinePlus::StartFuncLibco()
 
 CoroutineState CCorutinePlus::Resume(CCorutinePlusPool* pPool)
 {
+#ifdef _DEBUG
+	if (*(Net_UInt*)m_pResumeParam[0] == 256) {
+		ASSERT(0);
+	}
+#endif
     m_tmResumeTime = time(NULL);
 	m_pRunPool = pPool;
     m_pRunPool->ResumeFunc(this);
@@ -187,7 +203,7 @@ bool CCorutinePlusPool::InitCorutine(int nDefaultSize, int nLimitCorutineCount, 
 		for (int i = 0; i < nShareStackSize; i++) {
 			m_vtStacks.push_back(CreateShareStack());
 		}
-        m_usShareStackSize = m_vtStacks.size();
+        m_usShareStackSize = (uint16_t)m_vtStacks.size();
         m_usRealShareStackSize = m_usShareStackSize;
     }
     return m_bInit;
@@ -226,7 +242,13 @@ CCorutinePlus* CCorutinePlusPool::GetCorutine(bool bGlobal)
         pRet = m_vtCorutinePlus[--m_nCorutineSize];
     }
     //! 获取堆栈
-    pRet->InitStackAndPool(this, GetShareStack());
+	char* pStackData = GetShareStack();
+#ifdef _DEBUG
+	if (nullptr == pStackData) {
+		basiclib::BasicLogEvent(basiclib::DebugLevel_Error, "StackData Get Error!");
+	}
+#endif
+    pRet->InitStackAndPool(this, pStackData);
 	return pRet;
 }
 
@@ -269,6 +291,11 @@ CCorutinePlus* CCorutinePlusPool::CreateCorutine()
 void CCorutinePlusPool::YieldFunc(CCorutinePlus* pCorutine)
 {
     m_usRunCorutineStack--;
+#ifdef _DEBUG
+	if (m_usRunCorutineStack <= 0) {
+		ASSERT(0);
+	}
+#endif
     CCorutinePlus* pChange = m_pStackRunCorutine[m_usRunCorutineStack - 1];
 
     pCorutine->m_state = CoroutineState_Suspend;
@@ -333,6 +360,7 @@ void CCorutinePlusPool::ReleaseShareStack(char* pStack){
 }
 
 char* CCorutinePlusPool::GetShareStack(bool bGlobal){
+	char* pRet = nullptr;
     if (m_usShareStackSize == 0){
         //首先从全局拿一下
         if (bGlobal){
@@ -345,17 +373,23 @@ char* CCorutinePlusPool::GetShareStack(bool bGlobal){
             for (int i = 0; i < nGetCount; i++){
                 m_vtStacks[m_usShareStackSize++] = pBuf[i];
             }
-			return GetShareStack(false);
+			pRet = GetShareStack(false);
         }
-		return CreateShareStack();
+		else {
+			pRet = CreateShareStack();
+		}
     }
-    return m_vtStacks[--m_usShareStackSize];
+	else {
+		pRet = m_vtStacks[--m_usShareStackSize];
+	}
+	return pRet;
 }
 
 char* CCorutinePlusPool::CreateShareStack(){
 	char* pRet = nullptr;
-	if (m_vtCreateStack.MQPop(&pRet) == 0)
+	if (m_vtCreateStack.MQPop(&pRet) == 0) {
 		return pRet;
+	}
 
 	int nCreateSize = 0;
 	pRet = m_balance.GetNewCreateStack(m_nCreateTimesShareStack, nCreateSize);
@@ -365,6 +399,11 @@ char* CCorutinePlusPool::CreateShareStack(){
 		pAddBegin += STACK_SIZE;
 	}
 	m_nCreateTimesShareStack++;
+#ifdef _DEBUG
+	if (pRet == nullptr) {
+		return pRet;
+	}
+#endif
 	return pRet;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -419,7 +458,7 @@ int CCorutinePlusPoolBalance::GetExtraShareStackCount(){
 }
 //! 获取创建的堆栈
 char* CCorutinePlusPoolBalance::GetNewCreateStack(int nTimes, int& nCreateSize) {
-	nCreateSize = pow(16, nTimes + 1);
+	nCreateSize = 16 * (int)pow(2, nTimes + 1);
 	if (nCreateSize < 16)
 		nCreateSize = 16;
 	else if (nCreateSize > 1024)

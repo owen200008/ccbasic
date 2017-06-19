@@ -30,12 +30,40 @@ public:
 	//! 最大不能超过max signlength, 0代表失败
 	size_t Sign(const char* pEncode, int nLength, byte* pOutput, int nOutputLength);
 	bool Verify(const char* pDecode, int nLength, const char* pVerify, int nVerifyLength);
+
+	CryptoPP::RandomPool& GetRandomPool() { return m_rng; }
 protected:
 	CryptoPP::RandomPool					m_rng;
 	CryptoPP::RSAES_OAEP_SHA_Encryptor		m_pubEncode;
 	CryptoPP::RSASSA_PKCS1v15_SHA_Verifier	m_pubDecode;
 	CryptoPP::RSAES_OAEP_SHA_Decryptor		m_priDecode;
 	CryptoPP::RSASSA_PKCS1v15_SHA_Signer	m_priEncode;
+};
+
+struct RSAInitData {
+	Net_UShort					m_usVersion;
+	basiclib::CBasicSmartBuffer m_smBufPub;
+	basiclib::CBasicSmartBuffer m_smBufPri;
+};
+typedef basiclib::basic_vector<RSAInitData>	VTRSAInitData;
+class CXKRSAManager : public basiclib::CBasicObject
+{
+public:
+	CXKRSAManager();
+	virtual ~CXKRSAManager();
+
+	bool InitFromPath(const char* pPath);
+	bool InitFromPath(const char* pPath, const std::function<void(const char* pFileName, basiclib::CBasicSmartBuffer& smBuf)>& func);
+	bool InitFromData(Net_UShort usDefaultVersion, VTRSAInitData& vtData);
+	CSCBasicRSA* GetRSAByVersion(Net_UShort sVersion);
+	Net_UShort GetRSADefaultVersion() { return m_usDefaultVersion; }
+	CSCBasicRSA* GetDefaultRSA() { return m_pDefaultRSA; }
+protected:
+	typedef basiclib::basic_map<Net_UShort, CSCBasicRSA*>   MapVersionToRSA;
+	typedef MapVersionToRSA::iterator                       MapVersionToRSAIterator;
+	MapVersionToRSA                                         m_mapRSA;
+	Net_UShort                                              m_usDefaultVersion;
+	CSCBasicRSA*                                            m_pDefaultRSA;
 };
 
 #endif

@@ -150,6 +150,9 @@ public:
 		}
 		return false;
 	}
+	void KnowDelRef() {
+		BasicInterlockedDecrement(&m_lRef);
+	}
 
 	CBasicRefPtr<T>	GetRefPtr()
 	{

@@ -153,3 +153,135 @@ bool CSCBasicRSA::Verify(const char* pDecode, int nLength, const char* pVerify, 
     CryptoPP::ArraySource source((byte*)pVerify, nVerifyLength, true, pVerifierFilter);
 	return pVerifierFilter->GetLastResult();
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CXKRSAManager::CXKRSAManager()
+{
+	m_pDefaultRSA = nullptr;
+	m_usDefaultVersion = 0;
+}
+CXKRSAManager::~CXKRSAManager()
+{
+	for (auto& rsa : m_mapRSA) {
+		delete rsa.second;
+	}
+}
+bool CXKRSAManager::InitFromPath(const char* pPath)
+{
+	basiclib::CBasicString strConfig = pPath;
+	strConfig += "rsa.ini";
+	basiclib::CBasicIniOp iniOp(strConfig.c_str());
+	iniOp.GetSection("main", [&](basiclib::CBasicString& strName, basiclib::CBasicString& strValue)->void {
+		Net_UShort nKey = (Net_UShort)atol(strName.c_str());
+		MapVersionToRSAIterator iter = m_mapRSA.find(nKey);
+		CSCBasicRSA* pRSA = nullptr;
+		if (iter == m_mapRSA.end()) {
+			pRSA = new CSCBasicRSA();
+			m_mapRSA[nKey] = pRSA;
+		}
+		else {
+			pRSA = iter->second;
+		}
+		basiclib::CBasicStringArray ayItem;
+		basiclib::BasicSpliteString(strValue.c_str(), ",", basiclib::IntoContainer_s<basiclib::CBasicStringArray>(ayItem));
+		if (ayItem.GetSize() >= 1) {
+			basiclib::CBasicString strPrivateFile = pPath;
+			strPrivateFile += ayItem[0];
+			pRSA->SetPrivateFileName(strPrivateFile.c_str());
+		}
+		if (ayItem.GetSize() >= 2) {
+			basiclib::CBasicString strPublicFile = pPath;
+			strPublicFile += ayItem[1];
+			pRSA->SetPublicFileName(strPublicFile.c_str());
+		}
+	});
+	m_usDefaultVersion = (Net_UShort)iniOp.GetLong("default", "version", "1");
+	MapVersionToRSAIterator iter = m_mapRSA.find(m_usDefaultVersion);
+	if (iter != m_mapRSA.end()) {
+		m_pDefaultRSA = iter->second;
+		return true;
+	}
+	return false;
+}
+bool CXKRSAManager::InitFromPath(const char* pPath, const std::function<void(const char* pFileName, basiclib::CBasicSmartBuffer& smBuf)>& func)
+{
+	basiclib::CBasicSmartBuffer smBuf;
+	basiclib::CBasicString strConfig = pPath;
+	strConfig += "rsa.ini";
+	smBuf.SetDataLength(0);
+	func(strConfig.c_str(), smBuf);
+	basiclib::CBasicIniOp iniOp;
+	iniOp.InitFromMem(smBuf.GetDataBuffer(), smBuf.GetDataLength());
+	iniOp.GetSection("main", [&](basiclib::CBasicString& strName, basiclib::CBasicString& strValue)->void {
+		Net_UShort nKey = (Net_UShort)atol(strName.c_str());
+		MapVersionToRSAIterator iter = m_mapRSA.find(nKey);
+		CSCBasicRSA* pRSA = nullptr;
+		if (iter == m_mapRSA.end()) {
+			pRSA = new CSCBasicRSA();
+			m_mapRSA[nKey] = pRSA;
+		}
+		else {
+			pRSA = iter->second;
+		}
+		basiclib::CBasicStringArray ayItem;
+		basiclib::BasicSpliteString(strValue.c_str(), ",", basiclib::IntoContainer_s<basiclib::CBasicStringArray>(ayItem));
+		if (ayItem.GetSize() >= 1) {
+			basiclib::CBasicString strPrivateFile = pPath;
+			strPrivateFile += ayItem[0];
+			smBuf.SetDataLength(0);
+			func(strPrivateFile.c_str(), smBuf);
+			pRSA->SetPrivateKey(smBuf.GetDataBuffer());
+		}
+		if (ayItem.GetSize() >= 2) {
+			basiclib::CBasicString strPublicFile = pPath;
+			strPublicFile += ayItem[1];
+			smBuf.SetDataLength(0);
+			func(strPublicFile.c_str(), smBuf);
+			pRSA->SetPublicKey(smBuf.GetDataBuffer());
+		}
+	});
+	m_usDefaultVersion = (Net_UShort)iniOp.GetLong("default", "version", "1");
+	MapVersionToRSAIterator iter = m_mapRSA.find(m_usDefaultVersion);
+	if (iter != m_mapRSA.end()) {
+		m_pDefaultRSA = iter->second;
+		return true;
+	}
+	return false;
+}
+bool CXKRSAManager::InitFromData(Net_UShort usDefaultVersion, VTRSAInitData& vtData) {
+	m_usDefaultVersion = usDefaultVersion;
+	for (auto& data : vtData) {
+		Net_UShort nKey = data.m_usVersion;
+		if (data.m_smBufPri.IsEmpty())
+			continue;
+		MapVersionToRSAIterator iter = m_mapRSA.find(nKey);
+		CSCBasicRSA* pRSA = nullptr;
+		if (iter == m_mapRSA.end()) {
+			pRSA = new CSCBasicRSA();
+			m_mapRSA[nKey] = pRSA;
+		}
+		else {
+			pRSA = iter->second;
+		}
+		pRSA->SetPrivateKey(data.m_smBufPri.GetDataBuffer());
+		if (!data.m_smBufPub.IsEmpty()) {
+			pRSA->SetPublicKey(data.m_smBufPub.GetDataBuffer());
+		}
+	}
+	MapVersionToRSAIterator iter = m_mapRSA.find(m_usDefaultVersion);
+	if (iter != m_mapRSA.end()) {
+		m_pDefaultRSA = iter->second;
+		return true;
+	}
+	return false;
+}
+
+CSCBasicRSA* CXKRSAManager::GetRSAByVersion(Net_UShort sVersion)
+{
+	MapVersionToRSAIterator iter = m_mapRSA.find(sVersion);
+	if (iter != m_mapRSA.end()) {
+		return iter->second;
+	}
+	return nullptr;
+}
+

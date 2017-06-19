@@ -466,6 +466,10 @@ void _BASIC_DLL_API Basic_RegulatePathString(CBasicString& strPath);
 *\param strFileName 文件名
 */
 void _BASIC_DLL_API Basic_RegulateFileNameString(CBasicString& strFileName);
+
+//! 读取文件
+bool _BASIC_DLL_API Basic_ReadTotalFile(const char* pFileName, basiclib::CBasicSmartBuffer& smBuf);
+
 __NS_BASIC_END
 /////////////////////////////////////////////////////////////////////////////////////////////
 

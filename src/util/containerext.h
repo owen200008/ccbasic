@@ -286,41 +286,11 @@ class CLockFreeMessageQueue : public moodycamel::ConcurrentQueue<T, CBasicConcur
 public:
 	typedef typename moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>::Block LockFreeMsgBlock;
 
-	struct AllocateIndexData
+	CLockFreeMessageQueue(size_t capacity = nBlockSize) : moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>(capacity)
 	{
-		std::atomic<size_t> initialBlockPoolIndex;
-		LockFreeMsgBlock* initialBlockPool;
-		size_t initialBlockPoolSize;
-		AllocateIndexData(int blockCount) : initialBlockPoolIndex(0){
-			initialBlockPoolSize = blockCount;
-			initialBlockPool = moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>::create_array(blockCount);
-			for (size_t i = 0; i < initialBlockPoolSize; ++i) {
-				initialBlockPool[i].dynamicallyAllocated = false;
-			}
-		}
-		~AllocateIndexData(){
-			moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>::destroy_array(initialBlockPool, initialBlockPoolSize);
-		}
-		LockFreeMsgBlock* GetBlock(){
-			if (initialBlockPoolIndex.load(std::memory_order_relaxed) >= initialBlockPoolSize) {
-				return nullptr;
-			}
-
-			auto index = initialBlockPoolIndex.fetch_add(1, std::memory_order_relaxed);
-
-			return index < initialBlockPoolSize ? (initialBlockPool + index) : nullptr;
-		}
-	};
-	CLockFreeMessageQueue(size_t capacity = nBlockSize) : moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>(capacity),
-		m_lock(0)
-	{
-		m_nAllocateIndex = 0;
 		m_vtAllocateIndexData.push_back(new AllocateIndexData(capacity));
 	}
 	virtual ~CLockFreeMessageQueue(){
-		for (auto& allocateData : m_vtAllocateIndexData){
-			delete allocateData;
-		}
 	}
 	virtual LockFreeMsgBlock* ChildCreateBlock(){
 		int nAllocateIndex = m_nAllocateIndex;
@@ -339,10 +309,6 @@ public:
 		TRACE("expand_queue:%d\n", pData->initialBlockPoolSize * 2 * sizeof(T));
 		return ChildCreateBlock();
 	}
-protected:
-	int															m_nAllocateIndex;
-	typename basiclib::basic_vector<AllocateIndexData*>			m_vtAllocateIndexData;
-	std::atomic<char>											m_lock;
 };
 ///////////////////////////////////////////////////////////////////////////////////////
 //内存检测不能用，因为不能重复调用allocate

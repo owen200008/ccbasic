@@ -22,9 +22,6 @@
 [submodule "3rd/libevent"]
 	path = 3rd/libevent
 	url = https://github.com/libevent/libevent.git
-[submodule "3rd/Selene"]
-	path = 3rd/Selene
-	url = https://github.com/owen200008/Selene.git
 [submodule "3rd/kaguya"]
 	path = 3rd/kaguya
 	url = https://github.com/satoren/kaguya.git

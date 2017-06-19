@@ -21,7 +21,7 @@ void BasicDebugBreak()
 
 void BasicTraceV(const char* lpszFormat, va_list argList)
 {
-	char szTraceBuff[256];
+	char szTraceBuff[1024];
 	memset(szTraceBuff, 0, sizeof(szTraceBuff));
 	vsnprintf(szTraceBuff, sizeof(szTraceBuff) / sizeof(char)-1, lpszFormat, argList);
 

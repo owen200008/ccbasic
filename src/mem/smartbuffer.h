@@ -40,6 +40,7 @@ struct _BASIC_DLL_API SmartBufferExportOutData
 		}
 	}
 };
+
 class _BASIC_DLL_API CBasicSmartBuffer : public CBasicObject
 {
 public:
