@@ -25,3 +25,6 @@
 [submodule "3rd/Selene"]
 	path = 3rd/Selene
 	url = https://github.com/owen200008/Selene.git
+[submodule "3rd/kaguya"]
+	path = 3rd/kaguya
+	url = https://github.com/satoren/kaguya.git
