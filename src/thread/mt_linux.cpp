@@ -417,7 +417,7 @@ LPCRITICAL_SECTION lpCriticalSection
 {
 	pthread_mutex_lock((pthread_mutex_t*)lpCriticalSection->LockSemaphore);
 	//
-	lpCriticalSection->OwningThread = BasicGetCurrentThreadId();
+	lpCriticalSection->m_bAcquired = true;
 }
 
 BOOL
@@ -429,7 +429,7 @@ LPCRITICAL_SECTION lpCriticalSection
 	if (!irc)
 	{
 		/* we now own the mutex  */
-		lpCriticalSection->OwningThread = BasicGetCurrentThreadId();
+		lpCriticalSection->m_bAcquired = true;
 		return true;
 	}
 	return false;
@@ -440,18 +440,12 @@ LeaveCriticalSection(
 LPCRITICAL_SECTION lpCriticalSection
 )
 {
-	DWORD hPrev = lpCriticalSection->OwningThread;
-	if (hPrev != 0 && hPrev != BasicGetCurrentThreadId())
-	{
-		BasicTrace("pthread_mutex_unlock fail owner:%d,this:%d \n", hPrev, BasicGetCurrentThreadId());
-		return;
-	}
-	lpCriticalSection->OwningThread = 0;
-
-	int nUnlock = pthread_mutex_unlock((pthread_mutex_t*)lpCriticalSection->LockSemaphore);
-	if (nUnlock != 0 && hPrev != 0)
-	{
-		BasicTrace("pthread_mutex_unlock fail(%d) owner:%d \n", nUnlock, hPrev);
+	if(lpCriticalSection->m_bAcquired){
+		lpCriticalSection->m_bAcquired = false;
+		int nUnlock = pthread_mutex_unlock((pthread_mutex_t*)lpCriticalSection->LockSemaphore);
+		if(nUnlock != 0){
+			BasicTrace("pthread_mutex_unlock fail(%d) owner:%d \n", nUnlock, hPrev);
+		}
 	}
 }
 
@@ -460,13 +454,7 @@ DeleteCriticalSection(
 LPCRITICAL_SECTION lpCriticalSection
 )
 {
-	if (lpCriticalSection == NULL)
-		return;
-	if (lpCriticalSection->OwningThread != 0)
-	{
-		BasicTrace("DeleteCritcalSection (%d) \n", lpCriticalSection->OwningThread);
-		LeaveCriticalSection(lpCriticalSection);
-	}
+	LeaveCriticalSection(lpCriticalSection);
 	pthread_mutex_t* pmutex = (pthread_mutex_t*)lpCriticalSection->LockSemaphore;
 	pthread_mutex_destroy(pmutex);
 	delete pmutex;

@@ -49,7 +49,7 @@ Net_Int CHttpSession::OnReceive(Net_UInt dwNetCode, const char *pszData, Net_Int
 		if (ret == HTTP_ERROR_NEWREQUEST || ret == HTTP_ERROR_FINISH)
 		{
 			HttpResponse response;
-			GetNetAddress(m_pRequest->GetRefPeerAddr());
+			m_pRequest->GetRefPeerAddr() = GetNetAddress();
 			if (m_funcOnHttpAsk)
 			{
 				long lRet = m_funcOnHttpAsk(this, m_pRequest, response);
@@ -83,19 +83,8 @@ Net_Int CHttpSession::OnReceive(Net_UInt dwNetCode, const char *pszData, Net_Int
 	return BASIC_NET_OK;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CHttpSessionServer::CHttpSessionServer(Net_UInt nSessionID) : CNetServerControl(nSessionID)
-{
-
-}
-
-CHttpSessionServer::~CHttpSessionServer()
-{
-
-}
-
-basiclib::CBasicSessionNetClient* CHttpSessionServer::ConstructSession(Net_UInt nSessionID)
-{
-	CHttpSession* pNotify = CHttpSession::CreateHttpClient(nSessionID, this);
+basiclib::CBasicSessionNetServerSession* CHttpSessionServer::ConstructSession(Net_UInt nSessionID){
+	CHttpSession* pNotify = CHttpSession::CreateNetServerSessionWithServer(nSessionID, m_usRecTimeout, this);
 	pNotify->m_funcOnHttpAsk = m_funcOnHttpAsk;
 	return pNotify;
 }

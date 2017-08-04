@@ -86,6 +86,7 @@ end
 
 local typedef = P {
 	"ALL",
+	STRUCTFUNCTION = namedpat("structfunction", (typename * blank0 * (C"*")^-1 * blank0 * name * P"(" * (1 - P")") ^0 * P")" * blank0 * ";")),
     COMMENTSTAR = namedpat("commentstar", P"/*" * (1 - P"*/") ^0 * P"*/"),
     COMMENTDEFINE = namedpat("commentdefine", P"#" * (1 - newline) ^0 * (newline + eof)),
     FIELD = namedpat("field", (typename * blank0 * (C"*")^-1 * blank0 * name * blank0 * ";")),
@@ -95,9 +96,10 @@ local typedef = P {
 	DEFAULTVALUECHILD = namedpat("defaultvaluechild", (nameChild * blank0 * "=" * blank0 * (1 - endCCode) ^1 * blank0 * ";")),
     DEFAULTSTRUCT = P"{" * multipat(V"DEFAULTVALUE" + V"DEFAULTNULLPTR" + V"DEFAULTVALUECHILD") * P"}",
     DEFAULT = namedpat("default", (name * P"()" * blank0 * V"DEFAULTSTRUCT")),
-	STRUCT = P"{" * multipat(V"FIELD" + V"COMMENTSTAR" + V"TYPEDEFFIELD") * blank0 * V"DEFAULT"^0 * blank0 * P"};",
+	DEFAULTCON = namedpat("defaultcon", (name * P"(" * (1 - P")") ^0 * P")" * blank0 * P";")),
+	STRUCT = P"{" * multipat(V"FIELD" + V"COMMENTSTAR" + V"STRUCTFUNCTION" + V"TYPEDEFFIELD" + V"DEFAULT"+ V"STRUCTFUNCTION" + V"DEFAULTCON") * blank0 * P"};",
 	TYPE = namedpat("type", P"struct"* blanks * name * blank0 * V"STRUCT" ),
-	ALL = multipat(V"TYPE" + V"COMMENTSTAR" + V"COMMENTDEFINE" + V"TYPEDEFFIELD" + blanks),
+	ALL = multipat(V"TYPE" + V"COMMENTSTAR" + V"STRUCTFUNCTION" + V"COMMENTDEFINE" + V"TYPEDEFFIELD" + blanks),
 }
 
 local arrayormap = P {
@@ -134,6 +136,21 @@ function convert.type(all, obj, set)
 			table.insert(result, field)
         elseif f.type == "commentstar" then
             --do nothing
+		elseif f.type == "structfunction" then
+            --do nothing
+		elseif f.type == "defaultcon" then
+			--do nothing
+		elseif f.type == "default" then
+			for _,defaultvalue in pairs(f[2]) do
+				local bFind = false
+				for _, field in pairs(result) do
+					if field.name == defaultvalue[1] and defaultvalue[2] then
+						field.defaultvalue = defaultvalue[2]
+						bFind = true
+						break
+					end
+				end
+			end
         elseif f.type == "typedeffield" then
             local typedeffiled = f[1]
             local name = f[2]
@@ -150,18 +167,6 @@ function convert.type(all, obj, set)
 			all.type[nesttypename] = convert.type(all, f)
 		end
 	end
-    if obj[3] then
-        for _,defaultvalue in pairs(obj[3][2]) do
-            local bFind = false
-            for _, field in pairs(result) do
-                if field.name == defaultvalue[1] and defaultvalue[2] then
-                    field.defaultvalue = defaultvalue[2]
-                    bFind = true
-                    break
-                end
-            end
-        end
-    end
 	return result
 end
 
@@ -178,7 +183,7 @@ local function adjust(r)
 	local result = { type = {}, typedeffield = {} }
 
 	for _, obj in ipairs(r) do
-        if obj.type ~= "commentstar" and obj.type ~= "commentdefine" and obj.type ~= "typedeffield" then
+        if obj.type ~= "commentstar" and obj.type ~= "commentdefine" and obj.type ~= "typedeffield" and obj.type ~= "structfunction" and obj.type ~= "defaultcon" then
         	local set = result[obj.type]
 		    local name = obj[1]
         

@@ -77,9 +77,6 @@ if(BASICLIBTEST_BUILD_TEST)
 		${PROJECT_SOURCE_DIR}/basic_test/thread/threadtest.h
 		${PROJECT_SOURCE_DIR}/basic_test/time/ontimertest.h
 		${PROJECT_SOURCE_DIR}/basic_test/util/containerexttest.h
-		${PROJECT_SOURCE_DIR}/src/scbasic/net/net.h
-		${PROJECT_SOURCE_DIR}/src/scbasic/net/net.cpp
-		${PROJECT_SOURCE_DIR}/src/scbasic/net/sendbuffer.cpp
 		${PROJECT_SOURCE_DIR}/src/scbasic/commu/basicclient.cpp
 		${PROJECT_SOURCE_DIR}/src/scbasic/commu/ipverify.cpp
 		${PROJECT_SOURCE_DIR}/src/scbasic/commu/servertemplate.cpp

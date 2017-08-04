@@ -14,22 +14,18 @@
 #define BASIC_BASICCLIENT_H
 
 #include "../../inc/basic.h"
-#include "../scbasic/net/net.h"
 #include "../scbasic_head.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //连接管理
 class _SCBASIC_DLL_API CCommonClientSession : public basiclib::CBasicSessionNetClient
 {
-public:
-    static CCommonClientSession* CreateCCommonClientSession(uint32_t nSessionID = basiclib::CBasicSessionNet::GetDefaultCreateSessionID()){ return new CCommonClientSession(nSessionID); }
-
-protected:
-	CCommonClientSession(uint32_t nSessionID);
-	virtual ~CCommonClientSession();
+	DefineCreateNetClientDefault(CCommonClientSession);
 public:
 	virtual int32_t Connect(const char* lpszAddress);
-	virtual int32_t OnDisconnect(uint32_t dwNetCode);
+
+protected:
+	virtual uint32_t OnDisconnect(uint32_t dwNetCode);
 };
 
 #endif 

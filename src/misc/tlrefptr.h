@@ -19,92 +19,75 @@ class CBasicRefPtr
 public:
 	typedef T	value_type;
 
-	CBasicRefPtr() : m_pT(NULL)
-	{
+	CBasicRefPtr() : m_pT(NULL){
 	}
-	CBasicRefPtr(T* pT) : m_pT(pT)
-	{
+	CBasicRefPtr(T* pT) : m_pT(pT){
 		if (m_pT)
 			m_pT->AddRef();
 	}
 
 	template<class U>
-	operator CBasicRefPtr<U>() const
-	{
+	operator CBasicRefPtr<U>() const{
 		//STATIC_CHECK(SUPERSUBCLASS(U, T), U_must_be_super_class_of_T);
 		return CBasicRefPtr<U>(dynamic_cast<U*>(m_pT));
 	}
 
-	CBasicRefPtr(const CBasicRefPtr& ptr) : m_pT(ptr.m_pT)
-	{
+	CBasicRefPtr(const CBasicRefPtr& ptr) : m_pT(ptr.m_pT){
 		if (m_pT)
 			m_pT->AddRef();
 	}
 
 
-	~CBasicRefPtr()
-	{
+	~CBasicRefPtr(){
 		if (m_pT)
 			m_pT->DelRef();
 	}
 
-	CBasicRefPtr&	operator=(T* p)
-	{
-		if (m_pT)
-		{
+	CBasicRefPtr&	operator=(T* p){
+		if (m_pT){
 			m_pT->DelRef();
 		}
 
 		m_pT = p;
-		if (m_pT)
-		{
+		if (m_pT){
 			m_pT->AddRef();
 		}
 		return *this;
 	}
 
-	CBasicRefPtr&	operator=(const CBasicRefPtr& ptr)
-	{
-		if (m_pT)
-		{
+	CBasicRefPtr&	operator=(const CBasicRefPtr& ptr){
+		if (m_pT){
 			m_pT->DelRef();
 		}
 
 		m_pT = ptr.m_pT;
-		if(m_pT)
-		{
+		if(m_pT){
 			m_pT->AddRef();
 		}
 		return *this;
 	}
 
-	bool		operator==(const CBasicRefPtr& ptr) const
-	{
+	bool		operator==(const CBasicRefPtr& ptr) const{
 		return m_pT == ptr.m_pT;
 	}
 
-	bool		operator!=(const CBasicRefPtr& ptr) const
-	{
+	bool		operator!=(const CBasicRefPtr& ptr) const{
 		return m_pT != ptr.m_pT;
 	}
 
 
-	bool		operator==(const void* p) const
-	{
+	bool		operator==(const void* p) const{
 		return m_pT == p;
 	}
 
-	bool		operator!=(const void* p) const
-	{
+	bool		operator!=(const void* p) const{
 		return m_pT != p;
 	}
 	
-	T* operator->() const
-	{
+	T* operator->() const{
 		return m_pT;
 	}
-	T* GetResFunc()
-	{
+	T* GetResFunc(){
 		return m_pT;
 	}
 #ifdef __BASICWINDOWS
@@ -130,38 +113,34 @@ template<class T>
 class EnableRefPtr
 {
 public:
-	EnableRefPtr()
-	{
+	EnableRefPtr(){
 		m_lRef = 0;
 	}
 	virtual ~EnableRefPtr()
 	{}
 
-	void AddRef()
-	{
+	void AddRef(){
 		BasicInterlockedIncrement(&m_lRef);
 	}
 
-	bool DelRef()
-	{
+	bool DelRef(){
 		if (0 == BasicInterlockedDecrement(&m_lRef)){
-			delete this;
+			DeleteRetPtrObject();
 			return true;
 		}
 		return false;
 	}
-	void KnowDelRef() {
-		BasicInterlockedDecrement(&m_lRef);
-	}
 
-	CBasicRefPtr<T>	GetRefPtr()
-	{
+	CBasicRefPtr<T>	GetRefPtr(){
 		return CBasicRefPtr<T>(dynamic_cast<T*>(this));
 	}
 
-	long	GetRef() const
-	{
+	long	GetRef() const{
 		return m_lRef;
+	}
+
+	virtual void DeleteRetPtrObject(){
+		delete this;
 	}
 private:
 	long	m_lRef;

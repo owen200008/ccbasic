@@ -238,6 +238,18 @@ bool operator == (CBasicSmartBuffer& b1, CBasicSmartBuffer& b2)
 
 	return memcmp(b1.GetDataBuffer(), b2.GetDataBuffer(), b1.GetDataLength()) == 0;
 }
+
+//废弃前面数据
+void CBasicSmartBuffer::ThrowDataLength(int nLength){
+	if(m_cbBuffer < nLength)
+		m_cbBuffer = 0;
+	m_cbBuffer -= nLength;
+	if(m_bSelfBuf)
+		memmove(m_pszBuffer, m_pszBuffer + nLength, m_cbBuffer);
+	else
+		//尽量不改变原来的内存块
+		m_pszBuffer += nLength;
+}
 //读取数据
 void CBasicSmartBuffer::ReadData(void* pBuffer, int nLength)
 {

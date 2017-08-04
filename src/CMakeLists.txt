@@ -17,6 +17,12 @@ macro(source_group_by_dir source_files)
     if(MSVC)
         set(sgbd_cur_dir ${PROJECT_SOURCE_DIR})
         foreach(sgbd_file ${${source_files}})
+			set(samefilename FALSE)
+			while (NOT samefilename)
+				string(REGEX REPLACE "/[^/\\.]*/\\.\\./" "/" sgbd_fpath ${sgbd_file})
+				string(COMPARE EQUAL ${sgbd_fpath} ${sgbd_file} samefilename)
+				set(sgbd_file ${sgbd_fpath})
+			endwhile()
             string(REGEX REPLACE "${sgbd_cur_dir}/" "" sgbd_fpath ${sgbd_file})
 			string(REGEX REPLACE "(.*)/" "" sgbd_group_name ${sgbd_fpath})
 			string(COMPARE EQUAL ${sgbd_fpath} ${sgbd_group_name} sgbd_nogroup)
@@ -39,6 +45,7 @@ option(BASICLIB_BUILD_JEMALLOC "Build Use JEMALLOC" OFF)
 
 #include 
 include_directories(${BasicLibJemallocSrcPath}/include/jemalloc)
+include_directories(${BasicLibSrcPath}/../3rd/libevent/include)
 #extra src
 set(BasicLibExtra_Src)
 #flags
@@ -50,6 +57,7 @@ set(BasicLibDefinitions -DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOU
 set(BasicLibLinks)
 
 if(MSVC)
+	include_directories(${BasicLibSrcPath}/../3rd/libevent/build/include)
 	if(BASICLIB_BUILD_JEMALLOC)
 		message(WARNING "windows not support jemalloc")
 	endif()
@@ -61,7 +69,7 @@ if(MSVC)
 	set(BasicLibCMakeCXX_FLAGS "${BasicLibCMakeCXX_FLAGS} /MP")
 	set(BasicLibCMakeC_FLAGS "${BasicLibCMakeC_FLAGS} /MP")
 	set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC -DUNICODE -D_UNICODE -D__BASICWINDOWS)
-	set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../libs/FLzlib13.lib)
+	set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../libs/FLzlib13.lib ${BasicLibSrcPath}/../3rd/libevent/build/lib/Debug/event.lib ws2_32.lib)
 else()
 	enable_language(ASM)
 	set(BasicLibCMakeCXX_FLAGS "${BasicLibCMakeCXX_FLAGS} --std=c++11")
@@ -75,7 +83,7 @@ else()
 			execute_process(COMMAND make -f makefile_jemalloc -j4
 				WORKING_DIRECTORY ${BasicLibSrcPath}/script/)
 			set(BasicLibDefinitions ${BasicLibDefinitions} -DLINUX -D__LINUX)
-			set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl)			
+			set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/libevent/.libs/libevent.a ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl)			
 		endif()
 	endif()
 endif()
@@ -256,6 +264,18 @@ set(basiclib_SOURCES
    ${BasicLibSrcPath}/util/strutil/maa.cpp
    ${BasicLibSrcPath}/util/strutil/strmisc.cpp
    ${BasicLibSrcPath}/util/strutil/strutil.cpp
+   ${BasicLibSrcPath}/net/net.cpp
+   ${BasicLibSrcPath}/net/net.h
+   ${BasicLibSrcPath}/net/net_client.cpp
+   ${BasicLibSrcPath}/net/net_client.h
+   ${BasicLibSrcPath}/net/net_server.cpp
+   ${BasicLibSrcPath}/net/net_server.h
+   ${BasicLibSrcPath}/net/sendbuffer.cpp
+   ${BasicLibSrcPath}/net/sendbuffer.h
+   ${BasicLibSrcPath}/net/net_socket.cpp
+   ${BasicLibSrcPath}/net/net_socket.h
+   ${BasicLibSrcPath}/net/net_mgr.cpp
+   ${BasicLibSrcPath}/net/net_mgr.h
 	)
 set(TotalSourceData ${basiclib_SOURCES} ${BasicLibExtra_Src})
 source_group_by_dir(TotalSourceData)

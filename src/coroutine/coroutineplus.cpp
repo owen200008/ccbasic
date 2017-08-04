@@ -501,22 +501,13 @@ void CCorutinePlusPoolMgr::CheckAllCorutine(){
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //! 启动时候创建线程之前绑定param
-CCorutinePlusThreadData::CCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS, const std::function<void*(CCorutinePlusThreadData*)>& callback, const std::function<void(void*)>& releaseFunc)
+CCorutinePlusThreadData::CCorutinePlusThreadData()
 {
     m_dwThreadID = basiclib::BasicGetCurrentThreadId();
-    pTLS->SetValue(this);
-    m_releaseFunc = releaseFunc;
-    if (callback != nullptr){
-        m_pParam = callback(this);
-    }
     //默认调用一遍初始化
     m_pool.InitCorutine();
 }
 
-CCorutinePlusThreadData::~CCorutinePlusThreadData()
-{
-    if (m_pParam && m_releaseFunc != nullptr){
-        m_releaseFunc(m_pParam);
-    }
+CCorutinePlusThreadData::~CCorutinePlusThreadData(){
 }
 

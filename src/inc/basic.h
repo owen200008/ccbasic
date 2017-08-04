@@ -159,6 +159,10 @@
 #include "../sqlite/sqlite3.h"
 #include "../sqlite/sqlite3db.h"
 
+//net
+#include "../net/net_client.h"
+#include "../net/net_server.h"
+
 //获取版本号
 _BASIC_DLL_API basiclib::CBasicString& GetBasicLibVersion();
 //判断basic库是否可用

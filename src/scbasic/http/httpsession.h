@@ -15,13 +15,13 @@ class CHttpSession;
 
 typedef basiclib::CBasicRefPtr<CHttpSession>		RefHttpSession;
 typedef fastdelegate::FastDelegate3<RefHttpSession, HttpRequest*, HttpResponse&, long> OnHttpAskFunc;
-class _SCBASIC_DLL_API CHttpSession : public CNetServerControlClient
+class _SCBASIC_DLL_API CHttpSession : public CNetServerControlSession
 {
+	DefineCreateNetServerSessionWithServer(CHttpSession)
 public:
-	static CHttpSession* CreateHttpClient(Net_UInt nSessionID, CRefNetServerControl pServer){ return new CHttpSession(nSessionID, pServer); }
     void AsynSendResponse(HttpRequest*& pRequest, HttpResponse& response, basiclib::CBasicSmartBuffer& smBuf);
 protected:
-	CHttpSession(Net_UInt nSessionID, CRefNetServerControl pServer) : CNetServerControlClient(nSessionID, pServer){
+	CHttpSession(){
 		m_pRequest = NULL;
 		m_pParser = NULL;
 		m_tLastRequest = time(NULL);
@@ -41,19 +41,14 @@ protected:
 
 class _SCBASIC_DLL_API CHttpSessionServer : public CNetServerControl
 {
-public:
-	static CHttpSessionServer* CreateHttpServer(Net_UInt nSessionID){ return new CHttpSessionServer(nSessionID); }
-protected:
-	CHttpSessionServer(Net_UInt nSessionID);
-	virtual ~CHttpSessionServer();
-
+	DefineCreateNetServerDefault(CHttpSessionServer)
 public:
 	void bind_onhttpask(OnHttpAskFunc& func)
 	{
 		m_funcOnHttpAsk = func;
 	}
 protected:
-	virtual basiclib::CBasicSessionNetClient* ConstructSession(Net_UInt nSessionID);
+	virtual basiclib::CBasicSessionNetServerSession* ConstructSession(uint32_t nSessionID);
 protected:
 	OnHttpAskFunc	m_funcOnHttpAsk;
 };

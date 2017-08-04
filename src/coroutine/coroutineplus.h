@@ -277,18 +277,14 @@ class _BASIC_DLL_API CCorutinePlusThreadData : public basiclib::CBasicObject
 {
 public:
     //初始化在callback里面做,返回param，必须是new出来的
-    CCorutinePlusThreadData(basiclib::CBasicThreadTLS* pTLS, const std::function<void*(CCorutinePlusThreadData*)>& callback, const std::function<void(void*)>& releaseFunc);
+    CCorutinePlusThreadData();
     virtual ~CCorutinePlusThreadData();
 
     DWORD GetThreadID(){ return m_dwThreadID; }
     CCorutinePlusPool* GetCorutinePlusPool(){ return &m_pool; }
-
-    void* GetRevertParam(){ return m_pParam; }
 protected:
     CCorutinePlusPool									    m_pool;
     DWORD												    m_dwThreadID;
-    void*									                m_pParam;
-    std::function<void(void*)>                              m_releaseFunc;
 };
 
 #pragma warning (pop)

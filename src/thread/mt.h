@@ -136,8 +136,8 @@ public:
 #if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
 typedef struct _RBASIC_CRITICAL_SECTION {
 
-	DWORD OwningThread;			//!< 记录线程ID
-	HANDLE LockSemaphore;		//!< 信号量对象
+	bool	m_bAcquired;
+	HANDLE	LockSemaphore;		//!< 信号量对象
 
 } RBASIC_CRITICAL_SECTION, *PRBASIC_CRITICAL_SECTION;
 

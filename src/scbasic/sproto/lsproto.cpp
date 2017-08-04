@@ -861,18 +861,12 @@ getbuffer(lua_State *L, int index, size_t *sz)
 	return buffer;
 }
 
-int SprotoDecodeFunc(lua_State *L, basiclib::CBasicBitstream* pSMBuf, struct sproto_type* st){
-    const void * buffer;
+int SprotoDecodeFunc(lua_State *L, const void * buffer, size_t sz, struct sproto_type* st){
     struct decode_ud self;
-    size_t sz;
     int r;
     if (st == NULL){
         return luaL_argerror(L, 1, "Need a sproto_type object");
     }
-    sz = 0;
-
-    buffer = pSMBuf->GetDataBuffer(); //getbuffer(L, 2, &sz);
-    sz = pSMBuf->GetDataLength();
     if (!lua_istable(L, -1))
     {
         lua_newtable(L);
@@ -887,9 +881,9 @@ int SprotoDecodeFunc(lua_State *L, basiclib::CBasicBitstream* pSMBuf, struct spr
     r = sproto_decode(st, buffer, (int)sz, decode, &self);
     if (r < 0)
     {
-        if (pSMBuf->GetDataLength() > 8)
+        if (sz > 8)
         {
-            const unsigned char* pBegin = (const unsigned char*)pSMBuf->GetDataBuffer();
+            const unsigned char* pBegin = (const unsigned char*)buffer;
             //解析协议,读取前面8个字节
             Net_UInt nFlopKey = pBegin[0] | pBegin[1] << 8 | pBegin[2] << 16 | pBegin[3] << 24;
             Net_UInt nMethod = pBegin[4] | pBegin[5] << 8 | pBegin[6] << 16 | pBegin[7] << 24;
@@ -915,7 +909,13 @@ int SprotoDecodeFunc(lua_State *L, basiclib::CBasicBitstream* pSMBuf, struct spr
 static int
 ldecode(lua_State *L) 
 {
-    return SprotoDecodeFunc(L, GetBasicLibClass<basiclib::CBasicBitstream>(L, 1), (struct sproto_type *)lua_touserdata(L, 2));
+	basiclib::CBasicBitstream* pSMBuf = GetBasicLibClass<basiclib::CBasicBitstream>(L, 1);
+    return SprotoDecodeFunc(L, pSMBuf->GetDataBuffer(), pSMBuf->GetDataLength(), (struct sproto_type *)lua_touserdata(L, 2));
+}
+static int ldecodestr(lua_State *L) {
+	size_t sz = 0;
+	const char* pInfo = lua_tolstring(L, 1, &sz);
+	return SprotoDecodeFunc(L, pInfo, sz, (struct sproto_type *)lua_touserdata(L, 2));
 }
 
 static int
@@ -1108,6 +1108,7 @@ luaopen_sproto_core(lua_State *L) {
 		{ "dumpproto", ldumpproto },
 		{ "querytype", lquerytype },
 		{ "decode", ldecode },
+		{ "decodestr", ldecodestr },
 		{ "loadproto", lloadproto },
 		{ "saveproto", lsaveproto },
 		{ "default", ldefault },

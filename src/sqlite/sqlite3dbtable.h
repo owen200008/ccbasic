@@ -29,6 +29,8 @@ public:
 	bool SetRow(int nRow);
 
 	void finalizeClose();
+
+	void ClearNoRelease();
 protected:
 	bool CheckResluts();
 protected:

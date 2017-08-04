@@ -8,6 +8,7 @@
 #include "thread/threadtest.h"
 #include "coroutine/coroutinetest.h"
 #include "../scbasic/encode/rsaencode.h"
+#include "comm/functionxiaolvtest.h"
 
 int main(int argc, char* argv[])
 {
@@ -37,11 +38,12 @@ int main(int argc, char* argv[])
 
 	//TestCoroutine(1);
 	//TestCoroutine();
-	TestThread();
+	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
 	//TestContainExt();
-	//NetServerTest();
+	NetServerTest();
+	//TestFunctionXiaolvTest();
 	getchar();
 	return 0;
 }

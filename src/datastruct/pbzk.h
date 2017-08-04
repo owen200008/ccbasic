@@ -2,7 +2,11 @@
 #define BASIC_PBZK_H
 
 #define PBZK_END_STRING "IsEnd"
-class CPBZK
+
+#pragma warning (push)
+#pragma warning (disable: 4251)
+#pragma warning (disable: 4275)
+class _BASIC_DLL_API CPBZK
 {
 public:
 	CPBZK();
@@ -23,5 +27,6 @@ protected:
 	typedef HashMapPBZK::iterator															HashMapPBZKIterator;
 	HashMapPBZK m_mapPBZK;
 };
+#pragma warning (pop)
 
 #endif

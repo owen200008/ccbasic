@@ -8,6 +8,7 @@ public:
 	CBasicGlobalTLSData(){
 		m_mTLS.CreateTLS();
 		m_mTLS.SetValue(new MapBasicGlobalTLSData());
+		m_pCreateFunc = nullptr;
 	}
 	virtual ~CBasicGlobalTLSData(){
 
@@ -20,22 +21,31 @@ public:
 		m_mTLS.SetValue(pRet);
 		return pRet;
 	}
-protected:
-	CBasicThreadTLS m_mTLS;
+public:
+	CBasicThreadTLS			m_mTLS;
+	pCreateKeyTLSFunc		m_pCreateFunc;
 };
 typedef basiclib::CBasicSingleton<CBasicGlobalTLSData> CSingletonBasicGlobalTLSData;
 void* BasicGetBasiclibGlobalTLS(int nKey){
-	MapBasicGlobalTLSData* pRet = (MapBasicGlobalTLSData*)CSingletonBasicGlobalTLSData::Instance().GetTLSData();
-	if (pRet){
-		MapBasicGlobalTLSData::iterator iter = pRet->find(nKey);
-		if (iter != pRet->end())
-			return iter->second;
+	CBasicGlobalTLSData& globalData = CSingletonBasicGlobalTLSData::Instance();
+	MapBasicGlobalTLSData* pRet = (MapBasicGlobalTLSData*)globalData.GetTLSData();
+	MapBasicGlobalTLSData::iterator iter = pRet->find(nKey);
+	if (iter != pRet->end())
+		return iter->second;
+	void* pKeyData = nullptr;
+	if (nKey == BasicGetBasiclibGlobalTLS_Key_CorutinePoolData) {
+		pKeyData = new CCorutinePlusThreadData();
 	}
-	return nullptr;
+	else if (globalData.m_pCreateFunc) {
+		void* pKeyData = globalData.m_pCreateFunc(nKey);
+	}
+	(*pRet)[nKey] = pKeyData;
+	return pKeyData;
 }
-void BasicSetBasiclibGlobalTLS(int nKey, void* pData){
-	MapBasicGlobalTLSData* pRet = (MapBasicGlobalTLSData*)CSingletonBasicGlobalTLSData::Instance().GetTLSData();
-	(*pRet)[nKey] = pData;
+
+void BasicGetBasiclibGlobalTLS_BindCreateFunc(pCreateKeyTLSFunc func) {
+	ASSERT(CSingletonBasicGlobalTLSData::Instance().m_pCreateFunc == nullptr);
+	CSingletonBasicGlobalTLSData::Instance().m_pCreateFunc = func;
 }
 
 __NS_BASIC_END

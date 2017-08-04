@@ -46,9 +46,9 @@ protected:
 	void EmptyRuler();
 
 protected:
-	basiclib::CPtrList	m_lsIpRuler;			// IP规则列表
-	BOOL		m_bSupportAll;			// 允许全部 (*)
-	basiclib::CMutex		m_synObj;				// 同步对象
+	basiclib::CPtrList				m_lsIpRuler;			// IP规则列表
+	BOOL							m_bSupportAll;			// 允许全部 (*)
+	basiclib::CCriticalSection		m_synObj;				// 同步对象
 };
 
 /************************************************************************************************

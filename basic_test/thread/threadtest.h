@@ -56,20 +56,19 @@ THREAD_RETURN WorkerThreadTest(void *arg)
 }
 
 
-void TestThread()
-{
+void TestThread(){
+	BasicGetBasiclibGlobalTLS_BindCreateFunc([](int nType)->void*{
+		if(nType == 1){
+			return malloc(1);
+		}
+		return nullptr;
+	});
 	void* pRet = BasicGetBasiclibGlobalTLS(0);
 	printf("%d\n", pRet == nullptr ? 0 : 1);
 	pRet = BasicGetBasiclibGlobalTLS(1);
 	printf("%d\n", pRet == nullptr ? 0 : 1);
-	BasicSetBasiclibGlobalTLS(0, malloc(1));
-	pRet = BasicGetBasiclibGlobalTLS(0);
-	printf("%d\n", pRet == nullptr ? 0 : 1);
-	pRet = BasicGetBasiclibGlobalTLS(1);
-	printf("%d\n", pRet == nullptr ? 0 : 1);
 	tls.CreateTLS();
-	for (int i = 0; i < 4; i++)
-	{
+	for (int i = 0; i < 4; i++){
 		DWORD dwThreadServerID = 0;
 		basiclib::BasicCreateThread(WorkerThreadTest, nullptr, &dwThreadServerID);
 	}

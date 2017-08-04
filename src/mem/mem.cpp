@@ -10,7 +10,7 @@ extern "C" {
 __NS_BASIC_START
 
 //这里不能用自旋锁，会恶化
-basiclib::CMutex g_lockCheck;
+basiclib::CCriticalSection g_lockCheck;
 std::map<void*, stacktrace::call_stack> g_mapCheck;
 #ifdef _DEBUG
 uint32_t g_nCheckMemMode = MemRunMemCheck_RunSizeCheck | MemRunMemCheck_RunTongJi;

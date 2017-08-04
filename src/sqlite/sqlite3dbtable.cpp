@@ -8,6 +8,12 @@ CCQLite3DBTable::CCQLite3DBTable()
 	m_nCurrentRow = 0;
 	m_paszResults = NULL;
 }
+
+void CCQLite3DBTable::ClearNoRelease(){
+	m_paszResults = NULL;
+	m_paszResults = 0;
+}
+
 CCQLite3DBTable::~CCQLite3DBTable()
 {
 	finalizeClose();
@@ -17,7 +23,7 @@ int CCQLite3DBTable::NumOfFields()
 	return m_nCols;
 }
 
-int CCQLite3DBTable::NumOfRows()
+int CCQLite3DBTable::NumOfRows() 
 {
 	return m_nRows;
 }

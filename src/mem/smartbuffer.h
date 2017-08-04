@@ -88,6 +88,9 @@ public:
 
 	//设置和获取长度
 	long GetAllocBufferLength(){ return m_cbAlloc; }
+
+	//废弃前面数据
+	void ThrowDataLength(int nLength);
 protected:
 	char* AllocBuffer(long lLength, long lGrowLength = 0);
 	void  EmptyBuffer();

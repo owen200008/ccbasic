@@ -10,11 +10,6 @@
 #include <syslog.h>
 #endif
 
-#ifdef __BASICWINDOWS
-//?? for access
-//#include <io.h>
-#endif
-
 using namespace std;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -479,9 +474,12 @@ CBasicLogChannel* _GetChannel(int nIndex)
 	{
 		return NULL;
 	}
-	if (g_pLogChannel[nIndex] == NULL && nIndex == 0)  //默认的内部创建
+	if (g_pLogChannel[nIndex] == NULL)  //默认的内部创建
 	{
-		g_pLogChannel[nIndex] = _CreateLogChannel(LOG_BY_DAY | LOG_BY_SIZE | LOG_ADD_TIME | LOG_ADD_THREAD, "basiclibs.log");
+		if(nIndex == 0)
+			g_pLogChannel[nIndex] = _CreateLogChannel(LOG_BY_DAY | LOG_BY_SIZE | LOG_ADD_TIME | LOG_ADD_THREAD, "basiclibs.log");
+		else if(nIndex == 1)
+			g_pLogChannel[nIndex] = _CreateLogChannel(LOG_BY_DAY | LOG_BY_SIZE | LOG_ADD_TIME | LOG_ADD_THREAD, "basiclibserror.log");
 	}
 	return g_pLogChannel[nIndex];
 }
