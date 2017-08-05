@@ -23,3 +23,6 @@
 	path = 3rd/libevent
 	url = https://github.com/libevent/libevent.git
 
+[submodule "3rd/kaguya"]
+	path = 3rd/kaguya
+	url = https://github.com/satoren/kaguya.git
