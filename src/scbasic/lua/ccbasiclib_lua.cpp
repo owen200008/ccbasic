@@ -220,6 +220,9 @@ void ExportBasiclibClassToLua(lua_State* L) {
 		.setConstructors<CPBZK()>()
 		.addFunction("ReadPBZKFileBuffer", &CPBZK::ReadPBZKFileBuffer)
 		.addFunction("IsContainPBZK", &CPBZK::IsContainPBZK)
+		 .addStaticFunction("ReadPBZK", [](CPBZK* p, string& strData, bool bAddZiFu){
+			p->ReadPBZKFileBuffer(strData.c_str(), strData.length(), bAddZiFu);
+		})
 		.addStaticFunction("ReplacePBZK", [](CPBZK* pPBZK, char* txt, int nLength, char cReplace = '*', bool bDeep = true) { {
 				pPBZK->ReplacePBZK(txt, nLength, cReplace, bDeep);
 				return string(txt, nLength);
