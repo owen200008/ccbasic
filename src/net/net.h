@@ -160,6 +160,11 @@ public:
 	void bind_disconnect(const HandleDisConnect& func) { m_funcDisconnect = func; }
 	void bind_idle(const HandleIdle& func) { m_funcIdle = func; }
 	void bind_error(const HandleError& func) { m_funcError = func; }
+	const HandleReceive GetBindRece(){ return m_funcReceive; }
+	const HandleConnect GetBindConnect(){ return m_funcConnect; }
+	const HandleDisConnect GetBindDisconnect(){ return m_funcDisconnect; }
+	const HandleIdle GetBindIdle(){ return m_funcIdle; }
+	const HandleError GetBindError(){ return m_funcError; }
 
 	//×¢²á¹ýÂËÆ÷
 	int RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptions = 0);

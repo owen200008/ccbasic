@@ -10,7 +10,11 @@ CNetServerControlSession::~CNetServerControlSession()
 }
 void CNetServerControlSession::SuccessLogin(){
 	m_bVerify = true;
-	m_server->SuccessLogin(this);
+	if(m_server->m_handleVerifySuccess){
+		if(!m_server->m_handleVerifySuccess(this)){
+			Close();
+		}
+	}
 }
 
 uint32_t CNetServerControlSession::OnConnect(uint32_t dwNetCode){
@@ -66,16 +70,6 @@ int32_t CNetServerControl::StartServer(const char* lpszAddress, basiclib::CBasic
 
 int32_t CNetServerControl::OnUserConnect(basiclib::CBasicSessionNetNotify* pNotify, Net_UInt dwNetCode){
 	return BASIC_NET_OK;
-}
-
-//用户登录成功
-bool CNetServerControl::SuccessLogin(CNetServerControlSession* pNotify){
-	if (m_handleVerifySuccess)
-		if (!m_handleVerifySuccess(pNotify)){
-			pNotify->Close();
-			return false;
-		}
-	return true;
 }
 
 basiclib::CBasicSessionNetServerSession* CNetServerControl::ConstructSession(uint32_t nSessionID){

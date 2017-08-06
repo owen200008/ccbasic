@@ -467,6 +467,7 @@ unsigned CNetThread::ThreadIOCPFunc(void* lpWorkContext){
 void CNetThread::StartRecvData(CBasicNet_SocketTransfer* pSocket){
 	UINT nRetVal = WSARecv(pSocket->GetSocketID(), &pSocket->m_wsaInBuffer, 1, &m_dwIoSize, &m_ulFlags, &pSocket->m_olRead.m_ol, NULL);  //I know this
 	if(nRetVal == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING){
+		ASSERT(0);
 		pSocket->Close();
 	}
 }

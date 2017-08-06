@@ -31,9 +31,6 @@ public:
 	//! 启动服务
 	virtual int32_t StartServer(const char* lpszAddress, basiclib::CBasicPreSend* pPreSend = nullptr);
 protected:
-	//用户登录成功
-    virtual bool SuccessLogin(CNetServerControlSession* pNotify);
-protected:
 	//! 绑定认证成功，就不需要connect
 	virtual int32_t OnUserConnect(basiclib::CBasicSessionNetNotify* pNotify, Net_UInt dwNetCode);
 
@@ -70,10 +67,9 @@ protected:\
 class _SCBASIC_DLL_API CNetServerControlSession : public basiclib::CBasicSessionNetServerSession
 {
 	DefineCreateNetServerSessionWithServer(CNetServerControlSession)
-protected:
-	virtual uint32_t OnConnect(uint32_t dwNetCode);
-
-    virtual void SuccessLogin();
+public:
+	//! 
+	virtual void SuccessLogin();
 protected:
 	CNetServerControlSession();
 	virtual ~CNetServerControlSession();
@@ -81,6 +77,8 @@ protected:
 	void BindServer(CNetServerControl* pServer){
 		m_server = pServer;
 	}
+
+	virtual uint32_t OnConnect(uint32_t dwNetCode);
 public:
 	CRefNetServerControl	m_server;
     bool                    m_bVerify;
