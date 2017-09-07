@@ -239,7 +239,7 @@ namespace details {
 			: static_cast<T>(-1);
 	};
 
-#if defined(__GNUC__) || defined( __clang__ )
+#if defined(__GNUC__) && !defined( __clang__ )
 	typedef ::max_align_t std_max_align_t;      // GCC forgot to add it to std:: for a while
 #else
 	typedef std::max_align_t std_max_align_t;   // Others (e.g. MSVC) insist it can *only* be accessed via std::
@@ -248,7 +248,7 @@ namespace details {
 	// 8-byte aligned scalar values (looking at you, iOS). Work around this with our own union. See issue #64.
 	typedef union {
 		std_max_align_t x;
-		long double y;
+		long long y;
 		void* z;
 	} max_align_t;
 }
@@ -1431,14 +1431,14 @@ protected:
 					assert((head->freeListRefs.load(std::memory_order_relaxed) & SHOULD_BE_ON_FREELIST) == 0);
 					
 					// Decrease refcount twice, once for our ref, and once for the list's ref
-					head->freeListRefs.fetch_add(-2, std::memory_order_release);
+					head->freeListRefs.fetch_sub(2, std::memory_order_release);
 					return head;
 				}
 				
 				// OK, the head must have changed on us, but we still need to decrease the refcount we increased.
 				// Note that we don't need to release any memory effects, but we do need to ensure that the reference
 				// count decrement happens-after the CAS on the head.
-				refs = prevHead->freeListRefs.fetch_add(-1, std::memory_order_acq_rel);
+				refs = prevHead->freeListRefs.fetch_sub(1, std::memory_order_acq_rel);
 				if (refs == SHOULD_BE_ON_FREELIST + 1) {
 					add_knowing_refcount_is_zero(prevHead);
 				}
@@ -1648,14 +1648,14 @@ private:
 	
 	struct ProducerBase : public details::ConcurrentQueueProducerTypelessBase
 	{
-		ProducerBase(ConcurrentQueue* parent, bool isExplicit) :
+		ProducerBase(ConcurrentQueue* parent_, bool isExplicit_) :
 			tailIndex(0),
 			headIndex(0),
 			dequeueOptimisticCount(0),
 			dequeueOvercommit(0),
 			tailBlock(nullptr),
-			isExplicit(isExplicit),
-			parent(parent)
+			isExplicit(isExplicit_),
+			parent(parent_)
 		{
 		}
 		
@@ -2114,7 +2114,7 @@ private:
 				this->tailBlock = firstAllocatedBlock;
 			}
 			while (true) {
-				auto stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) + static_cast<index_t>(BLOCK_SIZE);
+				stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) + static_cast<index_t>(BLOCK_SIZE);
 				if (details::circular_less_than<index_t>(newTailIndex, stopIndex)) {
 					stopIndex = newTailIndex;
 				}
@@ -2593,7 +2593,7 @@ private:
 					currentTailIndex += static_cast<index_t>(BLOCK_SIZE);
 					
 					// Find out where we'll be inserting this block in the block index
-					BlockIndexEntry* idxEntry;
+					BlockIndexEntry* idxEntry = nullptr;  // initialization here unnecessary but compiler can't always tell
 					Block* newBlock;
 					bool indexInserted = false;
 					auto head = this->headIndex.load(std::memory_order_relaxed);
@@ -2649,7 +2649,7 @@ private:
 				this->tailBlock = firstAllocatedBlock;
 			}
 			while (true) {
-				auto stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) + static_cast<index_t>(BLOCK_SIZE);
+				stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) + static_cast<index_t>(BLOCK_SIZE);
 				if (details::circular_less_than<index_t>(newTailIndex, stopIndex)) {
 					stopIndex = newTailIndex;
 				}
@@ -2840,6 +2840,9 @@ private:
 		inline bool insert_block_index_entry(BlockIndexEntry*& idxEntry, index_t blockStartIndex)
 		{
 			auto localBlockIndex = blockIndex.load(std::memory_order_relaxed);		// We're the only writer thread, relaxed is OK
+			if(localBlockIndex == nullptr){
+				return false;  // this can happen if new_block_index failed in the constructor
+			}
 			auto newTail = (localBlockIndex->tail.load(std::memory_order_relaxed) + 1) & (localBlockIndex->capacity - 1);
 			idxEntry = localBlockIndex->index[newTail];
 			if (idxEntry->key.load(std::memory_order_relaxed) == INVALID_BLOCK_BASE ||
@@ -3360,10 +3363,10 @@ private:
 							auto empty = details::invalid_thread_id;
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
 							auto reusable = details::invalid_thread_id2;
-							if ((probedKey == empty    && mainHash->entries[index].key.compare_exchange_strong(empty,    id, std::memory_order_relaxed)) ||
-								(probedKey == reusable && mainHash->entries[index].key.compare_exchange_strong(reusable, id, std::memory_order_acquire))) {
+							if ((probedKey == empty    && mainHash->entries[index].key.compare_exchange_strong(empty,    id, std::memory_order_relaxed, std::memory_order_relaxed)) ||
+								(probedKey == reusable && mainHash->entries[index].key.compare_exchange_strong(reusable, id, std::memory_order_acquire, std::memory_order_acquire))) {
 #else
-							if ((probedKey == empty    && mainHash->entries[index].key.compare_exchange_strong(empty,    id, std::memory_order_relaxed))) {
+							if ((probedKey == empty    && mainHash->entries[index].key.compare_exchange_strong(empty,    id, std::memory_order_relaxed, std::memory_order_relaxed))) {
 #endif
 								mainHash->entries[index].value = value;
 								break;
@@ -3398,7 +3401,7 @@ private:
 					auto raw = static_cast<char*>((Traits::malloc)(sizeof(ImplicitProducerHash) + std::alignment_of<ImplicitProducerKVP>::value - 1 + sizeof(ImplicitProducerKVP) * newCapacity));
 					if (raw == nullptr) {
 						// Allocation failed
-						implicitProducerHashCount.fetch_add(-1, std::memory_order_relaxed);
+						implicitProducerHashCount.fetch_sub(1, std::memory_order_relaxed);
 						implicitProducerHashResizeInProgress.clear(std::memory_order_relaxed);
 						return nullptr;
 					}
@@ -3427,11 +3430,11 @@ private:
 				bool recycled;
 				auto producer = static_cast<ImplicitProducer*>(recycle_or_create_producer(false, recycled));
 				if (producer == nullptr) {
-					implicitProducerHashCount.fetch_add(-1, std::memory_order_relaxed);
+					implicitProducerHashCount.fetch_sub(1, std::memory_order_relaxed);
 					return nullptr;
 				}
 				if (recycled) {
-					implicitProducerHashCount.fetch_add(-1, std::memory_order_relaxed);
+					implicitProducerHashCount.fetch_sub(1, std::memory_order_relaxed);
 				}
 				
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
@@ -3448,10 +3451,10 @@ private:
 					auto empty = details::invalid_thread_id;
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
 					auto reusable = details::invalid_thread_id2;
-					if ((probedKey == empty    && mainHash->entries[index].key.compare_exchange_strong(empty,    id, std::memory_order_relaxed)) ||
-						(probedKey == reusable && mainHash->entries[index].key.compare_exchange_strong(reusable, id, std::memory_order_acquire))) {
+					if ((probedKey == empty    && mainHash->entries[index].key.compare_exchange_strong(empty,    id, std::memory_order_relaxed, std::memory_order_relaxed)) ||
+						(probedKey == reusable && mainHash->entries[index].key.compare_exchange_strong(reusable, id, std::memory_order_acquire, std::memory_order_acquire))) {
 #else
-					if ((probedKey == empty    && mainHash->entries[index].key.compare_exchange_strong(empty,    id, std::memory_order_relaxed))) {
+					if ((probedKey == empty    && mainHash->entries[index].key.compare_exchange_strong(empty,    id, std::memory_order_relaxed, std::memory_order_relaxed))) {
 #endif
 						mainHash->entries[index].value = producer;
 						break;

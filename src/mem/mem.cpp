@@ -17,8 +17,8 @@ uint32_t g_nCheckMemMode = MemRunMemCheck_RunSizeCheck | MemRunMemCheck_RunTongJ
 #else
 uint32_t g_nCheckMemMode = 0;
 #endif
-int	m_nCheckMin = 0;
-int m_nCheckMax = 0;
+size_t m_nCheckMin = 0;
+size_t m_nCheckMax = 0;
 
 //////////////////////////////////////////////////////////////////////////////
 uint32_t GetHandleID_Default()

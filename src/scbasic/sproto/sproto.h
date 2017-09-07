@@ -2,7 +2,6 @@
 #define sproto_h
 
 #include <stddef.h>
-#include "../scbasic_head.h"
 
 struct field {
     int m_bStar;
@@ -62,13 +61,13 @@ struct sproto_type {
 #define SPROTO_CC_STRING_SIZE	2//+³¤¶È
 #define SPROTO_CC_STRUCT_SIZE	0//+ÄÚÈÝ
 
-_SCBASIC_DLL_API struct sproto * sproto_create(const void * proto, size_t sz);
-void _SCBASIC_DLL_API sproto_release(struct sproto *);
+struct sproto * sproto_create(const void * proto, size_t sz);
+void sproto_release(struct sproto *);
 
-_SCBASIC_DLL_API struct sproto_type *  sproto_type(const struct sproto *, const char * type_name);
+struct sproto_type *  sproto_type(const struct sproto *, const char * type_name);
 
-int _SCBASIC_DLL_API sproto_pack(const void * src, int srcsz, void * buffer, int bufsz);
-int _SCBASIC_DLL_API sproto_unpack(const void * src, int srcsz, void * buffer, int bufsz);
+int sproto_pack(const void * src, int srcsz, void * buffer, int bufsz);
+int sproto_unpack(const void * src, int srcsz, void * buffer, int bufsz);
 
 struct sproto_arg {
 	void *ud;
@@ -87,11 +86,11 @@ struct sproto_arg {
 
 typedef int (*sproto_callback)(const struct sproto_arg *args);
 
-int _SCBASIC_DLL_API sproto_decode(const struct sproto_type *, const void * data, int size, sproto_callback cb, void *ud);
-int _SCBASIC_DLL_API sproto_encode(const struct sproto_type *, void * buffer, int size, sproto_callback cb, void *ud);
+int sproto_decode(const struct sproto_type *, const void * data, int size, sproto_callback cb, void *ud);
+int sproto_encode(const struct sproto_type *, void * buffer, int size, sproto_callback cb, void *ud);
 
 // for debug use
-void _SCBASIC_DLL_API sproto_dump(struct sproto *);
-_SCBASIC_DLL_API const char * sproto_name(struct sproto_type *);
+void sproto_dump(struct sproto *);
+const char * sproto_name(struct sproto_type *);
 
 #endif

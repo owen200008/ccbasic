@@ -1,4 +1,4 @@
-#include <stdlib.h>
+﻿#include <stdlib.h>
 #include <map>
 #include <basic.h>
 #include "net/nettest.h"
@@ -37,12 +37,12 @@ int main(int argc, char* argv[])
 
 
 	//TestCoroutine(1);
-	//TestCoroutine();
+	TestCoroutine();
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
 	//TestContainExt();
-	NetServerTest();
+	//NetServerTest();
 	//TestFunctionXiaolvTest();
 	getchar();
 	return 0;

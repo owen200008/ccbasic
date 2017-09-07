@@ -1354,22 +1354,22 @@ CBasicBitstream& CBasicBitstream::operator << (const basiclib::CBasicString& dat
 }
 CBasicBitstream& CBasicBitstream::operator << (const basiclib::CBasicSmartBuffer* pV)
 {
-	SerializeDataBuffer((int8_t*)pV->GetDataBuffer(), pV->GetDataLength());
+	SerializeDataBuffer((int8_t*)pV->GetDataBuffer(), (uint16_t)pV->GetDataLength());
 	return *this;
 }
 CBasicBitstream& CBasicBitstream::operator << (const int8_t* v)
 {
-	SerializeDataBuffer(v, strlen((char*)v));
+	SerializeDataBuffer(v, (uint16_t)strlen((char*)v));
 	return *this;
 }
 CBasicBitstream& CBasicBitstream::operator << (const uint8_t* v)
 {
-	SerializeDataBuffer((const int8_t*)v, strlen((const char*)v));
+	SerializeDataBuffer((const int8_t*)v, (uint16_t)strlen((const char*)v));
 	return *this;
 }
 CBasicBitstream& CBasicBitstream::operator << (const CBasicSmartBuffer& insRet)
 {
-	SerializeDataBuffer((int8_t*)insRet.GetDataBuffer(), insRet.GetDataLength());
+	SerializeDataBuffer((int8_t*)insRet.GetDataBuffer(), (uint16_t)insRet.GetDataLength());
 	return *this;
 }
 void CBasicBitstream::SerializeDataBuffer(const int8_t* pData, uint16_t usLength)

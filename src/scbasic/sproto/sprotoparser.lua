@@ -442,7 +442,7 @@ basiclib::CBasicBitstream& operator>>(basiclib::CBasicBitstream& os, %s& data){
 ]]
     local fieldstarformat_in = [[data.%s ? ins << (Net_Char)1 << *data.%s : ins << (Net_Char)0;
     ]]
-    local fieldstarformat_out = [[os >> cStar;cStar ? os >> *data.%s : os;
+    local fieldstarformat_out = [[os >> cStar;if(cStar){if(data.%s)os >> *data.%s;else{%s tmp;os >> tmp;}}
     ]]
     local fieldstarformat_out_ext=[[Net_Char cStar = 0;
     ]]
@@ -471,7 +471,7 @@ basiclib::CBasicBitstream& operator>>(basiclib::CBasicBitstream& os, %s& data){
                     bStar = true
                 end 
                 fieldsin = fieldsin.. string.format(fieldstarformat_in, type_fields.name, type_fields.name)
-                fieldsout = fieldsout.. string.format(fieldstarformat_out, type_fields.name)
+                fieldsout = fieldsout.. string.format(fieldstarformat_out, type_fields.name, type_fields.name, type_fields.typename)
             else
                 fieldsin = fieldsin.. string.format(fieldformat_in, type_fields.name)
                 fieldsout = fieldsout.. string.format(fieldformat_out, type_fields.name)

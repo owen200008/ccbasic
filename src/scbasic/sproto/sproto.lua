@@ -76,9 +76,19 @@ function sproto:encode(smbuf, typename, tbl)
 	return core.encode(smbuf, st, tbl)
 end
 
+function sproto:encodestr(typename, tbl, bBase64, bZip)
+	local st = querytype(self, typename)
+	return core.encodestr(st, tbl, bBase64, bZip)
+end
+
 function sproto:decode(smbuf, typename)
 	local st = querytype(self, typename)
 	return core.decode(smbuf, st)
+end
+
+function sproto:decodestr(str, typename, bBase64)
+	local st = querytype(self, typename)
+	return core.decodestr(str, st, bBase64)
 end
 
 function sproto:pencode(typename, tbl)

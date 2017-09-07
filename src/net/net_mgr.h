@@ -41,7 +41,7 @@ public:
 	static unsigned __stdcall ThreadIOCPFunc(void* lpWorkContext);
 
 	//! 开始接收数据
-	void StartRecvData(CBasicNet_SocketTransfer* pSocket);
+	bool StartRecvData(CBasicNet_SocketTransfer* pSocket);
 
 	//! 获取扩展func
 	static IOCPExt_Func& GetExtFunc(){ return m_funcExt; }

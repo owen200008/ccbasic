@@ -35,9 +35,6 @@ typedef struct redisReply {
     char *str; /* Used for both REDIS_REPLY_ERROR and REDIS_REPLY_STRING */
     size_t elements; /* number of elements, for REDIS_REPLY_ARRAY */
     struct redisReply **element; /* elements vector for REDIS_REPLY_ARRAY */
-    redisReply(){
-        type = -1;
-    }
 } redisReply;
 
 class _SCBASIC_DLL_API CRedisReplyPacket : basiclib::CBasicObject

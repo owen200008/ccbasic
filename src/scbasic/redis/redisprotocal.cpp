@@ -6,6 +6,8 @@ static redisReply *createReplyObject(int type){
     if (r == NULL)
         return NULL;
     r->type = type;
+	r->element = nullptr;
+	r->str = nullptr;
     return r;
 }
 static void *createStringObject(const redisReadTask *task, char *str, size_t len){

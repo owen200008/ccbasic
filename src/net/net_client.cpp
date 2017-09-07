@@ -56,8 +56,12 @@ public:
 	//! client连接使用
 	virtual void ClientConnectEx(){
 		//已经绑定到IOCP，开启receive
-		m_pThread->StartRecvData(this);
-		OnConnect(BASIC_NETCODE_SUCC);
+		if(m_pThread->StartRecvData(this)){
+			OnConnect(BASIC_NETCODE_SUCC);
+		}
+		else{
+			OnConnect(BASIC_NETCODE_CLOSE_REMOTE);
+		}
 	}
 
 	//! dns解析结束
@@ -88,7 +92,7 @@ VOID WINAPI QueryDNSCompleteCallback(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LP
 	UNREFERENCED_PARAMETER(Bytes);
 	WinDNSContextQuery* pQuery = CONTAINING_RECORD(Overlapped, WinDNSContextQuery, m_QueryOverlapped);
 	if(Error != ERROR_SUCCESS){
-		basiclib::BasicLogEventErrorV("dns parse error(%s:%s)", pQuery->m_pClient->m_strParseConnectAddr.c_str(), Error);
+		basiclib::BasicLogEventErrorV("dns parse error(%s:%d)", pQuery->m_pClient->m_strParseConnectAddr.c_str(), Error);
 	}
 	else{
 		sockaddr_storage storageaddr;

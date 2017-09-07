@@ -557,26 +557,16 @@ expand_buffer(lua_State *L, int osz, int nsz) {
 
 	return string
  */
-
-static int
-lencode(lua_State *L) 
-{
-	struct encode_ud self;
-	basiclib::CBasicBitstream* pSMBuf = GetBasicLibClass<basiclib::CBasicBitstream>(L, 1);
+int encodebysmbuf(lua_State *L, basiclib::CBasicBitstream* pSMBuf, struct sproto_type* st, int tbl_index = 3){
 	void * buffer = pSMBuf->GetDataBuffer();
 	int sz = pSMBuf->GetAllocBufferLength();
-	int tbl_index = 3;
-	struct sproto_type * st = (struct sproto_type *)lua_touserdata(L, 2);
-	if (st == NULL) 
-	{
-		return luaL_argerror(L, 1, "Need a sproto_type object");
-	}
+	struct encode_ud self;
 	luaL_checktype(L, tbl_index, LUA_TTABLE);
-	luaL_checkstack(L, ENCODE_DEEPLEVEL*2 + 8, NULL);
+	luaL_checkstack(L, ENCODE_DEEPLEVEL * 2 + 8, NULL);
 	self.L = L;
 	self.st = st;
 	self.tbl_index = tbl_index;
-	for (;;) {
+	for(;;){
 		int r;
 		self.array_tag = NULL;
 		self.array_index = 0;
@@ -584,31 +574,79 @@ lencode(lua_State *L)
 
 		lua_settop(L, tbl_index);
 		lua_pushnil(L);	// for iterator (stack slot 3)
-		self.iter_index = tbl_index+1;
+		self.iter_index = tbl_index + 1;
 
 		r = sproto_encode(st, buffer, sz, encode, &self);
-		if (r<0) 
-		{
-			if (r == -1)
-			{
+		if(r<0){
+			if(r == -1){
 				pSMBuf->SetDataLength(sz * 2);
 				buffer = pSMBuf->GetDataBuffer();
 				sz = pSMBuf->GetAllocBufferLength();
 			}
-			else
-			{
+			else{
 				assert(0);
 				return luaL_argerror(L, 1, "return error");;
 			}
-		} 
-		else 
-		{
+		}
+		else{
 			pSMBuf->SetDataLength(r);
 			//lua_pushlightuserdata(L, st);
 			//lua_pushlstring(L, (const char*)buffer, r);
 			return 1;
 		}
 	}
+}
+
+static int lencodestr(lua_State *L){
+	basiclib::CBasicBitstream smBuf, smBufRet, smZipBuf;
+	smBuf.SetDataLength(4096);
+	smBuf.SetDataLength(0);
+	struct sproto_type * st = (struct sproto_type *)lua_touserdata(L, 1);
+	bool bBase64 = lua_toboolean(L, 3);
+	bool bZip = lua_toboolean(L, 4);
+	int nRet = encodebysmbuf(L, &smBuf, st, 2);
+	if(nRet == 1){
+		//最后一个字节加入是否压缩
+		if(bZip){
+			unsigned long ulLength = smBuf.GetDataLength();
+			if(ulLength > 16 * 1024 * 1024)
+				return luaL_argerror(L, 1, "lencodestr compress max size 16M error");
+			smZipBuf.SetDataLength(ulLength * 1.1 + 24 + sizeof(Net_UInt));//zip 默认是1.1倍+12
+			char* pBegin = smZipBuf.GetDataBuffer();
+			unsigned char* pSetBuffer = (unsigned char*)pBegin;
+			pSetBuffer += basiclib::SerializeUShort(pSetBuffer, 0x0102);
+			pSetBuffer += basiclib::SerializeUInt(pSetBuffer, ulLength);
+			int nRet = compress((BYTE*)pSetBuffer, &ulLength, (BYTE*)smBuf.GetDataBuffer(), ulLength);
+			if(nRet != Z_OK){
+				return luaL_argerror(L, 1, "lencodestr compress error");
+			}
+			pSetBuffer += ulLength;
+			pSetBuffer += basiclib::SerializeUShort(pSetBuffer, 0x0203);
+			smZipBuf.SetDataLength((char*)pSetBuffer - pBegin);
+			swap(smBuf, smZipBuf);
+		}
+		if(bBase64){
+			basiclib::CBasicBase64Ex base64;
+			smBufRet.SetDataLength(smBuf.GetDataLength() * 2);
+			smBufRet.SetDataLength(0);
+			base64.Encode((BYTE*)smBuf.GetDataBuffer(), smBuf.GetDataLength(), smBufRet);
+			lua_pushlstring(L, smBufRet.GetDataBuffer(), smBufRet.GetDataLength());
+		}
+		else{
+			lua_pushlstring(L, smBuf.GetDataBuffer(), smBuf.GetDataLength());
+		}
+		return 1;
+	}
+	return 0;
+}
+
+static int lencode(lua_State *L) {
+	basiclib::CBasicBitstream* pSMBuf = GetBasicLibClass<basiclib::CBasicBitstream>(L, 1);
+	struct sproto_type * st = (struct sproto_type *)lua_touserdata(L, 2);
+	if (st == NULL) {
+		return luaL_argerror(L, 1, "Need a sproto_type object");
+	}
+	return encodebysmbuf(L, pSMBuf, st);
 }
 
 struct decode_ud 
@@ -742,8 +780,8 @@ decode(const struct sproto_arg *args)
 	}
 	case SPROTO_CC_UINT:
 	{
-		lua_Integer v = *(uint64_t*)args->value;
-		lua_pushinteger(L, v);
+		lua_Number v = *(uint64_t*)args->value;
+		lua_pushnumber(L, v);
 		nDecodeLength = SPROTO_CC_INT_SIZE;
 		break;
 	}
@@ -914,7 +952,42 @@ ldecode(lua_State *L)
 }
 static int ldecodestr(lua_State *L) {
 	size_t sz = 0;
+	basiclib::CBasicSmartBuffer smBuf, smZipBuf;
 	const char* pInfo = lua_tolstring(L, 1, &sz);
+	bool bBase64 = lua_toboolean(L, 3);
+	if(bBase64){
+		basiclib::CBasicBase64Ex base64;
+		base64.Decode((BYTE*)pInfo, sz, smBuf);
+		pInfo = smBuf.GetDataBuffer();
+		sz = smBuf.GetDataLength();
+	}
+	//先查看最后一个字节
+	if(sz >= 8){
+		unsigned char* pBegin = (unsigned char*)pInfo;
+		Net_UShort nSignZip = 0;
+		pBegin += basiclib::UnSerializeUShort((unsigned char*)pBegin, nSignZip);
+		if(nSignZip == 0x0102){
+			//找到zip头标志
+			unsigned char* pEnd = (unsigned char*)pInfo + sz - 2;
+			basiclib::UnSerializeUShort((unsigned char*)pEnd, nSignZip);
+			if(nSignZip == 0x0203){
+				Net_UInt nResLength = 0;
+				pBegin += basiclib::UnSerializeUInt(pBegin, nResLength);
+				if(nResLength > 16 * 1024 * 1024){
+					return luaL_argerror(L, 1, "ldecodestr max zip size 16m error");
+				}
+				smZipBuf.SetDataLength(nResLength);
+				unsigned long ulLength = sz - 8;
+				unsigned long ulResLength = nResLength;
+				int nRet = uncompress((BYTE*)smZipBuf.GetDataBuffer(), &ulResLength, (BYTE*)pBegin, ulLength);
+				if(nRet != Z_OK){
+					return luaL_argerror(L, 1, "ldecodestr zip error");
+				}
+				pInfo = smZipBuf.GetDataBuffer();
+				sz = smZipBuf.GetDataLength();
+			}
+		}
+	}
 	return SprotoDecodeFunc(L, pInfo, sz, (struct sproto_type *)lua_touserdata(L, 2));
 }
 
@@ -1112,6 +1185,7 @@ luaopen_sproto_core(lua_State *L) {
 		{ "loadproto", lloadproto },
 		{ "saveproto", lsaveproto },
 		{ "default", ldefault },
+		{ "encodestr", lencodestr },
 		{ NULL, NULL },
 	};
 #if LUA_VERSION_NUM < 503

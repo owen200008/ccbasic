@@ -41,7 +41,7 @@ protected:
 	void Accept(evutil_socket_t s, sockaddr* pAddr);
 
 	//! 初始化事件
-	void InitServerSessionEvent();
+	bool InitServerSessionEvent();
 protected:
 	char					m_szPeerAddr[ADDRESS_MAX_LENGTH];
 	uint32_t				m_nPeerPort;
@@ -140,16 +140,18 @@ void CBasicNet_SocketSession::Accept(evutil_socket_t s, sockaddr* pAddr) {
 	m_socketfd = s;
 	SetLibEvent([](CBasicNet_Socket* pNotify, intptr_t lRevert)->void {
 		CBasicNet_SocketSession* pSession = (CBasicNet_SocketSession*)pNotify;
-		pSession->InitServerSessionEvent();
-		pSession->OnConnect(BASIC_NETCODE_SUCC);
+		if(pSession->InitServerSessionEvent())
+			pSession->OnConnect(BASIC_NETCODE_SUCC);
+		else
+			pSession->OnConnect(BASIC_NETCODE_CLOSE_REMOTE);
 	});
 }
 
 //! 初始化事件
-void CBasicNet_SocketSession::InitServerSessionEvent(){
+bool CBasicNet_SocketSession::InitServerSessionEvent(){
 #ifdef BASICWINDOWS_USE_IOCP
 	//已经绑定到IOCP，开启receive
-	m_pThread->StartRecvData(this);
+	return m_pThread->StartRecvData(this);
 #else
 	event_set(&m_revent, m_socketfd, EV_READ | EV_PERSIST, OnLinkRead, this);
 	event_base_set(m_pThread->m_base, &m_revent);
@@ -157,6 +159,7 @@ void CBasicNet_SocketSession::InitServerSessionEvent(){
 	event_base_set(m_pThread->m_base, &m_wevent);
 	//read data
 	event_add(&m_revent, NULL);
+	return true;
 #endif
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

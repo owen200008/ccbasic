@@ -159,11 +159,6 @@ protected:
 	BasicTLS_Key	m_key;
 };
 
-#define BasicGetBasiclibGlobalTLS_Key_CorutinePoolData	0xFFFFFFFF
-_BASIC_DLL_API void* BasicGetBasiclibGlobalTLS(int nKey);
-typedef void*(*pCreateKeyTLSFunc)(int);
-_BASIC_DLL_API void BasicGetBasiclibGlobalTLS_BindCreateFunc(pCreateKeyTLSFunc func);
-
 __NS_BASIC_END
 
 #endif 

@@ -218,9 +218,8 @@ BOOL CBasicSmartBuffer::InitFormFile(const char* lpszFile)
 	return bRet;
 }
 
-CBasicSmartBuffer& CBasicSmartBuffer::operator = (const CBasicSmartBuffer& buffer)
-{
-	Free();
+CBasicSmartBuffer& CBasicSmartBuffer::operator = (const CBasicSmartBuffer& buffer){
+	SetDataLength(0);
 	AppendData(buffer.m_pszBuffer, buffer.m_cbBuffer);
 	return *this;
 }

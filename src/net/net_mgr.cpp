@@ -464,12 +464,17 @@ unsigned CNetThread::ThreadIOCPFunc(void* lpWorkContext){
 }
 
 //! 开始接收数据
-void CNetThread::StartRecvData(CBasicNet_SocketTransfer* pSocket){
+bool CNetThread::StartRecvData(CBasicNet_SocketTransfer* pSocket){
 	UINT nRetVal = WSARecv(pSocket->GetSocketID(), &pSocket->m_wsaInBuffer, 1, &m_dwIoSize, &m_ulFlags, &pSocket->m_olRead.m_ol, NULL);  //I know this
-	if(nRetVal == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING){
-		ASSERT(0);
-		pSocket->Close();
+	if(nRetVal == SOCKET_ERROR){
+		int nError = WSAGetLastError();
+		if(nError != WSA_IO_PENDING){
+			ASSERT(0);
+			pSocket->Close();
+			return false;
+		}
 	}
+	return true;
 }
 #else
 //! 异步dns解析

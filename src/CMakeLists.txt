@@ -75,7 +75,14 @@ else()
 	set(BasicLibCMakeCXX_FLAGS "${BasicLibCMakeCXX_FLAGS} --std=c++11")
 	set(BasicLibExtra_Src ${BasicLibExtra_Src} ${BasicLibSrcPath}/coroutine/coctx_swap.S)
 	if(BASICLIB_BUILD_ANDROID)
+        set(EVENT__DISABLE_SAMPLES ON CACHE BOOL "flags")
+        set(EVENT__DISABLE_REGRESS ON CACHE BOOL "flags")
+        set(EVENT__DISABLE_TESTS ON CACHE BOOL "flags")
+	    set(EVENT__DISABLE_THREAD_SUPPORT ON CACHE BOOL "flags")
+	    set(EVENT__DISABLE_OPENSSL ON CACHE BOOL "flags")
+	    add_subdirectory(${BasicLibSrcPath}/../3rd/libevent libevent)
 		set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC -D__ANDROID -DANDROID)
+		set(BasicLibLinks ${BasicLibLinks} event_static dl)
 	else()
 		if(BASICLIB_BUILD_IOS)
 			set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC -D__MAC -DMAC)
@@ -171,6 +178,7 @@ set(basiclib_SOURCES
     ${BasicLibSrcPath}/types/linux.h
     ${BasicLibSrcPath}/types/types.h
     ${BasicLibSrcPath}/util/auto_cast.h
+	${BasicLibSrcPath}/util/skiplist.h
     ${BasicLibSrcPath}/util/concurrentqueue/blockingconcurrentqueue.h
     ${BasicLibSrcPath}/util/concurrentqueue/concurrentqueue.h
     ${BasicLibSrcPath}/util/container.h

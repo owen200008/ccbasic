@@ -5,12 +5,10 @@ class CWriteToFile
 {
 public:
 	CWriteToFile(FILE* fp)
-		: m_fp(fp)
-	{
+		: m_fp(fp){
 
 	}
-	long funcWrite(const char* pszData, long lLength)
-	{
+	long funcWrite(const char* pszData, long lLength){
 		fwrite(pszData, 1, lLength, m_fp);
 		return 0;
 	}
@@ -19,13 +17,11 @@ protected:
 };
 
 //!get size
-int CBasicIniOp::GetIniSize()
-{
+int CBasicIniOp::GetIniSize(){
     return sizeof(CBasicIniOp);
 }
 
-void CBasicIniOp::Empty()
-{
+void CBasicIniOp::Empty(){
     m_file.Empty();
     m_buffer.Free();
 
@@ -33,19 +29,16 @@ void CBasicIniOp::Empty()
 	m_bModified = false;
 }
 
-int CBasicIniOp::InitFromMem(const char* lpszData, size_t cbData)
-{
+int CBasicIniOp::InitFromMem(const char* lpszData, size_t cbData){
 	Empty();
 	return _InitData(lpszData, cbData);
 }
 
-int CBasicIniOp::InitFromFile(const char* filename)
-{
+int CBasicIniOp::InitFromFile(const char* filename){
 	Empty();
 
 	FILE* fp = fopen(filename, "rb");
-	if (fp == NULL)
-	{
+	if (fp == NULL){
 		return -1;
 	}
 	m_file = filename;
@@ -66,10 +59,8 @@ int CBasicIniOp::InitFromFile(const char* filename)
 	return nRet;
 }
 
-bool CBasicIniOp::EmptySection(const char* lpszSection)
-{
-	if (lpszSection == 0)
-	{
+bool CBasicIniOp::EmptySection(const char* lpszSection){
+	if (lpszSection == 0){
 		m_buffer.Free();
 		m_dic.erase(m_dic.begin(), m_dic.end());
 		m_bModified = true;
@@ -90,8 +81,7 @@ bool CBasicIniOp::EmptySection(const char* lpszSection)
 
 
 	CBasicString strSectionBegin = strSection + SEP_SIGN;
-	for (Dict::iterator iter = m_dic.begin(); iter != m_dic.end();)
-	{
+	for (Dict::iterator iter = m_dic.begin(); iter != m_dic.end();){
 		CBasicString strKey = iter->first;
 		if (strKey == strSection || strKey.Find(strSectionBegin.c_str()) == 0){
 			m_dic.erase(iter++);
@@ -106,8 +96,7 @@ bool CBasicIniOp::EmptySection(const char* lpszSection)
 }
 
 
-int CBasicIniOp::InsertBefore(const char* key1, const char* key2, const char* value, const char* findkey2)
-{
+int CBasicIniOp::InsertBefore(const char* key1, const char* key2, const char* value, const char* findkey2){
 	if (key1 == NULL || key2 == NULL || value == NULL || findkey2 == NULL)
 		return -1;
 
@@ -121,8 +110,7 @@ int CBasicIniOp::InsertBefore(const char* key1, const char* key2, const char* va
 
 	IndexData i;
 	Dict::iterator iter = m_dic.find(strKey);
-	if (iter != m_dic.end())
-	{
+	if (iter != m_dic.end()){
 		i.m_nData64 = iter->second;
 
 		m_tmp.SetDataLength(0);
@@ -147,28 +135,23 @@ int CBasicIniOp::InsertBefore(const char* key1, const char* key2, const char* va
 		strKey.MakeUpper();
 		m_dic[strKey] = i.m_nData64;
 	}
-	else	
-	{
+	else	{
 		SetData(key1, key2, value);
 	}
 	return 0;
 }
 
 
-bool CBasicIniOp::WriteToFile(const char* filename)
-{
-	if (filename == NULL)
-	{
-		if (!IsModified())	
-		{
+bool CBasicIniOp::WriteToFile(const char* filename){
+	if (filename == NULL){
+		if (!IsModified())	{
 			return true;
 		}
 		filename = m_file.c_str();
 	}
 
 	FILE* fp = fopen(filename, "wb");
-	if (fp == NULL)
-	{
+	if (fp == NULL){
 		return false;
 	}
 
@@ -183,10 +166,8 @@ bool CBasicIniOp::WriteToFile(const char* filename)
 }
 
 
-bool CBasicIniOp::ParseCombine(long nType, const char* lpszSection, const char* lpszData, long nV1Begin, long nV1End, long nV2Begin, long nV2End)
-{
-	if (nType == INI_TYPE_KEY)
-	{
+bool CBasicIniOp::ParseCombine(long nType, const char* lpszSection, const char* lpszData, long nV1Begin, long nV1End, long nV2Begin, long nV2End){
+	if (nType == INI_TYPE_KEY){
 		CBasicString strName(lpszData + nV1Begin, nV1End - nV1Begin);
 		CBasicString strSection = lpszSection;
 		CBasicString strValue(lpszData + nV2Begin, nV2End - nV2Begin);
@@ -201,10 +182,8 @@ bool CBasicIniOp::ParseCombine(long nType, const char* lpszSection, const char* 
 }
 
 
-bool CBasicIniOp::ParseINI(long nType, const char* lpszSection, const char* lpszData, long nV1Begin, long nV1End, long nV2Begin, long nV2End)
-{
-	if (nType == INI_TYPE_KEY)
-	{
+bool CBasicIniOp::ParseINI(long nType, const char* lpszSection, const char* lpszData, long nV1Begin, long nV1End, long nV2Begin, long nV2End){
+	if (nType == INI_TYPE_KEY){
 		CBasicString strName(lpszData + nV1Begin, nV1End - nV1Begin);
 		CBasicString strSection = lpszSection;
 		strSection.TrimLeft();
@@ -221,8 +200,7 @@ bool CBasicIniOp::ParseINI(long nType, const char* lpszSection, const char* lpsz
 
 		m_dic[strKey] = i.m_nData64;
 	}
-	else if (nType == INI_TYPE_SCETION_END)
-	{
+	else if (nType == INI_TYPE_SCETION_END){
 		CBasicString strKey = lpszSection;
 		strKey.TrimLeft();
 		strKey.TrimRight();
@@ -236,15 +214,13 @@ bool CBasicIniOp::ParseINI(long nType, const char* lpszSection, const char* lpsz
 
 	return true;
 }
-void CBasicIniOp::_SetData(const char* key1, const char* key2, const char* value)
-{
+void CBasicIniOp::_SetData(const char* key1, const char* key2, const char* value){
 	if (key1 == 0)
 		return;
 
 	m_bModified = true;	
 
-	if (key2 == 0)	//
-	{
+	if (key2 == 0){	//
 		EmptySection(key1);
 		return;
 	}
@@ -258,19 +234,15 @@ void CBasicIniOp::_SetData(const char* key1, const char* key2, const char* value
 
 	IndexData i;
 	Dict::iterator iter = m_dic.find(strKey);
-	if (iter != m_dic.end())
-	{
+	if (iter != m_dic.end()){
 		long nDeltLen = 0;	//
 		i.m_nData64 = iter->second;
-		do
-		{
+		do{
 			//
-			if (value == 0)
-			{
+			if (value == 0){
 				char* pszData = GetDataBuffer() + i.m_nOffset + i.m_nKeyLen + i.m_nValueLen;
 				int nIndex = 0;
-				while (*(pszData + nIndex) != '\n')
-				{
+				while (*(pszData + nIndex) != '\n'){
 					++nIndex;
 				}
 
@@ -281,8 +253,7 @@ void CBasicIniOp::_SetData(const char* key1, const char* key2, const char* value
 				nDeltLen = -1 * nDelLen;
 				UpdateOffset(i.m_nOffset, nDeltLen);
 			}
-			else
-			{
+			else{
 				//
 				long nNewLen = strlen(value);	//		
 				nDeltLen = nNewLen - i.m_nValueLen; //
@@ -303,8 +274,7 @@ void CBasicIniOp::_SetData(const char* key1, const char* key2, const char* value
 		DWORD dwDataOffset = i.m_nOffset;
 		Dict::iterator si = m_dic.find(strSection);
 		ASSERT(si != m_dic.end());
-		if (si != m_dic.end())
-		{
+		if (si != m_dic.end()){
 			i.m_nData64 = si->second;
 			if (i.m_nOffset < dwDataOffset)	//
 			{
@@ -313,19 +283,17 @@ void CBasicIniOp::_SetData(const char* key1, const char* key2, const char* value
 			}
 		}
 	}
-	else if (value == 0)
-	{
+	else if (value == 0){
 		return;
 	}
-	else	//
-	{
+	else{	//
+	
 		long  lKeyLen = strlen(key2);
 		long  lValLen = strlen(value);
 
 		//				
 		m_tmp.SetDataLength(0);
-		if (lKeyLen > 0)
-		{
+		if (lKeyLen > 0){
 			m_tmp.AppendData((const char*)key2, lKeyLen * sizeof(char));
 			m_tmp.AppendData((const char*)"=", sizeof(char));
 			m_tmp.AppendData((const char*)value, lValLen * sizeof(char));
@@ -335,8 +303,7 @@ void CBasicIniOp::_SetData(const char* key1, const char* key2, const char* value
 		long  nNewLen = m_tmp.GetDataLength() / sizeof(char);
 
 		Dict::iterator si = m_dic.find(strSection);
-		if (si == m_dic.end())
-		{
+		if (si == m_dic.end()){
 			CBasicSmartBuffer buf;
 			buf.AppendData((const char*)"[", sizeof(char));
 			buf.AppendData((const char*)key1, strlen(key1)*sizeof(char));
@@ -346,8 +313,7 @@ void CBasicIniOp::_SetData(const char* key1, const char* key2, const char* value
 
 			InitData(buf.GetDataBuffer(), buf.GetDataLength() / sizeof(char));
 		}
-		else if (nNewLen > 0) 
-		{
+		else if (nNewLen > 0) {
 			i.m_nData64 = si->second;
 
 			DWORD dwDataBegin = i.m_nOffset + i.m_nSectionLength;
@@ -368,22 +334,18 @@ void CBasicIniOp::_SetData(const char* key1, const char* key2, const char* value
 	}
 }
 
-void CBasicIniOp::UpdateOffset(DWORD dwBeginOffset, long nMove)
-{
+void CBasicIniOp::UpdateOffset(DWORD dwBeginOffset, long nMove){
 	IndexData i;
-	for (Dict::iterator iter = m_dic.begin(); iter != m_dic.end(); ++iter)
-	{
+	for (Dict::iterator iter = m_dic.begin(); iter != m_dic.end(); ++iter){
 		i.m_nData64 = iter->second;
-		if (i.m_nOffset > dwBeginOffset)
-		{
+		if (i.m_nOffset > dwBeginOffset){
 			i.m_nOffset += nMove;
 			iter->second = i.m_nData64;
 		}
 	}
 }
 
-void CBasicIniOp::AddNewData(DWORD dwStartPos, long cbOldData, const char* lpszNewData, long cbData)
-{
+void CBasicIniOp::AddNewData(DWORD dwStartPos, long cbOldData, const char* lpszNewData, long cbData){
 	dwStartPos *= sizeof(char);
 	cbOldData *= sizeof(char);
 	cbData *= sizeof(char);
@@ -393,7 +355,6 @@ void CBasicIniOp::AddNewData(DWORD dwStartPos, long cbOldData, const char* lpszN
 	m_buffer.CommitData(nDeltLen);
 	char* pszData = m_buffer.GetDataBuffer();
 
-	//œ»∞—‘≠¿¥µƒ ˝æ›“∆∂ØµΩŒª
 	DWORD dwDataBegin = dwStartPos;
 	DWORD dwMoveLen = nOldAllLen - dwDataBegin - cbOldData;
 	memmove(pszData + dwDataBegin + cbData, pszData + dwDataBegin + cbOldData, dwMoveLen);
@@ -404,32 +365,27 @@ void CBasicIniOp::AddNewData(DWORD dwStartPos, long cbOldData, const char* lpszN
 }
 
 
-int CBasicIniOp::_InitData(const char* lpszData, size_t cbData)
-{
+int CBasicIniOp::_InitData(const char* lpszData, size_t cbData){
 	return InitData(lpszData, cbData);
 }
 
 
-void CBasicIniOp::_WriteTo(const std::function<long(const char*, long)>& func)
-{
+void CBasicIniOp::_WriteTo(const std::function<long(const char*, long)>& func){
 	int nLen = GetDataLength();
 	const char* lpsz = GetDataBuffer();
 
 	func(lpsz, nLen);
 }
 
-int CBasicIniOp::InitData(const char* lpszData, size_t cbData)
-{
-	if (cbData == 0)
-	{
+int CBasicIniOp::InitData(const char* lpszData, size_t cbData){
+	if (cbData == 0){
 		return 0;
 	}
 
 	size_t nOldLen = GetDataLength();
 	m_buffer.AppendData((const char *)lpszData, cbData * sizeof(char));
 	size_t lSize = GetDataLength();
-	if (GetDataBuffer()[lSize - 1] != '\n')
-	{
+	if (GetDataBuffer()[lSize - 1] != '\n'){
 		m_buffer.AppendData((const char*)NEW_LINE, NEW_LINE_LEN);
 		lSize += (NEW_LINE_LEN / sizeof(char));
 	}

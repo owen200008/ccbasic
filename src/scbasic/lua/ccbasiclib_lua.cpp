@@ -57,13 +57,13 @@ void BasiclibLua_BasicLogEvent(const char* pLog) {
 void BasiclibLua_BasicLogEventError(const char* pLog) {
 	basiclib::BasicLogEventError(pLog);
 }
-string BasiclibLua_Basic_MD5(string& strEncode) {
+string BasiclibLua_Basic_MD5(const string& strEncode) {
 	basiclib::CBasicMD5 md5;
 	md5.update((unsigned char *)strEncode.c_str(), strEncode.length());
 	md5.finalize();
 	return md5.hex_digest();
 }
-uint32_t BasiclibLua_Basic_crc32(string& strEncode) {
+uint32_t BasiclibLua_Basic_crc32(const string& strEncode) {
 	return basiclib::Basic_crc32((unsigned char*)strEncode.c_str(), strEncode.length());
 }
 
@@ -96,7 +96,7 @@ void ExportBasiclibClassToLua(lua_State* L) {
 		.addFunction("TrimRight", pTrimRightFunc)
 		.addFunction("Find", pFindFunc)
 		.addFunction("ReverseFind", pReverseFindFunc)
-		.addStaticFunction("SetString", [](basiclib::CBasicString* pStr, std::string& str) { {
+		.addStaticFunction("SetString", [](basiclib::CBasicString* pStr, const std::string& str) { {
 				pStr->assign(str.c_str(), str.length());
 			}})
 		.addStaticFunction("GetTotalString", [](basiclib::CBasicString* pStr) { {
@@ -135,16 +135,16 @@ void ExportBasiclibClassToLua(lua_State* L) {
 				}
 				return strRet;
 			}})
-		.addStaticFunction("AppendData", [](basiclib::CBasicBitstream* pSM, std::string& str) { {
+		.addStaticFunction("AppendData", [](basiclib::CBasicBitstream* pSM, const std::string& str) { {
 				pSM->AppendData(str.c_str(), str.length());
 			}})
-		.addStaticFunction("AppendDataEx", [](basiclib::CBasicBitstream* pSM, std::string& str) { {
+		.addStaticFunction("AppendDataEx", [](basiclib::CBasicBitstream* pSM, const std::string& str) { {
 				pSM->AppendDataEx(str.c_str(), str.length());
 			}})
-		.addStaticFunction("AppendSMBuffer", [](basiclib::CBasicBitstream* pSM, basiclib::CBasicBitstream* pSM2)->void { {
+		.addStaticFunction("AppendSMBuffer", [](basiclib::CBasicBitstream* pSM, const basiclib::CBasicBitstream* pSM2)->void { {
 				pSM->AppendData(pSM2->GetDataBuffer(), pSM2->GetDataLength());
 			}})
-		.addStaticFunction("Compare", [](basiclib::CBasicBitstream* pSM, basiclib::CBasicBitstream* pSM2)->bool { {
+		.addStaticFunction("Compare", [](basiclib::CBasicBitstream* pSM, const basiclib::CBasicBitstream* pSM2)->bool { {
 				if (pSM->GetDataLength() != pSM2->GetDataLength())
 					return false;
 				return memcmp(pSM->GetDataBuffer(), pSM2->GetDataBuffer(), pSM->GetDataLength()) == 0;
@@ -169,7 +169,7 @@ void ExportBasiclibClassToLua(lua_State* L) {
 	.addFunction("CompareDouble", &basiclib::CNetBasicValue::CompareDouble)
 	.addFunction("CompareLongLong", &basiclib::CNetBasicValue::CompareLongLong)
 	.addFunction("GetSeriazeLength", &basiclib::CNetBasicValue::GetSeriazeLength)
-	.addStaticFunction("ComparePointString", [](basiclib::CNetBasicValue* pData, std::string& str) { {
+	.addStaticFunction("ComparePointString", [](basiclib::CNetBasicValue* pData, const std::string& str) { {
 	return pData->ComparePointString(str.c_str(), str.length());
 	}})
 	.addStaticFunction("SeriazeSMBuf", [](basiclib::CNetBasicValue* pData, basiclib::CBasicSmartBuffer* pBuf) { {
@@ -178,7 +178,7 @@ void ExportBasiclibClassToLua(lua_State* L) {
 	.addStaticFunction("UnSeriazeSMBuf", [](basiclib::CNetBasicValue* pData, basiclib::CBasicSmartBuffer* pBuf) { {
 	pData->UnSeriazeSMBuf(*pBuf);
 	}})
-	.addStaticFunction("SetString", [](basiclib::CNetBasicValue* pData, std::string& str) { {
+	.addStaticFunction("SetString", [](basiclib::CNetBasicValue* pData, const std::string& str) { {
 	pData->SetString(str.c_str(), str.length());
 	}})
 	);
@@ -220,12 +220,12 @@ void ExportBasiclibClassToLua(lua_State* L) {
 		.setConstructors<CPBZK()>()
 		.addFunction("ReadPBZKFileBuffer", &CPBZK::ReadPBZKFileBuffer)
 		.addFunction("IsContainPBZK", &CPBZK::IsContainPBZK)
-		 .addStaticFunction("ReadPBZK", [](CPBZK* p, string& strData, bool bAddZiFu){
-			p->ReadPBZKFileBuffer(strData.c_str(), strData.length(), bAddZiFu);
+		 .addStaticFunction("ReadPBZK", [](CPBZK* p, const string& strData){
+			p->ReadPBZKFileBuffer(strData.c_str(), strData.length());
 		})
-		.addStaticFunction("ReplacePBZK", [](CPBZK* pPBZK, char* txt, int nLength, char cReplace = '*', bool bDeep = true) { {
-				pPBZK->ReplacePBZK(txt, nLength, cReplace, bDeep);
-				return string(txt, nLength);
+		.addStaticFunction("ReplacePBZK", [](CPBZK* pPBZK, const string& str, const char* pReplate, bool bDeep, bool bCheckSpecialZF) { {
+				pPBZK->ReplacePBZK((char*)str.c_str(), str.length(), pReplate[0], bDeep, bCheckSpecialZF);
+				return str;
 			}})
 	);
 

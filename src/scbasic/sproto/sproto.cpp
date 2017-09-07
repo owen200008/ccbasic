@@ -19,9 +19,6 @@ inline bool IsStarMiss(int bStar, int nSZ){
 	return nSZ == 0 && bStar;
 }
 
-
-
-
 static void
 pool_init(struct pool *p) {
 	p->header = NULL;
@@ -1340,18 +1337,18 @@ sproto_encode(const struct sproto_type *st, void * buffer, int size, sproto_call
 		args.tagname = f->name;
 		args.m_bStar = f->m_bStar;
 		uint8_t* pStarValue = data;
-		if (args.m_bStar)
+		if(args.m_bStar){
 			data += 1;
+			size -= 1;
+		}
 		args.subtype = f->st;
 		args.m_nMapKeyType = f->m_nKeyType;
 		args.m_nDefaultValue = f->m_nDefaultValue;
-		if (type & SPROTO_TARRAY) 
-		{
+		if (type & SPROTO_TARRAY) {
 			args.type = type & ~SPROTO_TARRAY;
 			sz = encode_array(cb, &args, data, size);
 		} 
-		else 
-		{
+		else {
 			args.type = type;
 			args.index = 0;
 			switch(type) 
@@ -1371,9 +1368,6 @@ sproto_encode(const struct sproto_type *st, void * buffer, int size, sproto_call
 				else if (sz == 1){
 					sz = encode_ccchar(ccCharvalue, data, size);
 				}
-				else{
-					return -1;
-				}
 				break;
 			}
 			case SPROTO_CC_SHORT:
@@ -1390,9 +1384,6 @@ sproto_encode(const struct sproto_type *st, void * buffer, int size, sproto_call
 				}
 				else if (sz == 2){
 					sz = encode_ccshort(ccCharvalue, data, size);
-				}
-				else{
-					return -1;
 				}
 				break;
 			}
@@ -1411,9 +1402,6 @@ sproto_encode(const struct sproto_type *st, void * buffer, int size, sproto_call
 				else if (sz == 4){
 					sz = encode_ccinteger(ccCharvalue, data, size);
 				}
-				else{
-					return -1;
-				}
 				break;
 			}
 			case SPROTO_CC_LONGLONG:{
@@ -1428,9 +1416,6 @@ sproto_encode(const struct sproto_type *st, void * buffer, int size, sproto_call
 				}
 				else if (sz == 8){
 					sz = encode_cclonglong(ccCharvalue, data, size);
-				}
-				else{
-					return -1;
 				}
 				break;
 			}
@@ -1447,9 +1432,6 @@ sproto_encode(const struct sproto_type *st, void * buffer, int size, sproto_call
 				}
 				else if (sz == 8){
 					sz = encode_ccdouble(ccCharvalue, data, size);
-				}
-				else{
-					return -1;
 				}
 				break;
 			}
@@ -2075,9 +2057,10 @@ sproto_decode(const struct sproto_type *st, const void * data, int size, sproto_
 		args.tagname = f->name;
 		args.m_bStar = f->m_bStar;
 		if (f->m_bStar){
+			char cType = datastream[0];
 			datastream += 1;
 			size -= 1;
-			if (!datastream[0]){
+			if (!cType){
 				continue;
 			}
 		}
