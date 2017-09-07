@@ -9,6 +9,6 @@ do
 	if [ "$?" -eq "0" ]; then
 		make -f ./GNUmakefile-cross distclean
 		make -f ./GNUmakefile-cross static dynamic -j4
-		sudo make -f ./GNUmakefile-cross install PREFIX=$NOWPATH/cryptopp/android-$arch
+		sudo make -f ./GNUmakefile-cross install PREFIX=$NOWPATH/cryptopp/$arch
 	fi
 done
