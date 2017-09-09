@@ -68,7 +68,7 @@ protected:
 
 protected:
 	static BYTE m_sBase64Alphabet[];
-	static char m_sBase64Decode[];
+	static unsigned char m_sBase64Decode[];
 	static char base64_pad;	
 };
 
@@ -89,7 +89,7 @@ protected:
 
 protected:
 	static BYTE m_sBase64Alphabet[];
-	static char m_sBase64Decode[];
+	static unsigned char m_sBase64Decode[];
 	static char base64_pad;	
 };
 __NS_BASIC_END

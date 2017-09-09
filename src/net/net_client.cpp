@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <netinet/tcp.h>
+extern void OnLinkRead(evutil_socket_t fd, short event, void *arg);
+extern void OnLinkWrite(evutil_socket_t fd, short event, void *arg);
 #endif
 
 __NS_BASIC_START

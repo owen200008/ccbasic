@@ -317,10 +317,8 @@ bool CBasicOnTimer::AddTimeOut(intptr_t nKey, pOnTimerCallback pFunc, int nTimes
 	return true;
 }
 
-bool CBasicOnTimer::AddOnTimer(intptr_t nKey, pOnTimerCallback pFunc, int nTimes, intptr_t pParam1)
-{
-	if (time > 0)
-	{
+bool CBasicOnTimer::AddOnTimer(intptr_t nKey, pOnTimerCallback pFunc, int nTimes, intptr_t pParam1) {
+	if (nTimes > 0) {
 		struct timer_event event;
 		event.m_callbackFunc = pFunc;
 		event.m_nKey = nKey;

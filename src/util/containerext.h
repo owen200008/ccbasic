@@ -286,26 +286,25 @@ class CLockFreeMessageQueue : public moodycamel::ConcurrentQueue<T, CBasicConcur
 public:
 	typedef typename moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>::Block LockFreeMsgBlock;
 
-	CLockFreeMessageQueue(size_t capacity = nBlockSize) : moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>(capacity)
-	{
-		m_vtAllocateIndexData.push_back(new AllocateIndexData(capacity));
+	CLockFreeMessageQueue(size_t capacity = nBlockSize) : moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>(capacity){
+		this->m_vtAllocateIndexData.push_back(this->CreateAllocateIndexData(capacity));
 	}
 	virtual ~CLockFreeMessageQueue(){
 	}
 	virtual LockFreeMsgBlock* ChildCreateBlock(){
-		int nAllocateIndex = m_nAllocateIndex;
-		AllocateIndexData* pData = m_vtAllocateIndexData[nAllocateIndex];
+		int nAllocateIndex = this->m_nAllocateIndex;
+		auto pData = this->m_vtAllocateIndexData[nAllocateIndex];
 		LockFreeMsgBlock* pRet = pData->GetBlock();
-		if (pRet)
+		if(pRet)
 			return pRet;
-		while (m_lock.exchange(1)){};
-		if (nAllocateIndex != m_nAllocateIndex){
-			m_lock.exchange(0);
+		while(this->m_lock.exchange(1)){};
+		if(nAllocateIndex != this->m_nAllocateIndex){
+			this->m_lock.exchange(0);
 			return ChildCreateBlock();
 		}
-		m_vtAllocateIndexData.push_back(new AllocateIndexData(pData->initialBlockPoolSize * 2));
-		m_nAllocateIndex++;
-		m_lock.exchange(0);
+		this->m_vtAllocateIndexData.push_back(this->CreateAllocateIndexData(pData->initialBlockPoolSize * 2));
+		this->m_nAllocateIndex++;
+		this->m_lock.exchange(0);
 		TRACE("expand_queue:%d\n", pData->initialBlockPoolSize * 2 * sizeof(T));
 		return ChildCreateBlock();
 	}

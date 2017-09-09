@@ -2114,7 +2114,7 @@ private:
 				this->tailBlock = firstAllocatedBlock;
 			}
 			while (true) {
-				stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) + static_cast<index_t>(BLOCK_SIZE);
+				auto stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) + static_cast<index_t>(BLOCK_SIZE);
 				if (details::circular_less_than<index_t>(newTailIndex, stopIndex)) {
 					stopIndex = newTailIndex;
 				}
@@ -2649,7 +2649,7 @@ private:
 				this->tailBlock = firstAllocatedBlock;
 			}
 			while (true) {
-				stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) + static_cast<index_t>(BLOCK_SIZE);
+				auto stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) + static_cast<index_t>(BLOCK_SIZE);
 				if (details::circular_less_than<index_t>(newTailIndex, stopIndex)) {
 					stopIndex = newTailIndex;
 				}
@@ -3591,6 +3591,9 @@ private:
 			return index < initialBlockPoolSize ? (initialBlockPool + index) : nullptr;
 		}
 	};
+    AllocateIndexData* CreateAllocateIndexData(int nBlockCount){
+        return new AllocateIndexData(nBlockCount);
+    }
 protected:
 	std::atomic<ProducerBase*> producerListTail;
 	std::atomic<std::uint32_t> producerCount;
@@ -3601,7 +3604,7 @@ protected:
 
 	//new add
 	int															m_nAllocateIndex;
-	typename basiclib::basic_vector<AllocateIndexData*>			m_vtAllocateIndexData;
+	typename basiclib::basic_vector<AllocateIndexData*>		m_vtAllocateIndexData;
 	std::atomic<char>											m_lock;
 	
 #if !MCDBGQ_USEDEBUGFREELIST

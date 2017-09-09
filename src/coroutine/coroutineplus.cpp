@@ -22,10 +22,16 @@ void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void* s1)
     ctx->regs[EIP] = (char*)pfn;
 }
 #else
+#ifdef __LINUX
 extern "C"
 {
     extern void coctx_swap(coctx_t *, coctx_t*) asm("coctx_swap");
 }
+#else
+void coctx_swap(coctx_t *, coctx_t*){
+
+}
+#endif
 #endif
 
 #if defined(__i386__)
@@ -54,6 +60,11 @@ void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void *s1)
     ctx->regs[RIP] = (char*)pfn;
     ctx->regs[RDI] = (char*)s1;
 }
+#else
+#ifndef __BASICWINDOWS
+void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void *s1){
+}
+#endif
 #endif
 
 ///////////////////////////////////////////////////////////////////////////
@@ -82,7 +93,7 @@ void CCorutinePlusBase::YieldCorutine(){
 #ifdef _DEBUG
 	char sStackSize = 0;
 	int nLength = m_ctx.ss_sp + STACK_SIZE - &sStackSize;
-	//预留10K的空间
+	//10k space
 	ASSERT(nLength < STACK_SIZE - 10 * 1024);
 	static int nTotalUseStackSize = 0;
 	if (nLength > nTotalUseStackSize) {
@@ -106,10 +117,10 @@ CoroutineState CCorutinePlusBase::Resume(CCorutinePlusPoolBase* pPool){
     return m_state;
 }
 
-//! 判断是否是死循环或者没有唤醒
+//! loop or no wakeup
 bool CCorutinePlusBase::IsCoroutineError(time_t tmNow){
     if (m_state == CoroutineState_Suspend || m_state == CoroutineState_Running)
-        //超过5s都没有响应,说明是有问题或者死循环
+        //5s
         return tmNow - m_tmResumeTime > 5;
     return false;
 }
@@ -147,7 +158,7 @@ CCorutinePlusPoolBase::~CCorutinePlusPoolBase()
 	int nIndex = 0;
 	for (auto& c : m_vtStacks) {
 		pBuf[nIndex++] = c;
-		//返还堆栈
+		//back stack
 		if (nIndex == 1024) {
 			m_balance.ReleaseExtraStack(pBuf, nIndex);
 			nIndex = 0;
@@ -170,7 +181,7 @@ bool CCorutinePlusPoolBase::InitCorutine(int nDefaultSize, int nLimitCorutineCou
     m_nLimitSize = nLimitCorutineCount;
     m_usMaxCreateShareStackSize = nMaxShareStackSize;
     {
-        //创建协程
+        //create
         m_vtCorutinePlus.reserve(nDefaultSize * 2);
         for (int i = 0; i < nDefaultSize; i++){
             m_vtCorutinePlus.push_back(CreateCorutine());
@@ -179,7 +190,7 @@ bool CCorutinePlusPoolBase::InitCorutine(int nDefaultSize, int nLimitCorutineCou
         m_nRealVTCorutineSize = m_nCorutineSize;
     }
     {
-        //创建堆栈
+        //create
         m_vtStacks.reserve(nShareStackSize * 2 + 1);
 		for (int i = 0; i < nShareStackSize; i++) {
 			m_vtStacks.push_back(CreateShareStack());
@@ -199,9 +210,9 @@ void CCorutinePlusBase::InitStackAndPool(CCorutinePlusPoolBase* pPool, char* pSt
 CCorutinePlusBase* CCorutinePlusPoolBase::GetCorutine(bool bGlobal){
 	CCorutinePlusBase* pRet = nullptr;
     if (m_nCorutineSize == 0){
-        //首先从全局拿一下
+        //get from global
         if (bGlobal){
-            //默认获取256
+            //default 256
             uint16_t nHalf = m_nRealVTCorutineSize;
 			CCorutinePlusBase* pBuf[256] = { 0 };
             if (nHalf > 256)
@@ -219,7 +230,7 @@ CCorutinePlusBase* CCorutinePlusPoolBase::GetCorutine(bool bGlobal){
     else{
         pRet = m_vtCorutinePlus[--m_nCorutineSize];
     }
-    //! 获取堆栈
+    //! get stack
 	char* pStackData = GetShareStack();
 #ifdef _DEBUG
 	if (nullptr == pStackData) {
@@ -239,20 +250,20 @@ void CCorutinePlusPoolBase::ReleaseCorutine(CCorutinePlusBase* pPTR){
         m_vtCorutinePlus[m_nCorutineSize] = pPTR;
     }
     m_nCorutineSize++;
-    //! 返还堆栈
+    //! return stack
     ReleaseShareStack(pPTR->m_ctx.ss_sp);
 
     if (m_nCorutineSize >= m_nLimitSize){
-        //放到全局去
+        //set to global
 		CCorutinePlusBase* pBuf[1024] = { 0 };
-        //默认返还一半
+        //return half
         uint16_t nHalf = m_nCorutineSize / 2;
         if (nHalf > 1024)
             nHalf = 1024;
         for (int i = 0; i < nHalf; i++){
             pBuf[i] = m_vtCorutinePlus[--m_nCorutineSize];
         }
-        //返还堆栈
+        //ret stack
         m_balance.ReleaseCorutineMore(pBuf, nHalf);
     }
 }
@@ -274,20 +285,18 @@ void CCorutinePlusPoolBase::YieldFunc(CCorutinePlusBase* pCorutine){
 	CCorutinePlusBase* pChange = m_pStackRunCorutine[m_usRunCorutineStack - 1];
 
     pCorutine->m_state = CoroutineState_Suspend;
-    //不需要恢复栈
+    //no need to copy stack
     coctx_swap(&pCorutine->m_ctx, &pChange->m_ctx);
 }
 
 void CCorutinePlusPoolBase::FinishFunc(CCorutinePlusBase* pCorutine){
     pCorutine->m_state = CoroutineState_Death;
     m_usRunCorutineStack--;
-    //返还协程
+    //ret p
     ReleaseCorutine(pCorutine);
 
-    //为了保证不要崩溃
     do{
         coctx_swap(&pCorutine->m_ctx, &m_pStackRunCorutine[m_usRunCorutineStack - 1]->m_ctx);
-        //不应该进入这里
         ASSERT(0);
         basiclib::BasicLogEventError("error, finish must be no resume...");
     } while (true);
@@ -320,14 +329,14 @@ void CCorutinePlusPoolBase::ReleaseShareStack(char* pStack){
     m_usShareStackSize++;
     if (m_usShareStackSize > m_usMaxCreateShareStackSize){
         char* pBuf[512] = { 0 };
-        //默认返还一半
+        //half
         uint16_t nHalfShareStackSize = m_usShareStackSize / 2;
         if (nHalfShareStackSize > 512)
             nHalfShareStackSize = 512;
         for (int i = 0; i < nHalfShareStackSize; i++){
             pBuf[i] = m_vtStacks[--m_usShareStackSize];
         }
-        //返还堆栈
+        //ret stack
         m_balance.ReleaseExtraStack(pBuf, nHalfShareStackSize);
     }
 }
@@ -335,9 +344,9 @@ void CCorutinePlusPoolBase::ReleaseShareStack(char* pStack){
 char* CCorutinePlusPoolBase::GetShareStack(bool bGlobal){
 	char* pRet = nullptr;
     if (m_usShareStackSize == 0){
-        //首先从全局拿一下
+        //get from global
         if (bGlobal){
-            //默认获取256
+            //256
             uint16_t nHalf = m_usRealShareStackSize;
             char* pBuf[256] = { 0 };
             if (nHalf > 256)
@@ -387,7 +396,7 @@ CCorutinePlusPoolBalance::~CCorutinePlusPoolBalance(){
 		basiclib::BasicDeallocate(*c);
 	});
 }
-//! 获取多余的corutine
+//! get more corutine
 int CCorutinePlusPoolBalance::GetCorutineMore(CCorutinePlusBase* pPTR[], int nCount){
     int nGetCount = 0;
     m_queueExtraCorutine.SafeFuncCallback([&]()->void{
@@ -429,7 +438,7 @@ int CCorutinePlusPoolBalance::GetExtraCorutineCount(){
 int CCorutinePlusPoolBalance::GetExtraShareStackCount(){
     return m_queueExtraStack.GetMQLength();
 }
-//! 获取创建的堆栈
+//! get create stack
 char* CCorutinePlusPoolBalance::GetNewCreateStack(int nTimes, int& nCreateSize) {
 	nCreateSize = 16 * (int)pow(2, nTimes + 1);
 	if (nCreateSize < 16)
@@ -453,7 +462,7 @@ CCorutinePlusPoolMgr::~CCorutinePlusPoolMgr()
 void CCorutinePlusPoolMgr::CreateCorutine(CCorutinePlusBase* pPTR){
     MQPush(&pPTR);
 }
-//! 检查所有的协程是否有问题
+//! check 
 void CCorutinePlusPoolMgr::CheckAllCorutine(){
     int nLength = GetMQLength();
     if (nLength > 0){
@@ -465,17 +474,17 @@ void CCorutinePlusPoolMgr::CheckAllCorutine(){
         time_t tmNow = time(NULL);
         for (int i = 0; i < nLength; i++){
             if (pCheckCorutine[i]->IsCoroutineError(tmNow)){
-                basiclib::BasicLogEventErrorV("协程检查出现异常,可能存在死循环或者逻辑不正确导致协程无法唤醒 状态(%d) 地址(%x)", pCheckCorutine[i]->GetCoroutineState(), pCheckCorutine[i]->m_func);
+                basiclib::BasicLogEventErrorV("Corutine check error, maybe loop or no wakeup state(%d) address(%x)", pCheckCorutine[i]->GetCoroutineState(), pCheckCorutine[i]->m_func);
             }
         }
         delete[]pCheckCorutine;
     }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//! 启动时候创建线程之前绑定param
+//! 
 CCorutinePlusThreadDataBase::CCorutinePlusThreadDataBase(){
     m_dwThreadID = basiclib::BasicGetCurrentThreadId();
-    //默认调用一遍初始化
+    //init
 	m_pPool = CreatePool();
 	m_pPool->InitCorutine();
 }

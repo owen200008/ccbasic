@@ -438,13 +438,12 @@ LPCRITICAL_SECTION lpCriticalSection
 VOID
 LeaveCriticalSection(
 LPCRITICAL_SECTION lpCriticalSection
-)
-{
+) {
 	if(lpCriticalSection->m_bAcquired){
 		lpCriticalSection->m_bAcquired = false;
 		int nUnlock = pthread_mutex_unlock((pthread_mutex_t*)lpCriticalSection->LockSemaphore);
 		if(nUnlock != 0){
-			BasicTrace("pthread_mutex_unlock fail(%d) owner:%d \n", nUnlock, hPrev);
+			BasicTrace("pthread_mutex_unlock fail(%d)\n", nUnlock);
 		}
 	}
 }

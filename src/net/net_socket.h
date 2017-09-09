@@ -14,6 +14,10 @@
 #include "evdns.h"
 #include "sendbuffer.h"
 
+#ifndef INVALID_SOCKET
+#define INVALID_SOCKET  (unsigned int)(~0)
+#endif
+
 #ifdef __BASICWINDOWS
 #define BASICWINDOWS_USE_IOCP
 #endif
