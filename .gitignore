@@ -1,6 +1,7 @@
 *.log
 *.tlog
 *.pdb
+*.obj
 *.lib
 *.exp
 *.pch
@@ -10,6 +11,7 @@
 *.idb
 *.dll
 *.o
+*.a
 *.so
 *.o.d
 *.sdf

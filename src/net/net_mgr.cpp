@@ -18,6 +18,7 @@ int			g_nIntThreadCount = 0;
 bool CNetThread::m_bExtInit = false;
 IOCPExt_Func CNetThread::m_funcExt;
 #else
+#include <netinet/in.h>
 CNetThread*	g_pEventThreads = nullptr;
 int			g_nEventThreadCount = 1;
 int			g_nIntThreadCount = 0;
