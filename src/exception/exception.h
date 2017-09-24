@@ -28,7 +28,7 @@ class CBasicException;
  * Linux: 生成到/tmp下，命名规则：进程名.异常线程ID.进程ID
 */
 
-class CBasicException : public basiclib::CBasicObject
+class _BASIC_DLL_API CBasicException : public basiclib::CBasicObject
 {
 public:
 	CBasicException();
@@ -59,34 +59,34 @@ public:
  * \brief  设置异常保护模式
  * \param  nMode 异常保护模式 BASIC_EXCEPTION_*
 */
-void BasicSetExceptionMode(int nMode = 0, int nInstance = 0);
+_BASIC_DLL_API void BasicSetExceptionMode(int nMode = 0, int nInstance = 0);
 //
 
 /*! \fn void BasicClearException();
 * \brief  退出前取消异常保护模式
 */
-void BasicClearException();
+_BASIC_DLL_API void BasicClearException();
 
 /*! \fn BOOL BasicIsDaemonMode();
 * \brief 判断是否后台运行模式
 */
-BOOL BasicIsDaemonMode();
+_BASIC_DLL_API BOOL BasicIsDaemonMode();
 
 /*! \fn void BasicRestart();
 * \brief  重启进程
 */
-void BasicRestart();
+_BASIC_DLL_API void BasicRestart();
 
 /*! \fn void BasicRegisteShutDown();
 * \brief  注册退出函数
 */
 typedef fastdelegate::FastDelegate0<long> GlobalShutdownFunc;
-void BasicRegisteShutDown(GlobalShutdownFunc funcShutdown);
+_BASIC_DLL_API void BasicRegisteShutDown(GlobalShutdownFunc funcShutdown);
 
 #if	!(defined(__LINUX) || defined(__MAC) || defined(__ANDROID))
 typedef fastdelegate::FastDelegate1<PEXCEPTION_POINTERS> GlobalExceptionFunc;
 //!注册异常回调函数处理
-void BasicRegisteExceptionFunction(GlobalExceptionFunc funcException);
+_BASIC_DLL_API void BasicRegisteExceptionFunction(GlobalExceptionFunc funcException);
 #endif
 
 
