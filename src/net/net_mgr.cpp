@@ -75,8 +75,7 @@ void CBasicNetMgv::Initialize(pGetConfFunc func){
 	WSADATA wsaData;
 
 	wVersionRequested = MAKEWORD(2, 2);
-
-	(void)WSAStartup(wVersionRequested, &wsaData);
+	WSAStartup(wVersionRequested, &wsaData);
 
 	g_nEventThreadCount = atol(func("NetThreadCount").c_str());
 	if(g_nEventThreadCount <= 0)

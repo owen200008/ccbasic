@@ -265,19 +265,16 @@ int32_t CBasicNet_SocketClient::RealOnConnect(sockaddr_storage* pAddr, int addrl
 				if(!m_bDNS){
 					m_bDNS = true;
 					ADDRINFOEX hints;
-					memset(&hints, 0, sizeof(ADDRINFOEXA));
+					ZeroMemory(&hints, sizeof(hints));
 					hints.ai_family = AF_UNSPEC;
-
 
 					INT nError = GetAddrInfoExW(m_strParseConnectAddrW.c_str(), NULL, NS_DNS, NULL,
 												&hints, &m_dnsQuery.m_QueryResults, &m_dnsQuery.m_timeout, &m_dnsQuery.m_QueryOverlapped, QueryDNSCompleteCallback, &m_dnsQuery.m_CancelHandle);
+					//dns解析一次需要增加一次引用
+					GetRealSessionNet()->AddRef();
 					if(nError != WSA_IO_PENDING && nError != NO_ERROR){
 						QueryDNSCompleteCallback(nError, 0, &m_dnsQuery.m_QueryOverlapped);
 						lReturn = BASIC_NET_GENERIC_ERROR;
-					}
-					else{
-						//dns解析一次需要增加一次引用
-						GetRealSessionNet()->AddRef();
 					}
 				}
 #else

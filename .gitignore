@@ -27,3 +27,5 @@
 *.stamp
 /3rd/src/scbasic/sproto/build
 /src/build
+/sphinxbase
+/libs/iconv/tests

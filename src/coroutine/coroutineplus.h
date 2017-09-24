@@ -212,6 +212,8 @@ public:
 	CCorutinePlusThreadDataBase();
     virtual ~CCorutinePlusThreadDataBase();
 
+	void Init();
+
     DWORD GetThreadID(){ return m_dwThreadID; }
 	CCorutinePlusPoolBase* GetCorutinePlusPool(){ return m_pPool; }
 protected:

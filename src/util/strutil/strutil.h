@@ -1038,7 +1038,7 @@ int Basic_DeesCWBasicString(const CharType* psz, CharType* pszDest)
 		{
 			if(psz[i] == esc[0])
 			{
-				size_t nPos = __tcschr(esc, psz[i + 1]) - esc;
+				int nPos = __tcschr(esc, psz[i + 1]) - esc;
 				if(nPos >= 0)
 				{
 					pszDest[n++] = key[nPos];
@@ -1205,7 +1205,7 @@ typename __BasicString<CharType>::StringType	Basic_HtmlEncode(const CharType* ps
 		{
 			ret += spec;
 		}
-		else if ((*psz) >= 0 && ((*psz) < 0x20) || *psz == 127)	// 不可见
+		else if (((*psz) >= 0 && ((*psz) < 0x20)) || *psz == 127)	// 不可见
 		{
 			buf[0] = (CharType)'&';
 			buf[1] = (CharType)'#';

@@ -31,28 +31,31 @@ public:
 	CSpinLockFuncNoSameThreadSafe(SpinLock* pLock, BOOL bInitialLock = FALSE);
 	virtual ~CSpinLockFuncNoSameThreadSafe();
 
-	virtual void Lock();
-	virtual void LockAndSleep(unsigned short usSleep = 100);
-	virtual bool LockNoWait();
-	virtual void UnLock();
+	//! 不能用虚函数 因为用在构造函数里面
+	void Lock();
+	void LockAndSleep(unsigned short usSleep = 100);
+	bool LockNoWait();
+	void UnLock();
 	bool IsLock();
 protected:
 	SpinLock* 		m_pLock;
 	bool			m_bAcquired;
 };
 
-class _BASIC_DLL_API CSpinLockFunc : public CSpinLockFuncNoSameThreadSafe
+class _BASIC_DLL_API CSpinLockFunc
 {
 public:
-	CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock = FALSE) : CSpinLockFuncNoSameThreadSafe(pLock, bInitialLock){
-	}
-	virtual ~CSpinLockFunc(){
-	}
+	CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock = FALSE);
+	virtual ~CSpinLockFunc();
 
-	virtual void Lock();
-	virtual void LockAndSleep(unsigned short usSleep = 100);
-	virtual bool LockNoWait();
-	virtual void UnLock();
+	//! 不能用虚函数 因为用在构造函数里面
+	void Lock();
+	void LockAndSleep(unsigned short usSleep = 100);
+	bool LockNoWait();
+	void UnLock();
+protected:
+	SpinLock* 		m_pLock;
+	bool			m_bAcquired;
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class StructData>

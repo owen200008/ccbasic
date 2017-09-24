@@ -1,6 +1,6 @@
 #ifdef __ANDROID
 //
-//ȡ��ϵͳ��Ϣϵ�к���
+//
 //
 //
 #include "../inc/basic.h"
@@ -32,7 +32,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 /*
- *û��ʵ�ֵĺ���
+ *
  *DWORD BasicGetDiskInfo(char* pszDiskBuffer, int nBufferLen)��
  *struct mount_entry* ReadFilesystemlist()
  *long BasicGetDiskFreeinfo(LPCTSTR lpszPath)
@@ -42,7 +42,7 @@
 __NS_BASIC_START
 
 //
-//ȡ��CPU����
+//CPU
 int BasicGetNumberOfCpu()
 {
 	return sysconf(_SC_NPROCESSORS_ONLN);
@@ -53,7 +53,7 @@ int BasicGetCpuNumber()
 	return sysconf(_SC_NPROCESSORS_ONLN);
 }
 //
-//ȡ�ò���ϵͳ�汾
+//
 int BasicGetOSystemV(CBasicString& strOSVer)
 {
     struct utsname osbuf;
@@ -146,7 +146,7 @@ static CPU_t *cpus_refresh ()
 }
 
 //
-//ȡ��CPU������,��λ�ٷֱ�
+//
 int BasicGetCPUUse()
 {
 	cpus_refresh ();
@@ -210,12 +210,12 @@ int BasicGetCPUUse()
 }
 //
 
-//ȡ���ڴ���Ϣ����λK
-//����
-//dwPhysicalMemory	�����ڴ�
-//dwAvailMemory		�����ڴ�
-//dwUsedMemory		ʹ���ڴ�
-//dwVirtualMemory	�����ڴ�
+//
+//
+//dwPhysicalMemory
+//dwAvailMemory		
+//dwUsedMemory		
+//dwVirtualMemory	
 void BasicGetMemoryInfo(DWORD& dwPhysicalMemory,
 				   DWORD& dwAvailMemory,
 				   DWORD& dwUsedMemory,
@@ -245,7 +245,7 @@ struct proc_t
 };
 
 //
-//ȡ�ý��ʹ���ڴ� ��λK
+//
 DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
 {
 	FILE* fstatm = NULL;
@@ -290,7 +290,7 @@ DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
 //
 
 //
-//ȡ��Ӳ����Ϣ
+//
 #ifndef UINTMAX_MAX
 #define UINTMAX_MAX ((uintmax_t) -1)
 #endif
@@ -320,7 +320,7 @@ DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
 #define EXTRACT_TOP_BIT(x) ((x) & ((uintmax_t)1 << (sizeof(x) * CHAR_BIT - 1)))
 #define PROPAGATE_TOP_BIT(x) ((x) | ~ (EXTRACT_TOP_BIT(x) - 1))
 
-//�ļ�ϵͳ��ʾ
+//
 struct mount_entry
 {
 	char *me_devname;
@@ -334,7 +334,7 @@ struct mount_entry
 };
 
 
-//�ļ�ϵͳ����Ϣ
+//
 struct fs_usage
 {
 	int fsu_blocksize;
@@ -349,29 +349,15 @@ struct fs_usage
 
 static struct mount_entry *g_mount_list = NULL;         //���е��ļ�ϵͳ
 
-/*******************************************************
-PROC:��ȡ�ļ�ϵͳ��Ϣ
-���룺path·��
-	  disk�ļ�ϵͳ
-	  fsp�ļ�ϵͳ��Ϣ
-�����0��ʾ�ɹ� -1ʧ��
-*******************************************************/
+
 int GetFSUsage(const char *path,const char *disk,struct fs_usage *fsp);
 
-/*******************************************************
-PROC:��ȡ���е��ļ�ϵͳ
-�������ǰϵͳ�ļ�ϵͳ��LIST
-*******************************************************/
+
 struct mount_entry* ReadFilesystemlist();
 
-/*******************************************************
-PROC:������ʾ�ļ�ϵͳ
-*******************************************************/
+
 static CBasicString ShowAllEntries();
 
-/*******************************************************
-PROC:��ʾ�ļ�ϵͳ�豸
-*******************************************************/
 static bool ShowDev(const char *disk, const char *mount_point,const char *fstype, int me_dummy, int me_remote,char *buf, int nBufLen);
 
 static void FreeList(struct mount_entry *& mount_list);
@@ -522,7 +508,7 @@ BOOL exec_command(char *pBuf,int nLen,char *format,...)
 
 
 
-//ȡ��ϵͳ����ʱ�䣬��λ������
+//
 DWORD BasicGetTickTime()
 {
 /*
@@ -542,7 +528,7 @@ double BasicGetTickTimeCount()
     return dRet;
 }
 
-//ȡ��ģ����
+//
 //��hModule==NULL����ȡ��ǰ��������
 CBasicString BasicGetModuleName(HANDLE hModule)
 {
@@ -566,7 +552,7 @@ long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBufLen)
 	return len;
 }
 
-//ȡ��ģ��������ȫ·��
+//
 CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
 {
 	CBasicString strModule = BasicGetModuleName(hModule);
@@ -576,7 +562,7 @@ CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
 	return strModule;
 }
 
-//ȡ��·��
+//
 CBasicString BasicGetModulePath(HANDLE hModule)
 {
 	char szWorkDir[256] = { 0 };
@@ -586,8 +572,7 @@ CBasicString BasicGetModulePath(HANDLE hModule)
 
 //************************************************************************
 // Author:    Mini.J @2009/3/13
-// Method:    Basic_ProcessIsTerminated => ����Ƿ��˳�
-//			�鿴����б����Ƿ��д���Ľ��ID��������˵��δ�˳�
+// Method:    Basic_ProcessIsTerminated => 
 // Returns:   BOOL =>
 // Parameter: DWORD dwProcessID => ���ID
 //************************************************************************
@@ -660,7 +645,6 @@ int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-//��̬����õĺ���
 void* BasicLoadLibrary(const char* lpszLibFileName)
 {
 	void* hDll = dlopen(lpszLibFileName, RTLD_NOW|RTLD_GLOBAL);
@@ -696,7 +680,6 @@ CProcessInfo::CProcessInfo(DWORD nProcessId)
 
 
 //
-//ȡ��ָ����̵�CPU�����ʣ���λ�ٷֱ�
 int CProcessInfo::GetProcessCpu()
 {
 	//�Ȼ�ȡ�ܵ�CPU��ʱ��
@@ -729,7 +712,6 @@ int CProcessInfo::GetProcessCpu()
 	cpu->y_sav = cpu->y;
 	cpu->z_sav = cpu->z;
 
-	//��ȡ��̵�CPUʱ��
 	// enough for a /proc/pid/stat line
 	char buf[PIDBUFSIZ];
 
@@ -748,7 +730,6 @@ int CProcessInfo::GetProcessCpu()
 	rewind(fpidstat);
 	fflush(fpidstat);
 
-	//����̵�stat�ļ�������
 	if (!fgets(buf, sizeof(buf), fpidstat))
 	{
 		std_err("failed /proc/%d/stat read", m_nProcessId);
@@ -761,7 +742,6 @@ int CProcessInfo::GetProcessCpu()
 	{
 		return -1;
 	}
-	//��ȡ�ļ������õ�ֵ
 	SIC_t nUtime = atof(ayProcessData[13].c_str());
 	SIC_t nStime = atof(ayProcessData[14].c_str());
 	SIC_t nCutime = atof(ayProcessData[15].c_str());

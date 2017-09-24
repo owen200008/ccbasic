@@ -484,11 +484,19 @@ void CCorutinePlusPoolMgr::CheckAllCorutine(){
 //! 
 CCorutinePlusThreadDataBase::CCorutinePlusThreadDataBase(){
     m_dwThreadID = basiclib::BasicGetCurrentThreadId();
-    //init
-	m_pPool = CreatePool();
-	m_pPool->InitCorutine();
+	//init
+	m_pPool = nullptr;
 }
 
 CCorutinePlusThreadDataBase::~CCorutinePlusThreadDataBase(){
+	if(m_pPool)
+		delete m_pPool;
 }
 
+void CCorutinePlusThreadDataBase::Init(){
+	//init
+	if(m_pPool == nullptr){
+		m_pPool = CreatePool();
+		m_pPool->InitCorutine();
+	}
+}

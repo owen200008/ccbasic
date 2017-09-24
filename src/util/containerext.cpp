@@ -51,6 +51,16 @@ bool CSpinLockFuncNoSameThreadSafe::IsLock()
 	return m_pLock->m_nLock.load() != 0;
 }
 
+CSpinLockFunc::CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock){
+	m_pLock = pLock;
+	m_bAcquired = false;
+	if(bInitialLock)
+		Lock();
+}
+CSpinLockFunc::~CSpinLockFunc(){
+	UnLock();
+}
+
 void CSpinLockFunc::Lock()
 {
 	DWORD dwThreadID = BasicGetCurrentThreadId();
@@ -90,10 +100,8 @@ void CSpinLockFunc::LockAndSleep(unsigned short usSleep)
 	m_pLock->m_lockThreadID = BasicGetCurrentThreadId();
 }
 
-void CSpinLockFunc::UnLock()
-{
-	if (m_bAcquired)
-	{
+void CSpinLockFunc::UnLock(){
+	if (m_bAcquired){
 		m_pLock->m_lockThreadID = 0;
 		m_pLock->m_nLock.exchange(0);
 		m_bAcquired = false;

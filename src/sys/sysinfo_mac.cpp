@@ -379,10 +379,10 @@ _BASIC_DLL_API BOOL BasicSetSysTime(time_t tTime)
 	return TRUE;
 }
 
-#define MAC_PROCESS_CMD				"ps -el"		// Linuxœ‘ æΩ¯≥Ã–≈œ¢√¸¡Ó
-#define PS_CMD_COL_PID				"PID"		// Linux ps√¸¡Ó∑µªÿΩ¯≥ÃID¡–√Ë ˆ√˚
-#define PS_CMD_COL_PPID				"PPID"		// Linux ps√¸¡Ó∑µªÿ∏∏Ω¯≥ÃID¡–√Ë ˆ√˚
-#define PS_CMD_COL_CMD				"CMD"		// Linux ps√¸¡Ó∑µªÿΩ¯≥Ã√˚≥∆¡–√Ë ˆ√˚
+#define MAC_PROCESS_CMD				"ps -el"		// Linux
+#define PS_CMD_COL_PID				"PID"		// Linux 
+#define PS_CMD_COL_PPID				"PPID"		// Linux 
+#define PS_CMD_COL_CMD				"CMD"		// Linux 
  
 
 //! 取本机IP地址和子网掩码
