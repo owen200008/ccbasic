@@ -1,14 +1,9 @@
 #!/bin/bash
 
-export ANDROID_NDK_ROOT=/root/ndk/android-ndk-r14b
+export ANDROID_NDK_ROOT=$1
 NOWPATH=$(pwd)
 cd ./../../3rd/cryptopp
-for arch in armeabi armeabi-v7a arm64-v8a mips mips64 x86 x86_64
-do
-	./setenv-android.sh $arch stlport-static
-	if [ "$?" -eq "0" ]; then
-		make -f ./GNUmakefile-cross distclean
-		make -f ./GNUmakefile-cross static dynamic -j4
-		sudo make -f ./GNUmakefile-cross install PREFIX=$NOWPATH/cryptopp/$arch
-	fi
-done
+./setenv-android.sh $2
+make -f ./GNUmakefile-cross distclean
+make -f ./GNUmakefile-cross static dynamic -j4
+make -f ./GNUmakefile-cross install PREFIX=$NOWPATH/cryptopp/$arch
