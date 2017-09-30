@@ -119,15 +119,33 @@ void ExportBasiclibClassToLua(lua_State* L) {
 		);
 	luaState["CBasicBitstream"].setClass(kaguya::UserdataMetatable<basiclib::CBasicBitstream>()
 		.setConstructors<basiclib::CBasicBitstream()>()
-		.addFunction("ResetReadError", &basiclib::CBasicBitstream::ResetReadError)
-		.addFunction("IsReadError", &basiclib::CBasicBitstream::IsReadError)
-		.addFunction("IsEmpty", &basiclib::CBasicBitstream::IsEmpty)
-		.addFunction("Free", &basiclib::CBasicBitstream::Free)
-		.addFunction("GetDataLength", &basiclib::CBasicBitstream::GetDataLength)
-		.addFunction("SetDataLength", &basiclib::CBasicBitstream::SetDataLength)
-		.addFunction("AppendString", &basiclib::CBasicBitstream::AppendString)
-		.addFunction("GetAllocBufferLength", &basiclib::CBasicBitstream::GetAllocBufferLength)
-		.addFunction("InitFormFile", &basiclib::CBasicBitstream::InitFormFile)
+		.addStaticFunction("ResetReadError", [](basiclib::CBasicBitstream* pSM){{
+            pSM->ResetReadError();
+        }})
+		.addStaticFunction("IsReadError", [](basiclib::CBasicBitstream* pSM){{
+            return pSM->IsReadError();
+        }})
+		.addStaticFunction("IsEmpty", [](basiclib::CBasicBitstream* pSM){{
+            return pSM->IsEmpty();
+        }})
+		.addStaticFunction("Free", [](basiclib::CBasicBitstream* pSM){{
+            pSM->Free();
+        }})
+		.addStaticFunction("GetDataLength", [](basiclib::CBasicBitstream* pSM){{
+            return pSM->GetDataLength();
+        }})
+		.addStaticFunction("SetDataLength", [](basiclib::CBasicBitstream* pSM, long nLength){{
+            pSM->SetDataLength(nLength);
+        }})
+		.addStaticFunction("AppendString", [](basiclib::CBasicBitstream* pSM, const char* lpszText){{
+            pSM->AppendString(lpszText);
+        }})
+		.addStaticFunction("GetAllocBufferLength", [](basiclib::CBasicBitstream* pSM){{
+            return pSM->GetAllocBufferLength();
+        }})
+		.addStaticFunction("InitFormFile", [](basiclib::CBasicBitstream* pSM, const char* lpszFile){{
+            return pSM->InitFormFile(lpszFile);
+        }})
 		.addStaticFunction("GetDataBuffer", [](basiclib::CBasicBitstream* pSM) { {
 				std::string strRet;
 				if (pSM->GetDataBuffer()) {

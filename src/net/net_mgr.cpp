@@ -61,7 +61,9 @@ CBasicNetMgv::~CBasicNetMgv() {
 	//release net
 	CloseNetSocket();
 }
-
+#ifdef __ANDROID
+#include <sys/system_properties.h>
+#endif
 THREAD_RETURN CBasicNetMgv::ThreadCheckFunc(void* lpWorkContext) {
 	srand((unsigned int)(time(NULL) + BasicGetTickTime() + BasicGetCurrentThreadId()));
 	m_gNetMgrPoint->OnTimer();
@@ -144,12 +146,31 @@ void CBasicNetMgv::Initialize(pGetConfFunc func) {
 			BasicLogEventError("libevent eventadd error");
 			exit(1);
 		}
+#ifdef __ANDROID
+        pThread->m_dnsbase = evdns_base_new(pThread->m_base, 0);
+        int nAddServers = 0;
+        char buf[PROP_VALUE_MAX];
+        int r = __system_property_get("net.dns1", buf);
+        if(r >= 7){
+            nAddServers++;
+            evdns_base_nameserver_ip_add(pThread->m_dnsbase, buf);
+        }
+        r = __system_property_get("net.dns2", buf);
+        if(r >= 7){
+            nAddServers++;
+            evdns_base_nameserver_ip_add(pThread->m_dnsbase, buf);
+        }
+        if(nAddServers == 0){
+            evdns_base_nameserver_ip_add(pThread->m_dnsbase, "223.5.5.5");
+        }
+#else
 		pThread->m_dnsbase = evdns_base_new(pThread->m_base, 1);
+#endif
 		if (!pThread->m_dnsbase) {
 			BasicLogEventError("libevent eventdns add error");
 			exit(1);
 		}
-		BasicCreateThread(WorkerThread, pThread, &(pThread->m_dwThreadID));
+        BasicCreateThread(WorkerThread, pThread, &(pThread->m_dwThreadID));
 	}
 	//init all thread
 	while (g_nIntThreadCount != g_nEventThreadCount){

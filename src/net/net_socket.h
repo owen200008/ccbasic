@@ -154,6 +154,7 @@ protected:
 };
 
 #define MAX_BUFFER_SEND_BUF				4096
+
 class CBasicNet_SocketTransfer : public CBasicNet_Socket{
 public:
 	CBasicNet_SocketTransfer(CBasicSessionNetNotify* pFather, uint32_t nSessionID, uint16_t usRecTimeout = 0);
@@ -182,21 +183,18 @@ public:
 
 	//! onidle
 	void OnIdle();
-protected:
-	friend void OnLinkRead(evutil_socket_t fd, short event, void *arg);
-	friend void OnLinkWrite(evutil_socket_t fd, short event, void *arg);
 
+    //! 读事件
+    void OnReadEvent();
+
+    //! 写事件
+    void OnWriteEvent();
+protected:
 	//! 重新初始化成员
 	virtual void InitMember();
 
 	//! 线程内执行函数
 	virtual void CloseCallback(BOOL bRemote, DWORD dwNetCode = 0);
-
-	//! 读事件
-	void OnReadEvent();
-
-	//! 写事件
-	void OnWriteEvent();
 
 	//! 只在libevent线程使用
 	void SendDataFromQueue();
@@ -253,6 +251,8 @@ private:
 
 	friend class CNetThread;
 };
+    void OnLinkRead(evutil_socket_t fd, short event, void *arg);
+    void OnLinkWrite(evutil_socket_t fd, short event, void *arg);
 
 __NS_BASIC_END
 //////////////////////////////////////////////////////////////////////////////////////////////////
