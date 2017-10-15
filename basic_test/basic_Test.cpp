@@ -37,11 +37,11 @@ int main(int argc, char* argv[])
 
 
 	//TestCoroutine(1);
-	TestCoroutine();
+	//TestCoroutine();
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
-	//TestContainExt();
+	TestContainExt();
 	//NetServerTest();
 	//TestFunctionXiaolvTest();
 	getchar();

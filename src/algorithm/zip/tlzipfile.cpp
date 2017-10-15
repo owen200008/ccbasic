@@ -264,7 +264,7 @@ bool CBasicZipFile::addFile(const char *filename, zip_base_file_info* file, file
 		if (*(++sub) != 0)	// not end
 		{
 			char_string key(filename, sub - filename - 1);
-			file_container::iterator iter = dir->lower_bound(key);
+			file_container::iterator iter = dir->find(key);
 			if (iter != dir->end() && iter->first == key)
 			{
 				zip_dir_info* subfile = dynamic_cast<zip_dir_info*>(iter->second);
@@ -297,7 +297,7 @@ zip_base_file_info*	CBasicZipFile::getFileInfo(const char* filename, file_contai
 	}
 
 	zip_base_file_info* info = NULL;
-	file_container::iterator iter = dir->lower_bound(key);
+	file_container::iterator iter = dir->find(key);
 	if (iter != dir->end() && iter->first == key)
 	{
 		if (sub && *(++sub) != '\0')
