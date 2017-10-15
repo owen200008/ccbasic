@@ -417,7 +417,7 @@ LPCRITICAL_SECTION lpCriticalSection
 {
 	pthread_mutex_lock((pthread_mutex_t*)lpCriticalSection->LockSemaphore);
 	//
-	lpCriticalSection->m_bAcquired = true;
+	lpCriticalSection->m_nAcquired++;
 }
 
 BOOL
@@ -429,7 +429,7 @@ LPCRITICAL_SECTION lpCriticalSection
 	if (!irc)
 	{
 		/* we now own the mutex  */
-		lpCriticalSection->m_bAcquired = true;
+		lpCriticalSection->m_nAcquired++;
 		return true;
 	}
 	return false;
@@ -439,13 +439,12 @@ VOID
 LeaveCriticalSection(
 LPCRITICAL_SECTION lpCriticalSection
 ) {
-	if(lpCriticalSection->m_bAcquired){
-		lpCriticalSection->m_bAcquired = false;
-		int nUnlock = pthread_mutex_unlock((pthread_mutex_t*)lpCriticalSection->LockSemaphore);
-		if(nUnlock != 0){
-			BasicTrace("pthread_mutex_unlock fail(%d)\n", nUnlock);
-		}
-	}
+    ASSERT(lpCriticalSection->m_nAcquired > 0);
+    lpCriticalSection->m_nAcquired--;
+    int nUnlock = pthread_mutex_unlock((pthread_mutex_t*)lpCriticalSection->LockSemaphore);
+    if(nUnlock != 0){
+        BasicTrace("pthread_mutex_unlock fail(%d)\n", nUnlock);
+    }
 }
 
 VOID

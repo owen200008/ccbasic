@@ -168,14 +168,14 @@ void CBasicNet_Socket::CloseCallback(BOOL bRemote, DWORD dwNetCode){
 ///////////////////////////////////////////////////////////////////////////////
 void OnLinkRead(evutil_socket_t fd, short event, void *arg){
 	CBasicNet_SocketTransfer* pLink = (CBasicNet_SocketTransfer*)arg;
-	if(pLink != nullptr && pLink->m_socketfd == fd){
+	if(pLink != nullptr && pLink->GetSocketID() == fd){
 		pLink->OnReadEvent();
 	}
 }
 
 void OnLinkWrite(evutil_socket_t fd, short event, void *arg){
 	CBasicNet_SocketTransfer* pLink = (CBasicNet_SocketTransfer*)arg;
-	if(pLink != nullptr && pLink->m_socketfd == fd){
+	if(pLink != nullptr && pLink->GetSocketID() == fd){
 		pLink->OnWriteEvent();
 	}
 }

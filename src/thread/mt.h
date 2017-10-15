@@ -135,10 +135,8 @@ public:
 // CCriticalSection
 #if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
 typedef struct _RBASIC_CRITICAL_SECTION {
-
-	bool	m_bAcquired;
-	HANDLE	LockSemaphore;		//!< 信号量对象
-
+	uint32_t	m_nAcquired;
+	HANDLE		LockSemaphore;		//!< 信号量对象
 } RBASIC_CRITICAL_SECTION, *PRBASIC_CRITICAL_SECTION;
 
 typedef RBASIC_CRITICAL_SECTION CRITICAL_SECTION;

@@ -18,8 +18,6 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <netinet/tcp.h>
-extern void OnLinkRead(evutil_socket_t fd, short event, void *arg);
-extern void OnLinkWrite(evutil_socket_t fd, short event, void *arg);
 #endif
 
 __NS_BASIC_START
@@ -32,17 +30,17 @@ public:
 	CBasicNet_SocketSession(CBasicSessionNetServerSession* pFather, uint32_t nSessionID, uint16_t usRecTimeout = 0);
 	virtual ~CBasicNet_SocketSession();
 
-	//!»ñÈ¡¶Ô¶ËµÄµØÖ·ºÍ¶Ë¿Ú
+	//!ï¿½ï¿½È¡ï¿½Ô¶ËµÄµï¿½Ö·ï¿½Í¶Ë¿ï¿½
 	const char* GetNetAddress() { return m_szPeerAddr; }
 	uint32_t GetNetAddressPort() { return m_nPeerPort; }
 
-	//! »ñÈ¡×´Ì¬
+	//! ï¿½ï¿½È¡×´Ì¬
 	virtual void GetNetStatus(CBasicString& strStatus);
 protected:
-	//! serverÏß³ÌÄÚ
+	//! serverï¿½ß³ï¿½ï¿½ï¿½
 	void Accept(evutil_socket_t s, sockaddr* pAddr);
 
-	//! ³õÊ¼»¯ÊÂ¼þ
+	//! ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Â¼ï¿½
 	bool InitServerSessionEvent();
 protected:
 	char					m_szPeerAddr[ADDRESS_MAX_LENGTH];
@@ -65,7 +63,7 @@ CBasicNet_SocketSession::CBasicNet_SocketSession(CBasicSessionNetServerSession* 
 CBasicNet_SocketSession::~CBasicNet_SocketSession(){
 }
 
-//! »ñÈ¡×´Ì¬
+//! ï¿½ï¿½È¡×´Ì¬
 void CBasicNet_SocketSession::GetNetStatus(CBasicString& strStatus){
 	uint32_t dwLinkNetStatus = GetSessionStatus(TIL_SS_LINK);
 	uint32_t dwCloseNetStatus = GetSessionStatus(TIL_SS_CLOSE);
@@ -138,7 +136,7 @@ void CBasicNet_SocketSession::Accept(evutil_socket_t s, sockaddr* pAddr) {
 	evutil_make_listen_socket_reuseable(s);
 	evutil_make_listen_socket_reuseable_port(s);
 
-	//¸³Öµsocketid,±£Ö¤Í¬²½£¬»ñÈ¡session
+	//ï¿½ï¿½Öµsocketid,ï¿½ï¿½Ö¤Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡session
 	m_socketfd = s;
 	SetLibEvent([](CBasicNet_Socket* pNotify, intptr_t lRevert)->void {
 		CBasicNet_SocketSession* pSession = (CBasicNet_SocketSession*)pNotify;
@@ -149,10 +147,10 @@ void CBasicNet_SocketSession::Accept(evutil_socket_t s, sockaddr* pAddr) {
 	});
 }
 
-//! ³õÊ¼»¯ÊÂ¼þ
+//! ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Â¼ï¿½
 bool CBasicNet_SocketSession::InitServerSessionEvent(){
 #ifdef BASICWINDOWS_USE_IOCP
-	//ÒÑ¾­°ó¶¨µ½IOCP£¬¿ªÆôreceive
+	//ï¿½Ñ¾ï¿½ï¿½ó¶¨µï¿½IOCPï¿½ï¿½ï¿½ï¿½ï¿½ï¿½receive
 	return m_pThread->StartRecvData(this);
 #else
 	event_set(&m_revent, m_socketfd, EV_READ | EV_PERSIST, OnLinkRead, this);
@@ -165,12 +163,12 @@ bool CBasicNet_SocketSession::InitServerSessionEvent(){
 #endif
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-//! »ñÈ¡sessionid£¬µÈÓÚsocketid
+//! ï¿½ï¿½È¡sessionidï¿½ï¿½ï¿½ï¿½ï¿½ï¿½socketid
 uint32_t CBasicSessionNetServerSession::GetSessionID(){
 	return m_pSocket->GetSocketID();
 }
 
-//!»ñÈ¡¶Ô¶ËµÄµØÖ·ºÍ¶Ë¿Ú
+//!ï¿½ï¿½È¡ï¿½Ô¶ËµÄµï¿½Ö·ï¿½Í¶Ë¿ï¿½
 const char* CBasicSessionNetServerSession::GetNetAddress(){ 
 	return ((CBasicNet_SocketSession*)m_pSocket)->GetNetAddress();
 }
@@ -257,13 +255,13 @@ public:
 	CBasicNet_SocketListen(CBasicSessionNetServer* pServer);
 	virtual ~CBasicNet_SocketListen();
 
-	//! ÅÐ¶ÏÊÇ·ñ¼àÌý
+	//! ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
 	bool IsListen() { return m_socketfd != INVALID_SOCKET; }
 
-	//! ¼àÌý²Ù×÷
+	//! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	int32_t Listen(const char* lpszAddress, bool bWaitSuccess);
 #ifdef BASICWINDOWS_USE_IOCP
-	//! server¼àÌýÒì²½acceptÊ¹ÓÃ
+	//! serverï¿½ï¿½ï¿½ï¿½ï¿½ì²½acceptÊ¹ï¿½ï¿½
 	virtual void ServerAcceptEx(OVERLAPPEDPLUS* pOverlapPlus){
 		if(IsToClose()){
 			Close();
@@ -285,27 +283,27 @@ public:
 	}
 #endif
 public:
-	//! ontimerÏß³Ì
+	//! ontimerï¿½ß³ï¿½
 	virtual bool OnTimer(unsigned int nTick);
 protected:
 	friend void OnLinkListenRead(evutil_socket_t fd, short event, void *arg);
 
-	//! ¼àÌý³õÊ¼»¯
+	//! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
 	void InitListenEvent(evutil_socket_t socketfd);
 
-	//! ½ÓÊÕ¿Í»§¶Ë
+	//! ï¿½ï¿½ï¿½Õ¿Í»ï¿½ï¿½ï¿½
 	void AcceptClient();
 	void DoAcceptClient(evutil_socket_t s, CBasicSessionNetServerSession* pAcceptSession, sockaddr* pAddr);
 protected:
 	virtual CBasicSessionNet* GetRealSessionNet() { return m_pFather; }
 protected:
-	uint32_t								m_nChildThread;		//·ÖÅäÏß³Ì
+	uint32_t								m_nChildThread;		//ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½
 	CBasicSessionNetServer*					m_pFather;
 	//waitlisten event
 	basiclib::CEvent						m_eventListen;
 #ifdef BASICWINDOWS_USE_IOCP
 #define DEFAULT_SERVERACCEPTEXDATA_COUNT	4
-	//Ä¬ÈÏÆô¶¯4¸öacceptex
+	//Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½4ï¿½ï¿½acceptex
 	ServerAcceptExData						m_acceptData[DEFAULT_SERVERACCEPTEXDATA_COUNT];
 #endif
 };
@@ -320,7 +318,7 @@ CBasicSessionNetServer* CreateNetWithServer(size_t nClassSize, const std::functi
 
 CBasicNet_SocketListen::CBasicNet_SocketListen(CBasicSessionNetServer* pServer) : CBasicNet_Socket(CBasicNet_Socket::GetDefaultCreateSessionID()) {
 	m_pFather = pServer;
-	//Ëæ»úÖµ¾Í¿ÉÒÔ
+	//ï¿½ï¿½ï¿½Öµï¿½Í¿ï¿½ï¿½ï¿½
 	//m_nChildThread = 0;
 }
 
@@ -328,7 +326,7 @@ CBasicNet_SocketListen::~CBasicNet_SocketListen() {
 
 }
 
-//! ¼àÌý²Ù×÷
+//! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 int32_t CBasicNet_SocketListen::Listen(const char* lpszAddress, bool bWaitSuccess) {
 	if (IsListen())
 		return BASIC_NET_ALREADY_LISTEN;
@@ -397,7 +395,7 @@ int32_t CBasicNet_SocketListen::Listen(const char* lpszAddress, bool bWaitSucces
 	return lReturn;
 }
 
-//! ontimerÏß³Ì
+//! ontimerï¿½ß³ï¿½
 bool CBasicNet_SocketListen::OnTimer(unsigned int nTick) {
 	if (CBasicNet_Socket::OnTimer(nTick)) {
 		m_pFather->OnTimer(nTick);
@@ -462,7 +460,7 @@ int32_t CBasicSessionNetServer::Listen(const char* lpszAddress, bool bWaitSucces
 	return nRet;
 }
 
-//»ñÈ¡ÓÃ»§ÔÚÏßÊý
+//ï¿½ï¿½È¡ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 long CBasicSessionNetServer::GetOnlineSessionCount() {
 	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
 	return m_mapClientSession.size();
@@ -487,7 +485,7 @@ void CBasicSessionNetServer::SendToAll(void * pData, int nLength, DWORD dwFlag, 
 	}
 }
 
-//¶Ï¿ªËùÓÐÁ¬½Ó,¶Ï¿ªÇ°µÄ»Øµ÷
+//ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½Ï¿ï¿½Ç°ï¿½Ä»Øµï¿½
 void CBasicSessionNetServer::CloseAllSession(const std::function<void(CBasicSessionNetServerSession* pSession)>& func){
 	VTClientSession vtUser;
 	CopyClientSession(vtUser);
@@ -502,13 +500,13 @@ void CBasicSessionNetServer::CloseAll(){
 		client.second->Close();
 	}
 }
-//! »ñÈ¡×´Ì¬ÐÅÏ¢
+//! ï¿½ï¿½È¡×´Ì¬ï¿½ï¿½Ï¢
 void CBasicSessionNetServer::GetNetStatus(CBasicString& strStatus){
 	VTClientSession vtUser;
 	CopyClientSession(vtUser);
 
 	basiclib::CBasicString strVal;
-	strVal.Format("¼àÌý: %s  Á¬½Ó¶ÓÁÐÈçÏÂ£º\r\n", m_strListenAddr.c_str());
+	strVal.Format("ï¿½ï¿½ï¿½ï¿½: %s  ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â£ï¿½\r\n", m_strListenAddr.c_str());
 	for (auto& client : vtUser){
 		client->GetNetStatus(strVal);
 	}
@@ -551,7 +549,7 @@ CBasicSessionNetServerSession* CBasicSessionNetServer::ConstructSession(uint32_t
 	return CBasicSessionNetServerSession::CreateNetServerSession(nSessionID, m_usRecTimeout);
 }
 
-//! ½ÓÊÕ¶ÔÏó
+//! ï¿½ï¿½ï¿½Õ¶ï¿½ï¿½ï¿½
 void CBasicSessionNetServer::AcceptClient(CBasicSessionNetServerSession* pClient) {
 	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
 	m_mapClientSession[pClient->GetSessionID()] = pClient;
@@ -573,7 +571,7 @@ int32_t CBasicSessionNetServer::OnClientDisconnectCallback(CBasicSessionNetNotif
 	return lRet;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-//ontimerÏß³Ì
+//ontimerï¿½ß³ï¿½
 void CBasicSessionNetServer::OnTimer(unsigned int nTick) {
 	if (nTick % 10 == 0) {
 		if (!m_strListenAddr.IsEmpty() && !IsListen()) {
