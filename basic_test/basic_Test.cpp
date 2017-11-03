@@ -18,6 +18,13 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 	srand(time(NULL) + basiclib::BasicGetTickTime());
+	Net_LONGLONG valueA = 1;
+	for(int i = 0; i < 1000000; i++){
+		printf("%lld\r\n", valueA);
+		valueA += 1000000;
+	}
+	
+
 	/*char szBuf[1024] = { 0 };
 	for (int i = 0; i < 1024; i++) {
 		szBuf[i] = rand() % 256;
@@ -41,7 +48,7 @@ int main(int argc, char* argv[])
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
-	TestContainExt();
+	//TestContainExt();
 	//NetServerTest();
 	//TestFunctionXiaolvTest();
 	getchar();

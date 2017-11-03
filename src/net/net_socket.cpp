@@ -212,6 +212,7 @@ bool CBasicNet_SocketTransfer::OnTimer(unsigned int nTick){
 					Close();
 				}
 			}
+			m_pFather->OnTimer(nTick);
 		}
 		return true;
 	}

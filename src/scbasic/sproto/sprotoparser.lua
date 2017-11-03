@@ -86,10 +86,13 @@ end
 
 local typedef = P {
 	"ALL",
-	STRUCTFUNCTION = namedpat("structfunction", (typename * blank0 * (C"*")^-1 * blank0 * name * P"(" * (1 - P")") ^0 * P")" * blank0 * ";")),
+	STRUCTFUNCTION = namedpat("structfunction", ((C"const")^-1 * blank0 * typename * blank0 * (C"*")^-1 * blank0 * name * P"(" * (1 - P")") ^0 * P")" * blank0 * (C"const")^-1 * blank0 * ";")),
     COMMENTSTAR = namedpat("commentstar", P"/*" * (1 - P"*/") ^0 * P"*/"),
     COMMENTDEFINE = namedpat("commentdefine", P"#" * (1 - newline) ^0 * (newline + eof)),
     FIELD = namedpat("field", (typename * blank0 * (C"*")^-1 * blank0 * name * blank0 * ";")),
+	PROTECTEDFIELD = namedpat("protectedfield", (P"protected:")),
+	PUBLICFIELD = namedpat("publicfield", (P"public:")),
+	PRIVATEFIELD = namedpat("privatefield", (P"private:")),
     TYPEDEFFIELD = namedpat("typedeffield", (P"typedef" * blanks * typedefword * blanks * typename * blank0 * ";")),
     DEFAULTVALUE = namedpat("defaultvalue", (name * blank0 * "=" * blank0 * tag * blank0 * ";")),
 	DEFAULTNULLPTR = namedpat("defaultnullptr", (name * blank0 * "=" * blank0 * (1 - endCCode) ^1 * blank0 * ";")),
@@ -97,7 +100,7 @@ local typedef = P {
     DEFAULTSTRUCT = P"{" * multipat(V"DEFAULTVALUE" + V"DEFAULTNULLPTR" + V"DEFAULTVALUECHILD") * P"}",
     DEFAULT = namedpat("default", (name * P"()" * blank0 * V"DEFAULTSTRUCT")),
 	DEFAULTCON = namedpat("defaultcon", (name * P"(" * (1 - P")") ^0 * P")" * blank0 * P";")),
-	STRUCT = P"{" * multipat(V"FIELD" + V"COMMENTSTAR" + V"STRUCTFUNCTION" + V"TYPEDEFFIELD" + V"DEFAULT"+ V"STRUCTFUNCTION" + V"DEFAULTCON") * blank0 * P"};",
+	STRUCT = P"{" * multipat(V"PUBLICFIELD" + V"PROTECTEDFIELD" + V"PRIVATEFIELD" + V"FIELD" + V"COMMENTSTAR" + V"STRUCTFUNCTION" + V"TYPEDEFFIELD" + V"DEFAULT"+ V"STRUCTFUNCTION" + V"DEFAULTCON") * blank0 * P"};",
 	TYPE = namedpat("type", P"struct"* blanks * name * blank0 * V"STRUCT" ),
 	ALL = multipat(V"TYPE" + V"COMMENTSTAR" + V"STRUCTFUNCTION" + V"COMMENTDEFINE" + V"TYPEDEFFIELD" + blanks),
 }
@@ -120,26 +123,34 @@ function convert.type(all, obj, set)
 	local names = {}
 	for _, f in ipairs(obj[2]) do
 		if f.type == "field" then
-            local fieldtype = f[1]
-            local bStar = 0
-            local name = f[2]
-            if f[2] == "*" then
-                name = f[3]
-                bStar = 1
-            end
-            
-            if names[name] then
-				error(string.format("redefine %s in type %s", name, typename))
+			if all.m_isPublic then
+				local fieldtype = f[1]
+				local bStar = 0
+				local name = f[2]
+				if f[2] == "*" then
+					name = f[3]
+					bStar = 1
+				end
+				
+				if names[name] then
+					error(string.format("redefine %s in type %s", name, typename))
+				end
+				names[name] = true
+				local field = { name = name, star = bStar, array = 0, keytype = 0, typename = fieldtype, defaultvalue = 0}
+				table.insert(result, field)
 			end
-			names[name] = true
-            local field = { name = name, star = bStar, array = 0, keytype = 0, typename = fieldtype, defaultvalue = 0}
-			table.insert(result, field)
         elseif f.type == "commentstar" then
             --do nothing
 		elseif f.type == "structfunction" then
             --do nothing
 		elseif f.type == "defaultcon" then
 			--do nothing
+		elseif f.type == "publicfield" then
+			all.m_isPublic = true
+		elseif f.type == "protectedfield" then
+			all.m_isPublic = false
+		elseif f.type == "privatefield" then
+			all.m_isPublic = false
 		elseif f.type == "default" then
 			for _,defaultvalue in pairs(f[2]) do
 				local bFind = false
@@ -180,10 +191,10 @@ function convert.typedeffield(all, obj, set)
 end
 
 local function adjust(r)
-	local result = { type = {}, typedeffield = {} }
+	local result = { type = {}, typedeffield = {}, m_isPublic = true }
 
 	for _, obj in ipairs(r) do
-        if obj.type ~= "commentstar" and obj.type ~= "commentdefine" and obj.type ~= "typedeffield" and obj.type ~= "structfunction" and obj.type ~= "defaultcon" then
+        if obj.type ~= "commentstar" and obj.type ~= "commentdefine" and obj.type ~= "typedeffield" and obj.type ~= "structfunction" and obj.type ~= "defaultcon" and obj.type ~= "publicfield" and obj.type ~= "protectedfield" and obj.type ~= "privatefield" then
         	local set = result[obj.type]
 		    local name = obj[1]
         

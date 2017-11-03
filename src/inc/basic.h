@@ -114,6 +114,7 @@
 #include "../algorithm/md5.h"
 //#include "../algorithm/aes/aes.h"
 #include "../algorithm/sha1/sha1.h"
+#include "../algorithm/rc5/rc5.h"
 //Time
 #include "../time/tltime.h"
 #include "../time/ontimer.h"
@@ -132,10 +133,6 @@
 
 #include "../coroutine/coroutineplus.h"
 #include "../mem/bitstream.h"
-
-//
-//RC5
-//#include "../algorithm/rc5/rc5.h"
 
 // Ñ¹Ëõ
 #include "../algorithm/zip/tlgzip.h"

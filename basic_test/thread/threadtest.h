@@ -24,9 +24,9 @@ void ReadSelfOrder(int fd, short event, void *arg)
 
 THREAD_RETURN WorkerThreadTest(void *arg)
 {
-	void* pRet = BasicGetBasiclibGlobalTLS(0);
+	void* pRet = nullptr;// BasicGetBasiclibGlobalTLS(0);
 	printf("%d\n", pRet == nullptr ? 0 : 1);
-	pRet = BasicGetBasiclibGlobalTLS(1);
+	pRet = nullptr;// BasicGetBasiclibGlobalTLS(1);
 	printf("%d\n", pRet == nullptr ? 0 : 1);
 		{
 				clock_t begin = clock();
@@ -57,15 +57,15 @@ THREAD_RETURN WorkerThreadTest(void *arg)
 
 
 void TestThread(){
-	BasicGetBasiclibGlobalTLS_BindCreateFunc([](int nType)->void*{
+	/*BasicGetBasiclibGlobalTLS_BindCreateFunc([](int nType)->void*{
 		if(nType == 1){
 			return malloc(1);
 		}
 		return nullptr;
-	});
-	void* pRet = BasicGetBasiclibGlobalTLS(0);
+	});*/
+	void* pRet = nullptr;// BasicGetBasiclibGlobalTLS(0);
 	printf("%d\n", pRet == nullptr ? 0 : 1);
-	pRet = BasicGetBasiclibGlobalTLS(1);
+	pRet = nullptr;// BasicGetBasiclibGlobalTLS(1);
 	printf("%d\n", pRet == nullptr ? 0 : 1);
 	tls.CreateTLS();
 	for (int i = 0; i < 4; i++){

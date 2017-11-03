@@ -104,6 +104,9 @@ set(CMAKE_C_FLAGS ${BasicLibCMakeC_FLAGS})
 
 #src
 set(basiclib_SOURCES 
+	${BasicLibSrcPath}/algorithm/rc5/rc5.h
+	${BasicLibSrcPath}/algorithm/rc5/rc5_locl.h
+	${BasicLibSrcPath}/algorithm/rc5/rc5.cpp
 	${BasicLibSrcPath}/algorithm/md5.h
     ${BasicLibSrcPath}/algorithm/sha1/sha1.h
     ${BasicLibSrcPath}/algorithm/xtra.h
