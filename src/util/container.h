@@ -29,22 +29,22 @@ class basic_multiset : public unordered_multiset<_Kty, hash<_Kty>, equal_to<_Kty
 };
 
 template<class _Key, class _Tp>
-class basic_map : public unordered_map<_Key, _Tp, hash<_Key>, equal_to<_Key>, DEFAULT_ALLOCATOR<_Tp>>
+class basic_map : public unordered_map<_Key, _Tp, hash<_Key>, equal_to<_Key>, DEFAULT_ALLOCATOR<pair<const _Key, _Tp>>>
 {
 };
 
 template<class _Key, class _Tp>
-class basic_order_map : public map<_Key, _Tp, less<_Key>, DEFAULT_ALLOCATOR<_Tp> >
+class basic_order_map : public map<_Key, _Tp, less<_Key>, DEFAULT_ALLOCATOR<pair<const _Key, _Tp>> >
 {
 };
 
 template<class _Key, class _Tp>
-class basic_multimap : public unordered_multimap<_Key, _Tp, hash<_Key>, equal_to<_Key>, DEFAULT_ALLOCATOR<_Tp> >
+class basic_multimap : public unordered_multimap<_Key, _Tp, hash<_Key>, equal_to<_Key>, DEFAULT_ALLOCATOR<pair<const _Key, _Tp>> >
 {
 };
 
 template<class _Key, class _Tp>
-class basic_order_multimap : public multimap<_Key, _Tp, less<_Key>, DEFAULT_ALLOCATOR<_Tp> >
+class basic_order_multimap : public multimap<_Key, _Tp, less<_Key>, DEFAULT_ALLOCATOR<pair<const _Key, _Tp>> >
 {
 };
 
