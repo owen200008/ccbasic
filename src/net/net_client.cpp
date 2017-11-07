@@ -40,22 +40,22 @@ public:
 	CBasicNet_SocketClient(CBasicSessionNetNotify* pFather, uint32_t nSessionID, uint16_t usRecTimeout = 0);
 	virtual ~CBasicNet_SocketClient();
 
-	//! Á¬½Ó
+	//! è¿žæŽ¥
 	int32_t Connect(const char* lpszAddress);
 
-	//! ÖØÁ¬
+	//! é‡è¿ž
 	int32_t DoConnect();
 
-	//! »ñÈ¡×´Ì¬
+	//! èŽ·å–çŠ¶æ€
 	virtual void GetNetStatus(CBasicString& strStatus);
 
-	//! »ñÈ¡Á¬½ÓµØÖ·
+	//! èŽ·å–è¿žæŽ¥åœ°å€
 	basiclib::CBasicString& GetConnectAddr(){ return m_strConnectAddr; }
 
 #ifdef BASICWINDOWS_USE_IOCP
-	//! clientÁ¬½ÓÊ¹ÓÃ
+	//! clientè¿žæŽ¥ä½¿ç”¨
 	virtual void ClientConnectEx(){
-		//ÒÑ¾­°ó¶¨µ½IOCP£¬¿ªÆôreceive
+		//å·²ç»ç»‘å®šåˆ°IOCPï¼Œå¼€å¯receive
 		if(m_pThread->StartRecvData(this)){
 			OnConnect(BASIC_NETCODE_SUCC);
 		}
@@ -64,16 +64,16 @@ public:
 		}
 	}
 
-	//! dns½âÎö½áÊø
+	//! dnsè§£æžç»“æŸ
 	static friend VOID WINAPI QueryDNSCompleteCallback(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LPOVERLAPPED Overlapped);
 #endif
 protected:
-	//! dnsÒì²½½âÎö
+	//! dnså¼‚æ­¥è§£æž
 	static void DNSParseConnectCallback(int errcode, struct  evutil_addrinfo* addr, void* ptr);
 
 	int32_t RealOnConnect(sockaddr_storage* pAddr, int addrlen);
 
-	//! ³õÊ¼»¯ÊÂ¼þ
+	//! åˆå§‹åŒ–äº‹ä»¶
 	void InitClientEvent(bool bAddWrite = true, bool bAddRead = true);
 protected:
 	basiclib::CBasicString			m_strConnectAddr;
@@ -127,7 +127,7 @@ VOID WINAPI QueryDNSCompleteCallback(_In_ DWORD Error, _In_ DWORD Bytes, _In_ LP
 		FreeAddrInfoExW(pQuery->m_QueryResults);
 		pQuery->m_QueryResults = nullptr;
 	}
-	//ÐèÒªÏÈ¼õÒ»´ÎÒýÓÃ
+	//éœ€è¦å…ˆå‡ä¸€æ¬¡å¼•ç”¨
 	pQuery->m_pClient->GetRealSessionNet()->DelRef();
 	pQuery->m_pClient->m_bDNS = false;
 }
@@ -151,7 +151,7 @@ CBasicNet_SocketClient::CBasicNet_SocketClient(CBasicSessionNetNotify* pFather, 
 CBasicNet_SocketClient::~CBasicNet_SocketClient(){
 
 }
-//Á¬½Ó
+//è¿žæŽ¥
 int32_t CBasicNet_SocketClient::DoConnect(){
 	return RealOnConnect(nullptr, 0);
 }
@@ -202,7 +202,7 @@ int32_t CBasicNet_SocketClient::Connect(const char* lpszAddress){
 	}
 	if(m_strConnectAddr.CompareNoCase(lpszAddress) != 0){
 		m_strConnectAddr = lpszAddress;
-		//½âÎö³öportºÍµØÖ·
+		//è§£æžå‡ºportå’Œåœ°å€
 		if(!ParseAddress(m_strConnectAddr.c_str(), m_strParseConnectAddr, m_nParseConnectPort, m_bIPV6)){
 			return BASIC_NET_INVALID_ADDRESS;
 		}
@@ -268,7 +268,7 @@ int32_t CBasicNet_SocketClient::RealOnConnect(sockaddr_storage* pAddr, int addrl
 
 					INT nError = GetAddrInfoExW(m_strParseConnectAddrW.c_str(), NULL, NS_DNS, NULL,
 												&hints, &m_dnsQuery.m_QueryResults, &m_dnsQuery.m_timeout, &m_dnsQuery.m_QueryOverlapped, QueryDNSCompleteCallback, &m_dnsQuery.m_CancelHandle);
-					//dns½âÎöÒ»´ÎÐèÒªÔö¼ÓÒ»´ÎÒýÓÃ
+					//dnsè§£æžä¸€æ¬¡éœ€è¦å¢žåŠ ä¸€æ¬¡å¼•ç”¨
 					GetRealSessionNet()->AddRef();
 					if(nError != WSA_IO_PENDING && nError != NO_ERROR){
 						QueryDNSCompleteCallback(nError, 0, &m_dnsQuery.m_QueryOverlapped);
@@ -336,7 +336,7 @@ int32_t CBasicNet_SocketClient::RealOnConnect(sockaddr_storage* pAddr, int addrl
 				event_set(&m_wevent, m_socketfd, EV_WRITE, OnLinkWrite, this);
 				event_base_set(m_pThread->m_base, &m_wevent);
 				SetLibEvent([](CBasicNet_Socket* pSession, intptr_t lRevert)->void{
-					//ÐèÒªÏÈ³õÊ¼»¯
+					//éœ€è¦å…ˆåˆå§‹åŒ–
 					((CBasicNet_SocketClient*)pSession)->InitClientEvent(false);
 					((CBasicNet_SocketClient*)pSession)->OnConnect(BASIC_NETCODE_SUCC);
 				});
@@ -409,11 +409,11 @@ void CBasicNet_SocketClient::DNSParseConnectCallback(int errcode, struct  evutil
 		}
 		evutil_freeaddrinfo(addr);
 	}
-	//! ±ØÐëÏÈ¼õÉÙÒ»´ÎÒýÓÃ,ÔÚDNSparseÀïÃæ»áÔö¼ÓÒ»´ÎÒýÓÃ
+	//! å¿…é¡»å…ˆå‡å°‘ä¸€æ¬¡å¼•ç”¨,åœ¨DNSparseé‡Œé¢ä¼šå¢žåŠ ä¸€æ¬¡å¼•ç”¨
 	pClient->GetRealSessionNet()->DelRef();
 }
 
-//! »ñÈ¡×´Ì¬ÐÅÏ¢
+//! èŽ·å–çŠ¶æ€ä¿¡æ¯
 void CBasicNet_SocketClient::GetNetStatus(CBasicString& strStatus){
 	uint32_t dwLinkNetStatus = GetSessionStatus(TIL_SS_LINK);
 	uint32_t dwCloseNetStatus = GetSessionStatus(TIL_SS_CLOSE);
@@ -485,7 +485,7 @@ int32_t CBasicSessionNetClient::Connect(const char* lpszAddress){
 	return ((CBasicNet_SocketClient*)m_pSocket)->Connect(lpszAddress);
 }
 
-//! »ñÈ¡Á¬½ÓµØÖ·
+//! èŽ·å–è¿žæŽ¥åœ°å€
 basiclib::CBasicString& CBasicSessionNetClient::GetConnectAddr(){
 	return ((CBasicNet_SocketClient*)m_pSocket)->GetConnectAddr();
 }

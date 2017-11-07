@@ -1,6 +1,6 @@
 #ifdef __LINUX
 //
-//È¡µÃÏµÍ³ĞÅÏ¢ÏµÁĞº¯Êı
+//å–å¾—ç³»ç»Ÿä¿¡æ¯ç³»åˆ—å‡½æ•°
 //
 //
 #include "../inc/basic.h"
@@ -33,7 +33,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_START
 
-//!»ñÈ¡ÊÇ·ñÓĞ¼üÅÌÏûÏ¢
+//!è·å–æ˜¯å¦æœ‰é”®ç›˜æ¶ˆæ¯
 int BasicKBHit()
 {
 #ifdef __x86_64__
@@ -60,7 +60,7 @@ int BasicKBHit()
 #endif
 }
 //
-//È¡µÃCPU¸öÊı
+//å–å¾—CPUä¸ªæ•°
 int BasicGetNumberOfCpu()
 {
 	return sysconf(_SC_NPROCESSORS_ONLN);
@@ -71,7 +71,7 @@ int BasicGetCpuNumber()
 	return sysconf(_SC_NPROCESSORS_ONLN);
 }
 //
-//È¡µÃ²Ù×÷ÏµÍ³°æ±¾
+//å–å¾—æ“ä½œç³»ç»Ÿç‰ˆæœ¬
 int BasicGetOSystemV(CBasicString& strOSVer)
 {
     struct utsname osbuf;
@@ -164,7 +164,7 @@ static CPU_t *cpus_refresh ()
 } 
 
 //
-//È¡µÃCPUÀûÓÃÂÊ,µ¥Î»°Ù·Ö±È
+//å–å¾—CPUåˆ©ç”¨ç‡,å•ä½ç™¾åˆ†æ¯”
 int BasicGetCPUUse()
 {
 	cpus_refresh ();
@@ -228,12 +228,12 @@ int BasicGetCPUUse()
 }
 //
 
-//È¡µÃÄÚ´æĞÅÏ¢£¬µ¥Î»K
-//²ÎÊı£º
-//dwPhysicalMemory	ÎïÀíÄÚ´æ 
-//dwAvailMemory		¿ÉÓÃÄÚ´æ
-//dwUsedMemory		Ê¹ÓÃÄÚ´æ
-//dwVirtualMemory	ĞéÄâÄÚ´æ
+//å–å¾—å†…å­˜ä¿¡æ¯ï¼Œå•ä½K
+//å‚æ•°ï¼š
+//dwPhysicalMemory	ç‰©ç†å†…å­˜ 
+//dwAvailMemory		å¯ç”¨å†…å­˜
+//dwUsedMemory		ä½¿ç”¨å†…å­˜
+//dwVirtualMemory	è™šæ‹Ÿå†…å­˜
 void BasicGetMemoryInfo(DWORD& dwPhysicalMemory, 
 				   DWORD& dwAvailMemory, 
 				   DWORD& dwUsedMemory, 
@@ -264,7 +264,7 @@ struct proc_t
 
 #define PAGE_SIZE 4096
 //
-//È¡µÃ½ø³ÌÊ¹ÓÃÄÚ´æ µ¥Î»K
+//å–å¾—è¿›ç¨‹ä½¿ç”¨å†…å­˜ å•ä½K
 DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
 {
 	FILE* fstatm = NULL;
@@ -309,7 +309,7 @@ DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
 //
 
 //
-//È¡µÃÓ²ÅÌĞÅÏ¢
+//å–å¾—ç¡¬ç›˜ä¿¡æ¯
 #ifndef UINTMAX_MAX
 #define UINTMAX_MAX ((uintmax_t) -1)
 #endif
@@ -340,7 +340,7 @@ DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
 #define EXTRACT_TOP_BIT(x) ((x) & ((uintmax_t)1 << (sizeof(x) * CHAR_BIT - 1)))
 #define PROPAGATE_TOP_BIT(x) ((x) | ~ (EXTRACT_TOP_BIT(x) - 1))
 
-//ÎÄ¼şÏµÍ³±êÊ¾
+//æ–‡ä»¶ç³»ç»Ÿæ ‡ç¤º
 struct mount_entry
 {
 	char *me_devname;
@@ -354,7 +354,7 @@ struct mount_entry
 };
 
 
-//ÎÄ¼şÏµÍ³µÄĞÅÏ¢
+//æ–‡ä»¶ç³»ç»Ÿçš„ä¿¡æ¯
 struct fs_usage
 {
 	int fsu_blocksize;
@@ -367,30 +367,30 @@ struct fs_usage
 
 };
 
-static struct mount_entry *g_mount_list = NULL;         //ËùÓĞµÄÎÄ¼şÏµÍ³
+static struct mount_entry *g_mount_list = NULL;         //æ‰€æœ‰çš„æ–‡ä»¶ç³»ç»Ÿ
 
 /*******************************************************
-PROC:»ñÈ¡ÎÄ¼şÏµÍ³ĞÅÏ¢
-ÊäÈë£ºpathÂ·¾¶
-	  diskÎÄ¼şÏµÍ³
-	  fspÎÄ¼şÏµÍ³ĞÅÏ¢
-Êä³ö£º0±íÊ¾³É¹¦ -1Ê§°Ü
+PROC:è·å–æ–‡ä»¶ç³»ç»Ÿä¿¡æ¯
+è¾“å…¥ï¼špathè·¯å¾„
+	  diskæ–‡ä»¶ç³»ç»Ÿ
+	  fspæ–‡ä»¶ç³»ç»Ÿä¿¡æ¯
+è¾“å‡ºï¼š0è¡¨ç¤ºæˆåŠŸ -1å¤±è´¥
 *******************************************************/
 int GetFSUsage(const char *path,const char *disk,struct fs_usage *fsp);
 
 /*******************************************************
-PROC:¶ÁÈ¡ËùÓĞµÄÎÄ¼şÏµÍ³
-Êä³ö£ºµ±Ç°ÏµÍ³ÎÄ¼şÏµÍ³µÄLIST
+PROC:è¯»å–æ‰€æœ‰çš„æ–‡ä»¶ç³»ç»Ÿ
+è¾“å‡ºï¼šå½“å‰ç³»ç»Ÿæ–‡ä»¶ç³»ç»Ÿçš„LIST
 *******************************************************/
 struct mount_entry* ReadFilesystemlist();
 
 /*******************************************************
-PROC:±éÀúÏÔÊ¾ÎÄ¼şÏµÍ³
+PROC:éå†æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿ
 *******************************************************/
 static CBasicString ShowAllEntries();
 
 /*******************************************************
-PROC:ÏÔÊ¾ÎÄ¼şÏµÍ³Éè±¸
+PROC:æ˜¾ç¤ºæ–‡ä»¶ç³»ç»Ÿè®¾å¤‡
 *******************************************************/
 static bool ShowDev(const char *disk, const char *mount_point,const char *fstype, int me_dummy, int me_remote,char *buf, int nBufLen);
 
@@ -576,7 +576,7 @@ static CBasicString ShowAllEntries()
 }
 
 #ifndef __ANDROID
-//»ñÈ¡ËùÓĞ´ÅÅÌ¿Õ¼äĞÅÏ¢
+//è·å–æ‰€æœ‰ç£ç›˜ç©ºé—´ä¿¡æ¯
 DWORD BasicGetDiskInfo(char* pszDiskBuffer, int nBufferLen)
 {
 	g_mount_list = ReadFilesystemlist();
@@ -628,7 +628,7 @@ BOOL exec_command(char *pBuf,int nLen,char *format,...)
 }
 
 #ifndef __ANDROID
-//È¡Â·¾¶ËùÔÚ´ÅÅÌµÄÊ£Óà¿Õ¼ä M
+//å–è·¯å¾„æ‰€åœ¨ç£ç›˜çš„å‰©ä½™ç©ºé—´ M
 long BasicGetDiskFreeinfo(const char* lpszPath)
 {
 	long lRet = -1;
@@ -646,7 +646,7 @@ long BasicGetDiskFreeinfo(const char* lpszPath)
 #endif //__ANDROID
 
 
-//È¡µÃÏµÍ³Æô¶¯Ê±¼ä£¬µ¥Î»£ººÁÃë
+//å–å¾—ç³»ç»Ÿå¯åŠ¨æ—¶é—´ï¼Œå•ä½ï¼šæ¯«ç§’
 DWORD BasicGetTickTime()
 {
 /*
@@ -666,8 +666,8 @@ double BasicGetTickTimeCount()
     return dRet;
 }
 
-//È¡µÃÄ£¿éÃû
-//ÈçhModule==NULL£¬ÔòÈ¡µ±Ç°Ö÷³ÌĞòÃû
+//å–å¾—æ¨¡å—å
+//å¦‚hModule==NULLï¼Œåˆ™å–å½“å‰ä¸»ç¨‹åºå
 CBasicString BasicGetModuleName(HANDLE hModule)
 {
 	char exe[512];
@@ -690,7 +690,7 @@ long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBufLen)
 	return len;
 }
 
-//È¡µÃÄ£¿éÃû£¬²»°üÀ¨È«Â·¾¶
+//å–å¾—æ¨¡å—åï¼Œä¸åŒ…æ‹¬å…¨è·¯å¾„
 CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
 {
 	CBasicString strModule = BasicGetModuleName(hModule);
@@ -701,7 +701,7 @@ CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
 }
 
 
-//È¡µÃÂ·¾¶
+//å–å¾—è·¯å¾„
 CBasicString BasicGetModulePath(HANDLE hModule)
 {
 	char szPath[_MAX_PATH];
@@ -716,10 +716,10 @@ CBasicString BasicGetModulePath(HANDLE hModule)
 
 //************************************************************************
 // Author:    Mini.J @2009/3/13
-// Method:    Basic_ProcessIsTerminated => ½ø³ÌÊÇ·ñÍË³ö
-//			²é¿´½ø³ÌÁĞ±íÖĞÊÇ·ñÓĞ´«ÈëµÄ½ø³ÌID¡£Èç¹û´æÔÚËµÃ÷Î´ÍË³ö
+// Method:    Basic_ProcessIsTerminated => è¿›ç¨‹æ˜¯å¦é€€å‡º
+//			æŸ¥çœ‹è¿›ç¨‹åˆ—è¡¨ä¸­æ˜¯å¦æœ‰ä¼ å…¥çš„è¿›ç¨‹IDã€‚å¦‚æœå­˜åœ¨è¯´æ˜æœªé€€å‡º
 // Returns:   BOOL => 
-// Parameter: DWORD dwProcessID => ½ø³ÌID
+// Parameter: DWORD dwProcessID => è¿›ç¨‹ID
 //************************************************************************
 BOOL BasicProcessIsTerminated(DWORD dwProcessID)
 {
@@ -790,7 +790,7 @@ int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-//¶¯Ì¬¿âµ÷ÓÃµÄº¯Êı
+//åŠ¨æ€åº“è°ƒç”¨çš„å‡½æ•°
 void* BasicLoadLibrary(const char* lpszLibFileName)
 {
 	void* hDll = dlopen(lpszLibFileName, RTLD_NOW|RTLD_GLOBAL);
@@ -834,10 +834,10 @@ CProcessInfo::CProcessInfo(DWORD nProcessId)
 
 
 //
-//È¡µÃÖ¸¶¨½ø³ÌµÄCPUÀûÓÃÂÊ£¬µ¥Î»°Ù·Ö±È
+//å–å¾—æŒ‡å®šè¿›ç¨‹çš„CPUåˆ©ç”¨ç‡ï¼Œå•ä½ç™¾åˆ†æ¯”
 int CProcessInfo::GetProcessCpu()
 {
-	//ÏÈ»ñÈ¡×ÜµÄCPUµÄÊ±¼ä
+	//å…ˆè·å–æ€»çš„CPUçš„æ—¶é—´
 	cpus_refresh ();
 	CPU_t *cpu = &cpus[Cpu_tot];
 	// we'll trim to zero if we get negative time ticks,   
@@ -867,7 +867,7 @@ int CProcessInfo::GetProcessCpu()
 	cpu->y_sav = cpu->y;   
 	cpu->z_sav = cpu->z; 
 
-	//»ñÈ¡½ø³ÌµÄCPUÊ±¼ä 
+	//è·å–è¿›ç¨‹çš„CPUæ—¶é—´ 
 	// enough for a /proc/pid/stat line 
 	char buf[PIDBUFSIZ];   
 
@@ -886,7 +886,7 @@ int CProcessInfo::GetProcessCpu()
 	rewind(fpidstat);   
 	fflush(fpidstat);   
 
-	//½«½ø³ÌµÄstatÎÄ¼ş¶Á³öÀ´
+	//å°†è¿›ç¨‹çš„statæ–‡ä»¶è¯»å‡ºæ¥
 	if (!fgets(buf, sizeof(buf), fpidstat))
 	{
 		std_err("failed /proc/%d/stat read", m_nProcessId);  
@@ -899,7 +899,7 @@ int CProcessInfo::GetProcessCpu()
 	{
 		return -1;
 	}
-	//»ñÈ¡ÎÄ¼şÖĞÓĞÓÃµÄÖµ
+	//è·å–æ–‡ä»¶ä¸­æœ‰ç”¨çš„å€¼
 	SIC_t nUtime = atof(ayProcessData[13].c_str());
 	SIC_t nStime = atof(ayProcessData[14].c_str());
 	SIC_t nCutime = atof(ayProcessData[15].c_str());

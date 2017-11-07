@@ -1,14 +1,14 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     basicclient.h
-// ´´½¨Õß:     owen
+// æ–‡ä»¶å:     basicclient.h
+// åˆ›å»ºè€…:     owen
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012-3-10 18:35:56
-// ÄÚÈİÃèÊö:   ¶¨Òå¿Í»§¶ËÍ¨Ñ¶Àà
-// °æ±¾ĞÅÏ¢:   1.0V
-// Ê¹ÓÃËµÃ÷:   Ö±½ÓÊ¹ÓÃCBasicClientSessionÀàÖ»Òª°ó¶¨Èı¸öº¯Êı´¦Àí:
-				OnConnectÏìÓ¦
-				OnReceiveÏìÓ¦
-				OnIdleÏìÓ¦,¿ÕÏĞÊ±¼äµÄ´¦Àí
+// åˆ›å»ºæ—¶é—´:   2012-3-10 18:35:56
+// å†…å®¹æè¿°:   å®šä¹‰å®¢æˆ·ç«¯é€šè®¯ç±»
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
+// ä½¿ç”¨è¯´æ˜:   ç›´æ¥ä½¿ç”¨CBasicClientSessionç±»åªè¦ç»‘å®šä¸‰ä¸ªå‡½æ•°å¤„ç†:
+				OnConnectå“åº”
+				OnReceiveå“åº”
+				OnIdleå“åº”,ç©ºé—²æ—¶é—´çš„å¤„ç†
 ************************************************************************************************/
 #ifndef BASIC_BASICCLIENT_H
 #define BASIC_BASICCLIENT_H
@@ -17,7 +17,7 @@
 #include "../scbasic_head.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//Á¬½Ó¹ÜÀí
+//è¿æ¥ç®¡ç†
 class _SCBASIC_DLL_API CCommonClientSession : public basiclib::CBasicSessionNetClient
 {
 	DefineCreateNetClientDefault(CCommonClientSession);

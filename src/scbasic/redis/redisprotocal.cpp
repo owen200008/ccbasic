@@ -240,12 +240,12 @@ void CRedisSendPacket::DataToSmartBuffer(basiclib::CBasicSmartBuffer& smBuf)
         }
         if (pCopyString && nFormatLength > 0){
             int nSmBufLength = smBuf.GetDataLength();
-            //保证长度足够
+            //淇濊瘉闀垮害瓒冲
             smBuf.SetDataLength(nSmBufLength + nFormatLength + 64);
             char* pBegin = smBuf.GetDataBuffer() + nSmBufLength;
             //size
             int nSize = sprintf(pBegin, "$%d\r\n%s\r\n", nFormatLength, pCopyString);
-            //设置最终的长度
+            //璁剧疆鏈�缁堢殑闀垮害
             smBuf.SetDataLength(nSmBufLength + nSize);
         }
     }

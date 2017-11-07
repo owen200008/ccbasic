@@ -11,14 +11,14 @@ public:
 	CLocalResultSet();
 	virtual ~CLocalResultSet();
 
-	//! »ñÈ¡ĞĞÊı
+	//! è·å–è¡Œæ•°
 	my_ulonglong GetRowsNumber();
-	//! »ñÈ¡Óò¸öÊı
+	//! è·å–åŸŸä¸ªæ•°
 	unsigned int GetFieldNumber();
 
-	//! »ñÈ¡ÏÂÒ»ĞĞ
+	//! è·å–ä¸‹ä¸€è¡Œ
 	bool NextRow();
-	//! »ñÈ¡Êı¾İ
+	//! è·å–æ•°æ®
 	bool getBoolean(uint32_t columnIndex);
 	bool getBoolean(const char* pColName);
 
@@ -40,9 +40,9 @@ public:
 	const char* getString(uint32_t columnIndex);
 	const char* getString(const char* pColName);
 protected:
-	//! ³õÊ¼»¯ÁĞĞÅÏ¢
+	//! åˆå§‹åŒ–åˆ—ä¿¡æ¯
 	void Init();
-	//! ¸ù¾İÁĞÃû»ñÈ¡index
+	//! æ ¹æ®åˆ—åè·å–index
 	uint32_t GetColumeIndexByName(const char* pColName);
 protected:
 	typedef basiclib::basic_map<basiclib::CBasicString, int>	MapColNameToIndex;
@@ -63,15 +63,15 @@ public:
 	CLocalConnect(CMySQL_Connection* pConn);
 	virtual ~CLocalConnect();
 
-	//! °ó¶¨
+	//! ç»‘å®š
 	void SetConnection(CMySQL_ConnectionPool* pPool, CMySQL_Connection* pConn);
 
-	//! ²éÑ¯Êı¾İ¿â
+	//! æŸ¥è¯¢æ•°æ®åº“
 	bool SelectMySQL(const char *q, CLocalResultSet& rs);
-	//! ¸üĞÂÊı¾İ¿â, ·µ»ØÓ°ÏìÌõÊı
+	//! æ›´æ–°æ•°æ®åº“, è¿”å›å½±å“æ¡æ•°
 	int QueryMySQL(const char *q);
 
-	//! ·µ»ØAUTO_INCREMENTÁĞÉú³ÉµÄID
+	//! è¿”å›AUTO_INCREMENTåˆ—ç”Ÿæˆçš„ID
 	my_ulonglong GetInsertID();
 protected:
 	CMySQL_ConnectionPool*	m_pPool;
@@ -85,14 +85,14 @@ public:
 	CMySQL_Connection();
 	virtual ~CMySQL_Connection();
 
-	//! ³õÊ¼»¯Êı¾İ¿â
+	//! åˆå§‹åŒ–æ•°æ®åº“
 	bool InitMySQL(CMySQLConnector::OnMySQLConnNotify pNotify, CMySQLConnector_NetWapper* pWapper, Net_UInt nMaxPacketSize = MYSQL_DEFAULT_MAX_PACKET_SIZE);
-	//! ÉèÖÃ±àÂë·½Ê½
+	//! è®¾ç½®ç¼–ç æ–¹å¼
 	int SetCharacterSet(const char *csname);
-	//! ÉèÖÃÁ¬½ÓÑ¡Ïî
+	//! è®¾ç½®è¿æ¥é€‰é¡¹
 	int SetOptions(enum mysql_option option,const void *arg);
 	int SetOptions4(enum mysql_option option, const void *arg1, const void *arg2);
-	//! Á¬½ÓÊı¾İ¿â
+	//! è¿æ¥æ•°æ®åº“
 	bool ConnectToSQL(const char *host,
 		const char *user,
 		const char *passwd,
@@ -101,12 +101,12 @@ public:
 		const char *unix_socket = nullptr,
 		unsigned long clientflag = 0);
 
-	//! ÅĞ¶ÏÊÇ·ñÁ¬½Ó¿ÉÓÃPingMySQLServer·µ»ØÒ»ÖÂ
+	//! åˆ¤æ–­æ˜¯å¦è¿æ¥å¯ç”¨PingMySQLServerè¿”å›ä¸€è‡´
 	int ReconnectMySQL();
 protected:
 	void MySQLNotifyType(CMySQLConnectorNotifyType notifyType, const char* pNotify);
 protected:
-	//! ping·şÎñÆ÷±£Ö¤Á¬½ÓÕı³£
+	//! pingæœåŠ¡å™¨ä¿è¯è¿æ¥æ­£å¸¸
 	int PingMySQLServer();
 protected:
 	CMySQLConnector	m_conn;
@@ -121,24 +121,24 @@ public:
 	CMySQL_ConnectionPool();
 	virtual ~CMySQL_ConnectionPool();
 
-	//! µÚÒ»´Î±ØĞë³õÊ¼»¯
+	//! ç¬¬ä¸€æ¬¡å¿…é¡»åˆå§‹åŒ–
 	bool Init(basiclib::CBasicString& url, basiclib::CBasicString& user, basiclib::CBasicString& password, int nInitSize, int maxSize, 
 		CMySQLConnector::OnMySQLConnNotify pNotify, OnCreateMySQLNetWapper pCreate, Net_UInt nMaxPacketSize = MYSQL_DEFAULT_MAX_PACKET_SIZE);
-	//! ³õÊ¼»¯Ö®ºó²ÅÄÜ»ñÈ¡Á¬½Ó
-	bool GetConnection(CLocalConnect& localConnect); //»ñµÃÊı¾İ¿âÁ¬½Ó
-	//! »ñÈ¡Á¬½Ó£¬µÈµ½ÓĞÎªÖ¹
+	//! åˆå§‹åŒ–ä¹‹åæ‰èƒ½è·å–è¿æ¥
+	bool GetConnection(CLocalConnect& localConnect); //è·å¾—æ•°æ®åº“è¿æ¥
+	//! è·å–è¿æ¥ï¼Œç­‰åˆ°æœ‰ä¸ºæ­¢
 	bool GetConnectionWaitForOne(CLocalConnect& localConnect, int nMaxTimes = 10000);
-	//! Ïú»ÙÊı¾İ¿âÁ¬½Ó³Ø
+	//! é”€æ¯æ•°æ®åº“è¿æ¥æ± 
 	void DestoryBasicConnPool();
 
-	//Ö´ĞĞontimerº¯Êı,È·±£Ã¿¸öÁ´½Ó²»»á±»¶Ï¿ª
+	//æ‰§è¡Œontimerå‡½æ•°,ç¡®ä¿æ¯ä¸ªé“¾æ¥ä¸ä¼šè¢«æ–­å¼€
 	void HandleOnTimer();
 private:
-	void ReleaseConnection(CMySQL_Connection *conn); //½«Êı¾İ¿âÁ¬½Ó·Å»Øµ½Á¬½Ó³ØµÄÈİÆ÷ÖĞ
+	void ReleaseConnection(CMySQL_Connection *conn); //å°†æ•°æ®åº“è¿æ¥æ”¾å›åˆ°è¿æ¥æ± çš„å®¹å™¨ä¸­
 
-	void InitConnection(int iInitialSize); //³õÊ¼»¯Êı¾İ¿âÁ¬½Ó³Ø
-	CMySQL_Connection*	CreateConnection(); //´´½¨Ò»¸öÁ¬½Ó
-	//! »ñÈ¡Ò»ÌõÁ¬½Ó
+	void InitConnection(int iInitialSize); //åˆå§‹åŒ–æ•°æ®åº“è¿æ¥æ± 
+	CMySQL_Connection*	CreateConnection(); //åˆ›å»ºä¸€ä¸ªè¿æ¥
+	//! è·å–ä¸€æ¡è¿æ¥
 	CMySQL_Connection* GetConnectionFromList();
 
 private:
@@ -152,7 +152,7 @@ private:
 	basiclib::CBasicString	m_strUrl;
 	basiclib::CBasicString	m_strUsername;
 	basiclib::CBasicString	m_strPassword;
-	unsigned int			m_nMaxSize; //Á¬½Ó³ØÖĞ¶¨ÒåµÄ×î´óÊı¾İ¿âÁ¬½ÓÊı
+	unsigned int			m_nMaxSize; //è¿æ¥æ± ä¸­å®šä¹‰çš„æœ€å¤§æ•°æ®åº“è¿æ¥æ•°
 
 	CMySQLConnector::OnMySQLConnNotify	m_pNotify;
 	OnCreateMySQLNetWapper				m_create;

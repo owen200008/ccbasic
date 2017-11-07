@@ -19,111 +19,111 @@ public:
 	~HttpResponse(void);
 
 	/*!
-	* ÉèÖÃ·µ»ØµÄHttpStatus×´Ì¬
-	* \param uStatus ÉèÖÃµÄ×´Ì¬Öµ¡£Ä¬ÈÏ200
+	* è®¾ç½®è¿”å›çš„HttpStatusçŠ¶æ€
+	* \param uStatus è®¾ç½®çš„çŠ¶æ€å€¼ã€‚é»˜è®¤200
 	*/
 	void	SetStatus(unsigned short uStatus);
 	
 	/*!
-	* »ñÈ¡·µ»ØµÄHttpStatus×´Ì¬
-	* \return µ±Ç°µÄ×´Ì¬
+	* è·å–è¿”å›çš„HttpStatusçŠ¶æ€
+	* \return å½“å‰çš„çŠ¶æ€
 	*/
 	unsigned short GetStatus() const;
 
 	/*!
-	* ÉèÖÃHttp°æ±¾¡£³ÌĞò¶Ôversion¸ñÊ½²»×öĞ£Ñé£¬µ÷ÓÃÕß±ØĞë×ÔĞĞ±£Ö¤¸ñÊ½ÕıÈ·¡£
-	* \param pszVersion HTTP°æ±¾ĞÅÏ¢¡£eg: 1.0¡¢1.1
+	* è®¾ç½®Httpç‰ˆæœ¬ã€‚ç¨‹åºå¯¹versionæ ¼å¼ä¸åšæ ¡éªŒï¼Œè°ƒç”¨è€…å¿…é¡»è‡ªè¡Œä¿è¯æ ¼å¼æ­£ç¡®ã€‚
+	* \param pszVersion HTTPç‰ˆæœ¬ä¿¡æ¯ã€‚eg: 1.0ã€1.1
 	*/
 	void	SetVersion(const char* pszVersion);
 
 	/*!
-	* »ñÈ¡°æ±¾ĞÅÏ¢
-	* \return °æ±¾×Ö·û´®
+	* è·å–ç‰ˆæœ¬ä¿¡æ¯
+	* \return ç‰ˆæœ¬å­—ç¬¦ä¸²
 	*/
 	const char*	GetVersion() const;
 
 	/*!
-	* ÉèÖÃHttpÍ·µÄÖµ
-	* \param key ¼üÃû
-	* \param value ¼üÖµ
-	* \param replace ¶ÔÓÚµ±Ç°Èç¹û¸Ã¼üÖµÒÑ¾­´æÔÚµÄ´¦Àí¡£true:Ìæ»»; false:ÉèÖÃÊ§°Ü
+	* è®¾ç½®Httpå¤´çš„å€¼
+	* \param key é”®å
+	* \param value é”®å€¼
+	* \param replace å¯¹äºå½“å‰å¦‚æœè¯¥é”®å€¼å·²ç»å­˜åœ¨çš„å¤„ç†ã€‚true:æ›¿æ¢; false:è®¾ç½®å¤±è´¥
 	*/
 	void	SetHeader(const char* key, const char* value, bool replace = true);
 
 	/*!
-	* ÉèÖÃCookieµÄÖµ
-	* \param key ¼üÃû
-	* \param value ¼üÖµ
-	* \param expires Ê§Ğ§Ê±¼ä
-	* \param path cookieµÄÓĞĞ§Â·¾¶
-	* \param domain cookieµÄÓĞĞ§Óò
+	* è®¾ç½®Cookieçš„å€¼
+	* \param key é”®å
+	* \param value é”®å€¼
+	* \param expires å¤±æ•ˆæ—¶é—´
+	* \param path cookieçš„æœ‰æ•ˆè·¯å¾„
+	* \param domain cookieçš„æœ‰æ•ˆåŸŸ
 	*/
 	void	SetCookie(const char* key, const char* value, time_t expires = 0, const char* path = NULL, const char* domain = NULL);
 
 	/*!
-	* »ñÈ¡ÒÑ¾­ÉèÖÃµÄHttpÍ·µÄÖµ
-	* \param key ¼üÃû
-	* \param def Èç¹ûÕÒ²»µ½Ä¬ÈÏ·µ»ØµÄÖµ
-	* \return »ñÈ¡µÄ¼üÖµ
+	* è·å–å·²ç»è®¾ç½®çš„Httpå¤´çš„å€¼
+	* \param key é”®å
+	* \param def å¦‚æœæ‰¾ä¸åˆ°é»˜è®¤è¿”å›çš„å€¼
+	* \return è·å–çš„é”®å€¼
 	*/
 	const char* GetHeader(const char* key, const char* def = NULL) const;
 
 	/*!
-	* ×·¼Ó·µ»Ø°üµÄÊı¾İ
-	* \param buf Ö¸Ïò×·¼ÓµÄÄÚ´æÖ¸Õë
-	* \param len bufµÄ³¤¶È
+	* è¿½åŠ è¿”å›åŒ…çš„æ•°æ®
+	* \param buf æŒ‡å‘è¿½åŠ çš„å†…å­˜æŒ‡é’ˆ
+	* \param len bufçš„é•¿åº¦
 	*/
 	void	AppendContent(const char* buf, size_t len);
 
 	/*!
-	* »ñµÃËùÓĞHttpÍ·ÉèÖÃÉú³ÉµÄÍ·Êı¾İ¿é
-	* \param buffer[out]£¬´æ´¢·µ»ØµÄÊı¾İ
+	* è·å¾—æ‰€æœ‰Httpå¤´è®¾ç½®ç”Ÿæˆçš„å¤´æ•°æ®å—
+	* \param buffer[out]ï¼Œå­˜å‚¨è¿”å›çš„æ•°æ®
 	*/
 	void	GetHeaderData(basiclib::CBasicSmartBuffer* buffer, long lContentLen = -1) const;
 
 	/*!
-	* »ñµÃËùÓĞHttpÄÚÈİ¿éµÄÊı¾İ
-	* \param buffer[out]£¬´æ´¢·µ»ØµÄÊı¾İ
+	* è·å¾—æ‰€æœ‰Httpå†…å®¹å—çš„æ•°æ®
+	* \param buffer[out]ï¼Œå­˜å‚¨è¿”å›çš„æ•°æ®
 	*/
 	void	GetContent(basiclib::CBasicSmartBuffer* buffer) const;
 
 	/*!
-	* ½«·µ»ØµÄHttpÄÚÈİ¿éÑ¹Ëõ¡£Í¬Ê±»áÔö¼ÓHttpÍ·Content-EncodingµÄÀàĞÍ
+	* å°†è¿”å›çš„Httpå†…å®¹å—å‹ç¼©ã€‚åŒæ—¶ä¼šå¢åŠ Httpå¤´Content-Encodingçš„ç±»å‹
 	*/
 	bool	ZipOutput();
 	
 	/*!
-	* ¸ù¾İstatusÉú³É·µ»ØµÄÊı¾İÎÄ±¾ÃèÊö
-	* \param status Http StatusµÄÖµ
-	* \return ÃèÊö×Ö·û´®
+	* æ ¹æ®statusç”Ÿæˆè¿”å›çš„æ•°æ®æ–‡æœ¬æè¿°
+	* \param status Http Statusçš„å€¼
+	* \return æè¿°å­—ç¬¦ä¸²
 	*/
 	static	const char*	GetStatusString(unsigned short status);
 
 	/*!
-	* ¸ñÊ½»¯Ê±¼ä
-	* \param t Ê±¼ä
-	* \param gmtime ÊÇ·ñ¸ñÊ½»¯ÎªGMTÊ±¼ä
-	* \return ¸ñÊ½»¯ºóµÄÊ±¼ä×Ö·û´®
+	* æ ¼å¼åŒ–æ—¶é—´
+	* \param t æ—¶é—´
+	* \param gmtime æ˜¯å¦æ ¼å¼åŒ–ä¸ºGMTæ—¶é—´
+	* \return æ ¼å¼åŒ–åçš„æ—¶é—´å­—ç¬¦ä¸²
 	*/
 	static	basiclib::char_string	GetTimeString(time_t t, bool gmtime);
 
 	/*!
-	* ´ÓÍêÕûµÄhttp°üÌå½âÎö¸÷¸öÄÚÈİ(ÎŞHttpĞ­ÒéµÚÒ»ĞĞÊı¾İ)
-	* \param pBuffer Ö¸Ïò°üÌåÖ¸Õë
-	* \param len °üÌå³¤¶È
-	* \return HTTP_SUCC³É¹¦¡£
+	* ä»å®Œæ•´çš„httpåŒ…ä½“è§£æå„ä¸ªå†…å®¹(æ— Httpåè®®ç¬¬ä¸€è¡Œæ•°æ®)
+	* \param pBuffer æŒ‡å‘åŒ…ä½“æŒ‡é’ˆ
+	* \param len åŒ…ä½“é•¿åº¦
+	* \return HTTP_SUCCæˆåŠŸã€‚
 	*/
 	int		FromCacheBuffer(const char* pBuffer, size_t len);
 
 	/*!
-	* Éú³ÉHttp°üÌå(ÎŞHttpĞ­ÒéµÚÒ»ĞĞÊı¾İ)
-	* \param pBuffer[out]·µ»ØµÄÊı¾İ°ü
+	* ç”ŸæˆHttpåŒ…ä½“(æ— Httpåè®®ç¬¬ä¸€è¡Œæ•°æ®)
+	* \param pBuffer[out]è¿”å›çš„æ•°æ®åŒ…
 	* \return HTTP_SUCC
 	*/
 	int		MakeCacheBuffer(basiclib::CBasicSmartBuffer* pBuffer) const;
 
 	/*!
-	* ÅĞ¶ÏÊÇ·ñKeepAlive
+	* åˆ¤æ–­æ˜¯å¦KeepAlive
 	* \return true: KeepAlive; false: Close
 	*/
 	bool	IsKeepAlive() const;

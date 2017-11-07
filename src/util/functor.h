@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     functor.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     functor.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 12:24:28
-// ÄÚÈİÃèÊö:   Ò»Ğ©³£ÓÃµÄ·Âº¯Êı¡£ÓÃÓÚ¼ò»¯³ÌĞò´¦Àí
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 12:24:28
+// å†…å®¹æè¿°:   ä¸€äº›å¸¸ç”¨çš„ä»¿å‡½æ•°ã€‚ç”¨äºç®€åŒ–ç¨‹åºå¤„ç†
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_FUNCTOR_H
 #define BASIC_FUNCTOR_H
@@ -26,9 +26,9 @@
 
 __NS_BASIC_START
 
-//!ÓÃÓÚÉ¾³ıÈİÆ÷ÀàÖĞ¶ÔÏóµÄ·Âº¯ÊıÀà¡£
+//!ç”¨äºåˆ é™¤å®¹å™¨ç±»ä¸­å¯¹è±¡çš„ä»¿å‡½æ•°ç±»ã€‚
 /*!
-ÓÃ·¨ÈçÏÂ£º<br/>
+ç”¨æ³•å¦‚ä¸‹ï¼š<br/>
 \code
 typedef vector<object*> object_container;
 object_container con;
@@ -54,9 +54,9 @@ public:
 	}
 };
 
-//!ÓÃÓÚÉ¾³ıÈİÆ÷ÀàÖĞ¶ÔÏóµÄ·Âº¯ÊıÀà¡£
+//!ç”¨äºåˆ é™¤å®¹å™¨ç±»ä¸­å¯¹è±¡çš„ä»¿å‡½æ•°ç±»ã€‚
 /*!
-ÓÃ·¨ÈçÏÂ£º<br/>
+ç”¨æ³•å¦‚ä¸‹ï¼š<br/>
 \code
 typedef vector<object*> object_container;
 object_container con;
@@ -81,9 +81,9 @@ public:
 	}
 };
 
-//! ÓÃÓÚ½«×Ö·û´®²åÈëµ½Êı¾İÈİÆ÷ÖĞµÄ·Âº¯Êı
+//! ç”¨äºå°†å­—ç¬¦ä¸²æ’å…¥åˆ°æ•°æ®å®¹å™¨ä¸­çš„ä»¿å‡½æ•°
 /*!
-Àı×Ó£º<br/>
+ä¾‹å­ï¼š<br/>
 \date 2008-03-15
 \code
 TCHAR buf[] = "abc-def-ghi-jkl-mno";
@@ -92,7 +92,7 @@ IntoContaner<CWBasicStringArray>	ic(ay);
 SpliteString(buf, '-', ic);
 cout<<CombineString('|', ay.begin(), ay.end())<<endl;
 \endcode
-Êä³öÎª:
+è¾“å‡ºä¸º:
 \code
 abc|def|ghi|jkl|mno
 \endcode
@@ -102,10 +102,10 @@ class WIntoContainer
 {
 	typedef typename Container::value_type	value_type;
 public:
-	//! ¹¹Ôìº¯Êı
+	//! æ„é€ å‡½æ•°
 	/*!
-	\param con [out]Ä¿±êÈİÆ÷£¬±ØĞëÎªÖ§³ÖLPCTSTR ²ÎÊıÒÔ¼°push_backµÄÈİÆ÷¡£
-	\param acceptEmpty [in]¶ÔÓÚ¿Õ×Ö·û´®µÄ´¦Àí·½Ê½¡£true: ¼ÓÈëµ½ÈİÆ÷£¬false²»´¦Àí¡£
+	\param con [out]ç›®æ ‡å®¹å™¨ï¼Œå¿…é¡»ä¸ºæ”¯æŒLPCTSTR å‚æ•°ä»¥åŠpush_backçš„å®¹å™¨ã€‚
+	\param acceptEmpty [in]å¯¹äºç©ºå­—ç¬¦ä¸²çš„å¤„ç†æ–¹å¼ã€‚true: åŠ å…¥åˆ°å®¹å™¨ï¼Œfalseä¸å¤„ç†ã€‚
 	*/
 	WIntoContainer(Container& con, bool acceptEmpty = false)
 		: __con(con), __acceptEmpty(acceptEmpty){}
@@ -125,10 +125,10 @@ class IntoContainer_s
 {
 	typedef typename Container::value_type	value_type;
 public:
-	//! ¹¹Ôìº¯Êı
+	//! æ„é€ å‡½æ•°
 	/*!
-	\param con [out]Ä¿±êÈİÆ÷£¬±ØĞëÎªÖ§³ÖLPCTSTR ²ÎÊıÒÔ¼°push_backµÄÈİÆ÷¡£
-	\param acceptEmpty [in]¶ÔÓÚ¿Õ×Ö·û´®µÄ´¦Àí·½Ê½¡£true: ¼ÓÈëµ½ÈİÆ÷£¬false²»´¦Àí¡£
+	\param con [out]ç›®æ ‡å®¹å™¨ï¼Œå¿…é¡»ä¸ºæ”¯æŒLPCTSTR å‚æ•°ä»¥åŠpush_backçš„å®¹å™¨ã€‚
+	\param acceptEmpty [in]å¯¹äºç©ºå­—ç¬¦ä¸²çš„å¤„ç†æ–¹å¼ã€‚true: åŠ å…¥åˆ°å®¹å™¨ï¼Œfalseä¸å¤„ç†ã€‚
 	*/
 	IntoContainer_s(Container& con, bool acceptEmpty = false)
 		: __con(con), __acceptEmpty(acceptEmpty){}
@@ -143,7 +143,7 @@ protected:
 	bool		__acceptEmpty;
 };
 
-//! ÓÃÓÚ½«×Ö·û´®²åÈëµ½ÒÑ¾­·ÖÅäºÅÊı¾İµÄÈİÆ÷ÖĞ
+//! ç”¨äºå°†å­—ç¬¦ä¸²æ’å…¥åˆ°å·²ç»åˆ†é…å·æ•°æ®çš„å®¹å™¨ä¸­
 template<class T>
 class IntoArray
 {
@@ -170,7 +170,7 @@ protected:
 };
 
 
-//! ÓÃÓÚ½âÎöÀàËÆÓÚa=b&c=d&e=fµÄ×Ö·û´®£¬²¢½«½á¹û·Åµ½mapÖĞ
+//! ç”¨äºè§£æç±»ä¼¼äºa=b&c=d&e=fçš„å­—ç¬¦ä¸²ï¼Œå¹¶å°†ç»“æœæ”¾åˆ°mapä¸­
 /*!
 \date 2008-03-15
 \code

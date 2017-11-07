@@ -33,17 +33,17 @@ typedef void (*coroutine_func)(CCorutinePlusBase* pCorutinePlus);
 #pragma warning (push)
 #pragma warning (disable: 4251)
 #pragma warning (disable: 4275)
-//! ĞŞ¸Ä¹ıÒ»¸ö°æ±¾Ê¹ÓÃtupleÊµÏÖ²ÎÊı´«µİ£¬²»¹ı±ØĞëC++14£¬ÁíÍâĞ§ÂÊÉÏºÍµ±Ç°°æ±¾Ğ§ÂÊ²î¾à±È½Ï´ó£¬Òò´Ë²ÎÊı²ÉÓÃ¸³ÖµµÄĞÎÊ½
+//! ä¿®æ”¹è¿‡ä¸€ä¸ªç‰ˆæœ¬ä½¿ç”¨tupleå®ç°å‚æ•°ä¼ é€’ï¼Œä¸è¿‡å¿…é¡»C++14ï¼Œå¦å¤–æ•ˆç‡ä¸Šå’Œå½“å‰ç‰ˆæœ¬æ•ˆç‡å·®è·æ¯”è¾ƒå¤§ï¼Œå› æ­¤å‚æ•°é‡‡ç”¨èµ‹å€¼çš„å½¢å¼
 class _BASIC_DLL_API CCorutinePlusBase : public basiclib::CBasicObject
 {
 public:
 	CCorutinePlusBase();
 	virtual ~CCorutinePlusBase();
 
-	//! ³õÊ¼»¯ coroutine_func
+	//! åˆå§‹åŒ– coroutine_func
 	void Create(coroutine_func pFunc);
 
-	//! »½ĞÑ
+	//! å”¤é†’
 	template<class...T>
 	CoroutineState Resume(CCorutinePlusPoolBase* pPool, T...args){
 		void* pResumeParam[sizeof...(args)] = { args... };
@@ -51,7 +51,7 @@ public:
 		return Resume(pPool);
 	}
 
-	//! Ë¯¾õ
+	//! ç¡è§‰
 	template<class...T>
 	void YieldCorutine(T...args){
 		void* pResumeParam[sizeof...(args)] = { args... };
@@ -70,10 +70,10 @@ public:
 		return (T*)pPTR;
 	}
 	///////////////////////////////////////////////////////////////////////////////////
-	//! »½ĞÑ
+	//! å”¤é†’
 	CoroutineState Resume(CCorutinePlusPoolBase* pPool);
 
-	//! Ë¯¾õ
+	//! ç¡è§‰
 	void YieldCorutine();
 	///////////////////////////////////////////////////////////////////////////////////
 	
@@ -82,7 +82,7 @@ public:
 	//no call self
 	virtual void StartFuncLibco();
 
-    //! ÅĞ¶ÏÊÇ·ñÊÇËÀÑ­»·»òÕßÃ»ÓĞ»½ĞÑ
+    //! åˆ¤æ–­æ˜¯å¦æ˜¯æ­»å¾ªç¯æˆ–è€…æ²¡æœ‰å”¤é†’
     bool IsCoroutineError(time_t tmNow);
 protected:
     void InitStackAndPool(CCorutinePlusPoolBase* pPool, char* pStack);
@@ -102,26 +102,26 @@ protected:
 };
 
 
-//¶¯Ì¬Æ½ºâ
+//åŠ¨æ€å¹³è¡¡
 class CCorutinePlusPoolBalance : public basiclib::CBasicObject
 {
 protected:
     CCorutinePlusPoolBalance();
     virtual ~CCorutinePlusPoolBalance();
 
-    //! »ñÈ¡¶àÓàµÄcorutine
+    //! è·å–å¤šä½™çš„corutine
     int GetCorutineMore(CCorutinePlusBase* pPTR[], int nCount);
-    //! ¶àÓàµÄCorutine·ÅÕâ±ß
+    //! å¤šä½™çš„Corutineæ”¾è¿™è¾¹
     void ReleaseCorutineMore(CCorutinePlusBase* pPTR[], int nCount);
 
-    //! »ñÈ¡¶ÑÕ»
+    //! è·å–å †æ ˆ
     int GetExtraStack(char* pBuf[], int nCount);
     void ReleaseExtraStack(char* pBuf[], int nCount);
 
     int GetExtraCorutineCount();
     int GetExtraShareStackCount();
 
-	//! »ñÈ¡´´½¨µÄ¶ÑÕ»
+	//! è·å–åˆ›å»ºçš„å †æ ˆ
 	char* GetNewCreateStack(int nTimes, int& nCreateSize);
 protected:
     basiclib::CMessageQueueLock<char*>              m_queueExtraStack;
@@ -130,7 +130,7 @@ protected:
     friend class CCorutinePlusPoolBase;
 };
 
-//Ğ­³Ì³¬Ê±¹ÜÀí
+//åç¨‹è¶…æ—¶ç®¡ç†
 class CCorutinePlusPoolMgr : public basiclib::CMessageQueueLock<CCorutinePlusBase*>
 {
 protected:
@@ -139,7 +139,7 @@ protected:
 
     void CreateCorutine(CCorutinePlusBase* pPTR);
 
-    //! ¼ì²éËùÓĞµÄĞ­³ÌÊÇ·ñÓĞÎÊÌâ
+    //! æ£€æŸ¥æ‰€æœ‰çš„åç¨‹æ˜¯å¦æœ‰é—®é¢˜
     void CheckAllCorutine();
 protected:
     friend class CCorutinePlusPoolBase;
@@ -163,7 +163,7 @@ public:
     uint32_t GetVTShareStackCount(){ return m_usShareStackSize; }
     uint32_t GetCreateTimesShareStackCount(){ return m_nCreateTimesShareStack; }
 
-    //Òì³£µÄĞ­³ÌĞèÒª»ØÊÕ
+    //å¼‚å¸¸çš„åç¨‹éœ€è¦å›æ”¶
     void ReleaseCorutine(CCorutinePlusBase* pPTR);
 protected:
     void ResumeFunc(CCorutinePlusBase* pNext);
@@ -192,7 +192,7 @@ private:
 	uint32_t						    m_nCreateTimes;
     uint32_t                            m_nCorutineSize;
     uint32_t                            m_nRealVTCorutineSize;
-    uint32_t                            m_nLimitSize;           //Èç¹û³¬¹ıÕâ¸öÊı×Ö£¬Ğ­³Ì»á·Åµ½¹«¹²ÀïÃæÈ¥
+    uint32_t                            m_nLimitSize;           //å¦‚æœè¶…è¿‡è¿™ä¸ªæ•°å­—ï¼Œåç¨‹ä¼šæ”¾åˆ°å…¬å…±é‡Œé¢å»
 
 	CCorutinePlusBase*					m_pStackRunCorutine[CorutinePlus_Max_Stack];
 	unsigned short						m_usRunCorutineStack;
@@ -208,7 +208,7 @@ private:
 class _BASIC_DLL_API CCorutinePlusThreadDataBase : public basiclib::CBasicObject
 {
 public:
-    //³õÊ¼»¯ÔÚcallbackÀïÃæ×ö,·µ»Øparam£¬±ØĞëÊÇnew³öÀ´µÄ
+    //åˆå§‹åŒ–åœ¨callbacké‡Œé¢åš,è¿”å›paramï¼Œå¿…é¡»æ˜¯newå‡ºæ¥çš„
 	CCorutinePlusThreadDataBase();
     virtual ~CCorutinePlusThreadDataBase();
 

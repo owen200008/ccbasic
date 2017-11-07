@@ -1,4 +1,4 @@
-//Òì³£´¦Àí Linux
+//å¼‚å¸¸å¤„ç† Linux
 //
 #include "../inc/basic.h"
 #ifndef __BASICWINDOWS
@@ -37,7 +37,7 @@ CBasicExceptionLinux *g_pExceptionHandler = NULL;
 int	g_nStartMode = 0;
 GlobalShutdownFunc g_funcShutdown = NULL;
 //
-// ÉèÖÃÒì³£±£»¤Ä£Ê½
+// è®¾ç½®å¼‚å¸¸ä¿æŠ¤æ¨¡å¼
 //
 void BASIC_SetExceptionMode(int nMode, int nInstance)
 {
@@ -45,7 +45,7 @@ void BASIC_SetExceptionMode(int nMode, int nInstance)
 
 	if(nMode&BASIC_EXCEPTION_DISABLE)
 	{
-		//½ûÓÃÒì³£±£»¤
+		//ç¦ç”¨å¼‚å¸¸ä¿æŠ¤
 		return;
 	}
 	if(g_pExceptionHandler == NULL)
@@ -55,12 +55,12 @@ void BASIC_SetExceptionMode(int nMode, int nInstance)
 	//
 	if(nMode&BASIC_EXCEPTION_NORESTART)
 	{
-		//²»ÖØÆô
+		//ä¸é‡å¯
 	}
 	//
 	if(nMode&BASIC_EXCEPTION_NOLOG)
 	{
-		//²»¼ÇÂ¼ÈÕÖ¾
+		//ä¸è®°å½•æ—¥å¿—
 	}
 	//
 	if(nMode&BASIC_DAEMONMODE)
@@ -70,7 +70,7 @@ void BASIC_SetExceptionMode(int nMode, int nInstance)
 }
 
 //
-// Ó¦ÓÃ³ÌĞò¹Ø±ÕÇ°µ÷ÓÃ£¬ºöÂÔÍË³öÊ±³öÏÖµÄÒì³£
+// åº”ç”¨ç¨‹åºå…³é—­å‰è°ƒç”¨ï¼Œå¿½ç•¥é€€å‡ºæ—¶å‡ºç°çš„å¼‚å¸¸
 //
 void BasicClearException()
 {
@@ -83,7 +83,7 @@ void BasicClearException()
 }
 
 //
-//ÖØÆô½ø³Ì
+//é‡å¯è¿›ç¨‹
 //
 void BASIC_Restart()
 {
@@ -91,9 +91,9 @@ void BASIC_Restart()
 		g_pExceptionHandler->Restart();
 }
 ///////////////////////////////////////////////////////////////////////
-//È¡µÃ³ÌĞòÔËĞĞµÄ²ÎÊı
+//å–å¾—ç¨‹åºè¿è¡Œçš„å‚æ•°
 #define PS_CMDLINE_BEGIN 6
-//!!×¢Òâ·µ»ØÖµĞèÒªÓÃBASIC_FreePidCmdlineÊÍ·Å
+//!!æ³¨æ„è¿”å›å€¼éœ€è¦ç”¨BASIC_FreePidCmdlineé‡Šæ”¾
 char **BASIC_GetPidCmdline(int nPid, const char *pszModule, int &nNum)
 {
 	nNum = 0;
@@ -138,7 +138,7 @@ char **BASIC_GetPidCmdline(int nPid, const char *pszModule, int &nNum)
 	return pszRet;
 }
 
-//!ÊÍ·Å³ÌĞò²ÎÊıµÄÄÚ´æ£¬ÅäºÏBASIC_GetPidCmdlineÊ¹ÓÃ
+//!é‡Šæ”¾ç¨‹åºå‚æ•°çš„å†…å­˜ï¼Œé…åˆBASIC_GetPidCmdlineä½¿ç”¨
 void BASIC_FreePidCmdline(char **pszRet, int nNum)
 {
 	int i = 0;
@@ -152,7 +152,7 @@ void BASIC_FreePidCmdline(char **pszRet, int nNum)
 	}
 }
 
-//ÉèÖÃ¿ÉÖ´ĞĞÊôĞÔ
+//è®¾ç½®å¯æ‰§è¡Œå±æ€§
 BOOL SetExecuteAttrib(LPCTSTR szModule)
 {
 	struct stat buf;
@@ -161,7 +161,7 @@ BOOL SetExecuteAttrib(LPCTSTR szModule)
 	{
 		return FALSE;
 	}
-	//Ã¿ÈıÎ»±íÊ¾Ò»¸öÊôĞÔ
+	//æ¯ä¸‰ä½è¡¨ç¤ºä¸€ä¸ªå±æ€§
 	int nMode = buf.st_mode;
 	if((nMode & (0100)) == 0)
 	{
@@ -179,7 +179,7 @@ BOOL SetExecuteAttrib(LPCTSTR szModule)
 	return TRUE;
 }
 
-//¼ì²épidÊÇ·ñ´æÔÚ
+//æ£€æŸ¥pidæ˜¯å¦å­˜åœ¨
 int CheckPidIsExist(LPCTSTR lpszFile)
 {
 	int nRet = -1;
@@ -194,14 +194,14 @@ int CheckPidIsExist(LPCTSTR lpszFile)
 			int nReadPid = atoi(szBuf);
 			if(kill(nReadPid,0) == 0)
 			{
-				//½ø³Ì´æÔÚ
+				//è¿›ç¨‹å­˜åœ¨
 				nRet = 1;
 			}
 			else
 			{
 				fprintf(stderr, "remove invalid lock file : [%d] %s \n",  nReadPid, lpszFile);
 				syslog(LOG_CRIT, "remove invalid lock file : [%d] %s \n",  nReadPid, lpszFile);
-				//½ø³Ì²»´æÔÚ
+				//è¿›ç¨‹ä¸å­˜åœ¨
 				nRet = 0;
 			}
 			
@@ -258,19 +258,19 @@ static int _core_dump_signals[] = {
 #endif
 };
 
-//Òª²¶×½µÄsignal
-//²»ÄÜ²¶×½µ½SIGKILL SIGSTOP,ÓÃkill -9 ½áÊøµÄ½ø³Ì±ØĞëÊÖ¹¤É¾³ı/var/run/xxx.pid
+//è¦æ•æ‰çš„signal
+//ä¸èƒ½æ•æ‰åˆ°SIGKILL SIGSTOP,ç”¨kill -9 ç»“æŸçš„è¿›ç¨‹å¿…é¡»æ‰‹å·¥åˆ é™¤/var/run/xxx.pid
 static int _quit_signals[] = {
         SIGHUP, SIGINT, SIGQUIT, SIGTERM,
 };
 
 
-//ºöÂÔµÄĞÅºÅ
+//å¿½ç•¥çš„ä¿¡å·
 static int _ignore_signals[] = {
-        SIGPIPE,	//tcpÍ¨Ñ¶ĞèºöÂÔSIGPIPEĞÅºÅ
-        SIGTTOU,	//·ÀÖ¹ÖÕ¶Ë¸ÉÈÅ
-        SIGTTIN,	//·ÀÖ¹ÖÕ¶Ë¸ÉÈÅ
-        SIGTSTP,	//·ÀÖ¹ÖÕ¶Ë¸ÉÈÅ
+        SIGPIPE,	//tcpé€šè®¯éœ€å¿½ç•¥SIGPIPEä¿¡å·
+        SIGTTOU,	//é˜²æ­¢ç»ˆç«¯å¹²æ‰°
+        SIGTTIN,	//é˜²æ­¢ç»ˆç«¯å¹²æ‰°
+        SIGTSTP,	//é˜²æ­¢ç»ˆç«¯å¹²æ‰°
 };
 ///////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -397,10 +397,10 @@ CBasicExceptionLinux::CBasicExceptionLinux()
 {
 	m_pszLockFile[0] = '\0';
 	m_pAllocStack = NULL;
-	//²¶×½ĞÅºÅ
+	//æ•æ‰ä¿¡å·
 	CatchSignal();
 
-	//»ñÈ¡ÃüÁîĞĞ²ÎÊı
+	//è·å–å‘½ä»¤è¡Œå‚æ•°
 	m_nParaNum = 0;
 	m_pszCmdline = NULL;
 
@@ -413,7 +413,7 @@ CBasicExceptionLinux::~CBasicExceptionLinux()
 		BasicDeallocate(m_pAllocStack);
 		m_pAllocStack = NULL;
 	}
-	//ÊÍ·Å²ÎÊıÖ¸ÕëµÄÄÚ´æ
+	//é‡Šæ”¾å‚æ•°æŒ‡é’ˆçš„å†…å­˜
 	BASIC_FreePidCmdline(m_pszCmdline, m_nParaNum);
 }
 
@@ -435,17 +435,17 @@ void CBasicExceptionLinux::BeforeQuit()
 			syslog(LOG_CRIT, "unlink (%s) [%d]\n", m_pszLockFile, r);
 	}
 	//syslog(LOG_CRIT, "exit (%s) \n", m_pszLockFile);
-	//¹Ø±ÕÏµÍ³ÈÕÖ¾
+	//å…³é—­ç³»ç»Ÿæ—¥å¿—
 	closelog();
 }
 
 void CBasicExceptionLinux::Restart()
 {
-	//²»ÄÜÓÃCString
+	//ä¸èƒ½ç”¨CString
 	char szModule[MAX_PATH];
 	BasicGetModuleName(NULL, szModule, MAX_PATH);
 
-	//Èç¹ûÎÄ¼ş±»É¾³ı»òÌæ»»£¬ÄÇÃ´ÎÄ¼şÃûºóÃæ»áÓĞ" (deleted)"×Ö·û´®  É¾³ıµô£¡
+	//å¦‚æœæ–‡ä»¶è¢«åˆ é™¤æˆ–æ›¿æ¢ï¼Œé‚£ä¹ˆæ–‡ä»¶ååé¢ä¼šæœ‰" (deleted)"å­—ç¬¦ä¸²  åˆ é™¤æ‰ï¼
 	const char* pDelExt = " (deleted)";
 	char* pDel = strstr(szModule, pDelExt);
 	int nExe = strlen(szModule);
@@ -453,7 +453,7 @@ void CBasicExceptionLinux::Restart()
 	{
 		*pDel = '\0'; 
 	}
-	//ÉÏ´«ÍêÎÄ¼şºó,¿ÉÄÜ¶ªÊ§ÎÄ¼ş¿ÉÖ´ĞĞÊôĞÔ
+	//ä¸Šä¼ å®Œæ–‡ä»¶å,å¯èƒ½ä¸¢å¤±æ–‡ä»¶å¯æ‰§è¡Œå±æ€§
 	SetExecuteAttrib(szModule);
 
 	syslog(LOG_CRIT, "Restart (%s)...\n", szModule);
@@ -466,11 +466,11 @@ void CBasicExceptionLinux::Restart()
 	exit(-1);
 }
 
-//ÉèÖÃºóÌ¨ÔËĞĞÄ£Ê½
+//è®¾ç½®åå°è¿è¡Œæ¨¡å¼
 void CBasicExceptionLinux::SetDaemonMode(int nInstance)
 {
 #ifndef __ANDROID
-	//ºóÌ¨ÔËĞĞ
+	//åå°è¿è¡Œ
 	FILE *fp = NULL;
 	pid_t pid = 0;
 
@@ -482,7 +482,7 @@ void CBasicExceptionLinux::SetDaemonMode(int nInstance)
 	pModule = pModule==NULL ? (char*)pFullPath : pModule+1;
 
 
-	//ÆôÓÃÈÕÖ¾£¬¼ÇÂ¼ÔÚ/var/log/messages
+	//å¯ç”¨æ—¥å¿—ï¼Œè®°å½•åœ¨/var/log/messages
 	openlog(pModule, LOG_CONS|LOG_PID, LOG_USER);
 
 	m_nParaNum = 0;
@@ -505,7 +505,7 @@ void CBasicExceptionLinux::SetDaemonMode(int nInstance)
 			if(++nTry < 3)
 			{
 				BasicSleep(1000);
-				//¼ì²épidÓĞĞ§
+				//æ£€æŸ¥pidæœ‰æ•ˆ
 				CheckPidIsExist(m_pszLockFile);
 				continue;
 			}
@@ -522,12 +522,12 @@ void CBasicExceptionLinux::SetDaemonMode(int nInstance)
 		break;
 	}
 
-	//¹Ø±ÕÊäÈëÊä³ö
+	//å…³é—­è¾“å…¥è¾“å‡º
 	int fdtablesize = getdtablesize();
 	for(int fd=0; fd<fdtablesize; fd++)
 		close(fd);
 
-	//½øÈëºóÌ¨ÔËĞĞ
+	//è¿›å…¥åå°è¿è¡Œ
 	pid = fork();
 
 	if (pid > 0)
@@ -552,10 +552,10 @@ void CBasicExceptionLinux::SetDaemonMode(int nInstance)
 }
 
 
-//²¶×½ĞÅºÅ
+//æ•æ‰ä¿¡å·
 void CBasicExceptionLinux::CatchSignal()
 {
-	//×î³õÉèÖÃÒì³£¶ÑÕ»
+	//æœ€åˆè®¾ç½®å¼‚å¸¸å †æ ˆ
 	if(!m_pAllocStack)
 	{
 		m_pAllocStack = BasicAllocate(ALLOCTO_STACK_MEMORY);

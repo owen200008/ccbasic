@@ -225,7 +225,7 @@ local buildin_types = {
     Net_UInt = 17,
     Net_CBasicString = 18,
 	Net_CBasicBitstream = 18,
-    --ÍâÖÃµÄÀàĞÍ
+    --å¤–ç½®çš„ç±»å‹
     Net_CNetBasicValue = 100,
 	
 }
@@ -253,7 +253,7 @@ local function flattypename(r)
 			local ftype = f.typename
 			local fullname = checktype(r.type, typename, ftype)
 			if fullname == nil then
-                --Æ¥ÅäÊÇ·ñÊÇarray»òÕßmap
+                --åŒ¹é…æ˜¯å¦æ˜¯arrayæˆ–è€…map
                 if r.typedeffield[ftype] then
                     ftype = r.typedeffield[ftype]
                 end
@@ -263,14 +263,14 @@ local function flattypename(r)
                     error(string.format("type match error %s in type %s %d", ftype, typename))
                 end
                 if fieldtyper.type == "array" then
-                    --±êÊ¾Êı×é
+                    --æ ‡ç¤ºæ•°ç»„
                     f.array = 1
-                    --¼ì²éÄÚ²¿½á¹¹ÊÇ·ñ¿ÉÒÔĞòÁĞ»¯
+                    --æ£€æŸ¥å†…éƒ¨ç»“æ„æ˜¯å¦å¯ä»¥åºåˆ—åŒ–
                     fullname = checktype(r.type, typename, fieldtyper[1])
                 elseif fieldtyper.type == "map" then
-                    --±êÊ¾Êı×é
+                    --æ ‡ç¤ºæ•°ç»„
                     f.array = 1
-                    --¼ì²éÄÚ²¿½á¹¹ÊÇ·ñ¿ÉÒÔĞòÁĞ»¯
+                    --æ£€æŸ¥å†…éƒ¨ç»“æ„æ˜¯å¦å¯ä»¥åºåˆ—åŒ–
                     f.keytype = checktype(r.type, typename, fieldtyper[1])
                     fullname = checktype(r.type, typename, fieldtyper[2])
                 else

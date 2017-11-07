@@ -9,14 +9,14 @@
 #pragma warning (disable: 4251)
 #pragma warning (disable: 4275)
 
-// ÉÏÏÂÎÄµÄ´¦ÀíÀà add by mojiayong
+// ä¸Šä¸‹æ–‡çš„å¤„ç†ç±» add by mojiayong
 class _SCBASIC_DLL_API CContextHandle : public basiclib::CBasicObject
 {
 public:
-	// param[in] pContent ĞèÒª´¦ÀíÄÚÈİ
+	// param[in] pContent éœ€è¦å¤„ç†å†…å®¹
 	CContextHandle(void* pContent) : m_pContent(pContent){}
-	//! param[in] pContext ´¦Àí¹ı³ÌÖĞÓÃµ½µÄÉÏÏÂÎÄ
-	//! param[in][out] buffer ´¦Àíºó·ÅÖÃµÄÄÚÈİ 
+	//! param[in] pContext å¤„ç†è¿‡ç¨‹ä¸­ç”¨åˆ°çš„ä¸Šä¸‹æ–‡
+	//! param[in][out] buffer å¤„ç†åæ”¾ç½®çš„å†…å®¹ 
 	virtual long HandleContext(void* pContext, basiclib::CBasicSmartBuffer& buffer) = 0;
 protected:
 	void* m_pContent;
@@ -33,43 +33,43 @@ public:
 	virtual ~HttpRequest(void);
 
 public:
-	// »ñÈ¡ÇëÇó·½Ê½.
-	// GET,POSTµÈ
+	// è·å–è¯·æ±‚æ–¹å¼.
+	// GET,POSTç­‰
 	virtual void	MethodHandler(const char* method);
-	// »ñÈ¡URI
+	// è·å–URI
 	// /index.php?a=b&c=d
 	virtual void	URIHandler(const char* URI);
-	// »ñÈ¡Ğ­Òé
+	// è·å–åè®®
 	// HTTP/1.1
 	virtual void	ProtocolHandler(const char* protocol);
-	// µÃµ½httpÍ·
+	// å¾—åˆ°httpå¤´
 	// Accept-Encoding: gzip, deflate
 	virtual void	HeaderHandler(const char* key, const char* value);
-	// »ñµÃpostµÄÄÚÈİ
+	// è·å¾—postçš„å†…å®¹
 	virtual void	PostDataHandler(const char* data, size_t len);
-	// Ò»¸öÇëÇó°ü½âÎö½áÊø
+	// ä¸€ä¸ªè¯·æ±‚åŒ…è§£æç»“æŸ
 	virtual void	RequestEndHandler();
-	// »ñµÃÔ­Ê¼ÇëÇóÊı¾İ[not implement]
+	// è·å¾—åŸå§‹è¯·æ±‚æ•°æ®[not implement]
 	virtual const char* GetRequestData(const char *szkey) const;
 
 public:
-	// È¡µÃheaderÍ·µÄÖµ
+	// å–å¾—headerå¤´çš„å€¼
 	bool	GetHeaderValue(const char* key, basiclib::char_string& value) const;
 	const char*	GetHeaderValue(const char* key) const;
     bool	GetHeaderValue(const char* key, basiclib::CTime& value) const;
 	bool	GetHeaderValue(const char* key, long& value) const;
 
-	// È¡µÃCookieµÄÖµ
+	// å–å¾—Cookieçš„å€¼
 	const char* GetCookie(const char* key) const;
 
-	// »ñµÃĞ­ÒéÍ·µÄĞÅÏ¢
+	// è·å¾—åè®®å¤´çš„ä¿¡æ¯
 	const basiclib::char_string&	GetMethod() const;
 	const basiclib::char_string&	GetURI() const;
 	const basiclib::char_string&	GetProtocol() const;
 
 	const basiclib::char_string&	GetFileName() const;
 
-	// »ñµÃGET·½Ê½µÄÍ·ĞÅÏ¢
+	// è·å¾—GETæ–¹å¼çš„å¤´ä¿¡æ¯
 	const char* GetParamValue(const char* key, const char* pDefault = NULL) const;
 	// 
 	const char* GetContentData() const;
@@ -89,7 +89,7 @@ public:
 		for_each(m_Headers.begin(), m_Headers.end(), func);
 	}
 
-	// ÉèÖÃÉÏÏÂÎÄµÄÒ»¸ö´«µİĞÅÏ¢
+	// è®¾ç½®ä¸Šä¸‹æ–‡çš„ä¸€ä¸ªä¼ é€’ä¿¡æ¯
 	void	SetContext(void* pContext);
 	void*	GetContext() const;
 
@@ -97,22 +97,22 @@ public:
 	BOOL	IsKeepAlive() const;
 	BOOL	IsSupportGZip() const;
 
-	// ÖØÖÃ
+	// é‡ç½®
 	void	Reset();
 
-	// ÉèÖÃ¶Ô¶ËµØÖ·
+	// è®¾ç½®å¯¹ç«¯åœ°å€
 	void		SetPeerAddr(const char* addr);
 	const char*	GetPeerAddr() const;
 	basiclib::CBasicString& GetRefPeerAddr();
 
 	void	SetFileName(const char* file);
 
-public: // ÉÏÏÂÎÄµÄ´¦Àí
-	//! Ôö¼ÓÉÏÏÂÎÄ´¦Àí
+public: // ä¸Šä¸‹æ–‡çš„å¤„ç†
+	//! å¢åŠ ä¸Šä¸‹æ–‡å¤„ç†
 	void	AddContextHandle(const char* szKey, CContextHandle* pHandle);
-	//! ¸ù¾İ¹Ø¼ü×ÖÉ¾³ıÉÏÏÂÎÄ´¦Àí
+	//! æ ¹æ®å…³é”®å­—åˆ é™¤ä¸Šä¸‹æ–‡å¤„ç†
 	void	RemoveContextHandle(const char* szKey);
-	//! µ÷ÓÃ´¦Àíº¯Êı£¬·µ»ØÒ»¸öbuffer
+	//! è°ƒç”¨å¤„ç†å‡½æ•°ï¼Œè¿”å›ä¸€ä¸ªbuffer
 	long	HandleContext(const char* szKey, void* pContext, basiclib::CBasicSmartBuffer& buffer) const;
 
 //	static	void	DecodeString(const char* strIn, char_string& strOut);

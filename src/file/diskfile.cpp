@@ -3,7 +3,7 @@
 #include "file_linux.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define SF_RW_MAX_SIZE		(10 * 1024 * 1024)		//Ò»´ÎÐ´Èë(¶Á³ö)µÄ×î´ó³¤¶È£¬³¬³öÕâ¸ö³¤¶ÈÒª·ÖÅú´¦Àí¡£
+#define SF_RW_MAX_SIZE		(10 * 1024 * 1024)		//ä¸€æ¬¡å†™å…¥(è¯»å‡º)çš„æœ€å¤§é•¿åº¦ï¼Œè¶…å‡ºè¿™ä¸ªé•¿åº¦è¦åˆ†æ‰¹å¤„ç†ã€‚
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_START
 extern long GetFileErrorID();
@@ -238,7 +238,7 @@ long CDiskFile::Write(const void* lpBuf, long lCount, long lRepeat, char cFill)
 	long lLeft = 0;
 	if (lpTemp == NULL)
 	{
-		if (lCount > SF_RW_MAX_SIZE)	//Èç¹û´óÓÚÕâ¸ö³¤¶È£¬·Ö¿ªÐ´
+		if (lCount > SF_RW_MAX_SIZE)	//å¦‚æžœå¤§äºŽè¿™ä¸ªé•¿åº¦ï¼Œåˆ†å¼€å†™
 		{
 			lCount *= lRepeat;
 			lRepeat = lCount / SF_RW_MAX_SIZE;

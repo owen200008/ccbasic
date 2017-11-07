@@ -1,20 +1,20 @@
 #ifndef INC_FILELINUX_H
 #define INC_FILELINUX_H
 /////////////////////////////////////////////////////////////////////////////////////////////
-// ÎÄ¼şÃû:		file_linux.h
-// ´´½¨Õß:		ÓÚºÆíµ
-// ´´½¨Ê±¼ä:	2008.10.21
-// ÄÚÈİÃèÊö:	ÎÄ¼ş´¦ÀíÀàÓÃµ½µÄÏµÍ³º¯ÊıÔÚlinuxÏÂµÄÊµÏÖ
+// æ–‡ä»¶å:		file_linux.h
+// åˆ›å»ºè€…:		äºæµ©æ·¼
+// åˆ›å»ºæ—¶é—´:	2008.10.21
+// å†…å®¹æè¿°:	æ–‡ä»¶å¤„ç†ç±»ç”¨åˆ°çš„ç³»ç»Ÿå‡½æ•°åœ¨linuxä¸‹çš„å®ç°
 /////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 //__NS_BASIC_START
 #if (defined(__LINUX) || defined(__MAC) || defined(__ANDROID))
 /////////////////////////////////////////////////////////////////////////////////////////////
-//ÉùÃ÷
+//å£°æ˜
 /////////////////////////////////////////////////////////////////////////////////////////////
 //
 #define NO_ERROR 0L 
-//ÎÄ¼şÊôĞÔ
+//æ–‡ä»¶å±æ€§
 
 #define INVALID_FILE_ATTRIBUTES				((DWORD)-1)
 
@@ -34,7 +34,7 @@
 #define FILE_ATTRIBUTE_NOT_CONTENT_INDEXED  0x00002000  
 #define FILE_ATTRIBUTE_ENCRYPTED            0x00004000  
 
-//ÎÄ¼ş´ò¿ªµÄÊôĞÔ
+//æ–‡ä»¶æ‰“å¼€çš„å±æ€§
 #define CREATE_NEW          1
 #define CREATE_ALWAYS       2
 #define OPEN_EXISTING       3
@@ -91,10 +91,10 @@ BOOL	CloseFile(HANDLE hObject);
 void	SetLastError(DWORD dwError);
 DWORD	GetLastError();
 
-//·â×°¹ıµÄ Shell ÃüÁî£¬Ìæ»»¡®¡¯ÖĞµÄ¿Õ¸ñ
+//å°è£…è¿‡çš„ Shell å‘½ä»¤ï¼Œæ›¿æ¢â€˜â€™ä¸­çš„ç©ºæ ¼
 int _basic_system(LPCTSTR lpCmd);
 
-//ÎÄ¼ş²Ù×÷
+//æ–‡ä»¶æ“ä½œ
 HANDLE	CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, 
 				   DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
 #define CreateFileA CreateFile
@@ -122,7 +122,7 @@ BOOL	SetFileAttributes(LPCTSTR lpFileName,DWORD dwFileAttributes);
 DWORD	GetFileAttributes(LPCTSTR lpFileName);
 #define GetFileAttributesA GetFileAttributes
 
-//ÎÄ¼ş²éÕÒ
+//æ–‡ä»¶æŸ¥æ‰¾
 HANDLE	FindFirstFile(LPCTSTR lpFileName,LPWIN32_FIND_DATA lpFindFileData);
 BOOL	FindNextFile(HANDLE hFindFile,LPWIN32_FIND_DATA lpFindFileData);
 BOOL	FindClose(HANDLE hFindFile);

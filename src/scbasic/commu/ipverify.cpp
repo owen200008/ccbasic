@@ -1,9 +1,9 @@
 #include "ipverify.h"
 
 //////////////////////////////////////////////////////////////////////////
-#define IP_LOOPADDR					"127.0.0.1"				// »Ø»·IP
-#define IP_LOOPMASK					"255.0.0.0"				// »Ø»·IP×ÓÍø¶Î
-#define IP_RULER_LOCAL_LAN			"$LOCAL_LAN"			// ±¾»úËùÔÚÍø¶Î
+#define IP_LOOPADDR					"127.0.0.1"				// å›ç¯IP
+#define IP_LOOPMASK					"255.0.0.0"				// å›ç¯IPå­ç½‘æ®µ
+#define IP_RULER_LOCAL_LAN			"$LOCAL_LAN"			// æœ¬æœºæ‰€åœ¨ç½‘æ®µ
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -32,13 +32,13 @@ int CIpVerify::SetIPRuler(const char* lpszRuler)
 	for (; nRulerIndex < nRulerCount; nRulerIndex++)
 	{
 		basiclib::CBasicString strRuler = ayRuler.GetAt(nRulerIndex);
-		if (strRuler.CompareNoCase("*") == 0)		// ÔÊĞíÈ«²¿
+		if (strRuler.CompareNoCase("*") == 0)		// å…è®¸å…¨éƒ¨
 		{
 			m_bSupportAll = TRUE;
 			nRet++;
 			continue;
 		}
-		if (strRuler.CompareNoCase(IP_RULER_LOCAL_LAN) == 0)		// Ä¬ÈÏ±¾»úËùÓĞÍø¶Î
+		if (strRuler.CompareNoCase(IP_RULER_LOCAL_LAN) == 0)		// é»˜è®¤æœ¬æœºæ‰€æœ‰ç½‘æ®µ
 		{
 			basiclib::LOCALADDR addr[20];
 			memset(addr, 0, sizeof(basiclib::LOCALADDR) * 20);
@@ -57,16 +57,16 @@ int CIpVerify::SetIPRuler(const char* lpszRuler)
 		int nLen = strRuler.GetLength();
 		int nPos1 = strRuler.Find(':');
 		int nPos2 = strRuler.Find('@');
-		if (nPos1 > 0)		// ÕÒµ½ÓĞ×ÓÍø
+		if (nPos1 > 0)		// æ‰¾åˆ°æœ‰å­ç½‘
 		{
 			strIP = strRuler.Mid(0, nPos1);
 			strMask = strRuler.Mid(nPos1+1, nPos2);
 		}
-		else if (nPos2 > 0)	// ÕÒµ½ÎŞ×ÓÍø,ÓĞÃû³Æ
+		else if (nPos2 > 0)	// æ‰¾åˆ°æ— å­ç½‘,æœ‰åç§°
 		{
 			strIP = strRuler.Mid(0, nPos2);
 		}
-		else		// ÕÒµ½ÎŞÃû³Æ
+		else		// æ‰¾åˆ°æ— åç§°
 		{
 			strIP = strRuler;
 		}
@@ -79,9 +79,9 @@ int CIpVerify::SetIPRuler(const char* lpszRuler)
 }
 
 //************************************************************************
-// Method:    IsIpTrust => ÈÏÖ¤Ä³Ò»IPµØÖ· 1¡¢±È½ÏIP  2¡¢¼ÆËã×ÓÂë±È½Ï
+// Method:    IsIpTrust => è®¤è¯æŸä¸€IPåœ°å€ 1ã€æ¯”è¾ƒIP  2ã€è®¡ç®—å­ç æ¯”è¾ƒ
 // Returns:   BOOL => 
-// Parameter: LPCTSTR lpszIP => IPµØÖ·Öµ
+// Parameter: LPCTSTR lpszIP => IPåœ°å€å€¼
 //************************************************************************
 BOOL CIpVerify::IsIpTrust(const char* lpszIP)
 {
@@ -104,12 +104,12 @@ BOOL CIpVerify::IsIpTrust(const char* lpszIP)
 			{
 				continue;
 			}
-			if (memcmp(szIP, pRuler->m_szIP, MAX_IP_ITEM) == 0)		// ±È½ÏIPµØÖ·
+			if (memcmp(szIP, pRuler->m_szIP, MAX_IP_ITEM) == 0)		// æ¯”è¾ƒIPåœ°å€
 			{
 				bRet = TRUE;
 				break;
 			}
-			else if(pRuler->m_szMask[0] != '\0')			// ÅĞ¶Ï×ÓÍøÑÚÂë
+			else if(pRuler->m_szMask[0] != '\0')			// åˆ¤æ–­å­ç½‘æ©ç 
 			{
 				BYTE szTmp[MAX_IP_ITEM];
 				memset(szTmp, 0, MAX_IP_ITEM);
@@ -131,10 +131,10 @@ BOOL CIpVerify::IsIpTrust(const char* lpszIP)
 }
 
 //************************************************************************
-// Method:    AddIPRuler => Ìí¼ÓIPĞÅÏ¢ÖÁ¹æÔòÁĞ±í
+// Method:    AddIPRuler => æ·»åŠ IPä¿¡æ¯è‡³è§„åˆ™åˆ—è¡¨
 // Returns:   BOOL => 
 // Parameter: LPCTSTR lpszIP => IP
-// Parameter: LPCTSTR lpszMask => ×ÓÍøÑÚÂë
+// Parameter: LPCTSTR lpszMask => å­ç½‘æ©ç 
 //************************************************************************
 BOOL CIpVerify::AddIPRuler(const char* lpszIP, const char* lpszMask)
 {
@@ -156,12 +156,12 @@ BOOL CIpVerify::AddIPRuler(const char* lpszIP, const char* lpszMask)
 	basiclib::CSingleLock lock(&m_synObj);
 	lock.Lock();
 	m_lsIpRuler.AddTail(pRuler);
-	// ×ÓÍøÑÚÂë
+	// å­ç½‘æ©ç 
 	memset(szIP, 0, MAX_IP_ITEM);
 	if (lpszMask != NULL && basiclib::__tcslen(lpszMask) > 0 && IsIPAddr(lpszMask, szIP, MAX_IP_ITEM))
 	{
 		memcpy(pRuler->m_szMask, szIP, MAX_IP_ITEM);
-		// ¼ÆËã½á¹û
+		// è®¡ç®—ç»“æœ
 		int j=0;
 		for (; j < MAX_IP_ITEM; j++)
 		{
@@ -173,11 +173,11 @@ BOOL CIpVerify::AddIPRuler(const char* lpszIP, const char* lpszMask)
 }
 
 //************************************************************************
-// Method:    IsIPAddr => ¼ì²éIPµØÖ·ÊÇ·ñºÏ·¨£¬ºÏ·¨Ôò½«4²¿·ÖÖµ·µ»Ø
+// Method:    IsIPAddr => æ£€æŸ¥IPåœ°å€æ˜¯å¦åˆæ³•ï¼Œåˆæ³•åˆ™å°†4éƒ¨åˆ†å€¼è¿”å›
 // Returns:   BOOL => 
-// Parameter: LPCTSTR lpszIP => IPµØÖ·
-// Parameter: BYTE * szIP => ·µ»ØIP4²¿·ÖµÄÄÚ´æ
-// Parameter: int cbIP => ÄÚ´æ´óĞ¡
+// Parameter: LPCTSTR lpszIP => IPåœ°å€
+// Parameter: BYTE * szIP => è¿”å›IP4éƒ¨åˆ†çš„å†…å­˜
+// Parameter: int cbIP => å†…å­˜å¤§å°
 //************************************************************************
 BOOL CIpVerify::IsIPAddr(const char* lpszIP, BYTE* szIP, int cbIP)
 {
@@ -190,7 +190,7 @@ BOOL CIpVerify::IsIPAddr(const char* lpszIP, BYTE* szIP, int cbIP)
 		int nIndex = 0;
 		for (; nIndex < nCount; nIndex++)
 		{
-			// ³¤¶ÈÊÇ·ñÓĞĞ§
+			// é•¿åº¦æ˜¯å¦æœ‰æ•ˆ
 			basiclib::CBasicString strPart = ayItem.GetAt(nIndex);
 			int nTmp = strPart.GetLength();
 			if (nTmp <= 0 || nTmp > 3)
@@ -198,7 +198,7 @@ BOOL CIpVerify::IsIPAddr(const char* lpszIP, BYTE* szIP, int cbIP)
 				bRet = FALSE;
 				break;
 			}
-			// IP¸÷²¿·ÖÄÚÈİÊÇ·ñÓĞĞ§
+			// IPå„éƒ¨åˆ†å†…å®¹æ˜¯å¦æœ‰æ•ˆ
 			BOOL bFlag = FALSE;
 			int i;
 			for (i = 0; i < nTmp; i++)
@@ -210,7 +210,7 @@ BOOL CIpVerify::IsIPAddr(const char* lpszIP, BYTE* szIP, int cbIP)
 					break;
 				}
 			}
-			// Ip¸÷²¿·ÖÖµÊÇ·ñÓĞĞ§
+			// Ipå„éƒ¨åˆ†å€¼æ˜¯å¦æœ‰æ•ˆ
 			nTmp = atoi(strPart.c_str());
 			if (nTmp > 255 || bFlag)
 			{
@@ -228,7 +228,7 @@ BOOL CIpVerify::IsIPAddr(const char* lpszIP, BYTE* szIP, int cbIP)
 }
 
 //************************************************************************
-// Method:    EmptyRuler => Çå³ıIP¹æÔòÁĞ±í
+// Method:    EmptyRuler => æ¸…é™¤IPè§„åˆ™åˆ—è¡¨
 // Returns:   void => 
 //************************************************************************
 void CIpVerify::EmptyRuler()
@@ -262,7 +262,7 @@ CBasicStringCmpInfo::~CBasicStringCmpInfo()
 }
 
 #define ALL_INFO_CMP   "*"
-//ÉèÖÃ¹æÔò
+//è®¾ç½®è§„åˆ™
 long CBasicStringCmpInfo::InitRuleInfo(const char* lpszRule, const char* lpszSplit)
 {
 	basiclib::CBasicStringArray ayRuleInfo;
@@ -276,7 +276,7 @@ long CBasicStringCmpInfo::InitRuleInfo(const char* lpszRule, const char* lpszSpl
 	return m_ayRuleInfo.size();
 }
 
-//¼ÓÈë¹æÔò
+//åŠ å…¥è§„åˆ™
 BOOL CBasicStringCmpInfo::AddRuleInfo(basiclib::CBasicString& strTmp)
 {
 	strTmp.TrimLeft();
@@ -352,7 +352,7 @@ BOOL IsTrustInfo(basiclib::CBasicString& strInfo, basiclib::CBasicStringArray& a
 	return TRUE;
 }
 
-//ÅĞ¶ÏÊÇ·ñÔÚ·¶Î§ÄÚ
+//åˆ¤æ–­æ˜¯å¦åœ¨èŒƒå›´å†…
 long CBasicStringCmpInfo::IsInRule(const char* lpszData, long lIndex)
 {
 	if (!lpszData)
@@ -388,7 +388,7 @@ basiclib::CBasicString GetStringInfo(basiclib::CBasicStringArray& ayInfo)
 	return strRet;
 }
 
-//»ñÈ¡×´Ì¬
+//è·å–çŠ¶æ€
 void CBasicStringCmpInfo::GetStatus(basiclib::CBasicString& strInfo)
 {
 	if (!m_strInfo.IsEmpty())
@@ -416,10 +416,10 @@ CIpDomainVerify::~CIpDomainVerify()
 
 }
 
-//ÉèÖÃ¹æÔò
+//è®¾ç½®è§„åˆ™
 long CIpDomainVerify::InitRuleInfo(const char* lpszRule, const char* lpszSplit)
 {
-	//ÉèÖÃÁËÖ®ºó¾Í²»È«²¿ĞÅÈÎ
+	//è®¾ç½®äº†ä¹‹åå°±ä¸å…¨éƒ¨ä¿¡ä»»
 	m_bTrustAll = FALSE;
 
 	basiclib::CBasicStringArray ayRuleInfo;
@@ -459,7 +459,7 @@ long CIpDomainVerify::InitRuleInfo(const char* lpszRule, const char* lpszSplit)
 	return m_ayRuleInfo.size();
 }
 
-//»ñÈ¡×´Ì¬
+//è·å–çŠ¶æ€
 void CIpDomainVerify::GetStatus(basiclib::CBasicString& strInfo)
 {
 	if(m_bTrustAll)
@@ -504,12 +504,12 @@ basiclib::CBasicString CIpDomainVerify::GetPortInfo(int nIndex)
 	return strRet;
 }
 
-//ÊÇ·ñÊÇĞÅÈÎIPºÍ¶Ë¿Ú
+//æ˜¯å¦æ˜¯ä¿¡ä»»IPå’Œç«¯å£
 BOOL CIpDomainVerify::IsTrust(const char* lpszData, WORD wPort)
 {
 	if (m_bTrustAll)
 	{
-		//Ä¬ÈÏÈ«²¿ĞÅÈÎ
+		//é»˜è®¤å…¨éƒ¨ä¿¡ä»»
 		return TRUE; 
 	}
 

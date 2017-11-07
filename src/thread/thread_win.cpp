@@ -55,7 +55,7 @@ void BasicSleep(DWORD dwMilliseconds)
 }
 
 
-//´´½¨Ïß³Ì
+//åˆ›å»ºçº¿ç¨‹
 HANDLE BasicCreateThread(
     LPBASIC_THREAD_START_ROUTINE lpStartAddress,
     void* lpParameter,
@@ -65,7 +65,7 @@ HANDLE BasicCreateThread(
 	return ::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)lpStartAddress, (void*)lpParameter, 0, lpThreadId);
 }
 
-//µÈ´ýÏß³ÌÍË³ö
+//ç­‰å¾…çº¿ç¨‹é€€å‡º
 BOOL BasicWaitThread(
 				   HANDLE hThread,
 				   DWORD  dwWaitTime/* = INFINITE*/

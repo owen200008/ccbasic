@@ -14,7 +14,7 @@ __NS_BASIC_START
 #pragma warning (disable: 4275)
 
 //////////////////////////////////////////////////////////////////////////
-//×ÔĞıËø
+//è‡ªæ—‹é”
 struct _BASIC_DLL_API SpinLock
 {
 	std::atomic<int>	m_nLock;
@@ -31,7 +31,7 @@ public:
 	CSpinLockFuncNoSameThreadSafe(SpinLock* pLock, BOOL bInitialLock = FALSE);
 	virtual ~CSpinLockFuncNoSameThreadSafe();
 
-	//! ²»ÄÜÓÃĞéº¯Êı ÒòÎªÓÃÔÚ¹¹Ôìº¯ÊıÀïÃæ
+	//! ä¸èƒ½ç”¨è™šå‡½æ•° å› ä¸ºç”¨åœ¨æ„é€ å‡½æ•°é‡Œé¢
 	void Lock();
 	void LockAndSleep(unsigned short usSleep = 100);
 	bool LockNoWait();
@@ -48,7 +48,7 @@ public:
 	CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock = FALSE);
 	virtual ~CSpinLockFunc();
 
-	//! ²»ÄÜÓÃĞéº¯Êı ÒòÎªÓÃÔÚ¹¹Ôìº¯ÊıÀïÃæ
+	//! ä¸èƒ½ç”¨è™šå‡½æ•° å› ä¸ºç”¨åœ¨æ„é€ å‡½æ•°é‡Œé¢
 	void Lock();
 	void LockAndSleep(unsigned short usSleep = 100);
 	bool LockNoWait();
@@ -90,7 +90,7 @@ public:
 	}
 	void SetOverLoadCallbackFunc(OverLoadLengthCallback& func){ m_overloadCallback = func; }
 	void SetDefaultStructReleaseFunc(DefaultReleaseFunc& func){ m_defaultReleaseFunc = func; }
-	//²åÈë°ü
+	//æ’å…¥åŒ…
 	virtual void MQPush(StructData* message){
 		m_queue[m_tail] = *message;
 		if (++m_tail >= m_cap)
@@ -102,7 +102,7 @@ public:
 			expand_queue();
 		}
 	}
-	//»ñÈ¡°ü,0´ú±í³É¹¦£¬1´ú±íÃ»ÓĞ
+	//è·å–åŒ…,0ä»£è¡¨æˆåŠŸï¼Œ1ä»£è¡¨æ²¡æœ‰
 	virtual int MQPop(StructData* message){
 		int ret = 1;
 		if (m_head != m_tail)
@@ -134,7 +134,7 @@ public:
 		return ret;
 	}
 
-	//»ñÈ¡¸öÊı
+	//è·å–ä¸ªæ•°
 	virtual int GetMQLength(){
 		int head, tail, cap;
 		head = m_head;
@@ -144,7 +144,7 @@ public:
 			return tail - head;
 		return tail + cap - head;
 	}
-    //±ØĞë±£Ö¤nLength×ã¹»,²¢ÇÒÊÇ¿ÉÒÔÊ¹ÓÃmemcpyµÄ
+    //å¿…é¡»ä¿è¯nLengthè¶³å¤Ÿ,å¹¶ä¸”æ˜¯å¯ä»¥ä½¿ç”¨memcpyçš„
     virtual void CopyAll(StructData* pQueue){
         if (m_head <= m_tail){
             memcpy(&(pQueue[0]), &(m_queue[m_head]), (m_tail - m_head) * sizeof(StructData));
@@ -155,7 +155,7 @@ public:
         }
     }
 
-	//Çå¿Õ¶ÓÁĞ£¬ÒÀ´Î»Øµ÷
+	//æ¸…ç©ºé˜Ÿåˆ—ï¼Œä¾æ¬¡å›è°ƒ
 	void Drop_Queue(const std::function<void(StructData *)>& func){
 		StructData msg;
 		while (!MQPop(&msg))
@@ -163,7 +163,7 @@ public:
 			func(&msg);
 		}
 	}
-    //±éÀú
+    //éå†
     virtual void ForeachData(const std::function<void(StructData *)>& func){
         int head = m_head;
         int tail = m_tail;
@@ -177,7 +177,7 @@ public:
             func(&msg);
         }
     }
-	//Ö±½ÓÇå¿Õ¶ÓÁĞ
+	//ç›´æ¥æ¸…ç©ºé˜Ÿåˆ—
 	void ClearQueue()
 	{
 		if (m_defaultReleaseFunc)
@@ -190,7 +190,7 @@ public:
 			m_tail = 0;
 		}
 	}
-    //µ¥Ïß³Ì²ÅÄÜÊ¹ÓÃ
+    //å•çº¿ç¨‹æ‰èƒ½ä½¿ç”¨
     StructData* FrontData(){
         if (GetMQLength() > 0){
             return &(m_queue[m_head]);
@@ -246,12 +246,12 @@ public:
 		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
 		return CMessageQueue<StructData>::GetMQLength();
 	}
-    //±ØĞë±£Ö¤nLength×ã¹»,²¢ÇÒÊÇ¿ÉÒÔÊ¹ÓÃmemcpyµÄ
+    //å¿…é¡»ä¿è¯nLengthè¶³å¤Ÿ,å¹¶ä¸”æ˜¯å¯ä»¥ä½¿ç”¨memcpyçš„
     virtual void CopyAll(StructData* pQueue){
         basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
         CMessageQueue<StructData>::CopyAll(pQueue);
     }
-    //±éÀú
+    //éå†
     virtual void ForeachData(const std::function<void(StructData *)>& func){
         basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
         CMessageQueue<StructData>::ForeachData(func);
@@ -260,7 +260,7 @@ public:
         basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
         func();
     }
-    //±ØĞëÔÚlockÇé¿öÏÂµ÷ÓÃ
+    //å¿…é¡»åœ¨lockæƒ…å†µä¸‹è°ƒç”¨
     void SafeMQPush(StructData* message){
         CMessageQueue<StructData>::MQPush(message);
     }
@@ -282,7 +282,7 @@ public:
 	static inline void free(void* ptr) { return basiclib::BasicDeallocate(ptr); }
 };
 
-//nBlockSize±ØĞëÎª2µÄÖ¸ÊıÃİ
+//nBlockSizeå¿…é¡»ä¸º2çš„æŒ‡æ•°å¹‚
 template<class T, size_t nBlockSize = 64>
 class CLockFreeMessageQueue : public moodycamel::ConcurrentQueue<T, CBasicConcurrentQueueTraits<nBlockSize>>
 {
@@ -313,8 +313,8 @@ public:
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////////
-//ÄÚ´æ¼ì²â²»ÄÜÓÃ£¬ÒòÎª²»ÄÜÖØ¸´µ÷ÓÃallocate
-//stack£¬dbghelp¾ö¶¨±ØĞëµ¥Ïß³Ì
+//å†…å­˜æ£€æµ‹ä¸èƒ½ç”¨ï¼Œå› ä¸ºä¸èƒ½é‡å¤è°ƒç”¨allocate
+//stackï¼Œdbghelpå†³å®šå¿…é¡»å•çº¿ç¨‹
 template<class KeyType>
 class CCheckNoPairKey : public basiclib::CBasicObject
 {

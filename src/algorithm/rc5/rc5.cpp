@@ -359,7 +359,7 @@ void RC5_32_cfb64_encrypt(const unsigned char *in, unsigned char *out, long leng
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Êä³öµÄº¯Êý
+//è¾“å‡ºçš„å‡½æ•°
 static CCriticalSection g_mtLock;
 int Basic_RC5_ecb_encrypt(basiclib::IBasicSecurity* pSecurity, char *pOutData, char *pInData, long lDatalen, const char *pKey, int iKeylen, int iEncrypt, int nRounds)
 {

@@ -55,7 +55,7 @@ int CCQLite3DBQuery::FieldNums()
 	return m_nCols;
 }
 
-//根据字段名返回列索引  
+//鏍规嵁瀛楁鍚嶈繑鍥炲垪绱㈠紩  
 int CCQLite3DBQuery::FieldIndex(const char* szField)
 {
 	if (!CheckStmt())
@@ -67,7 +67,7 @@ int CCQLite3DBQuery::FieldIndex(const char* szField)
 	{
 		for (int nField = 0; nField < m_nCols; nField++)
 		{
-			//后面还有很多类似的函数，参数差不多，需要一个sqlite3_stmt*和列索引值，这应该是内部查询了之后返回的结果，而不是事先保存的  
+			//鍚庨潰杩樻湁寰堝绫讳技鐨勫嚱鏁帮紝鍙傛暟宸笉澶氾紝闇�瑕佷竴涓猻qlite3_stmt*鍜屽垪绱㈠紩鍊硷紝杩欏簲璇ユ槸鍐呴儴鏌ヨ浜嗕箣鍚庤繑鍥炵殑缁撴灉锛岃�屼笉鏄簨鍏堜繚瀛樼殑  
 			const char *szTemp = sqlite3_column_name(m_pStmt, nField);
 			if (strcmp(szTemp, szField) == 0)
 			{

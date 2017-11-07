@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     tlgzip.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     tlgzip.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012-2-22 23:05:01
-// ÄÚÈİÃèÊö:   Ö§³Ögzip¸ñÊ½Êı¾İµÄÑ¹Ëõ½âÑ¹
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012-2-22 23:05:01
+// å†…å®¹æè¿°:   æ”¯æŒgzipæ ¼å¼æ•°æ®çš„å‹ç¼©è§£å‹
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_TLGZIP_H
 #define BASIC_TLGZIP_H
@@ -13,23 +13,23 @@ __NS_BASIC_START
 
 /*!***********************************************************************
  * \function BASIC_gcompress
- * \param	dest[out] Êä³öµÄÄ¿±êµØÖ·
- * \param	destLen[in/out]	inÊä³öµÄÄ¿±ê¿éµÄ³¤¶È¡£outÑ¹ËõºóÊı¾İµÄ³¤¶È
- * \param	source[in] ĞèÒªÑ¹ËõµÄÊı¾İ¿é
- * \param	level[in] Ñ¹Ëõ³Ì¶È(1-9)
- * \param	bufOut[out] Êä³ö
- * \remrk	destµÄ³¤¶ÈÖÁÉÙÎª£º
+ * \param	dest[out] è¾“å‡ºçš„ç›®æ ‡åœ°å€
+ * \param	destLen[in/out]	inè¾“å‡ºçš„ç›®æ ‡å—çš„é•¿åº¦ã€‚outå‹ç¼©åæ•°æ®çš„é•¿åº¦
+ * \param	source[in] éœ€è¦å‹ç¼©çš„æ•°æ®å—
+ * \param	level[in] å‹ç¼©ç¨‹åº¦(1-9)
+ * \param	bufOut[out] è¾“å‡º
+ * \remrk	destçš„é•¿åº¦è‡³å°‘ä¸ºï¼š
 			(sourceLen + 12) * 1.1 + 18
 ************************************************************************/
 int basic_gcompress(unsigned char *dest, unsigned long *destLen, const unsigned char *source, unsigned long sourceLen, int level);
 
 /*!***********************************************************************
 * \function BASIC_guncompress
-* \param	dest[out] Êä³öµÄÄ¿±êµØÖ·
-* \param	destLen[in/out]	inÊä³öµÄÄ¿±ê¿éµÄ³¤¶È¡£out½âÑ¹ºóÊı¾İµÄ³¤¶È
-* \param	source[in] ĞèÒª½âÑ¹ËõµÄÊı¾İ¿é
-* \param	bufOut[out] Êä³ö
-* \remrk	µ±dest´«ÈëÎªNULLÊ±£¬destLenµÄÊä³öÎª½âÑ¹ºóµÄ³¤¶È
+* \param	dest[out] è¾“å‡ºçš„ç›®æ ‡åœ°å€
+* \param	destLen[in/out]	inè¾“å‡ºçš„ç›®æ ‡å—çš„é•¿åº¦ã€‚outè§£å‹åæ•°æ®çš„é•¿åº¦
+* \param	source[in] éœ€è¦è§£å‹ç¼©çš„æ•°æ®å—
+* \param	bufOut[out] è¾“å‡º
+* \remrk	å½“destä¼ å…¥ä¸ºNULLæ—¶ï¼ŒdestLençš„è¾“å‡ºä¸ºè§£å‹åçš„é•¿åº¦
 ************************************************************************/
 int basic_guncompress(unsigned char *dest, unsigned long *destLen, const unsigned char *source, unsigned long sourceLen);
 

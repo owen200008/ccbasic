@@ -8,7 +8,7 @@
 
 __NS_BASIC_START
 
-//! basicallocator£¬Ê¹ÓÃBasicAllocateºÍTL_DeallcateµÄÄÚ´æ·ÖÅäÆ÷
+//! basicallocatorï¼Œä½¿ç”¨BasicAllocateå’ŒTL_Deallcateçš„å†…å­˜åˆ†é…å™¨
 
 // TEMPLATE CLASS allocator
 template<class _Ty>
@@ -155,10 +155,10 @@ public:
 
 
 
-//! ´´½¨Ò»¸ö¶ÔÏó£¬²¢µ÷ÓÃ¹¹Ôìº¯Êı
+//! åˆ›å»ºä¸€ä¸ªå¯¹è±¡ï¼Œå¹¶è°ƒç”¨æ„é€ å‡½æ•°
 /*
 \date	2008-05-30
-\return ÀàĞÍÎªTµÄ¶ÔÏóÖ¸Õë
+\return ç±»å‹ä¸ºTçš„å¯¹è±¡æŒ‡é’ˆ
 */
 template<class T>
 T*	Basic_NewObject()
@@ -168,10 +168,10 @@ T*	Basic_NewObject()
 	return (T*)p;
 }
 
-//! ÊÍ·ÅÒ»¸ö¶ÔÏó£¬²¢µ÷ÓÃÎö¹¹º¯Êı
+//! é‡Šæ”¾ä¸€ä¸ªå¯¹è±¡ï¼Œå¹¶è°ƒç”¨ææ„å‡½æ•°
 /*
 \date	2008-05-30
-\param	obj	ĞèÒªÊÍ·ÅµÄ¶ÔÏóÖ¸Õë
+\param	obj	éœ€è¦é‡Šæ”¾çš„å¯¹è±¡æŒ‡é’ˆ
 */
 template<class T>
 void BASIC_DeleteObject(T* obj)

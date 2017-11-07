@@ -18,15 +18,15 @@ public:
 protected:
 	BOOL LoadProfile(const char* lpszFile, const char* lpszModuleName = "");
 
-	// Í¨¹ıÄ£¿éÃû´ÓÅäÖÃÎÄ¼şÖĞÕÒµ½¸Ã×ÊÔ´²¢·µ»Ø
+	// é€šè¿‡æ¨¡å—åä»é…ç½®æ–‡ä»¶ä¸­æ‰¾åˆ°è¯¥èµ„æºå¹¶è¿”å›
 	const char* SetIDToSource(const char* lpszFormatID, const char* lpszID, const char* lpszModuleName);
 
 	const char* LoadString(const char* lpszFormatID, const char* lpszModuleName = "");
 
-	//ÉèÖÃ½ømap»º´æ
+	//è®¾ç½®è¿›mapç¼“å­˜
 	const char* FindStringSource(const char* lpszID);
 
-	//ÉèÖÃ½ømap»º´æ
+	//è®¾ç½®è¿›mapç¼“å­˜
 	void	SetToMapCache(const char* lpszID, const char* lpszSource);
 protected:
 	typedef basiclib::basic_map<basiclib::tstring_s, basiclib::tstring_s>	IDToSourceContainer;
@@ -112,7 +112,7 @@ const char* CBasicStringSource::SetIDToSource(const char* lpszFormatID, const ch
 			return NULL;
 	}
 
-	//ÌØÊâ·ûºÅ×ªÒå
+	//ç‰¹æ®Šç¬¦å·è½¬ä¹‰
 	char *p = (char*)strSource.c_str();
 	char* pOriginal = p;
 	while (*p != '\0')
@@ -156,7 +156,7 @@ const char* CBasicStringSource::LoadString(const char* lpszFormatID, const char*
 	const char* lpszRet = FindStringSource(strID.c_str());
 	if (NULL == lpszRet)
 	{
-		// ÕÒ²»µ½Ôò´ÓÅäÖÃÎÄ¼şÖĞ¶ÁÈ¡
+		// æ‰¾ä¸åˆ°åˆ™ä»é…ç½®æ–‡ä»¶ä¸­è¯»å–
 		lpszRet = SetIDToSource(lpszFormatID, strID.c_str(), lpszModuleName);
 	}
 	return lpszRet;
@@ -185,7 +185,7 @@ const char* BasicLoadString(unsigned long ulID, const char* lpszModuleName)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//CWBasicStringÀàÖ§³Ö×Ö·û´®×ÊÔ´¼ÓÔØ
+//CWBasicStringç±»æ”¯æŒå­—ç¬¦ä¸²èµ„æºåŠ è½½
 void CBasicString::FormatS(const char* lpszModuleName, const char* lpszFormatID, ...)
 {
 	const char* lpszForamt = BasicLoadString(lpszFormatID, lpszModuleName);

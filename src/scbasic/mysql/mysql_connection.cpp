@@ -63,25 +63,25 @@ unsigned int CLocalResultSet::GetFieldNumber()
 {
 	return mysql_num_fields(m_pRS);
 }
-//! »ñÈ¡ÏÂÒ»ĞĞ
+//! è·å–ä¸‹ä¸€è¡Œ
 bool CLocalResultSet::NextRow()
 {
 	m_rowData = mysql_fetch_row(m_pRS);
 	return m_rowData != nullptr;
 }
-//! ³õÊ¼»¯ÁĞĞÅÏ¢
+//! åˆå§‹åŒ–åˆ—ä¿¡æ¯
 void CLocalResultSet::Init()
 {
 	int nIndex = 0;
 	MYSQL_FIELD* pField = nullptr;
-	while(pField = mysql_fetch_field(m_pRS))//»ñÈ¡ÁĞÃû
+	while(pField = mysql_fetch_field(m_pRS))//è·å–åˆ—å
 	{
 		m_mapColName.insert(make_pair(basiclib::CBasicString(pField->name, pField->name_length), nIndex));
 		nIndex++;
 	}
 }
 
-//! »ñÈ¡Êı¾İ
+//! è·å–æ•°æ®
 bool CLocalResultSet::getBoolean(uint32_t columnIndex)
 {
 	return getInt(columnIndex) ? true : false;
@@ -186,7 +186,7 @@ const char* CLocalResultSet::getString(const char* pColName)
 	return getString(GetColumeIndexByName(pColName));
 }
 
-//! ¸ù¾İÁĞÃû»ñÈ¡index
+//! æ ¹æ®åˆ—åè·å–index
 uint32_t CLocalResultSet::GetColumeIndexByName(const char* pColName)
 {
 	MapColNameToIndexIterator iter = m_mapColName.find(pColName);
@@ -210,14 +210,14 @@ CLocalConnect::~CLocalConnect()
 	}
 }
 
-//! °ó¶¨
+//! ç»‘å®š
 void CLocalConnect::SetConnection(CMySQL_ConnectionPool* pPool, CMySQL_Connection* pConn)
 {
 	m_pPool = pPool;
 	m_pConn = pConn;
 }
 
-//! ²éÑ¯Êı¾İ¿â
+//! æŸ¥è¯¢æ•°æ®åº“
 bool CLocalConnect::SelectMySQL(const char *q, CLocalResultSet& rs)
 {
 	bool bRet = false;
@@ -245,7 +245,7 @@ int CLocalConnect::QueryMySQL(const char *q)
 	return mysql_affected_rows(m_pConn->m_pMySQL);
 }
 
-//! ·µ»ØAUTO_INCREMENTÁĞÉú³ÉµÄID
+//! è¿”å›AUTO_INCREMENTåˆ—ç”Ÿæˆçš„ID
 my_ulonglong CLocalConnect::GetInsertID()
 {
 	return mysql_insert_id(m_pConn->m_pMySQL);
@@ -272,13 +272,13 @@ void CMySQL_Connection::MySQLNotifyType(CMySQLConnectorNotifyType notifyType, co
 	basiclib::BasicLogEvent(pNotify);
 }
 
-//! ÉèÖÃ±àÂë·½Ê½
+//! è®¾ç½®ç¼–ç æ–¹å¼
 int CMySQL_Connection::SetCharacterSet(const char *csname)
 {
 	return mysql_set_character_set(m_pMySQL, csname);
 }
 
-//! ÉèÖÃÁ¬½ÓÑ¡Ïî
+//! è®¾ç½®è¿æ¥é€‰é¡¹
 int CMySQL_Connection::SetOptions(enum mysql_option option, const void *arg)
 {
 	return mysql_options(m_pMySQL, option, arg);
@@ -299,13 +299,13 @@ bool CMySQL_Connection::ConnectToSQL(const char *host,
 	return mysql_real_connect(m_pMySQL, host, user, passwd, db, port, unix_socket, clientflag);
 }
 
-//! ping·şÎñÆ÷±£Ö¤Á¬½ÓÕı³£
+//! pingæœåŠ¡å™¨ä¿è¯è¿æ¥æ­£å¸¸
 int CMySQL_Connection::PingMySQLServer()
 {
 	return mysql_ping(m_pMySQL);
 }
 
-//! ÅĞ¶ÏÊÇ·ñÁ¬½Ó¿ÉÓÃ
+//! åˆ¤æ–­æ˜¯å¦è¿æ¥å¯ç”¨
 int CMySQL_Connection::ReconnectMySQL()
 {
 	return PingMySQLServer();
@@ -344,7 +344,7 @@ bool CMySQL_ConnectionPool::Init(basiclib::CBasicString& url, basiclib::CBasicSt
 	return true;
 }
 
-//ÔÚÁ¬½Ó³ØÖĞ»ñµÃÒ»¸öÁ¬½Ó
+//åœ¨è¿æ¥æ± ä¸­è·å¾—ä¸€ä¸ªè¿æ¥
 bool CMySQL_ConnectionPool::GetConnection(CLocalConnect& localConnect)
 {
 	int nIndex = 0;
@@ -356,7 +356,7 @@ bool CMySQL_ConnectionPool::GetConnection(CLocalConnect& localConnect)
 	return pConn != NULL;
 }
 
-//! »ñÈ¡Á¬½Ó£¬µÈµ½ÓĞÎªÖ¹
+//! è·å–è¿æ¥ï¼Œç­‰åˆ°æœ‰ä¸ºæ­¢
 bool CMySQL_ConnectionPool::GetConnectionWaitForOne(CLocalConnect& localConnect, int nMaxTimes)
 {
 	int nWaitTimes = 0;
@@ -374,7 +374,7 @@ bool CMySQL_ConnectionPool::GetConnectionWaitForOne(CLocalConnect& localConnect,
 	return pConn != NULL;
 }
 
-//Ïú»ÙÁ¬½Ó³Ø,Ê×ÏÈÒªÏÈÏú»ÙÁ¬½Ó³ØµÄÖĞÁ¬½Ó
+//é”€æ¯è¿æ¥æ± ,é¦–å…ˆè¦å…ˆé”€æ¯è¿æ¥æ± çš„ä¸­è¿æ¥
 void CMySQL_ConnectionPool::DestoryBasicConnPool()
 {
 	m_connectSafeList.clear();
@@ -386,7 +386,7 @@ void CMySQL_ConnectionPool::DestoryBasicConnPool()
 }
 
 
-//Ö´ĞĞontimerº¯Êı,È·±£Ã¿¸öÁ´½Ó²»»á±»¶Ï¿ª
+//æ‰§è¡Œontimerå‡½æ•°,ç¡®ä¿æ¯ä¸ªé“¾æ¥ä¸ä¼šè¢«æ–­å¼€
 void CMySQL_ConnectionPool::HandleOnTimer()
 {
 	for (auto& conn : m_createList){
@@ -397,7 +397,7 @@ void CMySQL_ConnectionPool::HandleOnTimer()
 	}
 }
 
-//»ØÊÕÊı¾İ¿âÁ¬½Ó
+//å›æ”¶æ•°æ®åº“è¿æ¥
 void CMySQL_ConnectionPool::ReleaseConnection(CMySQL_Connection *conn)
 {
 	if (conn)
@@ -407,7 +407,7 @@ void CMySQL_ConnectionPool::ReleaseConnection(CMySQL_Connection *conn)
 }
 
 
-//³õÊ¼»¯Á¬½Ó³Ø£¬´´½¨×î´óÁ¬½ÓÊıµÄÒ»°ëÁ¬½ÓÊıÁ¿
+//åˆå§‹åŒ–è¿æ¥æ± ï¼Œåˆ›å»ºæœ€å¤§è¿æ¥æ•°çš„ä¸€åŠè¿æ¥æ•°é‡
 void CMySQL_ConnectionPool::InitConnection(int iInitialSize)
 {
 	for (int i = 0; i < iInitialSize; i++)
@@ -416,7 +416,7 @@ void CMySQL_ConnectionPool::InitConnection(int iInitialSize)
 	}
 }
 
-//´´½¨Á¬½Ó,·µ»ØÒ»¸öConnection
+//åˆ›å»ºè¿æ¥,è¿”å›ä¸€ä¸ªConnection
 CMySQL_Connection* CMySQL_ConnectionPool::CreateConnection()
 {
 	if (m_createList.size() < m_nMaxSize)
@@ -425,7 +425,7 @@ CMySQL_Connection* CMySQL_ConnectionPool::CreateConnection()
 		if (conn->InitMySQL(m_pNotify, m_create(), m_nMaxPacketSize)){
 			if (conn->ConnectToSQL(m_strUrl.c_str(), m_strUsername.c_str(), m_strPassword.c_str(), nullptr)){
 				m_createList.push_back(conn);
-				//ÉèÖÃping ×Ô¶¯ÖØÁ¬
+				//è®¾ç½®ping è‡ªåŠ¨é‡è¿
 				bool opt_reconnect_value = true;
 				conn->SetOptions(MYSQL_OPT_RECONNECT, (const char *)&opt_reconnect_value);
 				return conn;
@@ -435,7 +435,7 @@ CMySQL_Connection* CMySQL_ConnectionPool::CreateConnection()
 	return NULL;
 }
 
-//! »ñÈ¡Ò»ÌõÁ¬½Ó
+//! è·å–ä¸€æ¡è¿æ¥
 CMySQL_Connection* CMySQL_ConnectionPool::GetConnectionFromList()
 {
 	if (m_connectSafeList.size() == 0)

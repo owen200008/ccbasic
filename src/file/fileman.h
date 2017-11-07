@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// �ļ���:     fileman.h
-// ������:     ������
+// 文件名:     fileman.h
+// 创建者:     蔡振球
 // Email:      zqcai@w.cn
-// ����ʱ��:   2012/2/17 12:42:26
-// ��������:   �����ļ�������һЩȫ�ֺ�������
-// �汾��Ϣ:   1.0V
+// 创建时间:   2012/2/17 12:42:26
+// 内容描述:   定义文件管理的一些全局函数和类
+// 版本信息:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_FILEMAN_H
 #define BASIC_FILEMAN_H
@@ -13,76 +13,76 @@
 
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
-//����
+//声明
 //class CBasicObject;
-	class CBasicFileFind;				//�ļ�����
+	class CBasicFileFind;				//文件查找
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-#define WSTR_INVALID(x) (x == NULL || x[0] == _T('\0'))					//!< �ж��ַ���ָ��
-#define STR_INVALID(x) (x == NULL || x[0] == '\0')					//!< �ж��ַ���ָ��
+#define WSTR_INVALID(x) (x == NULL || x[0] == _T('\0'))					//!< 判断字符串指针
+#define STR_INVALID(x) (x == NULL || x[0] == '\0')					//!< 判断字符串指针
 
 
-//<a class="el" href="fileman_8h-source.html">fileman.h</a>��<a class="el" href="fileman_8h-source.html#l00253">253</a>�ж��塣
+//<a class="el" href="fileman_8h-source.html">fileman.h</a>第<a class="el" href="fileman_8h-source.html#l00253">253</a>行定义。
 
-//! ȡ�ļ�ȫ·��
+//! 取文件全路径
 /*! 
-*\param lpszPathOut һ��ָ��������������ڴ�ָ�룬���ȫ·��
-*\param lpszFileIn �������·��
-*\return �ɹ�: BASIC_FILE_OK��ʧ��: ���� BASIC_FILE_* �������ļ� filedefine.h��
+*\param lpszPathOut 一个指向接受输出结果的内存指针，输出全路径
+*\param lpszFileIn 输入相对路径
+*\return 成功: BASIC_FILE_OK；失败: 返回 BASIC_FILE_* 定义在文件 filedefine.h；
 *\remarks 
-*\warning 1�����ܼ��ȫ·���Ƿ���� 2���뵱ǰ����Ŀ¼���
+*\warning 1、不能检测全路径是否存在 2、与当前工作目录相关
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
 long _BASIC_DLL_API Basic_GetFileFullPath(char* lpszPathOut, const char* lpszFileIn);
 
-//! ����ļ�״̬
+//! 获得文件状态
 /*! 
-*\param lpszFileName �ļ�·��
-*\param rStatus һ��ָ��������������ڴ�ָ�룬�ļ�״̬TLFileStatusW�ṹ
-*\return �ɹ�: BASIC_FILE_OK��ʧ��:  ���� BASIC_FILE_* �������ļ� filedefine.h��
+*\param lpszFileName 文件路径
+*\param rStatus 一个指向接受输出结果的内存指针，文件状态TLFileStatusW结构
+*\return 成功: BASIC_FILE_OK；失败:  返回 BASIC_FILE_* 定义在文件 filedefine.h；
 *\remarks 
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
 long _BASIC_DLL_API Basic_GetFileStatus(const char* lpszFileName, TLFileStatus& rStatus);
-//! ����ļ���
+//! 获得文件名
 /*! 
-*\param lpszPathName �ļ�·��
-*\param lpszName һ��ָ��������������ڴ�ָ�룬����ļ���
-*\param nMax ָ���ڶ�������(lpszName)�ĳ��ȣ����ʵ��Ҫ�����ļ�������������ȣ���ʧ�ܲ�����ʵ��Ҫ���ص��ļ�������
-*\return �ɹ�: BASIC_FILE_OK��ʧ��: ����ʵ��Ҫ���ص��ļ������ȣ�
+*\param lpszPathName 文件路径
+*\param lpszName 一个指向接受输出结果的内存指针，输出文件名
+*\param nMax 指定第二个参数(lpszName)的长度，如果实际要返回文件名超出这个长度，则失败并返回实际要返回的文件名长度
+*\return 成功: BASIC_FILE_OK；失败: 返回实际要返回的文件名长度；
 *\remarks 
-*\warning �ڶ�����������ΪNULL
+*\warning 第二个参数不能为NULL
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */	
 long _BASIC_DLL_API Basic_GetFileName(const char* lpszPathName, char* lpszName, int nMax);
 
-//! ��ò�����չ�����ļ���
+//! 获得不带扩展名的文件名
 /*! 
-*\param lpszPathName �ļ�·��
-*\param lpszTitle һ��ָ��������������ڴ�ָ�룬���������չ�����ļ���
-*\param nMax ָ���ڶ�������(lpszTitle)�ĳ��ȣ����ʵ��Ҫ�����ļ�������������ȣ���ʧ�ܲ�����ʵ��Ҫ���ص��ļ�������
-*\return �ɹ�: BASIC_FILE_OK��ʧ��: ����ʵ��Ҫ���ص��ļ������ȣ�
+*\param lpszPathName 文件路径
+*\param lpszTitle 一个指向接受输出结果的内存指针，输出不带扩展名的文件名
+*\param nMax 指定第二个参数(lpszTitle)的长度，如果实际要返回文件名超出这个长度，则失败并返回实际要返回的文件名长度
+*\return 成功: BASIC_FILE_OK；失败: 返回实际要返回的文件名长度；
 *\remarks 
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
 long _BASIC_DLL_API Basic_GetFileTitle(const char* lpszPathName, char* lpszTitle, int nMax);
-//! ��ȫ·���ļ����У�ȡ��·��
+//! 从全路径文件名中，取得路径
 /*! 
-*\param lpszPathName �ļ�·��
-*\param lpszDirPath һ��ָ��������������ڴ�ָ�룬����ļ����ڵ��ļ���·��
-*\param nMax ָ���ڶ�������(lpszDirPath)�ĳ��ȣ����Ϊ_MAX_PATH�����ʵ��Ҫ�����ļ�������������ȣ���ʧ�ܲ�����_MAX_PATH
-*\return �ɹ�: BASIC_FILE_OK��ʧ��: ����_MAX_PATH
+*\param lpszPathName 文件路径
+*\param lpszDirPath 一个指向接受输出结果的内存指针，输出文件所在的文件夹路径
+*\param nMax 指定第二个参数(lpszDirPath)的长度，最大为_MAX_PATH，如果实际要返回文件名超出这个长度，则失败并返回_MAX_PATH
+*\return 成功: BASIC_FILE_OK；失败: 返回_MAX_PATH
 *\remarks 
-*\warning �ڶ�����������ΪNULL
+*\warning 第二个参数不能为NULL
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
 long _BASIC_DLL_API Basic_GetFileDirPath(const char* lpszPathName, char* lpszDirPath, int nMax);
-//! ȡ�ļ�����
+//! 取文件属性
 /*! 
-*\param lpszFileName �ļ�·��
-*\return �ɹ�: ����һ����ʶ�ļ������ļ������Ե�DWORD��ʧ��: ͨ��GetFileErrorID()��ô�����Ϣ��
+*\param lpszFileName 文件路径
+*\return 成功: 返回一个标识文件或者文件夹属性的DWORD；失败: 通过GetFileErrorID()获得错误信息；
 *\remarks 
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
@@ -90,78 +90,78 @@ long _BASIC_DLL_API Basic_GetFileDirPath(const char* lpszPathName, char* lpszDir
 DWORD _BASIC_DLL_API WBasic_GetFileAttributes(LPCTSTR lpszFileName);
 DWORD _BASIC_DLL_API Basic_GetFileAttributes(const char* lpszFileName);
 
-//! �����ļ�״̬
+//! 设置文件状态
 /*! 
-*\param lpszFileName �ļ�·��
-*\param status һ��ָ���ļ�״̬�ṹTLFileStatusW�ĳ�ָ��
-*\return �ɹ�: BASIC_FILE_OK��ʧ��: ͨ��GetFileErrorID()��ô�����Ϣ��
+*\param lpszFileName 文件路径
+*\param status 一个指向文件状态结构TLFileStatusW的常指针
+*\return 成功: BASIC_FILE_OK；失败: 通过GetFileErrorID()获得错误信息；
 *\remarks 
 *\warning 
-*\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>//!!!�ȴ�����
+*\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>//!!!等待再析
 */
 long _BASIC_DLL_API WBasic_SetFileStatus(LPCTSTR lpszFileName, const TLFileStatusW& rStatus);
 long _BASIC_DLL_API Basic_SetFileStatus(const char* lpszFileName, const TLFileStatus& rStatus);
-//! �������ļ������ļ���
+//! 重命名文件或者文件夹
 /*! 
-*\param lpszOldName Ҫ�����������ļ������ļ��е�����
-*\param lpszNewName ���ļ������ļ��е�����
-*\return �ɹ�: BASIC_FILE_OK��ʧ��: ͨ��GetFileErrorID()��ô�����Ϣ��
-*\remarks ʵ�ʵ���WinAPI��MoveFile(yhm??)
-*\warning 1�����ļ����ļ��в����Ѿ����� 2�����ļ������ڲ�ͬ���ļ�ϵͳ�£��������ļ��б����������ļ�������ͬ����������
+*\param lpszOldName 要被重命名的文件或者文件夹的名字
+*\param lpszNewName 新文件或者文件夹的名字
+*\return 成功: BASIC_FILE_OK；失败: 通过GetFileErrorID()获得错误信息；
+*\remarks 实际调用WinAPI的MoveFile(yhm??)
+*\warning 1、新文件或文件夹不能已经存在 2、新文件可以在不同的文件系统下，但是新文件夹必须在与老文件夹在相同的驱动盘下
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
 long _BASIC_DLL_API WBasic_RenameFile(LPCTSTR lpszOldName, LPCTSTR lpszNewName);
 long _BASIC_DLL_API Basic_RenameFile(const char* lpszOldName, const char* lpszNewName);
-//! ɾ���ļ�
+//! 删除文件
 /*! 
-*\param lpszFileName Ҫ��ɾ�����ļ���
-*\return �ɹ�: BASIC_FILE_OK��ʧ��: ͨ��GetFileErrorID()��ô�����Ϣ��
-*\remarks ʵ�ʵ���WinAPI��DeleteFile
-*\warning 1������ɾ��ֻ���ļ�
+*\param lpszFileName 要被删除的文件名
+*\return 成功: BASIC_FILE_OK；失败: 通过GetFileErrorID()获得错误信息；
+*\remarks 实际调用WinAPI的DeleteFile
+*\warning 1、不可删除只读文件
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
 long _BASIC_DLL_API WBasic_DeleteFile(LPCTSTR lpszFileName);
 long _BASIC_DLL_API Basic_DeleteFile(const char* lpszFileName);
-//! �����ļ�
+//! 复制文件
 /*! 
-*\param lpExistingFileName �Ѿ����ڵ��ļ�
-*\param lpNewFileName ���ļ�
-*\param bFailIfExists FALSE: ����ļ����ڣ����ǣ�TRUE: ����ļ����ڣ�������
-*\return �ɹ�: BASIC_FILE_OK��ʧ��: ͨ��GetFileErrorID()��ô�����Ϣ��
-*\remarks ʵ�ʵ���WinAPI��CopyFile
+*\param lpExistingFileName 已经存在的文件
+*\param lpNewFileName 新文件
+*\param bFailIfExists FALSE: 如果文件存在，覆盖；TRUE: 如果文件存在，不覆盖
+*\return 成功: BASIC_FILE_OK；失败: 通过GetFileErrorID()获得错误信息；
+*\remarks 实际调用WinAPI的CopyFile
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
 long _BASIC_DLL_API WBasic_CopyFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists);
 long _BASIC_DLL_API Basic_CopyFile(const char* lpExistingFileName, const char* lpNewFileName, BOOL bFailIfExists);
 
-//! �ж��Ƿ�ͨ���
+//! 判断是否通配符
 /*! 
-*\param pszFile ����������ƥ���·���ַ������MAX_PATH
-*\param pszSpec ͨ���'*','?'����Ҫ��WORD�ļ���д��"*.doc"�MAX_PATH
-*\return �ɹ�:TRUE��ʧ��:FALSE
-*\remarks ʵ�ʵ���WinAPI��PathMatchSpec
+*\param pszFile 被用来搜索匹配的路径字符串，最长MAX_PATH
+*\param pszSpec 通配符'*','?'比如要找WORD文件，写成"*.doc"最长MAX_PATH
+*\return 成功:TRUE；失败:FALSE
+*\remarks 实际调用WinAPI的PathMatchSpec
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
 BOOL _BASIC_DLL_API WBasic_PathMatchSpec(LPCTSTR pszFile, LPCTSTR pszSpec);
 BOOL _BASIC_DLL_API Basic_PathMatchSpec(const char* pszFile, const char* pszSpec);
-//! ȡ���ļ���ָ��
+//! 取得文件名指针
 /*! 
-*\param lpszPathName �ļ�·��
-*\return �ļ���ָ��
-*\remarks ���ص��ļ���ָ��ֻ����������� lpszPathName �е�ƫ�ƣ�ͬʱ֧�� '/' '\\'
+*\param lpszPathName 文件路径
+*\return 文件名指针
+*\remarks 返回的文件名指针只是在输入参数 lpszPathName 中的偏移，同时支持 '/' '\\'
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */	
 _BASIC_DLL_API char* Basic_FindFileName(const char* lpszPathName);
 
-//! ����Ŀ¼
+//! 创建目录
 /*! 
-*\param lpszPath Ҫ������Ŀ¼��
-*\return �ɹ�: BASIC_FILE_OK��ʧ��: BASIC_FILE_MKDIR_ERROR��
-*\remarks ������� lpszPath ͬʱ֧��'/'��'\\'���������һ��'/'��'\\'������ַ�ǰ���������Ϊ��Ҫ������Ŀ¼����������ݿ������ļ�����������Ŀ¼��
-*\remarks ��Ҫ����Ŀ¼ basic��Ҫ���� d:\\basic\\ ���� d:/basic/
+*\param lpszPath 要创建的目录名
+*\return 成功: BASIC_FILE_OK；失败: BASIC_FILE_MKDIR_ERROR；
+*\remarks 输入参数 lpszPath 同时支持'/'和'\\'。查找最后一个'/'或'\\'，这个字符前面的内容作为需要建立的目录。后面的内容看作是文件名，不创建目录。
+*\remarks 如要创建目录 basic，要输入 d:\\basic\\ 或者 d:/basic/
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
@@ -170,57 +170,57 @@ long _BASIC_DLL_API WBasic_mkdir(LPCTSTR lpszPath);
 
 _BASIC_DLL_API char* Basic_TempFileName(const char* lpszDir, const char* lpszHead, const char* lpszExt, char* lpszBuffer, int nMax);
 
-#define BASIC_FO_MOVE           0x0001			//!< �ļ��ƶ�
-#define BASIC_FO_COPY           0x0002			//!< �ļ�����
-#define BASIC_FO_DELETE         0x0003			//!< �ļ�ɾ��
-#define BASIC_FO_RENAME         0x0004			//!< �ļ�����
+#define BASIC_FO_MOVE           0x0001			//!< 文件移动
+#define BASIC_FO_COPY           0x0002			//!< 文件复制
+#define BASIC_FO_DELETE         0x0003			//!< 文件删除
+#define BASIC_FO_RENAME         0x0004			//!< 文件改名
 
-//! �ļ�Ŀ¼����
+//! 文件目录操作
 /*! 
-*\param wFunc �ļ�����ѡ��
+*\param wFunc 文件操作选项
 *  <ul>
-*  <li> �ļ�����ѡ��
+*  <li> 文件操作选项
 *     <ol>
-*     <li> BASIC_FO_MOVE		�ļ��ƶ�
-*     <li> BASIC_FO_COPY		�ļ�����
-*     <li> BASIC_FO_DELETE		�ļ�ɾ��
-*     <li> BASIC_FO_RENAME		�ļ�����
+*     <li> BASIC_FO_MOVE		文件移动
+*     <li> BASIC_FO_COPY		文件复制
+*     <li> BASIC_FO_DELETE		文件删除
+*     <li> BASIC_FO_RENAME		文件改名
 *     </ol>
 *  </ul>
-*\param pFrom ԭ�ļ�����Ŀ¼��
-*\param pTo Ŀ���ļ�����Ŀ¼��
+*\param pFrom 原文件或者目录名
+*\param pTo 目的文件或者目录名
 *\return 
 *\remarks 
-*\warning  ֧��ɾ�������ļ�
+*\warning  支持删除单个文件
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
 long _BASIC_DLL_API Basic_FileOperation(uint32_t wFunc, const char* pFrom, const char* pTo);
 
-#define BASIC_FIND_SUBDIR			0x0001			//!< ������Ŀ¼
-#define BASIC_FIND_DIR				0x0002			//!< ����Ŀ¼������
+#define BASIC_FIND_SUBDIR			0x0001			//!< 查找子目录
+#define BASIC_FIND_DIR				0x0002			//!< 返回目录的名称
 
-//! ����Ŀ¼����������ļ�
+//! 查找目录里面的所有文件
 /*! 
-*\param lpszFilePath ָ��Ҫ���ҵ��ļ�·��
-*\param lpszFileName ͨ���
-*\param dwFindMode ���ҵ�ѡ�� �����壺BASIC_FIND_* ��BASIC_FIND_SUBDIR:������Ŀ¼  BASIC_FIND_DIR������Ŀ¼������
-*\param f ģ�庯�����Բ��ҵ����ļ����д���������ԭ�� long func(LPCTSTR lpszFileName, time_t tmCreateTime, time_t tmModifyTime, long lFileLength, BYTE cAttr)
-          cAttr �ļ������ԣ������� enum TLFileAttribute 
-*\return ���ش�·���µķ����������ļ���
-*\remarks ��� lpszFilePath ���ļ��������� lpszFileName ��Ч�����Ҫ����ȫ�������⣬lpszFileName = NULL
+*\param lpszFilePath 指定要查找的文件路径
+*\param lpszFileName 通配符
+*\param dwFindMode 查找的选项 见定义：BASIC_FIND_* 。BASIC_FIND_SUBDIR:查找子目录  BASIC_FIND_DIR：返回目录的名称
+*\param f 模板函数，对查找到的文件进行处理。函数原型 long func(LPCTSTR lpszFileName, time_t tmCreateTime, time_t tmModifyTime, long lFileLength, BYTE cAttr)
+          cAttr 文件的属性，见定义 enum TLFileAttribute 
+*\return 返回此路径下的符合条件的文件数
+*\remarks 如果 lpszFilePath 有文件名，参数 lpszFileName 无效。如果要查找全部的问题，lpszFileName = NULL
 *\warning
 */
 
 long _BASIC_DLL_API Basic_FindAllFileInPath(const char* lpszFilePath, const char* lpszFileName, DWORD dwFindMode, const std::function<long(const char*, time_t, time_t, long, BYTE)>& f);
 
-//! ����Ŀ¼����������ļ�
+//! 查找目录里面的所有文件
 /*! 
-*\param lpszFilePath ָ��Ҫ���ҵ��ļ�·��
-*\param lpszFileName ͨ���
-*\param ayFile һ��CWBasicStringArrayָ��
-*\param dwFindMode ���ҵ�ѡ�� �����壺BASIC_FIND_* ��BASIC_FIND_SUBDIR:������Ŀ¼
-*\return ���ش�·���µķ����������ļ���
-*\remarks ��� lpszFilePath ���ļ��������� lpszFileName ��Ч�����Ҫ����ȫ�������⣬lpszFileName = NULL
+*\param lpszFilePath 指定要查找的文件路径
+*\param lpszFileName 通配符
+*\param ayFile 一个CWBasicStringArray指针
+*\param dwFindMode 查找的选项 见定义：BASIC_FIND_* 。BASIC_FIND_SUBDIR:查找子目录
+*\return 返回此路径下的符合条件的文件数
+*\remarks 如果 lpszFilePath 有文件名，参数 lpszFileName 无效。如果要查找全部的问题，lpszFileName = NULL
 *\warning
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
@@ -230,15 +230,15 @@ long _BASIC_DLL_API Basic_FindAllFileInPath(const char* lpszFilePath, const char
 class _BASIC_DLL_API CBasicFileFind : public CBasicObject
 {
 public:
-	//! ���캯��
+	//! 构造函数
 	/*!
-	*  ��ʼ�����г�Ա����
+	*  初始化所有成员变量
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	CBasicFileFind();
-	//! ��������
+	//! 析构函数
 	/*!
-	*  �ͷŷ�����ڴ�
+	*  释放分配的内存
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	virtual ~CBasicFileFind();
@@ -246,142 +246,142 @@ public:
 	// Attributes
 public:
 
-	//! ����ļ�����
+	//! 获得文件长度
 	/*!
-	*  ����һ��ULONGLONG�͵��ļ�����
+	*  返回一个ULONGLONG型的文件长度
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	ULONGLONG GetLength() const;
 
-	//! ����ļ���
+	//! 获得文件名
 	/*!
-	*  ����һ��CWBasicString�͵��ַ���
+	*  返回一个CWBasicString型的字符串
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	CBasicString GetFileName() const;
 
 
-	//! ����ļ����ڵ��ļ���·��
+	//! 获得文件所在的文件夹路径
 	/*!
-	*  ����һ��CWBasicString�͵��ַ���
+	*  返回一个CWBasicString型的字符串
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	CBasicString GetFilePath() const;
 
-	//! ��ò����ļ���չ�����ļ���
+	//! 获得不带文件扩展名的文件名
 	/*!
-	*  ����һ��CWBasicString�͵��ַ���
+	*  返回一个CWBasicString型的字符串
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	CBasicString GetFileTitle() const;
 
-	//! ��������ļ���URL
+	//! 获得网络文件的URL
 	/*!
-	*  ����һ��CWBasicString�͵��ַ���
+	*  返回一个CWBasicString型的字符串
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	CBasicString GetFileURL() const;
 
-	//! ����ļ����ڵ�Ŀ¼�����Ǹ�Ŀ¼
+	//! 获得文件所在的目录，不是根目录
 	/*!
-	*  ����һ��CWBasicString�͵��ַ���
+	*  返回一个CWBasicString型的字符串
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	CBasicString GetRoot() const;
 
-	//! ����ļ�����޸�ʱ��
+	//! 获得文件最后修改时间
 	/*!
-	*  ����һ��time_t��ʱ��
+	*  返回一个time_t型时间
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	time_t GetLastWriteTime() const;
 
-	//! ����ļ�������ʱ��
+	//! 获得文件最后访问时间
 	/*!
-	*  ����һ��time_t��ʱ��
+	*  返回一个time_t型时间
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	time_t GetLastAccessTime() const;
 
-	//! ����ļ�����ʱ��
+	//! 获得文件创建时间
 	/*!
-	*  ����һ��time_t��ʱ��
+	*  返回一个time_t型时间
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	time_t GetCreationTime() const;
 
 	///////group0812
-	/** @name �ļ������ж�
+	/** @name 文件属性判断
 	*/
 	//@{
 	///////group0812
 
-	//! ƥ���ļ�����
+	//! 匹配文件属性
 	/*!
-	*  ����TURE: ���д����ԣ�����FALSE: �����д����ԣ�
+	*  返回TURE: 具有此属性；返回FALSE: 不具有此属性；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	BOOL MatchesMask(DWORD dwMask) const;
 
-	//! �ļ��Ƿ���Ŀ¼
+	//! 文件是否是目录
 	/*!
-	*  ����TURE: ��Ŀ¼������FALSE: ����Ŀ¼��
+	*  返回TURE: 是目录；返回FALSE: 不是目录；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	BOOL IsDots() const;
 
-	//! �ļ��Ƿ�ֻ��
+	//! 文件是否只读
 	/*!
-	*  ����TURE: ֻ��������FALSE: ��ֻ����
+	*  返回TURE: 只读；返回FALSE: 非只读；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	BOOL IsReadOnly() const;
 
-	//! �ļ��Ƿ���Ŀ¼
+	//! 文件是否是目录
 	/*!
-	*  ����TURE: ��Ŀ¼������FALSE: ����Ŀ¼��
+	*  返回TURE: 是目录；返回FALSE: 不是目录；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	BOOL IsDirectory() const;
 
-	//! �ļ��Ƿ�ѹ��
+	//! 文件是否压缩
 	/*!
-	*  ����TURE: �ǣ�����FALSE: ��
+	*  返回TURE: 是；返回FALSE: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	BOOL IsCompressed() const;
 
-	//! �ļ��Ƿ���ϵͳ�ļ�
+	//! 文件是否是系统文件
 	/*!
-	*  ����TURE: �ǣ�����FALSE: ��
+	*  返回TURE: 是；返回FALSE: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	BOOL IsSystem() const;
 
-	//! �ļ��Ƿ�����
+	//! 文件是否隐藏
 	/*!
-	*  ����TURE: �ǣ�����FALSE: ��
+	*  返回TURE: 是；返回FALSE: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	BOOL IsHidden() const;
 
-	//! �ļ��Ƿ�����ʱ�ļ�
+	//! 文件是否是临时文件
 	/*!
-	*  ����TURE: �ǣ�����FALSE: ��
+	*  返回TURE: 是；返回FALSE: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	BOOL IsTemporary() const;
 
-	//! �ļ��Ƿ���һ�����ԣ������߱������κ�����
+	//! 文件是否有一般属性，即不具备其他任何属性
 	/*!
-	*  ����TURE: �ǣ�����FALSE: ��
+	*  返回TURE: 是；返回FALSE: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	BOOL IsNormal() const;
 
-	//! �ļ��Ƿ�鵵����
+	//! 文件是否归档属性
 	/*!
-	*  ����TURE: �ǣ�����FALSE: ��
+	*  返回TURE: 是；返回FALSE: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	BOOL IsArchived() const;
@@ -392,34 +392,34 @@ public:
 
 
 	///////group0812
-	/** @name �ļ�����Operations
+	/** @name 文件操作Operations
 	*/
 	//@{
 	///////group0812
 
 	// Operations
 
-	//! �ر��ļ����Ҿ��
+	//! 关闭文件查找句柄
 	/*!
-	*  �ر��ļ����Ҿ��
+	*  关闭文件查找句柄
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	void Close();
 
-	//! �����ļ�
+	//! 查找文件
 	/*!
-	*\param lpszFilePath �ļ�·��
-	*\param lpszFileName �ļ��������=NULL����ʾ�������е��ļ������ lpszFilePath ���ļ������ò�����Ч��
-	*\return �ɹ�: BASIC_FILE_OK��ʧ��: ͨ��GetFileErrorID()��ô�����Ϣ��
+	*\param lpszFilePath 文件路径
+	*\param lpszFileName 文件名，如果=NULL，表示查找所有的文件。如果 lpszFilePath 有文件名，该参数无效。
+	*\return 成功: BASIC_FILE_OK；失败: 通过GetFileErrorID()获得错误信息；
 	*\remarks
 	*\warning
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	long FindFile(const char* lpszFilePath, const char* lpszFileName = NULL);
 
-	//! ������һ���ļ�
+	//! 查找下一个文件
 	/*!
-	*  �ڵ���FindFile����Ҫ�������������֮����ܵ�����������
+	*  在调用FindFile后，需要调用这个函数，之后才能调用其他函数
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
 	long FindNextFile();
@@ -429,45 +429,45 @@ public:
 	///////group0812
 
 protected:
-	void CloseContext();		//!< �رղ���������
+	void CloseContext();		//!< 关闭查找上下文
 
 protected:
-	void* m_pFoundInfo;			//!< �Ѿ����ҵ����ļ���Ϣ
-	void* m_pNextInfo;			//!< ��һ���ļ���Ϣ
-	HANDLE m_hContext;			//!< �ļ��������
-	CBasicString m_strRoot;		//!< �ļ�Ŀ¼·��
+	void* m_pFoundInfo;			//!< 已经查找到的文件信息
+	void* m_pNextInfo;			//!< 下一个文件信息
+	HANDLE m_hContext;			//!< 文件搜索句柄
+	CBasicString m_strRoot;		//!< 文件目录路径
 };
 //////////////////addtogroup0812
 /** @} */
 //////////////////addtogroup0812
 
-//·���ָ�������
+//路径分隔符定义
 #ifdef __BASICWINDOWS
-#define WIDEPATHSPLIT 				_T('\\')		//�����ַ�
+#define WIDEPATHSPLIT 				_T('\\')		//单个字符
 #define PATHSPLIT_S					'\\'
-#define PATHSPLITSTRING_S			"\\"			//�ַ���
+#define PATHSPLITSTRING_S			"\\"			//字符串
 #else
-#define WIDEPATHSPLIT 				_T('/')			//�����ַ�
-#define PATHSPLIT_S 				'/'			//�����ַ�
+#define WIDEPATHSPLIT 				_T('/')			//单个字符
+#define PATHSPLIT_S 				'/'			//单个字符
 #define PATHSPLIT					PATHSPLIT_S
-#define PATHSPLITSTRING_S			"/"				//�ַ���
-#define PATHSPLIT_OTHER				'\\'		//�����ַ�
-#define PATHSPLITSTRING_OTHER		"\\"		//�ַ���
+#define PATHSPLITSTRING_S			"/"				//字符串
+#define PATHSPLIT_OTHER				'\\'		//单个字符
+#define PATHSPLITSTRING_OTHER		"\\"		//字符串
 #endif
 
-//! ��ʽ��·��
+//! 格式化路径
 /*! 
-*\param strPath ·��
+*\param strPath 路径
 */
 void _BASIC_DLL_API Basic_RegulatePathString(CBasicString& strPath);
 
-//! ��ʽ���ļ���
+//! 格式化文件名
 /*! 
-*\param strFileName �ļ���
+*\param strFileName 文件名
 */
 void _BASIC_DLL_API Basic_RegulateFileNameString(CBasicString& strFileName);
 
-//! ��ȡ�ļ�
+//! 读取文件
 bool _BASIC_DLL_API Basic_ReadTotalFile(const char* pFileName, basiclib::CBasicSmartBuffer& smBuf);
 
 __NS_BASIC_END

@@ -157,14 +157,14 @@ long CBasicZipFile::Flush()
 long CBasicZipFile::buildZipIndex()
 {
 	long file_length = GetLength();
-	if (file_length < 0)	// ·¢Éú´íÎó
+	if (file_length < 0)	// å‘ç”Ÿé”™è¯¯
 		return file_length;
 
-	// ÅÐ¶ÏÎÄ¼þ³¤¶ÈÊÇ·ñºÏ·¨
+	// åˆ¤æ–­æ–‡ä»¶é•¿åº¦æ˜¯å¦åˆæ³•
 	if (file_length < sizeof(zip_file_end))
 	{
 		if (!IsReadOnly() && file_length == 0)
-		{	// Èç¹ûÊÇÐ´ÎÄ¼þ£¬ÔÊÐíÎÄ¼þ³¤¶ÈÎª0
+		{	// å¦‚æžœæ˜¯å†™æ–‡ä»¶ï¼Œå…è®¸æ–‡ä»¶é•¿åº¦ä¸º0
 			return BASIC_FILE_OK;
 		}
 		else
@@ -198,7 +198,7 @@ long CBasicZipFile::buildZipIndex()
 	zip_file_end* file_end = (zip_file_end*)flag;
 	m_end = *file_end;
 	m_strComment = char_string((char*)(file_end + 1), file_end->size_comment);
-	// Æ«ÒÆµ½Ä¿Â¼Çø
+	// åç§»åˆ°ç›®å½•åŒº
 	Seek(file_end->offset_dir_to_first_disk, BASIC_FILE_BEGIN);
 
 	CBasicStaticBuffer sb;
@@ -225,9 +225,9 @@ long CBasicZipFile::buildZipIndex()
 		char* comment = extend + dir_block.size_extend;
 		
 		if (dir_block.property_outer_file & property_outer_file_dir)	// is a directory
-		{	// Ä¿Â¼
+		{	// ç›®å½•
 			zip_dir_info* info = Basic_NewObject<zip_dir_info>();
-			info->file_name = char_string(file, dir_block.size_filename - 1);	// Ä¿Â¼È¥³ýµô×îºóÒ»¸ö'/'
+			info->file_name = char_string(file, dir_block.size_filename - 1);	// ç›®å½•åŽ»é™¤æŽ‰æœ€åŽä¸€ä¸ª'/'
 			info->comment = char_string(comment, dir_block.size_comment);
 			info->time_lastmodify = lastmodify;
 			info->zip_type = dir_block.zip_type;
@@ -235,7 +235,7 @@ long CBasicZipFile::buildZipIndex()
 				BASIC_DeleteObject(info);
 		}
 		else
-		{	// ÎÄ¼þ
+		{	// æ–‡ä»¶
 			zip_file_info* info = Basic_NewObject<zip_file_info>();
 			info->file_name = char_string(file, dir_block.size_filename);
 			info->comment = char_string(comment, dir_block.size_comment);
@@ -674,7 +674,7 @@ zip_file_info* CBasicZipFile::__addfile(CBasicStaticBuffer* dataBuffer, file_con
 				rval = (deflateEnd(&stream) == Z_OK);
 				if (rval)
 				{
-					if (stream.total_out < block.size_unzipped)	// Ñ¹ËõÁË±È²»Ñ¹Ëõ»¹´ó£¬»¹²»Èç²»Ñ¹Ëõ
+					if (stream.total_out < block.size_unzipped)	// åŽ‹ç¼©äº†æ¯”ä¸åŽ‹ç¼©è¿˜å¤§ï¼Œè¿˜ä¸å¦‚ä¸åŽ‹ç¼©
 					{
 						block.size_zipped = dirblock.size_zipped = fileinfo->size_zipped = stream.total_out;
 						rval = true;

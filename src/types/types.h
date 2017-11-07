@@ -1,9 +1,9 @@
-/* »ù´¡ÀàĞÍ¶¨Òå */
+/* åŸºç¡€ç±»å‹å®šä¹‰ */
 
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
-//ĞèÒª×¢ÒâµÄÊÇwcharÔÚwindowsÏÂÊÇ2¸ö×Ö½ÚÔÚlinuxÏÂÊÀ4¸ö×Ö½Ú
+//éœ€è¦æ³¨æ„çš„æ˜¯wcharåœ¨windowsä¸‹æ˜¯2ä¸ªå­—èŠ‚åœ¨linuxä¸‹ä¸–4ä¸ªå­—èŠ‚
 
 #ifdef __BASICWINDOWS
 #include <tchar.h>
@@ -247,9 +247,9 @@ typedef const void	        *LPCVOID;
 #define _countof(array) (sizeof(array)/sizeof(array[0]))
 #endif
 
-//ÊôĞÔÎ»²Ù×÷º¯Êı
+//å±æ€§ä½æ“ä½œå‡½æ•°
 #define TLSetOptions(dwOptions, dwValue, dwMask) dwOptions &= ~dwMask; dwOptions |= (dwValue & dwMask)
-//ÊôĞÔÎ»»ñÈ¡º¯Êı
+//å±æ€§ä½è·å–å‡½æ•°
 #define TLGetOptions(dwOptions, dwMask) (dwOptions & dwMask)
 
 #ifdef __cplusplus

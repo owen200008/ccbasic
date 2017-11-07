@@ -134,13 +134,13 @@ bool ReplaceAddressForJump(PBYTE pOld, PBYTE pNew, char* pBuffer, const std::fun
 		return false;
 	}
 #else
-	logFunc("Ä¿Ç°²»ÖªµÀwin64");
+	logFunc("ç›®å‰ä¸çŸ¥é“win64");
 	return false;
 #endif
 	return true;
 }
 #endif
-//ÏàÍ¬¶¯Ì¬¿âÌæ»»½Ó¿Ú
+//ç›¸åŒåŠ¨æ€åº“æ›¿æ¢æ¥å£
 bool CBasicLoadDll::ReplaceDll(CBasicLoadDll& dll, const std::function<void(const char* pLog)>& logFunc)
 {
 #ifdef __BASICWINDOWS
@@ -170,8 +170,8 @@ bool CBasicLoadDll::ReplaceDll(CBasicLoadDll& dll, const std::function<void(cons
 		long lOldIndex = GetOldIndexBinerySearch(dwIndex, pstrFunctionName, m_hModule, pOldExportDirectory, aryOldAddressOfNames);
 		if (lOldIndex < 0)
 		{
-			//ÕÒ²»µ½
-			_snprintf(szBuf, LOGMAXSIZE, "ÕÒ²»µ½½Ó¿Ú%s", pstrFunctionName);
+			//æ‰¾ä¸åˆ°
+			_snprintf(szBuf, LOGMAXSIZE, "æ‰¾ä¸åˆ°æ¥å£%s", pstrFunctionName);
 			logFunc(szBuf);
 			continue;
 		}

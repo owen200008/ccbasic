@@ -51,9 +51,9 @@ public:
 	void CloseTimer();
 	void WaitThreadExit();
 
-	/*	×î¸ß¾«¶È10ms, Êµ¼ÊÎó²î25ms(sleep)
+	/*	æœ€é«˜ç²¾åº¦10ms, å®žé™…è¯¯å·®25ms(sleep)
 		100=1s 
-		Êµ¼Ê100ms¾«¶ÈÄÚµÄÎÞ·¨ÍêÈ«×¼È·
+		å®žé™…100msç²¾åº¦å†…çš„æ— æ³•å®Œå…¨å‡†ç¡®
 	*/
 	bool AddTimeOut(intptr_t nKey, pOnTimerCallback pFunc, int nTimes, intptr_t pParam1);
 	bool AddOnTimer(intptr_t nKey, pOnTimerCallback pFunc, int nTimes, intptr_t pParam1);

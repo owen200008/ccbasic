@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// �ļ���:     fileobj.h
-// ������:     ������
+// 文件名:     fileobj.h
+// 创建者:     蔡振球
 // Email:      zqcai@w.cn
-// ����ʱ��:   2012/2/17 12:43:13
-// ��������:   �����ļ���������
-// �汾��Ϣ:   1.0V
+// 创建时间:   2012/2/17 12:43:13
+// 内容描述:   定义文件处理基类
+// 版本信息:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_FILEOBJ_H
 #define BASIC_FILEOBJ_H
@@ -12,322 +12,322 @@
 #pragma once
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
-//����
-//�ļ��򿪷�ʽ
-//�����ļ�����ֻ�����д�������������Ʒ�ʽ��
-//ȱʡ��ʽ������һ�����ļ�������ļ����ڣ����ݲ��䡣
-#define PF_OPEN_ONLY	0x0001		/*!< ����ļ������ڣ���ʧ�ܡ�*/
-#define PF_OPEN_TRUN	0x0002		/*!< ����ļ����ڣ�������Ϊ�㡣*/
-#define PF_READ_ONLY	0x0004		/*!< ���ļ���ֻ����*/
-#define PF_CREATE_ONLY	0x0008		/*!< ����ļ����ڣ���ʧ�ܣ����򴴽�һ�����ļ���*/
-#define PF_MEM_ONLY		0x0010		/*!< �ڴ��ļ������ܸı��С*/
+//声明
+//文件打开方式
+//所有文件都以只读或读写、共享、二进制方式打开
+//缺省方式：创建一个新文件，如果文件存在，内容不变。
+#define PF_OPEN_ONLY	0x0001		/*!< 如果文件不存在，打开失败。*/
+#define PF_OPEN_TRUN	0x0002		/*!< 如果文件存在，长度置为零。*/
+#define PF_READ_ONLY	0x0004		/*!< 打开文件，只读。*/
+#define PF_CREATE_ONLY	0x0008		/*!< 如果文件存在，打开失败，否则创建一个新文件。*/
+#define PF_MEM_ONLY		0x0010		/*!< 内存文件，不能改变大小*/
 
-//�ļ�����
-#define PF_FILE_MASK	0xF000		/*!< �ļ�����*/
+//文件类型
+#define PF_FILE_MASK	0xF000		/*!< 文件类型*/
 
-#define PF_DISK_FILE	0x2000		/*!< �����ļ�*/
-#define PF_MEM_FILE		0x3000		/*!< �ڴ��ļ�*/
+#define PF_DISK_FILE	0x2000		/*!< 磁盘文件*/
+#define PF_MEM_FILE		0x3000		/*!< 内存文件*/
 
 //class CBasicObject;
-	class CBasicFileObj;				//�ļ���������
+	class CBasicFileObj;				//文件处理基类
 /////////////////////////////////////////////////////////////////////////////
 class CFileBase;
-//! ��װ�˶Դ����ļ����ڴ��ļ���һϵ�в���
+//! 封装了对磁盘文件和内存文件的一系列操作
 /*!
-* ��װ�˶��ļ���һϵ�в������������ļ����ݵĶ�д�����ļ��Ŀ�����ɾ�����ļ�״̬�Ĳ���
+* 封装了对文件的一系列操作，包括对文件内容的读写，对文件的拷贝、删除，文件状态的操作
 */
 class _BASIC_DLL_API CBasicFileObj : public basiclib::CBasicObject
 {
 	//BASIC_DECLARE_DYNCREATE(CWBasicFileObj)
 public:
 	// Constructors  
-	//! ���캯��
+	//! 构造函数
 	/*!
-	*  ��ʼ�����еĳ�Ա������
+	*  初始化所有的成员变量。
 	*/
 	CBasicFileObj();
 
-	//! ���캯�� 
+	//! 构造函数 
 	/*!
-	* ���������ڴ��ļ�����Ĺ��캯��
-	*\param pBuffer ��������ʼ���ڴ��ļ���������ݿ飬���������꣬�ö�����Ա�����
-	*\param lCount  ָ������1�������ݿ�ĳ���
+	* 用来创建内存文件对象的构造函数
+	*\param pBuffer 用来来初始华内存文件对象的数据块，函数调用完，该对象可以被销毁
+	*\param lCount  指明参数1传入数据块的长度
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	CBasicFileObj(void* pBuffer, long lCount);
 
-	//! ���캯��
+	//! 构造函数
 	/*!
-	* �������������ļ�����Ĺ��캯���������ο�Open����˵��
+	* 用来创建磁盘文件对象的构造函数，参数参考Open函数说明
 	*\param lpszFileName
 	*\param dwOpenFlags
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	CBasicFileObj(const char* lpszFileName, DWORD dwOpenFlags);
 
-	//! ��������
+	//! 析构函数
 	/*!
 	*/
 	virtual ~CBasicFileObj();
 
 	// Attributes
-	//! \brief �ж�ָ�����ļ��Ƿ��ڴ�״̬ 
+	//! \brief 判断指定的文件是否处于打开状态 
 	/*!
-	*\return TRUE:��ʾ�ļ��Ǵ򿪵�;FALSE:�ļ�û�д�
+	*\return TRUE:表示文件是打开的;FALSE:文件没有打开
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	BOOL IsOpen() const;
 
-	//! \brief �ж�ָ�����ļ��Ƿ��ڽ�ֹд״̬
+	//! \brief 判断指定的文件是否处于禁止写状态
 	/*!
-	*\return TRUE:��ʾ�ļ���ֻ��;FALSE:�ļ���ֻ��,Ҳ�����ļ�û�д�
+	*\return TRUE:表示文件是只读;FALSE:文件非只读,也可能文件没有打开
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	BOOL IsReadOnly() const { return  (m_dwOpenFlags & PF_READ_ONLY); }
 
-	//! \brief �ж�ָ�����ļ��Ƿ�ֻ��״̬
+	//! \brief 判断指定的文件是否处只打开状态
 	/*!
-	*\return TRUE:��ʾ�ļ���OpenOnly;FALSE:�ļ���OpenOnly,Ҳ�����ļ�û�д�
+	*\return TRUE:表示文件是OpenOnly;FALSE:文件非OpenOnly,也可能文件没有打开
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	BOOL IsOpenOnly() const { return  (m_dwOpenFlags & PF_OPEN_ONLY); }
 
-	//! \brief �ж�ָ�����ļ��Ƿ����ڴ��ļ�
+	//! \brief 判断指定的文件是否是内存文件
 	/*!
-	*\return TRUE:��ʾ��ǰ���������ڴ��ļ�;FALSE:���ڴ��ļ�,Ҳ�����ļ�û�д�
+	*\return TRUE:表示当前操作的是内存文件;FALSE:非内存文件,也可能文件没有打开
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	BOOL IsMemoryFile() const;
 
-	//! \brief �ж�ָ�����ļ��Ƿ���ֻ�����ڴ��ļ�
+	//! \brief 判断指定的文件是否是只读的内存文件
 	/*!
-	*\return TRUE:��ʾ��ǰ��������ֻ�����ڴ��ļ�;FALSE:��ֻ�������߷��ڴ��ļ�������û�д�
+	*\return TRUE:表示当前操作的是只读的内存文件;FALSE:非只读，或者非内存文件，或者没有打开
 	*/
 	BOOL IsMemoryOnly() const { return  (m_dwOpenFlags & PF_MEM_ONLY); }
 
-	//! \brief ����ļ���������ǰ��λ��
+	//! \brief 获得文件操作，当前的位置
 	/*!
-	*\return ����>=0�ĵ�ǰλ��
+	*\return 返回>=0的当前位置
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	long GetPosition() const;
 
-	//! \brief ����ļ��Ѿ����ļ���״̬
+	//! \brief 获得文件已经打开文件的状态
 	/*!
-	*����ļ��Ѿ����ļ���״̬
-	*\param rStatus �ļ�״̬�Ľṹ
-	*\return ����������óɹ����� BASIC_FILE_OK ���򷵻�һ����0��ֵ(������ filedefine.h)
+	*获得文件已经打开文件的状态
+	*\param rStatus 文件状态的结构
+	*\return 如果函数调用成功返回 BASIC_FILE_OK 否则返回一个非0的值(见定义 filedefine.h)
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	long GetStatus(TLFileStatus& rStatus) const;
 
 
-	//! \brief ����ļ������ڵ�Ŀ¼
+	//! \brief 获得文件的所在的目录
 	/*!
-	*\return ����������óɹ����ش��ļ�����Ŀ¼(����·��)
-	*\remarks �������OpenMemFile�򿪺���CWBasicFileObj(void* pBuffer, long lCount)����Ķ��󽫷��ؿ�
+	*\return 如果函数调用成功返回打开文件坐在目录(绝对路径)
+	*\remarks 如果是用OpenMemFile打开和用CWBasicFileObj(void* pBuffer, long lCount)构造的对象将返回空
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	CBasicString GetFileDirPath() const;
 
-	//! \brief ����ļ���
+	//! \brief 获得文件名
 	/*!
-	*\return ����������óɹ����ش��ļ����ļ���
-	*\remarks �������OpenMemFile�򿪺���CWBasicFileObj(void* pBuffer, long lCount)����Ķ��󽫷��ؿ�
+	*\return 如果函数调用成功返回打开文件的文件名
+	*\remarks 如果是用OpenMemFile打开和用CWBasicFileObj(void* pBuffer, long lCount)构造的对象将返回空
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	CBasicString GetFileName() const;
 
-	//! \brief ���û�к�׺���ļ���
+	//! \brief 获得没有后缀的文件名
 	/*!
-	*\return ����������óɹ����ش��ļ����ļ���
-	*\remarks �������OpenMemFile�򿪺���CWBasicFileObj(void* pBuffer, long lCount)����Ķ��󽫷��ؿ�
+	*\return 如果函数调用成功返回打开文件的文件名
+	*\remarks 如果是用OpenMemFile打开和用CWBasicFileObj(void* pBuffer, long lCount)构造的对象将返回空
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	CBasicString GetFileTitle() const;
 
-	//! \brief ����ļ���ȫ·��
+	//! \brief 获得文件的全路径
 	/*!
-	*\return ����������óɹ����ش��ļ���ȫ·��
-	*\remarks �������OpenMemFile�򿪺���CWBasicFileObj(void* pBuffer, long lCount)����Ķ��󽫷��ؿ�
+	*\return 如果函数调用成功返回打开文件的全路径
+	*\remarks 如果是用OpenMemFile打开和用CWBasicFileObj(void* pBuffer, long lCount)构造的对象将返回空
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	CBasicString GetFilePath() const;
 
-	//! \brief �ж��ļ��Ƿ�Ϸ�
+	//! \brief 判断文件是否合法
 	/*!
-	*\return ����������óɹ�����TRUE�����򷵻�FALSE��
-	*\remarks �����������Ҫ������������������ж��нṹ���ļ��Ƿ�Ϸ���
+	*\return 如果函数调用成功返回TRUE，否则返回FALSE。
+	*\remarks 派生类可能需要重载这个函数，用于判断有结构的文件是否合法。
 	*/
 	virtual BOOL IsValidFile() { return TRUE; }
 	// Operations
-	//! \brief ���ļ�
+	//! \brief 打开文件
 	/*!
-	*\param lpszFileName �ļ���·��(����·�������·��)
-	*\param dwOpenFlags  �ļ�����ѡ��
-	*  <ul>�ļ�����ѡ��
+	*\param lpszFileName 文件名路径(绝对路径或相对路径)
+	*\param dwOpenFlags  文件操作选项
+	*  <ul>文件操作选项
 	*     <ol>
-	*     <li> PF_OPEN_ONLY		����ļ������ڣ���ʧ�� </li>
-	*     <li> PF_OPEN_TRUN		����ļ����ڣ�������Ϊ��</li>
-	*     <li> PF_READ_ONLY		���ļ���ֻ��</li>
-	*     <li> PF_CREATE_ONLY	����ļ����ڣ���ʧ�ܣ����򴴽�һ�����ļ�</li>
-	*     <li> PF_MEM_ONLY		�ڴ��ļ������ܸı��С</li>
-	*     <li> PF_DISK_FILE		�����ļ�</li>
-	*     <li> PF_MEM_FILE		����ļ����ڣ���ʧ�ܣ����򴴽�һ�����ļ�</li>
+	*     <li> PF_OPEN_ONLY		如果文件不存在，打开失败 </li>
+	*     <li> PF_OPEN_TRUN		如果文件存在，长度置为零</li>
+	*     <li> PF_READ_ONLY		打开文件，只读</li>
+	*     <li> PF_CREATE_ONLY	如果文件存在，打开失败，否则创建一个新文件</li>
+	*     <li> PF_MEM_ONLY		内存文件，不能改变大小</li>
+	*     <li> PF_DISK_FILE		磁盘文件</li>
+	*     <li> PF_MEM_FILE		如果文件存在，打开失败，否则创建一个新文件</li>
 	*     </ol>
 	*  </ul>
-	*\return ����������óɹ����� BASIC_FILE_OK ���򷵻�һ����0��ֵ (������ filedefine.h)
+	*\return 如果函数调用成功返回 BASIC_FILE_OK 否则返回一个非0的值 (见定义 filedefine.h)
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	virtual long Open(const char* lpszFileName, DWORD dwOpenFlags);
 
-	//! \brief ���ڴ��ļ�
+	//! \brief 打开内存文件
 	/*!
-	*\param pBuffer ��������ʼ���ڴ��ļ���������ݿ飬���������꣬�ö�����Ա�����
-	*\param lCount  ָ������1�������ݿ�ĳ���
-	*\param lLength ָ�������ڴ��ļ��Ĵ�С�����lLength < lCount �� lLength = lCount
-	*\return ����������óɹ����� BASIC_FILE_OK ���򷵻�һ����0��ֵ(������ filedefine.h)
+	*\param pBuffer 用来来初始华内存文件对象的数据块，函数调用完，该对象可以被销毁
+	*\param lCount  指明参数1传入数据块的长度
+	*\param lLength 指明分配内存文件的大小，如果lLength < lCount 则 lLength = lCount
+	*\return 如果函数调用成功返回 BASIC_FILE_OK 否则返回一个非0的值(见定义 filedefine.h)
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	virtual long OpenMemFile(void* pBuffer, long lCount, long lLength = 0);
 
-	//! \brief ���´��ļ�
+	//! \brief 重新打开文件
 	/*!
-	*\return ����������óɹ����� BASIC_FILE_OK ���򷵻�һ����0��ֵ
-	*\remarks �������OpenMemFile�򿪺���CWBasicFileObj(void* pBuffer, long lCount)����Ķ���õ��ý�ʧ��
+	*\return 如果函数调用成功返回 BASIC_FILE_OK 否则返回一个非0的值
+	*\remarks 如果是用OpenMemFile打开和用CWBasicFileObj(void* pBuffer, long lCount)构造的对象该调用将失败
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	virtual long ReOpen();
 
-	//! \brief ���ļ��Ĳ���λ�����õ����
+	//! \brief 将文件的操作位置设置到最后
 	/*!
-	*\return ���ص�ǰ��λ��
+	*\return 返回当前的位置
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	long SeekToEnd();
 
-	//! \brief ���ļ��Ĳ���λ�����õ���ʼ
+	//! \brief 将文件的操作位置设置到开始
 	/*!
-	*\return ���ص�ǰ��λ��
+	*\return 返回当前的位置
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	long SeekToBegin();
 
 	// Overridables
-	//! \brief �����ļ��ĵ�ǰλ��
+	//! \brief 设置文件的当前位置
 	/*!
-	*\param lOff  �������Ӧ����2��ƫ��
+	*\param lOff  设置相对应参数2的偏移
 	*\param nFrom
 	*  <ul>
-	*     <ol>����ƫ�Ƶ����ֵ
-	*     <li> BASIC_FILE_BEGIN		�ļ�ͷ
-	*     <li> BASIC_FILE_CURRENT		��ǰλ��
-	*     <li> BASIC_FILE_END			�ļ�β
+	*     <ol>设置偏移的相对值
+	*     <li> BASIC_FILE_BEGIN		文件头
+	*     <li> BASIC_FILE_CURRENT		当前位置
+	*     <li> BASIC_FILE_END			文件尾
 	*     </ol>
 	*  </ul>
-	*\return ���ص�ǰ��λ��
+	*\return 返回当前的位置
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	virtual long Seek(long lOff, uint32_t nFrom);
 
-	//! \brief �����ļ��ĳ���
+	//! \brief 设置文件的长度
 	/*!
-	*\param lNewLen  �����ļ����³���
-	*\param cFill    �����ݵ����ֵ
-	*\return ����������óɹ����� BASIC_FILE_OK ���򷵻�һ����0��ֵ (�������� filedefine.h)
-	*\remarks ����������� PF_MEM_ONLY �򿪵��ļ�����֧�ָù��ܣ�����BASIC_FILE_SETLEN_DENIED
+	*\param lNewLen  设置文件的新长度
+	*\param cFill    空内容的填充值
+	*\return 如果函数调用成功返回 BASIC_FILE_OK 否则返回一个非0的值 (错误代码见 filedefine.h)
+	*\remarks 如果是以属性 PF_MEM_ONLY 打开的文件，不支持该功能，返回BASIC_FILE_SETLEN_DENIED
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	virtual long SetLength(long lNewLen, char cFill = 0);
 
-	//! \brief ����ļ��ĳ���
+	//! \brief 获得文件的长度
 	/*!
-	*\return ���صĳ���
+	*\return 返回的长度
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	virtual long GetLength();
 
-	//! \brief ����ļ��ĳ���
+	//! \brief 获得文件的长度
 	/*!
-	*\param lpBuf  ��ǰ׼����������Ŷ������ݵĻ���
-	*\param lCount ָ������Ĵ�С
-	*\return ����0���ض������ݵĳ��ȣ�С��0�Ǵ�����루�� filedefine.h��
+	*\param lpBuf  提前准备的用例存放读出数据的缓存
+	*\param lCount 指明缓存的大小
+	*\return 大于0返回读出数据的长度，小于0是错误代码（见 filedefine.h）
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	virtual long Read(void* lpBuf, long lCount);
 
-	//! \brief ��ָ������д�뵽�ļ���
+	//! \brief 将指定内容写入到文件中
 	/*!
-	*\param lpBuf  Ҫд���ļ������ݵĵ�ַ
-	*\param lCount Ҫд���ļ������ݵĴ�С
-	*\param lRepeat Ҫд���ļ���������Ҫ�ظ�д��Ĵ�����Ĭ����1
-	*\param cFill   �����ݵ����ֵ,Ĭ����0
-	*\return ����0����д�����ݵĳ��ȣ�С��0�Ǵ�����루�� filedefine.h��
+	*\param lpBuf  要写入文件的内容的地址
+	*\param lCount 要写入文件的内容的大小
+	*\param lRepeat 要写入文件的内容需要重复写入的次数，默认是1
+	*\param cFill   空内容的填充值,默认是0
+	*\return 大于0返回写入数据的长度，小于0是错误代码（见 filedefine.h）
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	virtual long Write(const void* lpBuf, long lCount, long lRepeat = 1, char cFill = 0);
 
-	//! \brief ��ָ�����ݲ����뵽�ļ���
+	//! \brief 将指定内容插入入到文件中
 	/*!
-	*\param lpBuf  Ҫд���ļ������ݵĵ�ַ
-	*\param lCount Ҫд���ļ������ݵĴ�С
-	*\param lRepeat Ҫд���ļ���������Ҫ�ظ�д��Ĵ�����Ĭ����1
-	*\param cFill   �����ݵ����ֵ,Ĭ����0
-	*\return ����0���ز������ݵĳ��ȣ�С��0�Ǵ�����루�� filedefine.h��
-	*\remarks �ú����Ĳ�����Write�����ƣ��������Seek����һ��ʹ�ã�ָ������ĵ�ǰλ��
+	*\param lpBuf  要写入文件的内容的地址
+	*\param lCount 要写入文件的内容的大小
+	*\param lRepeat 要写入文件的内容需要重复写入的次数，默认是1
+	*\param cFill   空内容的填充值,默认是0
+	*\return 大于0返回插入数据的长度，小于0是错误代码（见 filedefine.h）
+	*\remarks 该函数的参数和Write很相似，可以配合Seek函数一起使用，指定插入的当前位置
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	virtual long Insert(const void* lpBuf, long lCount, long lRepeat = 1, char cFill = 0);
 
-	//! \brief ˢ���ļ��Ļ���
+	//! \brief 刷新文件的缓存
 	/*!
 	*/
 	virtual long Flush();
 
-	//! \brief ��¡��һ���µ��ļ���������
+	//! \brief 克隆出一个新的文件操作对象
 	/*!
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	//virtual CWBasicFileObj* Duplicate() const;
 
-	//! \brief �ر��ļ�
+	//! \brief 关闭文件
 	/*!
 	*/
 	virtual void Close();
 
-	//! \brief ����ǰ�ļ������ݿ�����ָ�����ļ��� 
+	//! \brief 将当前文件的内容拷贝到指定的文件中 
 	/*!
-	*\remarks �����ڴ��ļ������lpszFileName=NULL���൱�ڵ�ǰ�ڴ�����ݴ��̡�
+	*\remarks 对于内存文件，如果lpszFileName=NULL，相当于当前内存的内容存盘。
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	virtual long CopyTo(const char* lpszFileName);
 
-	//! \brief ��ָ���ļ������ݿ�������ǰ�ļ�
+	//! \brief 将指定文件的内容拷贝到当前文件
 	/*!
-	*\remarks �����ڴ��ļ������lpszFileName=NULL���൱�����´Ӵ��̶������ݵ��ڴ档
+	*\remarks 对于内存文件，如果lpszFileName=NULL，相当于重新从磁盘读入内容到内存。
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	virtual long CopyFrom(const char* lpszFileName);
 
-	//! \brief �� pFile ���ļ����ݸ��Ƶ�������
+	//! \brief 将 pFile 的文件内容复制到本对象
 	/*!
-	*\remarks �����ļ�������򿪡�
+	*\remarks 两个文件都必须打开。
 	*/
 	virtual long CopyFromFile(CBasicFileObj* pFile);
 
-	//! \brief �� pFile �и������ݵ��ڴ��ļ�
+	//! \brief 从 pFile 中复制内容到内存文件
 	/*!
-	*\remarks pFile����򿪣��� this ����û�д򿪡�
+	*\remarks pFile必须打开，而 this 必须没有打开。
 	*/
 	virtual long OpenMemFromFile(CBasicFileObj* pFile);
 
-	//! \brief �ѱ������Ƶ��ڴ��ļ���
+	//! \brief 把本对象复制到内存文件中
 	/*!
-	*\remarks ���������򿪣����ҺϷ���
+	*\remarks 本对象必须打开，并且合法。
 	*/
 	//virtual long CloneToMemFile(CWBasicFileObj*& pNewFile);
 
-	//! \brief ��һ����¡�ļ�
+	//! \brief 打开一个克隆文件
 	/*!
 	*\remarks
 	*/
@@ -335,76 +335,76 @@ public:
 
 	//only for memory files
 
-	//! \brief ����ļ������ݻ���
+	//! \brief 获得文件的数据缓存
 	/*!
-	*\remarks ֻ���ڴ��ļ������ܷ��ػ����ַ�������ļ������ؿյ�ַ
+	*\remarks 只有内存文件对象能返回缓存地址，磁盘文件将返回空地址
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	void* GetDataBuffer();
 
-	//! \brief ����ļ��ĵ�ǰ���ݵ�ַ
+	//! \brief 获得文件的当前数据地址
 	/*!
-	*\param lCount ���úͷ��ط��ص����ݳ���
-	*\remarks ֻ���ڴ��ļ������ܷ��ػ����ַ�������ļ������ؿյ�ַ���ú������ļ��ĵ�ǰλ���йأ�Ӧ�úͺ���Seek���ʹ��
+	*\param lCount 设置和返回返回的数据长度
+	*\remarks 只有内存文件对象能返回缓存地址，磁盘文件将返回空地址，该函数和文件的当前位置有关，应该和函数Seek配合使用
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	void* GetCurDataBuffer(long& lCount);
 public:
-	//! \brief �������ļ�
+	//! \brief 重命名文件
 	/*!
-	*\param lpszOldName �����ļ�������(���·�������·��)
-	*\param lpszNewName ��Ҫ�����������ļ���(���·�������·��)
-	*\remarks �ú�����static��Ա���������Բ���Ҫ����Ϳ��Ե���
+	*\param lpszOldName 现有文件的名字(相对路径或绝对路径)
+	*\param lpszNewName 需要重新命名的文件名(相对路径或绝对路径)
+	*\remarks 该函数是static成员函数，可以不需要构造就可以调用
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	static long Rename(const char* lpszOldName, const char* lpszNewName);
 
-	//! \brief ɾ���ļ�
+	//! \brief 删除文件
 	/*!
-	*\param lpszFileName �����ļ�������(���·�������·��)
-	*\remarks �ú�����static��Ա���������Բ���Ҫ����Ϳ��Ե���
+	*\param lpszFileName 现有文件的名字(相对路径或绝对路径)
+	*\remarks 该函数是static成员函数，可以不需要构造就可以调用
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	static long Remove(const char* lpszFileName);
 
-	//! \brief ɾ���ļ�
+	//! \brief 删除文件
 	/*!
-	*\param lpszFileName �����ļ�������(���·�������·��)
-	*\param rStatus	     �������Σ������ļ���״̬
-	*\remarks �ú�����static��Ա���������Բ���Ҫ����Ϳ��Ե���
+	*\param lpszFileName 现有文件的名字(相对路径或绝对路径)
+	*\param rStatus	     函数出参，返回文件的状态
+	*\remarks 该函数是static成员函数，可以不需要构造就可以调用
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	static long GetStatus(const char* lpszFileName, TLFileStatus& rStatus);
 
-	//! \brief ɾ���ļ�
+	//! \brief 删除文件
 	/*!
-	*\param lpszFileName �����ļ�������(���·�������·��)
-	*\param rStatus	     ��Ҫ���õ��ļ�״̬
-	*\remarks �ú�����static��Ա���������Բ���Ҫ����Ϳ��Ե���
+	*\param lpszFileName 现有文件的名字(相对路径或绝对路径)
+	*\param rStatus	     需要设置的文件状态
+	*\remarks 该函数是static成员函数，可以不需要构造就可以调用
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
 	static long SetStatus(const char* lpszFileName, const TLFileStatus& rStatus);
 
 protected:
-	DWORD GetFileOpenType() const { return (m_dwOpenFlags & PF_FILE_MASK); }            /*!< �����ļ��򿪵��ļ����� */
-	DWORD GetFileOpenFlags(DWORD dwMask) const { return (m_dwOpenFlags & dwMask); }     /*!< ȡ�򿪵����� PF_* */
+	DWORD GetFileOpenType() const { return (m_dwOpenFlags & PF_FILE_MASK); }            /*!< 返回文件打开的文件类型 */
+	DWORD GetFileOpenFlags(DWORD dwMask) const { return (m_dwOpenFlags & dwMask); }     /*!< 取打开的属性 PF_* */
 
-	DWORD GetFileOpenFlags() const { return m_dwOpenFlags; }							/*!< ����ȫ�������� */
-	void  SetFileOpenFlags(DWORD dwValue, DWORD dwMask)									/*!< �����ļ������� */
+	DWORD GetFileOpenFlags() const { return m_dwOpenFlags; }							/*!< 返回全部的属性 */
+	void  SetFileOpenFlags(DWORD dwValue, DWORD dwMask)									/*!< 设置文件的属性 */
 	{
 		m_dwOpenFlags &= ~dwMask;
 		m_dwOpenFlags |= (dwValue & dwMask);
 	}
 
-	void	ClearMember();		/*!< ��ճ�Ա���� */
+	void	ClearMember();		/*!< 清空成员变量 */
 
-	long  CopyFileContent(CBasicFileObj* pFile);		/*!< �����ļ����� */
+	long  CopyFileContent(CBasicFileObj* pFile);		/*!< 复制文件内容 */
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 private:
-	DWORD			m_dwOpenFlags;		/*!< �ļ��򿪵����� PF_* */
-	CBasicString	m_strFileName;		/*!< �ļ�����ȫ·���� */
+	DWORD			m_dwOpenFlags;		/*!< 文件打开的属性 PF_* */
+	CBasicString	m_strFileName;		/*!< 文件名（全路径） */
 
-	CFileBase*		m_pFileObj;		/*!< �ļ��������� no delete �ں���close() ��ɾ���ö��� */
+	CFileBase*		m_pFileObj;		/*!< 文件处理对象 no delete 在函数close() 中删除该对象 */
 };
 //////////////////addtogroup0812
 /** @} */

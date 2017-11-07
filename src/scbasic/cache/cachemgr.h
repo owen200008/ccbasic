@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////////////
-// ÎÄ¼şÃû:    cachemgr.h
-// ´´½¨Õß:    ³Â¸Ö
-// ´´½¨Ê±¼ä:  2009-03-06
-// ÄÚÈİÃèÊö:  ¶¨ÒåÁËCCacheMgrÀà ÊµÏÖÒ»¸öCacheÄ£¿é
-//		2009-03-22 ºÎçâ£º ×öÁËÒ»Ğ©ĞŞ¸Ä¡£
+// æ–‡ä»¶å:    cachemgr.h
+// åˆ›å»ºè€…:    é™ˆé’¢
+// åˆ›å»ºæ—¶é—´:  2009-03-06
+// å†…å®¹æè¿°:  å®šä¹‰äº†CCacheMgrç±» å®ç°ä¸€ä¸ªCacheæ¨¡å—
+//		2009-03-22 ä½•ç®ï¼š åšäº†ä¸€äº›ä¿®æ”¹ã€‚
 /////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef INC_CACHEMGR_H
@@ -11,14 +11,14 @@
 
 #include "../../inc/basic.h"
 
-//»ùÀàÊ¹ÓÃÏÂÃæµÄcachemgrµÄ»ù´¡Àà
+//åŸºç±»ä½¿ç”¨ä¸‹é¢çš„cachemgrçš„åŸºç¡€ç±»
 class CBaseCacheDataDefine : public basiclib::EnableRefPtr<CBaseCacheDataDefine>
 {
 public:
     CBaseCacheDataDefine(DWORD dwCacheDataType){m_dwCacheDataType = dwCacheDataType;}
     virtual ~CBaseCacheDataDefine(){}
 
-    //»ñÈ¡·¢ËÍµ½cacheµÄÀàĞÍ
+    //è·å–å‘é€åˆ°cacheçš„ç±»å‹
     DWORD GetCacheDataType(){return m_dwCacheDataType;}
 protected:
     DWORD   m_dwCacheDataType;
@@ -45,7 +45,7 @@ public:
         m_pCacheData = basiclib::CBasicRefPtr<T>(pData);
 		m_nInvalidTime = time(0) + nLiveTime;
 	}
-	// ÅĞ¶ÏÊÇ·ñÊ§Ğ§
+	// åˆ¤æ–­æ˜¯å¦å¤±æ•ˆ
 	BOOL IsValidable(time_t now = 0)
 	{
 		if (0 == now)
@@ -75,9 +75,9 @@ public:
 		m_pCacheData = NULL;
 	}
 private:
-	// Ê§Ğ§Ê±¼ä
+	// å¤±æ•ˆæ—¶é—´
 	time_t	m_nInvalidTime;
-	// CTLRef¶ÔÏó
+	// CTLRefå¯¹è±¡
 	basiclib::CBasicRefPtr<T> m_pCacheData;
 };
 
@@ -92,31 +92,31 @@ public:
 	CCacheMgr(UINT nWatchTime = 60, const std::function<void(basiclib::CBasicRefPtr<T>)>* pCacheMgrDeleteCallback = nullptr);
 	virtual ~CCacheMgr();
 
-	// ¸ù¾İ×Ö·û´®Key È¡CacheData
+	// æ ¹æ®å­—ç¬¦ä¸²Key å–CacheData
 	basiclib::CBasicRefPtr<T> GetData(KeyT lpszKey);
-    // ¸ù¾İkeyµÄÀàĞÍT,pop½á¹û
+    // æ ¹æ®keyçš„ç±»å‹T,popç»“æœ
     basiclib::CBasicRefPtr<T> PopData(KeyT lpszKey);
 
-	// ½«CacheData¼ÓÈëMapÖĞ
+	// å°†CacheDataåŠ å…¥Mapä¸­
 	BOOL	SetData(KeyT lpszKey, T* pData, UINT nLiveTime, BOOL bReplate = TRUE);
 
-	// »ñÈ¡×Ü¹²ÇëÇóµÄ´ÎÊı
+	// è·å–æ€»å…±è¯·æ±‚çš„æ¬¡æ•°
 	UINT	GetTotalReq() const;
 
-	// Çå¿ÕËùÓĞµÄ»º´æ
+	// æ¸…ç©ºæ‰€æœ‰çš„ç¼“å­˜
 	void	RemoveAll();
 
-	// ±éÀúCacheDataMap É¾³ıÊ§Ğ§µÄCache
+	// éå†CacheDataMap åˆ é™¤å¤±æ•ˆçš„Cache
 	void	RemoveInvalid();
 protected:
-	// ÒÔ×Ö·û´®ÎªKeyµÄCacheMap
+	// ä»¥å­—ç¬¦ä¸²ä¸ºKeyçš„CacheMap
 	DataContainer	m_conDataContainer;
 	
-	// ´¦ÀíµÄÇëÇóÊı
+	// å¤„ç†çš„è¯·æ±‚æ•°
 	UINT	m_nTotalReq;
 
 	class CWatchThread;
-	// ÂÖÑ¯Ïß³Ì
+	// è½®è¯¢çº¿ç¨‹
 	CWatchThread*               m_pWatchThread;
     basiclib::CCriticalSection	m_csLock;
 	std::function<void(basiclib::CBasicRefPtr<T>)>    m_pDeleteCallback;
@@ -143,7 +143,7 @@ CCacheMgr<T, KeyT, KeyT2>::~CCacheMgr()
     RemoveAll();
 }
 
-// ¸ù¾İ×Ö·û´®Key È¡CacheData
+// æ ¹æ®å­—ç¬¦ä¸²Key å–CacheData
 template<class T, class KeyT, class KeyT2>
 basiclib::CBasicRefPtr<T> CCacheMgr<T, KeyT, KeyT2>::GetData(KeyT lpszKey)
 {
@@ -163,7 +163,7 @@ basiclib::CBasicRefPtr<T> CCacheMgr<T, KeyT, KeyT2>::GetData(KeyT lpszKey)
     return NULL;
 }
 
-// ¸ù¾İkeyµÄÀàĞÍT,pop½á¹û
+// æ ¹æ®keyçš„ç±»å‹T,popç»“æœ
 template<class T, class KeyT, class KeyT2>
 basiclib::CBasicRefPtr<T> CCacheMgr<T, KeyT, KeyT2>::PopData(KeyT lpszKey)
 {
@@ -187,7 +187,7 @@ basiclib::CBasicRefPtr<T> CCacheMgr<T, KeyT, KeyT2>::PopData(KeyT lpszKey)
 	return pRet;
 }
 
-// ½«CacheData¼ÓÈëMapÖĞ
+// å°†CacheDataåŠ å…¥Mapä¸­
 template<class T, class KeyT, class KeyT2>
 BOOL CCacheMgr<T, KeyT, KeyT2>::SetData(KeyT lpszKey, T* pData, UINT nLiveTime, BOOL bReplate)
 {	
@@ -204,7 +204,7 @@ BOOL CCacheMgr<T, KeyT, KeyT2>::SetData(KeyT lpszKey, T* pData, UINT nLiveTime, 
         }
         else
         {
-            //²»ÄÜÌæ»»µÄÖ±½Ó·µ»Ø´íÎó
+            //ä¸èƒ½æ›¿æ¢çš„ç›´æ¥è¿”å›é”™è¯¯
             return FALSE;
         }
     }
@@ -225,7 +225,7 @@ BOOL CCacheMgr<T, KeyT, KeyT2>::SetData(KeyT lpszKey, T* pData, UINT nLiveTime, 
     }
 }
 
-// »ñÈ¡×Ü¹²ÇëÇóµÄ´ÎÊı
+// è·å–æ€»å…±è¯·æ±‚çš„æ¬¡æ•°
 template<class T, class KeyT, class KeyT2>
 UINT CCacheMgr<T, KeyT, KeyT2>::GetTotalReq() const
 {
@@ -255,12 +255,12 @@ void CCacheMgr<T, KeyT, KeyT2>::RemoveInvalid()
         pCacheDataInfo = it->second;
         if (pCacheDataInfo != NULL && !pCacheDataInfo->IsValidable(tNowTime))
         {
-            //»Øµ÷
+            //å›è°ƒ
             if (m_pDeleteCallback)
             {
                 m_pDeleteCallback(pCacheDataInfo->__GetDataDirect());
             }
-            // ÒÑÎŞĞ§
+            // å·²æ— æ•ˆ
             m_conDataContainer.erase(it++);
             BASIC_DeleteObject(pCacheDataInfo);
         }
@@ -287,7 +287,7 @@ public:
 protected:
 	CCacheMgr<T, KeyT, KeyT2>	*m_pMgr;
 	BOOL			            m_bRunning;
-	UINT			            m_nTime;			// Ã¿¸ôm_nTimeÃë ÂÖÑ¯Ò»´Î
+	UINT			            m_nTime;			// æ¯éš”m_nTimeç§’ è½®è¯¢ä¸€æ¬¡
 };
 
 template <class T, class KeyT, class KeyT2>

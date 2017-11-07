@@ -74,9 +74,9 @@ void BasicNetStat::GetTransRate(BasicNetStat& lastData, double& dSend, double& d
 	lastData = *this;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//! ÖÇÄÜÖ¸ÕëÉ¾³ýµÄ·½Ê½
+//! æ™ºèƒ½æŒ‡é’ˆåˆ é™¤çš„æ–¹å¼
 void CBasicSessionNet::DeleteRetPtrObject(){
-	//Îö¹¹
+	//æžæž„
 	this->~CBasicSessionNet();
 	m_pSocket->~CBasicNet_Socket();
 	basiclib::BasicDeallocate(this);
@@ -95,7 +95,7 @@ CBasicSessionNet::~CBasicSessionNet(){
 #endif
 }
 
-//! °ó¶¨socket
+//! ç»‘å®šsocket
 void CBasicSessionNet::InitSocket(CBasicNet_Socket* pSocket){
 	m_pSocket = pSocket;
 }
@@ -108,12 +108,12 @@ int CBasicSessionNet::RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptio
 	return m_pSocket->RegistePreSend(pFilter, dwRegOptions);
 }
 
-//! »ñÈ¡×¢²áµÄ¹ýÂËÆ÷
+//! èŽ·å–æ³¨å†Œçš„è¿‡æ»¤å™¨
 CBasicPreSend* CBasicSessionNet::GetPreSend(){
 	return m_pSocket->GetPreSend();
 }
 
-//Ìá¹©°²È«É¾³ýµÄ»Øµ÷½Ó¿Ú
+//æä¾›å®‰å…¨åˆ é™¤çš„å›žè°ƒæŽ¥å£
 void CBasicSessionNet::SafeDelete() {
 	if(m_self == nullptr)
 		return;
@@ -126,11 +126,11 @@ CBasicSessionNetNotify::CBasicSessionNetNotify(){
 CBasicSessionNetNotify::~CBasicSessionNetNotify() {
 }
 
-//! ÊÇ·ñÁ¬½Ó
+//! æ˜¯å¦è¿žæŽ¥
 bool CBasicSessionNetNotify::IsConnected() {
 	return m_pSocket->IsConnected();
 }
-//! ÊÇ·ñÈÏÖ¤³É¹¦
+//! æ˜¯å¦è®¤è¯æˆåŠŸ
 bool CBasicSessionNetNotify::IsTransmit() {
 	return m_pSocket->IsTransmit();
 }
@@ -145,12 +145,12 @@ int32_t CBasicSessionNetNotify::Send(basiclib::CBasicSmartBuffer& smBuf, uint32_
 	return Send(smBuf.GetDataBuffer(), smBuf.GetDataLength(), dwFlag);
 }
 
-//! »ñÈ¡ÍøÂç×´Ì¬
+//! èŽ·å–ç½‘ç»œçŠ¶æ€
 void CBasicSessionNetNotify::GetNetStatus(CBasicString& strStatus) {
 	((CBasicNet_SocketTransfer*)m_pSocket)->GetNetStatus(strStatus);
 }
 
-//! »ñÈ¡ÍøÂç×´Ì¬
+//! èŽ·å–ç½‘ç»œçŠ¶æ€
 void CBasicSessionNetNotify::GetNetStatInfo(BasicNetStat& netState){
 	((CBasicNet_SocketTransfer*)m_pSocket)->GetNetStatInfo(netState);
 }

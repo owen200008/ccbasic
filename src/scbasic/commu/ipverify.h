@@ -8,20 +8,20 @@
 #pragma warning (disable: 4251)
 #pragma warning (disable: 4275)
 /////////////////////////////////////////////////////////////////////////////////////////////
-// 1¡¢Ö§³ÖIPÁĞ±í¼°×ÓÍøÈÏÖ¤
-// 2¡¢µ÷ÓÃ½Ó¿ÚÊ±´«ÈëµÄIPÄÚ²¿×Ô¶¯ÈÏÖ¤ÊÇ·ñÎªÓĞĞ§IPµØÖ·
-// 3¡¢¹æÔò´®¶¨Òå£º
-// Èç£º*;192.168.0.1:255.255.255.0@Íø¹Ø;10.0.1.51:255.255.255.0@±¾»ú
-//		*´ú±íÔÊĞíÈ«²¿ Ãû³ÆÎŞÓÃ£¬Ö»Îª·½±ãÔÄ¶Á
+// 1ã€æ”¯æŒIPåˆ—è¡¨åŠå­ç½‘è®¤è¯
+// 2ã€è°ƒç”¨æ¥å£æ—¶ä¼ å…¥çš„IPå†…éƒ¨è‡ªåŠ¨è®¤è¯æ˜¯å¦ä¸ºæœ‰æ•ˆIPåœ°å€
+// 3ã€è§„åˆ™ä¸²å®šä¹‰ï¼š
+// å¦‚ï¼š*;192.168.0.1:255.255.255.0@ç½‘å…³;10.0.1.51:255.255.255.0@æœ¬æœº
+//		*ä»£è¡¨å…è®¸å…¨éƒ¨ åç§°æ— ç”¨ï¼Œåªä¸ºæ–¹ä¾¿é˜…è¯»
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 #define MAX_IP_ITEM			(int)4				// 
 
 struct _SCBASIC_DLL_API _IPRuler
 {
-	BYTE		m_szIP[MAX_IP_ITEM];			// IPµØÖ·
-	BYTE		m_szMask[MAX_IP_ITEM];			// ×ÓÍøÑÚÂë
-	BYTE		m_szResult[MAX_IP_ITEM];		// IPÓë×ÓÍøÑÚÂëÓë(&)²Ù×÷½á¹û
+	BYTE		m_szIP[MAX_IP_ITEM];			// IPåœ°å€
+	BYTE		m_szMask[MAX_IP_ITEM];			// å­ç½‘æ©ç 
+	BYTE		m_szResult[MAX_IP_ITEM];		// IPä¸å­ç½‘æ©ç ä¸(&)æ“ä½œç»“æœ
 	
 	_IPRuler()
 	{
@@ -29,7 +29,7 @@ struct _SCBASIC_DLL_API _IPRuler
 	}
 };
 
-//Ö§³ÖIPµØÖ·ÈÏÖ¤
+//æ”¯æŒIPåœ°å€è®¤è¯
 class _SCBASIC_DLL_API CIpVerify : public basiclib::CBasicObject
 {
 public:
@@ -46,33 +46,33 @@ protected:
 	void EmptyRuler();
 
 protected:
-	basiclib::CPtrList				m_lsIpRuler;			// IP¹æÔòÁĞ±í
-	BOOL							m_bSupportAll;			// ÔÊĞíÈ«²¿ (*)
-	basiclib::CCriticalSection		m_synObj;				// Í¬²½¶ÔÏó
+	basiclib::CPtrList				m_lsIpRuler;			// IPè§„åˆ™åˆ—è¡¨
+	BOOL							m_bSupportAll;			// å…è®¸å…¨éƒ¨ (*)
+	basiclib::CCriticalSection		m_synObj;				// åŒæ­¥å¯¹è±¡
 };
 
 /************************************************************************************************
-Ö§³ÖÓòÃûºÍ¶Ë¿ÚµÄÈÏÖ¤Æ¥Åä
-¹æÔò£ºµØÖ·1:¶Ë¿Ú1;µØÖ·2:¶Ë¿Ú2
+æ”¯æŒåŸŸåå’Œç«¯å£çš„è®¤è¯åŒ¹é…
+è§„åˆ™ï¼šåœ°å€1:ç«¯å£1;åœ°å€2:ç«¯å£2
       172.20.0.153:8601;172.20.0.*:8601;*:8601;www.abcd.com:1234
 *************************************************************************************************/
-//×Ö·û´®Æ¥Åä¹æÔò
+//å­—ç¬¦ä¸²åŒ¹é…è§„åˆ™
 class _SCBASIC_DLL_API CBasicStringCmpInfo : public basiclib::CBasicObject
 {
 public:
 	CBasicStringCmpInfo();
 	virtual ~CBasicStringCmpInfo();
 
-	//ÉèÖÃ¹æÔò
+	//è®¾ç½®è§„åˆ™
 	virtual long InitRuleInfo(const char* lpszRule, const char* lpszSplit = ";");
 
-	//¼ÓÈë¹æÔò
+	//åŠ å…¥è§„åˆ™
 	BOOL AddRuleInfo(basiclib::CBasicString& strRuleInfo);
 
-	//ÅĞ¶ÏÊÇ·ñÔÚ·¶Î§ÄÚ
+	//åˆ¤æ–­æ˜¯å¦åœ¨èŒƒå›´å†…
 	long IsInRule(const char* lpszData, long lIndex = 0);
 
-	//»ñÈ¡×´Ì¬
+	//è·å–çŠ¶æ€
 	virtual void GetStatus(basiclib::CBasicString& strInfo);
 protected:
 	typedef basiclib::basic_vector<basiclib::CBasicStringArray> ContainRuleInfo;
@@ -82,20 +82,20 @@ protected:
 	basiclib::CBasicString m_strInfo;
 };
 
-//»ùÓÚ×Ö·û´®Æ¥Åä¹æÔòµÄ,ÕûĞÍÆ¥Åä
+//åŸºäºå­—ç¬¦ä¸²åŒ¹é…è§„åˆ™çš„,æ•´å‹åŒ¹é…
 class _SCBASIC_DLL_API CIpDomainVerify : public CBasicStringCmpInfo
 {
 public:
 	CIpDomainVerify();
 	virtual ~CIpDomainVerify();
 
-	//ÉèÖÃ¹æÔò
+	//è®¾ç½®è§„åˆ™
 	virtual long InitRuleInfo(const char* lpszRule, const char* lpszSplit = ";");
 
-	//»ñÈ¡×´Ì¬
+	//è·å–çŠ¶æ€
 	virtual void GetStatus(basiclib::CBasicString& strInfo);
 
-	//ÊÇ·ñÊÇĞÅÈÎIPºÍ¶Ë¿Ú
+	//æ˜¯å¦æ˜¯ä¿¡ä»»IPå’Œç«¯å£
 	BOOL IsTrust(const char* lpszData, WORD wPort);
 
 	//
@@ -106,7 +106,7 @@ protected:
 	typedef ContainNumber::iterator               ContainNumberIterator;
 
 	ContainNumber                                m_ayRuleExtre;
-	BOOL                                         m_bTrustAll;  //ĞÅÈÎËùÓĞ
+	BOOL                                         m_bTrustAll;  //ä¿¡ä»»æ‰€æœ‰
 };
 #pragma warning (pop)
 #endif

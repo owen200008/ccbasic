@@ -15,7 +15,7 @@ using namespace std;
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_START
 
-static int g_nLogLimit = (10*1024*1024);		//ÈÕÖ¾ÎÄ¼ş´óĞ¡ÏŞÖÆ
+static int g_nLogLimit = (10*1024*1024);		//æ—¥å¿—æ–‡ä»¶å¤§å°é™åˆ¶
 #define LOG_MESSAGE_SIZE 256
 
 static long ReplaceFileName(char* szFileName, const char* lpszKey, const char* lpszToday)
@@ -61,7 +61,7 @@ static void GetTodayString(char* szToday)
 	sprintf(szToday, "%d%02d%02d_000", cur.GetYear(), cur.GetMonth(), cur.GetDay());
 }
 
-//ÈÕÖ¾ÎÄ¼şÊôĞÔ½á¹¹
+//æ—¥å¿—æ–‡ä»¶å±æ€§ç»“æ„
 typedef basiclib::basic_vector<WriteLogDataBuffer> vector_logdata;
 class CBasicLogChannel : public basiclib::CBasicObject
 {
@@ -83,11 +83,11 @@ public:
 		}
 	}
 public:
-	long InitLogChannel(long nOption, const char* lpszLogFile);		//³õÊ¼»¯
-	long ChangeLogChannel(long nOption, const char* lpszLogFile);	//¸üĞÂÉèÖÃ
-	void CheckChannel(const char* lpszToday);						//¶¨Ê±¼ì²é£¬±ÈÈç¸ôÌìÖØĞÂÉú³ÉÎÄ¼şÃû£¬ÅĞ¶ÏÎÄ¼ş´óĞ¡µÈ¡£
+	long InitLogChannel(long nOption, const char* lpszLogFile);		//åˆå§‹åŒ–
+	long ChangeLogChannel(long nOption, const char* lpszLogFile);	//æ›´æ–°è®¾ç½®
+	void CheckChannel(const char* lpszToday);						//å®šæ—¶æ£€æŸ¥ï¼Œæ¯”å¦‚éš”å¤©é‡æ–°ç”Ÿæˆæ–‡ä»¶åï¼Œåˆ¤æ–­æ–‡ä»¶å¤§å°ç­‰ã€‚
 
-	long WriteLogData(const char* lpszText);	//Ğ´ÈÕÖ¾Êı¾İ
+	long WriteLogData(const char* lpszText);	//å†™æ—¥å¿—æ•°æ®
 	void WriteLogDataWithBuffer(WriteLogDataBuffer& logData, bool bThreadSafe);
 
 	void WriteLogBuffer();
@@ -130,7 +130,7 @@ protected:
 		{
 			m_lReplacePos = ReplaceFileName(m_szLogFileName, LOG_NAME_DAY_S, m_szToday);
 		}
-		char* pPos = &m_szLogFileName[m_lReplacePos + 9];		//ĞòºÅ¿ªÊ¼µÄÎ»ÖÃ
+		char* pPos = &m_szLogFileName[m_lReplacePos + 9];		//åºå·å¼€å§‹çš„ä½ç½®
 		char szTemp[32];
 		do
 		{
@@ -144,11 +144,11 @@ protected:
 		} while (1);
 	}
 
-	void _FillLogDataBuffer(WriteLogDataBuffer& logData);			//¸ù¾İÑ¡Ïî£¬Ìî³äÊı¾İ
-	void _AddLogDataBuffer(WriteLogDataBuffer& logData);			//Ôö¼Óµ½»º³åÊı×é
+	void _FillLogDataBuffer(WriteLogDataBuffer& logData);			//æ ¹æ®é€‰é¡¹ï¼Œå¡«å……æ•°æ®
+	void _AddLogDataBuffer(WriteLogDataBuffer& logData);			//å¢åŠ åˆ°ç¼“å†²æ•°ç»„
 	long _WriteLogDataBuffer(WriteLogDataBuffer& logData);
 
-	long _SetLogChannel(long nOption, const char* lpszLogFile);			//ÉèÖÃ
+	long _SetLogChannel(long nOption, const char* lpszLogFile);			//è®¾ç½®
 
 	static long GetNewFileNo()
 	{
@@ -156,27 +156,27 @@ protected:
 	}
 
 private:
-	long	m_nLogOption;					//ÈÕÖ¾µÄÊôĞÔ£¬¼û¶¨Òå LOG_*
-	long	m_nSizeLimit;					//ÈÕÖ¾ÎÄ¼şµÄ´óĞ¡ÏŞÖÆ¡£0±íÊ¾²»ÏŞÖÆ
-	FILE*	m_fLog;							//ÈÕÖ¾ÎÄ¼ş¾ä±ú
+	long	m_nLogOption;					//æ—¥å¿—çš„å±æ€§ï¼Œè§å®šä¹‰ LOG_*
+	long	m_nSizeLimit;					//æ—¥å¿—æ–‡ä»¶çš„å¤§å°é™åˆ¶ã€‚0è¡¨ç¤ºä¸é™åˆ¶
+	FILE*	m_fLog;							//æ—¥å¿—æ–‡ä»¶å¥æŸ„
 	char	m_szLogFileName[MAX_PATH];
-	char	m_szToday[16];					//µ±ÌìµÄÈÕÆÚºÍĞòºÅ¡£¸ñÊ½£ºYYMMDD_XXX  Èç 20110720_000
-	long	m_lReplacePos;					//Ìæ»»ÈÕÆÚ»òÕßĞòºÅµÄÆğÊ¼Î»ÖÃ
+	char	m_szToday[16];					//å½“å¤©çš„æ—¥æœŸå’Œåºå·ã€‚æ ¼å¼ï¼šYYMMDD_XXX  å¦‚ 20110720_000
+	long	m_lReplacePos;					//æ›¿æ¢æ—¥æœŸæˆ–è€…åºå·çš„èµ·å§‹ä½ç½®
 
-	static long	m_lLastFileNo;				//¶ÔÓÚµ±Ìì¶à¸öÎÄ¼ş×Ô¶¯Éú³ÉµÄÎÄ¼ş±àºÅ¡£
-	static bool m_bInitLock;				//ÊÇ·ñÉÏËø
+	static long	m_lLastFileNo;				//å¯¹äºå½“å¤©å¤šä¸ªæ–‡ä»¶è‡ªåŠ¨ç”Ÿæˆçš„æ–‡ä»¶ç¼–å·ã€‚
+	static bool m_bInitLock;				//æ˜¯å¦ä¸Šé”
 
-	CCriticalSection* m_pSynLogFile;		//²Ù×÷³ÉÔ±±äÁ¿µÄÁÙ½çÇø
+	CCriticalSection* m_pSynLogFile;		//æ“ä½œæˆå‘˜å˜é‡çš„ä¸´ç•ŒåŒº
 
-	vector_logdata		m_vLogData;			//»º³åµÄÊı¾İ
+	vector_logdata		m_vLogData;			//ç¼“å†²çš„æ•°æ®
     basiclib::SpinLock  m_lock;
 };
 
-long	CBasicLogChannel::m_lLastFileNo = 0;		//¶ÔÓÚµ±Ìì¶à¸öÎÄ¼ş×Ô¶¯Éú³ÉµÄÎÄ¼ş±àºÅ¡£
-bool	CBasicLogChannel::m_bInitLock = true;		//Ä¬ÈÏÉÏËø
+long	CBasicLogChannel::m_lLastFileNo = 0;		//å¯¹äºå½“å¤©å¤šä¸ªæ–‡ä»¶è‡ªåŠ¨ç”Ÿæˆçš„æ–‡ä»¶ç¼–å·ã€‚
+bool	CBasicLogChannel::m_bInitLock = true;		//é»˜è®¤ä¸Šé”
 static  bool m_bInitLogFunc = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define MAX_LOG_CHANNEL		8			//ÈÕÖ¾ÎÄ¼ş¸öÊı
+#define MAX_LOG_CHANNEL		8			//æ—¥å¿—æ–‡ä»¶ä¸ªæ•°
 
 static long g_nCurrentChannel = 0;
 
@@ -201,7 +201,7 @@ public:
 		while (m_bRuning)
 		{
 			OnTimerBasicLog();
-			BasicSleep(30000);		//ĞİÏ¢ 30 ÃëÖÓ
+			BasicSleep(30000);		//ä¼‘æ¯ 30 ç§’é’Ÿ
 		}
 	}
 	void Start()
@@ -250,12 +250,12 @@ long CBasicLogChannel::_SetLogChannel(long nOption, const char* lpszLogFile)
 {
 	m_nLogOption = nOption;
 	if (nOption & LOG_BY_NOLIMIT){
-		m_nSizeLimit = 0;	//²»ÏŞÖÆ´óĞ¡
+		m_nSizeLimit = 0;	//ä¸é™åˆ¶å¤§å°
 	}
 	else{
 		m_nSizeLimit = (nOption & LOG_SIZE_LIMIT) * 1024 * 1024;
 		if (m_nSizeLimit <= 0){
-			m_nSizeLimit = g_nLogLimit;	//Ä¬ÈÏ´óĞ¡ÏŞÖÆ
+			m_nSizeLimit = g_nLogLimit;	//é»˜è®¤å¤§å°é™åˆ¶
 		}
 	}
 
@@ -282,7 +282,7 @@ void CBasicLogChannel::CheckChannel(const char* lpszToday)
 	lock.Lock();
 	if (m_nLogOption & LOG_BY_DAY)
 	{
-		if (strncmp(m_szToday, lpszToday, 8) != 0)		//ÈÕÆÚ²»Ò»ÖÂ£¬ĞèÒª¸üĞÂÎÄ¼şÃû
+		if (strncmp(m_szToday, lpszToday, 8) != 0)		//æ—¥æœŸä¸ä¸€è‡´ï¼Œéœ€è¦æ›´æ–°æ–‡ä»¶å
 		{
 			CloseLogFile();
 			if (m_nLogOption & LOG_BY_ONEFILE)
@@ -300,7 +300,7 @@ void CBasicLogChannel::CheckChannel(const char* lpszToday)
 
 	TLFileStatus fStatus;
 	Basic_GetFileStatus(m_szLogFileName, fStatus);
-	if (m_nSizeLimit > 0 && fStatus.m_size > m_nSizeLimit)		//³¤¶È³¬¹ıÏŞÖÆ
+	if (m_nSizeLimit > 0 && fStatus.m_size > m_nSizeLimit)		//é•¿åº¦è¶…è¿‡é™åˆ¶
 	{
 		CloseLogFile();
 		if (m_nLogOption & LOG_BY_ONEFILE)
@@ -353,7 +353,7 @@ long CBasicLogChannel::WriteLogData(const char* lpszText)
         }
     }
     else{
-        //À´×Ô²»Í¬Ïß³Ì²Å»á½øÈëÕâÀï
+        //æ¥è‡ªä¸åŒçº¿ç¨‹æ‰ä¼šè¿›å…¥è¿™é‡Œ
         basiclib::CSpinLockFuncNoSameThreadSafe spinLock(&m_lock, TRUE);
         _AddLogDataBuffer(logData);
     }
@@ -376,7 +376,7 @@ void CBasicLogChannel::WriteLogDataWithBuffer(WriteLogDataBuffer& logData, bool 
             _WriteLogDataBuffer(logData);
         }
         else{
-            //À´×Ô²»Í¬Ïß³Ì²Å»á½øÈëÕâÀï
+            //æ¥è‡ªä¸åŒçº¿ç¨‹æ‰ä¼šè¿›å…¥è¿™é‡Œ
             basiclib::CSpinLockFuncNoSameThreadSafe spinLock(&m_lock, TRUE);
             _AddLogDataBuffer(logData);
         }
@@ -409,7 +409,7 @@ long CBasicLogChannel::_WriteLogDataBuffer(WriteLogDataBuffer& logData)
 	FILE* pFile = GetFileHandle();
 	if (pFile == NULL)
 	{
-		return -1;		//ÎÄ¼ş´ò¿ª²»³É¹¦
+		return -1;		//æ–‡ä»¶æ‰“å¼€ä¸æˆåŠŸ
 	}
 	static basiclib::CBasicSmartBuffer smBufCache;
 	basiclib::CBasicSmartBuffer smBuf;
@@ -424,7 +424,7 @@ long CBasicLogChannel::_WriteLogDataBuffer(WriteLogDataBuffer& logData)
 		pWriteBuf->SetDataLength(0);
 	}
 
-	if (logData.m_lCurTime > 0)	//Ğ´ÈëÊ±¼ä
+	if (logData.m_lCurTime > 0)	//å†™å…¥æ—¶é—´
 	{
 		CTime cur(logData.m_lCurTime);
 		char szLog[64];
@@ -432,7 +432,7 @@ long CBasicLogChannel::_WriteLogDataBuffer(WriteLogDataBuffer& logData)
 		pWriteBuf->AppendString(szLog);
 	}
 
-	if (logData.m_dwThreadId != 0)	//Ğ´ÈëÏß³ÌID
+	if (logData.m_dwThreadId != 0)	//å†™å…¥çº¿ç¨‹ID
 	{
 		char szLog[64];
 		sprintf(szLog, "pid:%d thread:%d ", (uint32_t)logData.m_dwProcessId, (uint32_t)logData.m_dwThreadId);
@@ -474,7 +474,7 @@ CBasicLogChannel* _GetChannel(int nIndex)
 	{
 		return NULL;
 	}
-	if (g_pLogChannel[nIndex] == NULL)  //Ä¬ÈÏµÄÄÚ²¿´´½¨
+	if (g_pLogChannel[nIndex] == NULL)  //é»˜è®¤çš„å†…éƒ¨åˆ›å»º
 	{
 		if(nIndex == 0)
 			g_pLogChannel[nIndex] = _CreateLogChannel(LOG_BY_DAY | LOG_BY_SIZE | LOG_ADD_TIME | LOG_ADD_THREAD, "basiclibs.log");
@@ -487,7 +487,7 @@ CBasicLogChannel* _GetChannel(int nIndex)
 
 long BasicSetLogEventMode(long nOption, const char* pszLogFile)
 {
-    //Ä¬ÈÏ×Ô¼ºÆô¶¯Ïß³Ì£¬Ïß³Ì°²È«
+    //é»˜è®¤è‡ªå·±å¯åŠ¨çº¿ç¨‹ï¼Œçº¿ç¨‹å®‰å…¨
     InitBasicLog(true);
 	if (g_nCurrentChannel < 0 || g_nCurrentChannel >= MAX_LOG_CHANNEL)
 	{
@@ -511,7 +511,7 @@ long BasicSetLogEventMode(long nOption, const char* pszLogFile)
 
 long BasicSetDefaultLogEventErrorMode(long nOption, const char* pszLogFile)
 {
-    //Ä¬ÈÏ×Ô¼ºÆô¶¯Ïß³Ì£¬Ïß³Ì°²È«
+    //é»˜è®¤è‡ªå·±å¯åŠ¨çº¿ç¨‹ï¼Œçº¿ç¨‹å®‰å…¨
     InitBasicLog(true);
 	if (pszLogFile == NULL || pszLogFile[0] == '\0')
 	{
@@ -531,7 +531,7 @@ long BasicSetDefaultLogEventErrorMode(long nOption, const char* pszLogFile)
 
 long BasicSetDefaultLogEventMode(long nOption, const char* pszLogFile)
 {
-    //Ä¬ÈÏ×Ô¼ºÆô¶¯Ïß³Ì£¬Ïß³Ì°²È«
+    //é»˜è®¤è‡ªå·±å¯åŠ¨çº¿ç¨‹ï¼Œçº¿ç¨‹å®‰å…¨
     InitBasicLog(true);
 	if (pszLogFile == NULL || pszLogFile[0] == '\0')
 	{
@@ -553,20 +553,20 @@ long BasicSetDefaultLogEventMode(long nOption, const char* pszLogFile)
 
 long BasicCloseLogEvent(long lLogChannel)
 {
-	if(lLogChannel < 0)		//¹Ø±ÕËùÓĞµÄ
+	if(lLogChannel < 0)		//å…³é—­æ‰€æœ‰çš„
 	{
 		if(g_LogThread != NULL)
 		{
 			g_LogThread->Stop();
 		}
-		g_nCurrentChannel = 0;			//ÕâÀï»áÔì³ÉÄÚ´æĞ¹Â¶
+		g_nCurrentChannel = 0;			//è¿™é‡Œä¼šé€ æˆå†…å­˜æ³„éœ²
 	}
 	else if(lLogChannel >= 0 || lLogChannel < MAX_LOG_CHANNEL)
 	{
 		if(g_pLogChannel[lLogChannel] != NULL)
 		{
 			g_pLogChannel[lLogChannel]->WriteLogBuffer();
-			g_pLogChannel[lLogChannel] = NULL;		//ÕâÀï»áÔì³ÉÄÚ´æĞ¹Â¶
+			g_pLogChannel[lLogChannel] = NULL;		//è¿™é‡Œä¼šé€ æˆå†…å­˜æ³„éœ²
 		}
 	}
 
@@ -576,7 +576,7 @@ long BasicCloseLogEvent(long lLogChannel)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//ÊÂ¼ş¼ÇÂ¼£¨Ğ´µ½Ä¬ÈÏÈÕÖ¾ÎÄ¼ş£©
+//äº‹ä»¶è®°å½•ï¼ˆå†™åˆ°é»˜è®¤æ—¥å¿—æ–‡ä»¶ï¼‰
 //
 void BasicLogEventErrorV(const char* pszLog, ...)
 {
@@ -654,7 +654,7 @@ void BasicLogEventV(DebugLevel level, long lLogChannel, const char* pszLog, ...)
 
 
 //
-//ÊÂ¼ş¼ÇÂ¼£¨Ğ´µ½ÈÕÖ¾ÎÄ¼ş£©
+//äº‹ä»¶è®°å½•ï¼ˆå†™åˆ°æ—¥å¿—æ–‡ä»¶ï¼‰
 //
 void BasicLogEvent(DebugLevel level, long lLogChannel, const char* pszLog)
 {
@@ -667,7 +667,7 @@ void BasicLogEvent(DebugLevel level, long lLogChannel, const char* pszLog)
 
     if (level > g_DebugLevel)
         return;
-	//Èç¹ûÕÒ²»µ½Ö±½ÓÈÃËû±ÀÀ£µô
+	//å¦‚æœæ‰¾ä¸åˆ°ç›´æ¥è®©ä»–å´©æºƒæ‰
 	_GetChannel(lLogChannel)->WriteLogData(pszLog);
 }
 
@@ -685,7 +685,7 @@ DebugLevel GetBasicLogLevel()
     return g_DebugLevel;
 }
 
-//! bThreadCheckSelf true ²»Æô¶¯Ëø(ÎŞ·¨ÊµÊ±¼ÇÂ¼) falseÆô¶¯Ëø Ïß³Ì°²È«(²»¿ªÆôbufferÄ£Ê½ÊµÊ±)
+//! bThreadCheckSelf true ä¸å¯åŠ¨é”(æ— æ³•å®æ—¶è®°å½•) falseå¯åŠ¨é” çº¿ç¨‹å®‰å…¨(ä¸å¼€å¯bufferæ¨¡å¼å®æ—¶)
 bool InitBasicLog(bool bThreadCheckSelf)
 {
 
@@ -711,7 +711,7 @@ bool InitBasicLog(bool bThreadCheckSelf)
     return true;
 }
 
-//! Èç¹û²»ÊÇ×Ô¼ºÏß³ÌĞèÒª30sµ÷ÓÃÒ»´Î
+//! å¦‚æœä¸æ˜¯è‡ªå·±çº¿ç¨‹éœ€è¦30sè°ƒç”¨ä¸€æ¬¡
 void OnTimerBasicLog()
 {
 	int nSize = g_nCurrentChannel + 1;

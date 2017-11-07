@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     skiplist.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     skiplist.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2017/8/23 
-// ÄÚÈİÃèÊö:   ÊµÏÖskiplist
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2017/8/23 
+// å†…å®¹æè¿°:   å®ç°skiplist
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_SKIPLIST_H
 #define BASIC_SKIPLIST_H
@@ -82,7 +82,7 @@ public:
 			BasicSkipListNode::DestroyLevelNode(m_pHeader);
 		}
 	}
-	//! ²åÈë
+	//! æ’å…¥
 	BasicSkipListNode* Insert(T& data){
 
 	}
@@ -95,7 +95,7 @@ protected:
 		}
 		return level > defaultLevelCount ? defaultLevelCount : level;
 	}
-	//! Ìá¹©±È½Ïº¯Êı
+	//! æä¾›æ¯”è¾ƒå‡½æ•°
 	virtual bool CompareTFunction(T& t1, T& t2) = 0;
 protected:
 	int						m_nMaxAllocateCountOnce;

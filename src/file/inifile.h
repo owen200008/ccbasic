@@ -1,17 +1,17 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     inifile.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     inifile.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012-2-22 23:41:54
-// ÄÚÈİÃèÊö:   
-´¦ÀíiniÎÄ¼şµÄÀà,ÖØĞ´Êı¾İ´æ·ÅÄ£Ê½£¬
-Ê¹ÓÃĞÂµÄ½âÎöº¯ÊıParseIniÌá¸ß½âÎöËÙ¶È
+// åˆ›å»ºæ—¶é—´:   2012-2-22 23:41:54
+// å†…å®¹æè¿°:   
+å¤„ç†iniæ–‡ä»¶çš„ç±»,é‡å†™æ•°æ®å­˜æ”¾æ¨¡å¼ï¼Œ
+ä½¿ç”¨æ–°çš„è§£æå‡½æ•°ParseIniæé«˜è§£æé€Ÿåº¦
 
-Êı¾İÖ§³Ö£º
-1.iniÎÄ¼ş×î´óÖ§³Ö4GB
-2.key×î´óÖ§³Ö1024×Ö½Ú
-3.Öµ×î´óÖ§³Ö4MB×Ö½Ú
-// °æ±¾ĞÅÏ¢:   1.0V
+æ•°æ®æ”¯æŒï¼š
+1.iniæ–‡ä»¶æœ€å¤§æ”¯æŒ4GB
+2.keyæœ€å¤§æ”¯æŒ1024å­—èŠ‚
+3.å€¼æœ€å¤§æ”¯æŒ4MBå­—èŠ‚
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_INIFILE_H
 #define BASIC_INIFILE_H 
@@ -21,11 +21,11 @@
 #include <stdio.h>
 
 __NS_BASIC_START
-//iniÎÄ¼ş½âÎöÆ÷
-#define INI_TYPE_SCETION		0x00000001	//section ¿ªÊ¼
-#define INI_TYPE_KEY			0x00000002	//ÖµĞĞ
-#define INI_TYPE_SCETION_END	0x00000004	//section ½áÊø
-#define INI_COMMENT				0x00000008	//×¢ÊÍĞĞ
+//iniæ–‡ä»¶è§£æå™¨
+#define INI_TYPE_SCETION		0x00000001	//section å¼€å§‹
+#define INI_TYPE_KEY			0x00000002	//å€¼è¡Œ
+#define INI_TYPE_SCETION_END	0x00000004	//section ç»“æŸ
+#define INI_COMMENT				0x00000008	//æ³¨é‡Šè¡Œ
 
 template<typename F>
 long ParseIniChar(const char* pszData, long cbData, F f, long cbBeginPos = 0)
@@ -55,7 +55,7 @@ long ParseIniChar(const char* pszData, long cbData, F f, long cbBeginPos = 0)
 					if (!f(INI_TYPE_SCETION_END, strLastSection.c_str(), strLastSection.c_str(), 0, strLastSection.GetLength(), nSecBegin, nLineBegin))
 						break;
 				}
-				nSecBegin = i; //section¿ªÊ¼Î»ÖÃ
+				nSecBegin = i; //sectionå¼€å§‹ä½ç½®
 			}
 		}
 		else if (d == ']')
@@ -79,7 +79,7 @@ long ParseIniChar(const char* pszData, long cbData, F f, long cbBeginPos = 0)
 			if (d == '\n')
 			{
 				++nLines;
-				nLineBegin = i + 1;	//ĞÂĞĞ¿ªÊ¼Î»ÖÃ
+				nLineBegin = i + 1;	//æ–°è¡Œå¼€å§‹ä½ç½®
 			}
 
 			nType = 0;
@@ -90,7 +90,7 @@ long ParseIniChar(const char* pszData, long cbData, F f, long cbBeginPos = 0)
 			nType = INI_TYPE_KEY;
 			nNameEnd = i;
 		}
-		else if (nType == 0 && (d == ';' || d == '#'))	//ÅĞ¶Ï×¢ÊÍĞĞ
+		else if (nType == 0 && (d == ';' || d == '#'))	//åˆ¤æ–­æ³¨é‡Šè¡Œ
 		{
 			nType = INI_COMMENT;
 		}
@@ -119,24 +119,24 @@ long ParseIniChar(const char* pszData, long cbData, F f, long cbBeginPos = 0)
 
 #define		SEP_SIGN			"||"
 
-//64×Ö½ÚµÄÊı¾İ´æ·ÅÆ«ÒÆÁ¿
+//64å­—èŠ‚çš„æ•°æ®å­˜æ”¾åç§»é‡
 struct IndexData
 {
 	union
 	{
-		LONGLONG  m_nData64;		//64Î»Êı¾İ
+		LONGLONG  m_nData64;		//64ä½æ•°æ®
 		struct  
 		{
-			unsigned int m_nOffset;	//Êı¾İÆ«ÒÆÁ¿
+			unsigned int m_nOffset;	//æ•°æ®åç§»é‡
 			union
 			{				
-				unsigned int m_nSectionLength;	//¶Î³¤¶È
+				unsigned int m_nSectionLength;	//æ®µé•¿åº¦
 				struct  
 				{
-					//Õë¶ÔÌØÊâĞèÒª£¬ĞŞ¸ÄÕâÁ½¸öÖµ¿ÉÒÔ¸Ä±ä¸÷×ÔÖ§³ÖµÄÊı¾İ³¤¶È£¬
-					//×¢Òâ£¬Á½ÕßÏà¼ÓµÈÓÚ32
-					unsigned int m_nKeyLen : 10;	//ÖµÃû³Æ³¤¶È,×î³¤1024×Ö½Ú
-					unsigned int m_nValueLen : 22;	//Öµ³¤¶È£¬×î³¤2^22=4MB×Ö½Ú£¬
+					//é’ˆå¯¹ç‰¹æ®Šéœ€è¦ï¼Œä¿®æ”¹è¿™ä¸¤ä¸ªå€¼å¯ä»¥æ”¹å˜å„è‡ªæ”¯æŒçš„æ•°æ®é•¿åº¦ï¼Œ
+					//æ³¨æ„ï¼Œä¸¤è€…ç›¸åŠ ç­‰äº32
+					unsigned int m_nKeyLen : 10;	//å€¼åç§°é•¿åº¦,æœ€é•¿1024å­—èŠ‚
+					unsigned int m_nValueLen : 22;	//å€¼é•¿åº¦ï¼Œæœ€é•¿2^22=4MBå­—èŠ‚ï¼Œ
 				};
 			};
 		};
@@ -167,7 +167,7 @@ namespace __private
 		F m_f;
 	};
 
-	//±éÀúËùÓĞµÄ¶Î
+	//éå†æ‰€æœ‰çš„æ®µ
 	template<typename F>
 	class get_section_list_strChar
 	{
@@ -207,13 +207,13 @@ public:
     //!get size
     int GetIniSize();
 public:
-	typedef		 basic_map<CBasicString, LONGLONG>   Dict;		//µ¥¶À¿ÉÒÔµÄ¶ÔÓ¦¹ØÏµ	
-	Dict				m_dic;					///Í¨¹ıkey²éÕÒÊı¾İµÄÊı¾İ½á¹¹		
-	CBasicString		m_file;				///Ä¬ÈÏµÄiniÎÄ¼şÃû£¬±£Áô×îºó¶ÁÈ¡µÄÎÄ¼şÃû
+	typedef		 basic_map<CBasicString, LONGLONG>   Dict;		//å•ç‹¬å¯ä»¥çš„å¯¹åº”å…³ç³»	
+	Dict				m_dic;					///é€šè¿‡keyæŸ¥æ‰¾æ•°æ®çš„æ•°æ®ç»“æ„		
+	CBasicString		m_file;				///é»˜è®¤çš„iniæ–‡ä»¶åï¼Œä¿ç•™æœ€åè¯»å–çš„æ–‡ä»¶å
 
-	bool				m_bModified;			///ÅĞ¶ÏÊı¾İÊÇ·ñ±»ĞŞ¸Ä¹ı
-	CBasicSmartBuffer	m_buffer;			//iniÎÄ¼şµÄ»º´æ
-	CBasicSmartBuffer	m_tmp;				///ÁÙÊ±Êı¾İ
+	bool				m_bModified;			///åˆ¤æ–­æ•°æ®æ˜¯å¦è¢«ä¿®æ”¹è¿‡
+	CBasicSmartBuffer	m_buffer;			//iniæ–‡ä»¶çš„ç¼“å­˜
+	CBasicSmartBuffer	m_tmp;				///ä¸´æ—¶æ•°æ®
 protected:
 	char* GetDataBuffer()
 	{
@@ -224,32 +224,32 @@ protected:
 		return m_buffer.GetDataLength() / sizeof(char);
 	}
 public:
-	///Çå¿Õµ±Ç°Êı¾İ
+	///æ¸…ç©ºå½“å‰æ•°æ®
 	void Empty();
 
-	///ÅĞ¶Ïµ±Ç°ÊÇ·ñÓĞ¶ÁÈ¡¹ıÊı¾İ
-	///Êı¾İÎª¿Õ·µ»Øtrue£¬·ñÔò·µ»Øfalse
+	///åˆ¤æ–­å½“å‰æ˜¯å¦æœ‰è¯»å–è¿‡æ•°æ®
+	///æ•°æ®ä¸ºç©ºè¿”å›trueï¼Œå¦åˆ™è¿”å›false
 	bool IsEmpty()
 	{
 		return m_buffer.GetDataLength() <= 0;
 	}
 
-	///·µ»ØÊı¾İÊÇ·ñ±»ĞŞ¸Ä¹ı
+	///è¿”å›æ•°æ®æ˜¯å¦è¢«ä¿®æ”¹è¿‡
 	bool IsModified()
 	{
 		return m_bModified;
 	}
 
-	/// ´ÓÊı¾İÎÄ¼ş³õÊ¼»¯Êı¾İ×Öµä
-	/// >= 0¶ÁÈ¡³É¹¦
-	/// -1 ¶ÁÈ¡ÎÄ¼şÊ§°Ü
-	/// -2 ÎÄ¼ş²»´æÔÚ
+	/// ä»æ•°æ®æ–‡ä»¶åˆå§‹åŒ–æ•°æ®å­—å…¸
+	/// >= 0è¯»å–æˆåŠŸ
+	/// -1 è¯»å–æ–‡ä»¶å¤±è´¥
+	/// -2 æ–‡ä»¶ä¸å­˜åœ¨
 	int InitFromFile(const char* filename);
-	/// ´ÓÄÚ´æÊı¾İÖĞ³õÊ¼»¯¡¾ANSI °æ±¾¡¿
+	/// ä»å†…å­˜æ•°æ®ä¸­åˆå§‹åŒ–ã€ANSI ç‰ˆæœ¬ã€‘
 	int InitFromMem(const char* lpszData, size_t cbData);
 
-	///±éÀúÒ»¸ösection£¬f×÷Îª»Øµ÷£¬´øÁ½¸ö²ÎÊı£¬Ô­ĞÍÈçvoid f(LPCTSTR key£¬LPCTSTR value)
-	///Ã¿ËÑË÷µ½Ò»¸ökey£¬¾Í»áµ÷ÓÃfÒ»´Î£¬²»ÊÇÓĞĞ§µÄkey=valueĞĞ²»»Øµ÷£¬Èç×¢ÊÍµÈ
+	///éå†ä¸€ä¸ªsectionï¼Œfä½œä¸ºå›è°ƒï¼Œå¸¦ä¸¤ä¸ªå‚æ•°ï¼ŒåŸå‹å¦‚void f(LPCTSTR keyï¼ŒLPCTSTR value)
+	///æ¯æœç´¢åˆ°ä¸€ä¸ªkeyï¼Œå°±ä¼šè°ƒç”¨fä¸€æ¬¡ï¼Œä¸æ˜¯æœ‰æ•ˆçš„key=valueè¡Œä¸å›è°ƒï¼Œå¦‚æ³¨é‡Šç­‰
 	template<typename F>
 	int  GetSection(const char* lpszSection, F f)
 	{
@@ -268,11 +268,11 @@ public:
 		__private::get_section_strChar<F> _callback(f);
 		return ParseIniChar(pszData + i.m_nOffset, i.m_nSectionLength, _callback);
 	}
-	///É¾³ıÒ»¸ösection
-	//Èç¹ûsectionÎªNULL£¬ÄÇÃ´É¾³ıÕû¸öÅäÖÃÎÄ¼ş
+	///åˆ é™¤ä¸€ä¸ªsection
+	//å¦‚æœsectionä¸ºNULLï¼Œé‚£ä¹ˆåˆ é™¤æ•´ä¸ªé…ç½®æ–‡ä»¶
 	bool EmptySection(const char* lpszSection);
 
-	//±éÀúËùÓĞµÄ¶ÎÃû£¬f×÷Îª»Øµ÷£¬´øÒ»¸ö²ÎÊı£¬Ô­ĞÍÎª void f(LPCTSTR lpszSection);
+	//éå†æ‰€æœ‰çš„æ®µåï¼Œfä½œä¸ºå›è°ƒï¼Œå¸¦ä¸€ä¸ªå‚æ•°ï¼ŒåŸå‹ä¸º void f(LPCTSTR lpszSection);
 	template<typename F>
 	int GetSectionList(F f)
 	{
@@ -280,14 +280,14 @@ public:
 		return ParseIniChar(GetDataBuffer(), GetDataLength(), _callback);
 	}
 
-	///²åÈëÖµµ½[key1]findkey2Ö®Ç°
-	///Èç¹ûfindkey2²»´æÔÚ£¬ÄÇÃ´¼ÓÈë¶Î×îºó
-	///²åÈëÖµÊ±£¬Ô­À´µÄ[key1]key2Öµ½«±»É¾³ı
-	///key1, key2,value, findkey2¾ù²»ÄÜÎªnull
-	///³É¹¦·µ»Ø0£¬ Ê§°Ü·µ»Ø-1
+	///æ’å…¥å€¼åˆ°[key1]findkey2ä¹‹å‰
+	///å¦‚æœfindkey2ä¸å­˜åœ¨ï¼Œé‚£ä¹ˆåŠ å…¥æ®µæœ€å
+	///æ’å…¥å€¼æ—¶ï¼ŒåŸæ¥çš„[key1]key2å€¼å°†è¢«åˆ é™¤
+	///key1, key2,value, findkey2å‡ä¸èƒ½ä¸ºnull
+	///æˆåŠŸè¿”å›0ï¼Œ å¤±è´¥è¿”å›-1
 	int InsertBefore(const char* key1, const char* key2, const char* value, const char* findkey2);
 
-	//ÉèÖÃÖµ£¬Èç¹ûvalue=NULL,ÄÇÃ´É¾³ı¸ÃÖµ
+	//è®¾ç½®å€¼ï¼Œå¦‚æœvalue=NULL,é‚£ä¹ˆåˆ é™¤è¯¥å€¼
 	void SetData(const char* key1, const char* key2, const char* value)
 	{
 		_SetData(key1, key2, value);
@@ -315,13 +315,13 @@ public:
 		return strRet;
 	}
 
-	///È¡Êı¾İ
+	///å–æ•°æ®
 	double GetDouble(const char* key1, const char* key2, const char* defval = "")
 	{
 		return atof(GetData(key1, key2, defval).c_str());
 	}
 
-	///È¡longĞÍÊı¾İ
+	///å–longå‹æ•°æ®
 	long  GetLong(const char* key1, const char* key2, const char* defval = "")
 	{
 		return atoi(GetData(key1, key2, defval).c_str());
@@ -371,15 +371,15 @@ public:
 		return CBasicString(pszData + i.m_nOffset + i.m_nKeyLen + 1, i.m_nValueLen);
 	}
 
-	//! °ÑÄÚÈİĞ´ÈëÎÄ¼ş
+	//! æŠŠå†…å®¹å†™å…¥æ–‡ä»¶
 	bool WriteToFile(const char* filename = NULL);
 
 
 
-	/*!½«µ±Ç°ÄÚÈİºÏ²¢µ½ÎÄ¼şfilenameÖĞ£¬½«ÓÃµ±Ç°µÄÊı¾İºÏ²¢ÎÄ¼şÖĞµÄÊı¾İ
-	*\param  ĞèÒªºÏ²¢µÄÎÄ¼ş
-	*\return ·µ»Ø´¦ÀíµÄÊı¾İĞĞÊı
-	*\remark µ±Ç°iniÎÄ¼şÖĞµÄ×¢ÊÍĞÅÏ¢»á±»¶ªµô
+	/*!å°†å½“å‰å†…å®¹åˆå¹¶åˆ°æ–‡ä»¶filenameä¸­ï¼Œå°†ç”¨å½“å‰çš„æ•°æ®åˆå¹¶æ–‡ä»¶ä¸­çš„æ•°æ®
+	*\param  éœ€è¦åˆå¹¶çš„æ–‡ä»¶
+	*\return è¿”å›å¤„ç†çš„æ•°æ®è¡Œæ•°
+	*\remark å½“å‰iniæ–‡ä»¶ä¸­çš„æ³¨é‡Šä¿¡æ¯ä¼šè¢«ä¸¢æ‰
 	*/
 	long CombinToFile(const char* filename)
 	{
@@ -393,10 +393,10 @@ public:
 		return lCount;
 	}
 
-	/*!½«µ±Ç°¶ÔÏóÖĞµÄÊı¾İºÏ²¢µ½ÆäËû¶ÔÏóÖĞ£¬ÓÅÏÈ¼¶ÊÇµ±Ç°Êı¾İ > ini
-	*\param ini ĞèÒªºÏ²¢µÄCWBasicIniOp¶ÔÏó
-	*\return ·µ»Ø´¦ÀíµÄÊı¾İĞĞÊı
-	*\remark µ±Ç°¶ÔÏóÖĞµÄ×¢ÊÍĞÅÏ¢½«±»ºöÂÔ
+	/*!å°†å½“å‰å¯¹è±¡ä¸­çš„æ•°æ®åˆå¹¶åˆ°å…¶ä»–å¯¹è±¡ä¸­ï¼Œä¼˜å…ˆçº§æ˜¯å½“å‰æ•°æ® > ini
+	*\param ini éœ€è¦åˆå¹¶çš„CWBasicIniOpå¯¹è±¡
+	*\return è¿”å›å¤„ç†çš„æ•°æ®è¡Œæ•°
+	*\remark å½“å‰å¯¹è±¡ä¸­çš„æ³¨é‡Šä¿¡æ¯å°†è¢«å¿½ç•¥
 	*/
 	long combine_to_other(CBasicIniOp& ini)
 	{
@@ -405,7 +405,7 @@ public:
 		});
 	}
 
-	/*!Á½¸ö¶ÔÏóÖ®¼äµÄ¿½±´
+	/*!ä¸¤ä¸ªå¯¹è±¡ä¹‹é—´çš„æ‹·è´
 	*/
 	CBasicIniOp& operator =(const CBasicIniOp& ini)
 	{
@@ -421,34 +421,34 @@ public:
 		}
 	}
 protected:
-	//ºÏ²¢·½Ê½µÄini½âÎö
+	//åˆå¹¶æ–¹å¼çš„iniè§£æ
 	bool ParseCombine(long nType, const char* lpszSection, const char* lpszData, long nV1Begin, long nV1End, long nV2Begin, long nV2End);
 
-	/*!½âÎöiniÎÄ¼şµÄ»Øµ÷º¯Êı*/
+	/*!è§£æiniæ–‡ä»¶çš„å›è°ƒå‡½æ•°*/
 	bool ParseINI(long nType, const char* lpszSection, const char* lpszData, long nV1Begin, long nV1End, long nV2Begin, long nV2End);
 
-	/*!ÄÚ²¿¸³Öµ²Ù×÷*/
+	/*!å†…éƒ¨èµ‹å€¼æ“ä½œ*/
 	void _SetData(const char* key1, const char* key2, const char* value);
 
-	/*!½«ĞèÒª±ä¶¯µÄÊı¾İµÄÆ«ÒÆÁ¿¸Ä±ä*/
+	/*!å°†éœ€è¦å˜åŠ¨çš„æ•°æ®çš„åç§»é‡æ”¹å˜*/
 	void UpdateOffset(DWORD dwBeginOffset, long nMove);
 
-	/// ´ÓÄÚ´æÊı¾İÖĞ³õÊ¼»¯
-	/// ÄÚ²¿º¯Êıµ÷ÓÃ£¬²»Ìá¹©¶ÔÍâÖ§³Ö
+	/// ä»å†…å­˜æ•°æ®ä¸­åˆå§‹åŒ–
+	/// å†…éƒ¨å‡½æ•°è°ƒç”¨ï¼Œä¸æä¾›å¯¹å¤–æ”¯æŒ
 	int InitData(const char* lpszData, size_t cbData);
 
-	/*Ôö¼ÓÊı¾İ
-	\param dwStartPos ÆğµãÎ»ÖÃ
-	\param cbOld      Ô­Ê¼Êı¾İ³¤¶È
-	\param lpszNewData ĞÂÊı¾İ
-	\param cbData      ĞÂÊı¾İ³¤¶È¶í
+	/*å¢åŠ æ•°æ®
+	\param dwStartPos èµ·ç‚¹ä½ç½®
+	\param cbOld      åŸå§‹æ•°æ®é•¿åº¦
+	\param lpszNewData æ–°æ•°æ®
+	\param cbData      æ–°æ•°æ®é•¿åº¦ä¿„
 	*/
 	void AddNewData(DWORD dwStartPos, long cbOldData, const char* lpszNewData, long cbData);
 
-	/// ´ÓÄÚ´æÊı¾İÖĞ³õÊ¼»¯¡¾ANSI °æ±¾¡¿
+	/// ä»å†…å­˜æ•°æ®ä¸­åˆå§‹åŒ–ã€ANSI ç‰ˆæœ¬ã€‘
 	int _InitData(const char* lpszData, size_t cbData);
 
-	//! ¸ù¾İ»Øµ÷º¯Êı£¬Ğ´ÈëÊı¾İ
+	//! æ ¹æ®å›è°ƒå‡½æ•°ï¼Œå†™å…¥æ•°æ®
 	void _WriteTo(const std::function<long(const char*, long)>& func);
 
 };

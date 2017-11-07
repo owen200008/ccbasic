@@ -2,11 +2,11 @@
 #include "filebase.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define MF_HEAD			sizeof(long) * 3		//Êı¾İÍ·µÄ³¤¶È
+#define MF_HEAD			sizeof(long) * 3		//æ•°æ®å¤´çš„é•¿åº¦
 
-#define MF_LEN			0						//Êı¾İ³¤¶È
-#define MF_POS			1						//µ±Ç°Î»ÖÃ
-#define MF_MAP			2						//MAPFILE ¾ä±ú
+#define MF_LEN			0						//æ•°æ®é•¿åº¦
+#define MF_POS			1						//å½“å‰ä½ç½®
+#define MF_MAP			2						//MAPFILE å¥æŸ„
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_START
 
@@ -56,7 +56,7 @@ long CMemFileBase::OpenMemFile(void* pBuffer, long lCount, long lLength)
 	{
 		return BASIC_FILE_OK;
 	}
-	else if (lLength == -2)	//´«½øÀ´µÄÊÇ¶ÔÏó
+	else if (lLength == -2)	//ä¼ è¿›æ¥çš„æ˜¯å¯¹è±¡
 	{
 		CFileBase* pFileBase = (CFileBase*)pBuffer;
 		lCount = pFileBase->GetLength();
@@ -128,7 +128,7 @@ long CMemFileBase::Read(void* lpBuf, long lCount)
 	return 0;
 }
 
-//ÄÚ²¿Ê¹ÓÃµÄ memmove º¯Êı£¬½â¾öµØÖ·ÖØµşµÄÎÊÌâ
+//å†…éƒ¨ä½¿ç”¨çš„ memmove å‡½æ•°ï¼Œè§£å†³åœ°å€é‡å çš„é—®é¢˜
 static char* _basic_memmove(char* dst, const char* src, size_t count)
 {
 	char* ret = dst;
@@ -396,7 +396,7 @@ void CMemFileBase::_SetDataHead(int nIndex, long lValue)
 	mf_setdatahead(m_pFileObj, nIndex, lValue);
 }
 
-#define MF_MEM_MAX_SIZE		(40 * 1024 * 1024)		//´¿ÄÚ´æÎÄ¼şµÄ×î´ó³¤¶È£¬³¬³öÕâ¸ö³¤¶È£¬ĞèÒªÊ¹ÓÃ MAPFILE
+#define MF_MEM_MAX_SIZE		(40 * 1024 * 1024)		//çº¯å†…å­˜æ–‡ä»¶çš„æœ€å¤§é•¿åº¦ï¼Œè¶…å‡ºè¿™ä¸ªé•¿åº¦ï¼Œéœ€è¦ä½¿ç”¨ MAPFILE
 char* CMemFileBase::_AllocMemory(long lLength)
 {
 	long lOldLength = _GetDataHead(MF_LEN);

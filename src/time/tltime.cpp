@@ -18,7 +18,7 @@ void CBasicTimeSplite::Empty()
     m_vtTimeSplite.clear();
 }
 
-//³õÊ¼»¯Ê±¼ä¶Î
+//åˆå§‹åŒ–æ—¶é—´æ®µ
 int CBasicTimeSplite::InitBasicTimeSplite(BasicTimeSpliteType basicTimeSpliteType, CTimeSpan& timeSpan, const char* lpszFormat, int nBeginDelay, int nEndDelay)
 {
     int nRet = 0;
@@ -76,7 +76,7 @@ BOOL CompareTimeSplite(const BasicTimeSplite& first, const BasicTimeSplite& seco
     return first.m_tmBegin < second.m_tmBegin;
 }
 
-//¸üĞÂÊ±¼ä
+//æ›´æ–°æ—¶é—´
 void CBasicTimeSplite::UpdateBasicTime(time_t tmNow)
 {
     switch (m_timeSpliteType)
@@ -114,7 +114,7 @@ void CBasicTimeSplite::UpdateBasicTime(time_t tmNow)
     }
 }
 
-//ÅĞ¶ÏÊ±¼äÊÇ·ñÎªÊ±¼ä¶ÎÄÚ
+//åˆ¤æ–­æ—¶é—´æ˜¯å¦ä¸ºæ—¶é—´æ®µå†…
 BasicTimeSpliteReturnType CBasicTimeSplite::IsTimeInTime(time_t tmNow)
 {
     BasicTimeSpliteReturnType basicRet = TimeBasic_NotReady;
@@ -176,7 +176,7 @@ BasicTimeSpliteReturnType CBasicTimeSplite::IsTimeInTime(time_t tmNow)
     return basicRet;
 }
 
-//»ñÈ¡×î½üµÄÊ±¼ä
+//è·å–æœ€è¿‘çš„æ—¶é—´
 BasicTimeSplite CBasicTimeSplite::GetLastBasicTimeSplite()
 {
     BasicTimeSplite basicTimeSplite;
@@ -187,7 +187,7 @@ BasicTimeSplite CBasicTimeSplite::GetLastBasicTimeSplite()
     return basicTimeSplite;
 }
 
-// ×ª³É×Ö·û´®
+// è½¬æˆå­—ç¬¦ä¸²
 CBasicString CBasicTimeSplite::FormatToString()
 {
 	CBasicString strRet;
@@ -195,7 +195,7 @@ CBasicString CBasicTimeSplite::FormatToString()
 	return strRet;
 }
 
-// ´Ó×Ö·û´®³õÊ¼»¯
+// ä»å­—ç¬¦ä¸²åˆå§‹åŒ–
 int CBasicTimeSplite::InitFromString(CBasicString& strData)
 {
 	CBasicStringArray ayInfo;
@@ -257,17 +257,17 @@ void CStatisticsTime::InitFromString(const char* lpszTime, time_t tmNow)
 		{
 			int Y,M,D,h,m,s;
 			sscanf(strTime.c_str(), "%04d%02d%02d%02d%02d%02d", &Y, &M, &D, &h, &m, &s);
-			basiclib::CTime timePrize(Y, M, D, h, m, s);  //µÚÒ»¸öÖÜÆÚµÄ°ä½±Ê±¼ä
+			basiclib::CTime timePrize(Y, M, D, h, m, s);  //ç¬¬ä¸€ä¸ªå‘¨æœŸçš„é¢å¥–æ—¶é—´
 			m_vtPrizeTime.push_back(timePrize);
 		}
 	}
 	
-	//¸üĞÂµ½µ±Ç°×îĞÂµÄÊ±¼ä
+	//æ›´æ–°åˆ°å½“å‰æœ€æ–°çš„æ—¶é—´
 	UpdateBasicTime(tmNow);
 
 	m_strFormat = lpszTime;
 }
-// ×ª³É×Ö·û´®
+// è½¬æˆå­—ç¬¦ä¸²
 basiclib::CBasicString CStatisticsTime::FormatToString()
 {
 	return m_strFormat;
@@ -278,7 +278,7 @@ BOOL CompareStatisticsTimeSplite(const basiclib::CTime& first, const basiclib::C
 	return first < second;
 }
 
-//¸üĞÂÊ±¼ä
+//æ›´æ–°æ—¶é—´
 void CStatisticsTime::UpdateBasicTime(time_t tmNow)
 {
 	for (VTPrizeTimeIterator iter = m_vtPrizeTime.begin();iter != m_vtPrizeTime.end();iter++)
@@ -293,7 +293,7 @@ void CStatisticsTime::UpdateBasicTime(time_t tmNow)
 			}
 			if(m_tmSpan.GetTimeSpan32() != 0)
 			{
-				//Ôö¼ÓµÄ·¶Î§
+				//å¢åŠ çš„èŒƒå›´
 				int nStep = (int)((tmNow - tmTime.GetTime32()) / m_tmSpan.GetTimeSpan32());
 				if(nStep <= 0)
 				{
@@ -313,12 +313,12 @@ void CStatisticsTime::UpdateBasicTime(time_t tmNow)
 
 	if (m_vtPrizeTime.size() > 1)
 	{
-		//ÅÅĞòÒ»´Î
+		//æ’åºä¸€æ¬¡
 		std::sort(m_vtPrizeTime.begin(), m_vtPrizeTime.end(), CompareStatisticsTimeSplite);
 	}
 }
 
-//! »ñÈ¡×î½üµÄÊ±¼äµã
+//! è·å–æœ€è¿‘çš„æ—¶é—´ç‚¹
 basiclib::CTime CStatisticsTime::GetLastPrizeTime()
 {
 	basiclib::CTime tmNow;
@@ -329,7 +329,7 @@ basiclib::CTime CStatisticsTime::GetLastPrizeTime()
 	return tmNow;
 }
 
-//ÅĞ¶ÏÊÇ·ñµ½°ä½±µÄÊ±¼ä£¬Èç¹ûµ½¾ÍÉèÖÃÏÂÒ»¸ö°ä½±Ê±¼ä	
+//åˆ¤æ–­æ˜¯å¦åˆ°é¢å¥–çš„æ—¶é—´ï¼Œå¦‚æœåˆ°å°±è®¾ç½®ä¸‹ä¸€ä¸ªé¢å¥–æ—¶é—´	
 BOOL CStatisticsTime::IsPrizeTime(time_t tmNow)
 {
 	BOOL bRet = FALSE;
@@ -344,7 +344,7 @@ BOOL CStatisticsTime::IsPrizeTime(time_t tmNow)
 	return bRet;
 }
 
-//! dump³öÄ¿Ç°µÄ³ÉÔ±±äÁ¿ĞÅÏ¢
+//! dumpå‡ºç›®å‰çš„æˆå‘˜å˜é‡ä¿¡æ¯
 void CStatisticsTime::DumpTimeInfo(basiclib::CBasicString& strInfo)
 {
 	basiclib::CBasicString strTmp;
@@ -438,7 +438,7 @@ CTime::CTime(const FILETIME& fileTime, int nDST)
 }
 #endif
 
-//½âÎö¸ñÊ½MMMM-MM-MM MM:MM:MM ÀıÈç 2014-04-02 17:42:13  
+//è§£ææ ¼å¼MMMM-MM-MM MM:MM:MM ä¾‹å¦‚ 2014-04-02 17:42:13  
 BOOL CTime::ParseString(const char* lpszTimeFormat)
 {
 	BOOL nResult = FALSE;

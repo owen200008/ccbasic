@@ -19,16 +19,16 @@ void CNetServerControlSession::SuccessLogin(){
 
 uint32_t CNetServerControlSession::OnConnect(uint32_t dwNetCode){
 	if (!m_server->m_ipTrust.IsIpTrust(GetNetAddress())){
-		basiclib::BasicLogEventErrorV("µØÖ·£º%s ²»ÔÚ°×Ãûµ¥ÄÚ!", GetNetAddress());
+		basiclib::BasicLogEventErrorV("åœ°å€ï¼š%s ä¸åœ¨ç™½åå•å†…!", GetNetAddress());
 		return BASIC_NET_GENERIC_ERROR;
 	}
 	if (m_server->m_nSessionMaxCount >= 0){
 		if (m_server->GetOnlineSessionCount() > m_server->m_nSessionMaxCount){
-            basiclib::BasicLogEventErrorV("µØÖ·£º%s ³¬¹ı×î´óÁ¬½ÓÊı %d!", GetNetAddress(), m_server->m_nSessionMaxCount);
+            basiclib::BasicLogEventErrorV("åœ°å€ï¼š%s è¶…è¿‡æœ€å¤§è¿æ¥æ•° %d!", GetNetAddress(), m_server->m_nSessionMaxCount);
 			return BASIC_NET_GENERIC_ERROR;
 		}
 	}
-	//ĞèÒªÈÏÖ¤
+	//éœ€è¦è®¤è¯
     int32_t nRet = basiclib::CBasicSessionNetServerSession::OnConnect(dwNetCode);
     if (nRet == BASIC_NET_OK){
         SuccessLogin();

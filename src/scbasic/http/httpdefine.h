@@ -68,7 +68,7 @@ const char	ENV_CACHE_EXPIRE[]		= ("cache-expire");
 const char	DEFAULT_MIMETYPE[]		= ("text/html");
 const char	CRLR[] = ("\r\n");
 
-// HTTPÇëÇó·½Ê½
+// HTTPè¯·æ±‚æ–¹å¼
 const char	HTTP_METHOD_GET[]		=	("GET");
 const char	HTTP_METHOD_POST[]		=	("POST");
 
@@ -215,11 +215,11 @@ const HttpStatus HttpStatusTable[] =
 const char HTTP_CONTENT_TYPE_URLENCODED[] = ("application/x-www-form-urlencoded");
 													
 					
-// HandleRequestµÄ·µ»ØÖµ
-const int	HTTP_SUCC = 0;	// ³É¹¦
-const int	HTTP_NOT_HANDLE = 1;	// Î´´¦Àí
-const int	HTTP_INTERNAL_ERROR = 2;	// ÄÚ²¿´íÎó
-const int	HTTP_ASYNC = 3;	// Òì²½´¦Àí
+// HandleRequestçš„è¿”å›å€¼
+const int	HTTP_SUCC = 0;	// æˆåŠŸ
+const int	HTTP_NOT_HANDLE = 1;	// æœªå¤„ç†
+const int	HTTP_INTERNAL_ERROR = 2;	// å†…éƒ¨é”™è¯¯
+const int	HTTP_ASYNC = 3;	// å¼‚æ­¥å¤„ç†
 
 #endif //INC_CIFOX_HTTPDEFINE_H__					
 

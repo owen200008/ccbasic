@@ -74,7 +74,7 @@ int	 CHttpParser::Parse(const char* buffer, size_t len, size_t& remain, IHttpPar
 				pHandler->URIHandler(token);
 				SET_STATUS(PS_Protocol);
 			}
-			else if (p - token > MAX_URI)	// Áô4K
+			else if (p - token > MAX_URI)	// ç•™4K
 			{
 				return HTTP_ERROR_URI_TOOLONG;
 			}
@@ -96,7 +96,7 @@ int	 CHttpParser::Parse(const char* buffer, size_t len, size_t& remain, IHttpPar
 					break;
 				case '\n':
 					if (token == p)
-					{// ¿ÕÐÐ£¬½áÊøÁË
+					{// ç©ºè¡Œï¼Œç»“æŸäº†
 						if (__context.m_nBodyLen == 0)
 						{
 							SET_STATUS(PS_End);
@@ -133,12 +133,12 @@ int	 CHttpParser::Parse(const char* buffer, size_t len, size_t& remain, IHttpPar
 		}
 	}
 	len += (p - token);
-	// mark a rule: ÒÔÏÂ²»ÄÜ¶Ôp½øÐÐ²Ù×÷.
+	// mark a rule: ä»¥ä¸‹ä¸èƒ½å¯¹pè¿›è¡Œæ“ä½œ.
 
 	if (__context.m_eStatus == PS_Body)
 	{
 		if (len >= __context.m_nBodyLen)
-		{	// Ê£ÏÂµÄ³¤¶È×ã¹»bodyÁË¡£
+		{	// å‰©ä¸‹çš„é•¿åº¦è¶³å¤Ÿbodyäº†ã€‚
 			pHandler->PostDataHandler(token, __context.m_nBodyLen);
 			len -= __context.m_nBodyLen;
 			token += __context.m_nBodyLen;

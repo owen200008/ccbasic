@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     string.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     string.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 9:17:12
-// ÄÚÈİÃèÊö:   ÊµÏÖstringtµÄMFC like½Ó¿Ú¡£
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 9:17:12
+// å†…å®¹æè¿°:   å®ç°stringtçš„MFC likeæ¥å£ã€‚
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_STRING_H
 #define BASIC_STRING_H
@@ -106,13 +106,13 @@ public:
 	void FormatV(const char* lpszFormat, va_list argList);
 
 	/*
-	È«¾ÖÊ¹ÓÃÊ±£¨¶à¸ö×ÊÔ´ÎÄ¼ş£©Ê¹ÓÃlpszModuleName½øĞĞÇø·Ö, Ä£¿éÃûºÍBasic_LoadStringSourceÊ±ÏàÍ¬
+	å…¨å±€ä½¿ç”¨æ—¶ï¼ˆå¤šä¸ªèµ„æºæ–‡ä»¶ï¼‰ä½¿ç”¨lpszModuleNameè¿›è¡ŒåŒºåˆ†, æ¨¡å—åå’ŒBasic_LoadStringSourceæ—¶ç›¸åŒ
 	*/
 	void FormatS(const char* lpszModuleName, const char* lpszFormatID, ...);
 	void FormatS(const char* lpszModuleName, DWORD dwFormatID, ...);
 
 	/*
-	È«¾ÖÊ¹ÓÃÊ±£¨¶à¸ö×ÊÔ´ÎÄ¼ş£©Ê¹ÓÃlpszModuleName½øĞĞÇø·Ö, Ä£¿éÃûºÍBasic_LoadStringSourceÊ±ÏàÍ¬
+	å…¨å±€ä½¿ç”¨æ—¶ï¼ˆå¤šä¸ªèµ„æºæ–‡ä»¶ï¼‰ä½¿ç”¨lpszModuleNameè¿›è¡ŒåŒºåˆ†, æ¨¡å—åå’ŒBasic_LoadStringSourceæ—¶ç›¸åŒ
 	*/
 	BOOL LoadString(const char* lpszFormatID, const char* lpszModuleName = "");
 	BOOL LoadString(DWORD dwFormatID, const char* lpszModuleName = "");

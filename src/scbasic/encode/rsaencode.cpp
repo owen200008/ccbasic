@@ -38,10 +38,10 @@ void CSCBasicRSA::GenerateRSAKey(unsigned int keyLength, string& strPub, string&
 	pubFile.MessageEnd();
 }
 
-//ÉèÖÃpublicfile
+//è®¾ç½®publicfile
 void CSCBasicRSA::SetPublicFileName(const char* pPubFileName)
 {
-	//android±àÒë³ö´íÎŞ·¨×ª»»FileSource to BufferedTransformation
+	//androidç¼–è¯‘å‡ºé”™æ— æ³•è½¬æ¢FileSource to BufferedTransformation
 	{
 		CryptoPP::FileSource source(pPubFileName, true, new CryptoPP::HexDecoder);
 		CryptoPP::Filter& filter = source;
@@ -56,7 +56,7 @@ void CSCBasicRSA::SetPublicFileName(const char* pPubFileName)
 }
 void CSCBasicRSA::SetPublicKey(const char* pData)
 {
-	//android±àÒë³ö´íÎŞ·¨×ª»»FileSource to BufferedTransformation
+	//androidç¼–è¯‘å‡ºé”™æ— æ³•è½¬æ¢FileSource to BufferedTransformation
 	{
 		CryptoPP::StringSource source(pData, true, new CryptoPP::HexDecoder);
 		CryptoPP::Filter& filter = source;
@@ -95,7 +95,7 @@ void CSCBasicRSA::SetPrivateKey(const char* pData)
 	}
 }
 
-//! ¼ÆËã¼ÓÃÜËùĞèµÄÊı¾İ³¤¶È
+//! è®¡ç®—åŠ å¯†æ‰€éœ€çš„æ•°æ®é•¿åº¦
 size_t CSCBasicRSA::CalcEncryptNeedLength(int nLength)
 {
 	size_t fixedLen = m_pubEncode.FixedMaxPlaintextLength();

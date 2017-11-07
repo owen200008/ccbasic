@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     singleton.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     singleton.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 12:06:43
-// ÄÚÈİÃèÊö:   ÊµÏÖÉè¼ÆÄ£Ê½ Singleton £¬ÊÇÒ»ÖÖ¸Ä½øµÄÈ«¾Ö±äÁ¿¡£
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 12:06:43
+// å†…å®¹æè¿°:   å®ç°è®¾è®¡æ¨¡å¼ Singleton ï¼Œæ˜¯ä¸€ç§æ”¹è¿›çš„å…¨å±€å˜é‡ã€‚
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_SINGLETON_H
 #define BASIC_SINGLETON_H
@@ -12,9 +12,9 @@
 #pragma once
 __NS_BASIC_START
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//ÉùÃ÷
+//å£°æ˜
 #define ST_LIFETIME_LIFO		0		//last-in, first-out (LIFO) order
-#define ST_LIFETIME_NODESTROY	-1		//²»Ïú»Ù¶ÔÏó
+#define ST_LIFETIME_NODESTROY	-1		//ä¸é”€æ¯å¯¹è±¡
 
 template<class T, int nLifetime = ST_LIFETIME_LIFO>
 class CBasicSingleton 
@@ -31,7 +31,7 @@ public:
 				_instance = new T();
 				if(nLifetime == ST_LIFETIME_LIFO)
 				{
-					atexit(Destroy);  //×¢²áÏú»Ùº¯Êı£¬ÊµÏÖ LIFO
+					atexit(Destroy);  //æ³¨å†Œé”€æ¯å‡½æ•°ï¼Œå®ç° LIFO
 				}
 			}
 		}

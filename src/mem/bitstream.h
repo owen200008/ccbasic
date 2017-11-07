@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     smartbuffer.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     smartbuffer.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 11:23:31
-// ÄÚÈİÃèÊö:   ÄÚ´æ¿é¹ÜÀí
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 11:23:31
+// å†…å®¹æè¿°:   å†…å­˜å—ç®¡ç†
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_BITSTREAMBUFFER_H
 #define BASIC_BITSTREAMBUFFER_H
@@ -55,8 +55,8 @@ public:
 	virtual ~CBasicBitstream();
 
 	/////////////////////////////////////////////////////////////////////////////
-	//´®ĞĞ»¯
-	//×Ö·û´®²Ù×÷
+	//ä¸²è¡ŒåŒ–
+	//å­—ç¬¦ä¸²æ“ä½œ
 	CBasicBitstream& operator << (const uint8_t v);
 	CBasicBitstream& operator << (const int8_t v);
 	CBasicBitstream& operator << (const uint16_t v);
@@ -107,8 +107,8 @@ public:
 		return *this;
 	}
 	/////////////////////////////////////////////////////////////////////////////
-	//·´´®ĞĞ»¯
-	//×Ö·û´®
+	//åä¸²è¡ŒåŒ–
+	//å­—ç¬¦ä¸²
 	CBasicBitstream& operator >> (uint8_t& v);
 	CBasicBitstream& operator >> (int8_t& v);
 	CBasicBitstream& operator >> (uint16_t& v);
@@ -174,7 +174,7 @@ public:
 	void UnSerializeCString(basiclib::CBasicString* pV);
 	void UnSerializeSmbuf(basiclib::CBasicSmartBuffer* pV);
 protected:
-	unsigned char m_szBuf[8];			//×î´ó±àÂë8×Ö½ÚÕûĞÍ
+	unsigned char m_szBuf[8];			//æœ€å¤§ç¼–ç 8å­—èŠ‚æ•´å‹
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,10 +183,10 @@ const double TINY_VALUE = (1E-10);
 const char		g_strDoubleNull[8] = { (char)0, (char)0, (char)0, (char)0, (char)0, (char)0, (char)0, (char)0x80 };
 const double	DTEDOUBLE_NULL = *(double*)g_strDoubleNull;
 
-#define DTE_CHAR_NULL		"NUL"			//×Ö·û´®¿ÕÖµ
-#define DTE_LONG_NULL		LONG_MIN		//ÕûÊı¿ÕÖµ
-#define DTE_DATETIME_NULL	SS_MINTIME		//ÈÕÆÚÊ±¼ä¿ÕÖµ
-#define DTE_COLOR_NULL		0x7fffffff		//ÑÕÉ«COLORREF
+#define DTE_CHAR_NULL		"NUL"			//å­—ç¬¦ä¸²ç©ºå€¼
+#define DTE_LONG_NULL		LONG_MIN		//æ•´æ•°ç©ºå€¼
+#define DTE_DATETIME_NULL	SS_MINTIME		//æ—¥æœŸæ—¶é—´ç©ºå€¼
+#define DTE_COLOR_NULL		0x7fffffff		//é¢œè‰²COLORREF
 
 #define IsColorNull(x)		((x) == DTE_COLOR_NULL)
 #define SetColorNull(x)		(x) = DTE_COLOR_NULL
@@ -272,13 +272,13 @@ public:
 	const CNetBasicValue& operator /= (const double& rhs);
 	const CNetBasicValue& operator /= (const int64_t& rhs);
 
-	//ĞòÁĞ»¯
+	//åºåˆ—åŒ–
 	void SeriazeSMBuf(basiclib::CBasicSmartBuffer& smBuf) const;
 	void UnSeriazeSMBuf(basiclib::CBasicSmartBuffer& smBuf);
 
 	int Seriaze(char* pData, int nLength);
 	int UnSeriaze(const char* pData, int nLength);
-	//»ñÈ¡ĞòÁĞ»¯³¤¶È
+	//è·å–åºåˆ—åŒ–é•¿åº¦
 	int GetSeriazeLength() const;
 protected:
 	void			toData(int32_t& lValue) const;
@@ -382,21 +382,21 @@ inline bool operator!=(const CNetBasicValue& lhs, const int32_t rhs)
 
 __NS_BASIC_END
 /////////////////////////////////////////////////////////////////////////////////////////////
-//½á¹¹¶¨Òå
-typedef uint8_t						Net_UChar;											//1¸ö×Ö½Ú
-typedef int8_t						Net_Char;											//1¸ö×Ö½Ú
-typedef uint16_t					Net_UShort;											//ÎŞ·ûºÅ2×Ö½Ú
-typedef int16_t						Net_Short;											//2×Ö½Ú
-typedef uint32_t					Net_UInt;											//ÎŞ·ûºÅ4×Ö½Ú
-typedef int32_t						Net_Int;											//4×Ö½Ú
-typedef int64_t						Net_LONGLONG;										//8×Ö½Ú
-typedef double						Net_Double;											//8×Ö½Ú
+//ç»“æ„å®šä¹‰
+typedef uint8_t						Net_UChar;											//1ä¸ªå­—èŠ‚
+typedef int8_t						Net_Char;											//1ä¸ªå­—èŠ‚
+typedef uint16_t					Net_UShort;											//æ— ç¬¦å·2å­—èŠ‚
+typedef int16_t						Net_Short;											//2å­—èŠ‚
+typedef uint32_t					Net_UInt;											//æ— ç¬¦å·4å­—èŠ‚
+typedef int32_t						Net_Int;											//4å­—èŠ‚
+typedef int64_t						Net_LONGLONG;										//8å­—èŠ‚
+typedef double						Net_Double;											//8å­—èŠ‚
 typedef intptr_t					Net_PtrInt;											//same with point size
 typedef basiclib::CBasicString		Net_CBasicString;                                   //define the cstring
 typedef basiclib::CNetBasicValue	Net_CNetBasicValue;                                 //define the cstring
 typedef basiclib::CBasicBitstream	Net_CBasicBitstream;                                //define the cstring
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//Ö§³ÖĞòÁĞ»¯µÄmapºÍvector¶¨Òå
+//æ”¯æŒåºåˆ—åŒ–çš„mapå’Œvectorå®šä¹‰
 typedef Net_Vector<Net_Int>													VTNetInt;
 typedef VTNetInt::iterator													VTNetIntIterator;
 typedef VTNetInt::const_iterator											VTNetIntIteratorConst;

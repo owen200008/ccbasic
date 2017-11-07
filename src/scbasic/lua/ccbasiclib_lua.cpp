@@ -41,7 +41,7 @@ namespace kaguya {
 				lua_settop(l, result_index);
 				lua_rawseti(l, array_index, i + 1);
 			}
-			//需要手动clear
+			//闇�瑕佹墜鍔╟lear
 			s->finalizeClose();
 			return 1;
 		}
@@ -247,7 +247,7 @@ void ExportBasiclibClassToLua(lua_State* L) {
 			}})
 	);
 
-	//全局函数
+	//鍏ㄥ眬鍑芥暟
 	
 	luaState["BasicGetModulePath"] = &BasiclibLua_BasicGetModulePath;
 	luaState["BasicLogEvent"] = &BasiclibLua_BasicLogEvent;

@@ -2,7 +2,7 @@
 #include "basicversion.h"
 
 static basiclib::CBasicString* g_strBasiclibVersion = nullptr;
-//»ñÈ¡°æ±¾ºÅ
+//è·å–ç‰ˆæœ¬å·
 basiclib::CBasicString& GetBasicLibVersion() {
 	if (g_strBasiclibVersion)
 		return *g_strBasiclibVersion;
@@ -17,7 +17,7 @@ basiclib::CBasicString& GetBasicLibVersion() {
 		if (!tmp.is_lock_free())\
 			return false;\
 	}
-//ÅĞ¶Ïbasic¿âÊÇ·ñ¿ÉÓÃ
+//åˆ¤æ–­basicåº“æ˜¯å¦å¯ç”¨
 bool IsSupportBasiclib()
 {
 	CHECKSUPPORTATOMIC(bool);

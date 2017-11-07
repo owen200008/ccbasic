@@ -214,7 +214,7 @@ encode(const struct sproto_arg *args)
 			lua_getfield(L, self->tbl_index, args->tagname);
 			if (lua_isnil(L, -1)) 
 			{
-				//ÅĞ¶ÏÊÇ·ñÊÇstar
+				//åˆ¤æ–­æ˜¯å¦æ˜¯star
 				if (args->m_bStar)
 					return 0;
 
@@ -254,7 +254,7 @@ encode(const struct sproto_arg *args)
 			lua_insert(L, -2);
 			lua_replace(L, self->iter_index);
 
-			//Ñ¹Èëkey
+			//å‹å…¥key
 			lua_pushvalue(L, self->iter_index);
 			switch (args->m_nMapKeyType)
 			{
@@ -349,7 +349,7 @@ encode(const struct sproto_arg *args)
 		if (lua_isnil(L, -1))
 		{
 			lua_pop(L, 1);
-			//ÅĞ¶ÏÊÇ·ñÊÇstar
+			//åˆ¤æ–­æ˜¯å¦æ˜¯star
 			if (args->m_bStar)
 				return 0;
 			return encode_xmdefault(args);
@@ -459,7 +459,7 @@ encode(const struct sproto_arg *args)
 			basiclib::CNetBasicValue value;
 			if (lua_isnil(L, -1))
 			{
-				//²»×öÈÎºÎÊÂÇé
+				//ä¸åšä»»ä½•äº‹æƒ…
 			}
 			else
 			{
@@ -606,12 +606,12 @@ static int lencodestr(lua_State *L){
 	bool bZip = lua_toboolean(L, 4);
 	int nRet = encodebysmbuf(L, &smBuf, st, 2);
 	if(nRet == 1){
-		//×îºóÒ»¸ö×Ö½Ú¼ÓÈëÊÇ·ñÑ¹Ëõ
+		//æœ€åä¸€ä¸ªå­—èŠ‚åŠ å…¥æ˜¯å¦å‹ç¼©
 		if(bZip){
 			unsigned long ulLength = smBuf.GetDataLength();
 			if(ulLength > 16 * 1024 * 1024)
 				return luaL_argerror(L, 1, "lencodestr compress max size 16M error");
-			smZipBuf.SetDataLength(ulLength * 1.1 + 24 + sizeof(Net_UInt));//zip Ä¬ÈÏÊÇ1.1±¶+12
+			smZipBuf.SetDataLength(ulLength * 1.1 + 24 + sizeof(Net_UInt));//zip é»˜è®¤æ˜¯1.1å€+12
 			char* pBegin = smZipBuf.GetDataBuffer();
 			unsigned char* pSetBuffer = (unsigned char*)pBegin;
 			pSetBuffer += basiclib::SerializeUShort(pSetBuffer, 0x0102);
@@ -693,7 +693,7 @@ decode(const struct sproto_arg *args)
 		}
 		if (args->m_nMapKeyType > 0)
 		{
-			//map,ÏÈÑ¹Èëkey
+			//map,å…ˆå‹å…¥key
 			switch (args->m_nMapKeyType)
 			{
 			case SPROTO_CC_CHAR:
@@ -922,7 +922,7 @@ int SprotoDecodeFunc(lua_State *L, const void * buffer, size_t sz, struct sproto
         if (sz > 8)
         {
             const unsigned char* pBegin = (const unsigned char*)buffer;
-            //½âÎöĞ­Òé,¶ÁÈ¡Ç°Ãæ8¸ö×Ö½Ú
+            //è§£æåè®®,è¯»å–å‰é¢8ä¸ªå­—èŠ‚
             Net_UInt nFlopKey = pBegin[0] | pBegin[1] << 8 | pBegin[2] << 16 | pBegin[3] << 24;
             Net_UInt nMethod = pBegin[4] | pBegin[5] << 8 | pBegin[6] << 16 | pBegin[7] << 24;
             char szBuf[32] = { 0 };
@@ -961,13 +961,13 @@ static int ldecodestr(lua_State *L) {
 		pInfo = smBuf.GetDataBuffer();
 		sz = smBuf.GetDataLength();
 	}
-	//ÏÈ²é¿´×îºóÒ»¸ö×Ö½Ú
+	//å…ˆæŸ¥çœ‹æœ€åä¸€ä¸ªå­—èŠ‚
 	if(sz >= 8){
 		unsigned char* pBegin = (unsigned char*)pInfo;
 		Net_UShort nSignZip = 0;
 		pBegin += basiclib::UnSerializeUShort((unsigned char*)pBegin, nSignZip);
 		if(nSignZip == 0x0102){
-			//ÕÒµ½zipÍ·±êÖ¾
+			//æ‰¾åˆ°zipå¤´æ ‡å¿—
 			unsigned char* pEnd = (unsigned char*)pInfo + sz - 2;
 			basiclib::UnSerializeUShort((unsigned char*)pEnd, nSignZip);
 			if(nSignZip == 0x0203){

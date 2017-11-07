@@ -766,7 +766,7 @@ CodecEncrypt(Codec* codec, int page, unsigned char* data, int len, int useWriteK
 	/* Restore the unencrypted header bytes 16..23 */
     memcpy(data+16, dbHeader, 8);
   }
-  //ÔÙ¾­¹ıÒ»´Îxtra¼ÓÃÜ
+  //å†ç»è¿‡ä¸€æ¬¡xtraåŠ å¯†
   Baisc_XTRA_Sqlite((int*)data, len / 4, k);
 #endif
 }
@@ -778,7 +778,7 @@ CodecDecrypt(Codec* codec, int page, unsigned char* data, int len)
   /* Use the previous encryption scheme */
   CodecAES(codec, page, 0, codec->m_readKey, data, len, data);
 #else
-  //ÏÈ¾­¹ıÒ»´Î½âÃÜ
+  //å…ˆç»è¿‡ä¸€æ¬¡è§£å¯†
 	Baisc_XTRA_Sqlite((int*)data, - (len / 4), k);
 
   unsigned char dbHeader[8];

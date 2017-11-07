@@ -1,5 +1,5 @@
-//linuxÏß³Ì¶¨Òå
-// ±àÒëÑ¡Ïî -lpthread
+//linuxçº¿ç¨‹å®šä¹‰
+// ç¼–è¯‘é€‰é¡¹ -lpthread
 
 #include "../inc/basic.h"
 #if	(defined(__LINUX) || defined(__MAC) || defined(__ANDROID))
@@ -9,19 +9,19 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_START
 
-//Ë¯Ãß
-//²ÎÊıµ¥Î»£ººÁÃë
+//ç¡çœ 
+//å‚æ•°å•ä½ï¼šæ¯«ç§’
 void BasicSleep(DWORD dwMilliseconds)
 {
 	//usleep(dwMilliseconds * 1000);
-	//¸ÄÓÃnanosleep
+	//æ”¹ç”¨nanosleep
 	timespec tmDelay;
-	tmDelay.tv_sec = dwMilliseconds/1000;	//Ãë
+	tmDelay.tv_sec = dwMilliseconds/1000;	//ç§’
 	tmDelay.tv_nsec = (dwMilliseconds%1000)*1000000;
 	nanosleep(&tmDelay, NULL);
 }
 
-//´´½¨Ïß³Ì
+//åˆ›å»ºçº¿ç¨‹
 HANDLE BasicCreateThread(
     LPBASIC_THREAD_START_ROUTINE lpStartAddress,
     void* lpParameter,
@@ -31,7 +31,7 @@ HANDLE BasicCreateThread(
 	pthread_t a;
 	pthread_attr_t *pattr = NULL;
 
-/* ĞŞ¸ÄÕ»´óĞ¡
+/* ä¿®æ”¹æ ˆå¤§å°
 #ifdef _POSIX_THREAD_ATTR_STACKSIZE
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
@@ -66,7 +66,7 @@ HANDLE BasicCreateThread(
 }
 
 
-//µÈ´ıÏß³ÌÍË³ö
+//ç­‰å¾…çº¿ç¨‹é€€å‡º
 BOOL BasicWaitThread(
 	HANDLE hThread,
 	DWORD  dwWaitTime
@@ -85,7 +85,7 @@ void BasicTerminateThread(HANDLE hThread)
 
 DWORD BasicGetCurrentThreadId()
 {
-    //Í³Ò»Ê¹ÓÃÓÃ»§Ì¬Ïß³Ìid
+    //ç»Ÿä¸€ä½¿ç”¨ç”¨æˆ·æ€çº¿ç¨‹id
     return (DWORD)pthread_self();
 }
 

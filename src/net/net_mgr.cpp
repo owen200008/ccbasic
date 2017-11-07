@@ -12,7 +12,7 @@ pGetConfFunc g_GetParamFunc = DefaultParamFuc;
 
 #ifdef BASICWINDOWS_USE_IOCP
 #include <mswsock.h>
-CNetThread*	g_pEventThreads = nullptr;		//ÕÍ≥…∂Àø⁄
+CNetThread*	g_pEventThreads = nullptr;		//ÂÆåÊàêÁ´ØÂè£
 int			g_nEventThreadCount = 1;
 int			g_nIntThreadCount = 0;
 bool CNetThread::m_bExtInit = false;
@@ -96,7 +96,7 @@ void CBasicNetMgv::Initialize(pGetConfFunc func){
 void CBasicNetMgv::Initialize(pGetConfFunc func) {
 	m_bTimeToKill = FALSE;
 
-	// π”√◊‘º∫µƒƒ⁄¥Ê∑÷≈‰
+	//‰ΩøÁî®Ëá™Â∑±ÁöÑÂÜÖÂ≠òÂàÜÈÖç
 	event_set_mem_functions(BasicAllocate, BasicReallocate, BasicDeallocate);
 #ifdef __LINUX
 	struct sigaction sa;
@@ -134,7 +134,7 @@ void CBasicNetMgv::Initialize(pGetConfFunc func) {
 			BasicLogEventError("create evutil_socketpair error");
 			exit(1);
 		}
-		//–¥»Î «◊Ë»˚£¨∂¡»°∑«◊Ë»˚
+		//ÂÜôÂÖ•ÊòØÈòªÂ°ûÔºåËØªÂèñÈùûÈòªÂ°û
 		evutil_make_socket_nonblocking(pThread->m_pair[0]);
 		evutil_make_socket_nonblocking(pThread->m_pair[1]);
 
@@ -218,12 +218,12 @@ void CBasicNetMgv::CloseNetSocket(){
 	TRACE("End CloseSocket!");
 }
 
-//! º”»Îtimer
+//! Âä†ÂÖ•timer
 void CBasicNetMgv::AddToTimer(CBasicNet_Socket* pSocket) {
 	CSpinLockFuncNoSameThreadSafe lock(&m_spinLockAdd, TRUE);
 	m_vtAddList.push_back(pSocket);
 }
-//! …æ≥˝timer
+//! Âà†Èô§timer
 void CBasicNetMgv::DelToTimer(CBasicNet_Socket* pSocket){
 	CSpinLockFuncNoSameThreadSafe lock(&m_spinLockAdd, TRUE);
 	m_vtDelList.push_back(pSocket);
@@ -233,7 +233,7 @@ void CBasicNetMgv::DelToTimer(CBasicNet_Socket* pSocket){
 void CBasicNetMgv::OnTimer() {
 	static unsigned int g_nTick = 0;
 	while (!m_bTimeToKill) {
-		//! º”»Îontimer
+		//! Âä†ÂÖ•ontimer
 		{
 			CSpinLockFuncNoSameThreadSafe lock(&m_spinLockAdd, TRUE);
 			swap(m_vtAddListDeal, m_vtAddList);
@@ -258,7 +258,7 @@ void CBasicNetMgv::OnTimer() {
 #endif
 		m_vtDeathSessionDeal.clear();
 
-		//! ÷¥––ontimer
+		//! ÊâßË°åontimer
 		long lCount = 0;
 		for(auto&session : m_vtOnTimerList){
 			session->OnTimer(g_nTick);
@@ -344,7 +344,7 @@ CNetThread::~CNetThread() {
 #endif
 }
 
-//! ∑¢ÀÕ ¬º˛
+//! ÂèëÈÄÅ‰∫ã‰ª∂
 void CNetThread::SetEvent(CBasicNet_Socket* pSession, CBasicNet_Socket::pCallSameRefNetSessionFunc pCallFunc, intptr_t lRevert){
 	if(BasicGetCurrentThreadId() == m_dwThreadID){
 		pCallFunc(pSession, lRevert);
@@ -354,7 +354,7 @@ void CNetThread::SetEvent(CBasicNet_Socket* pSession, CBasicNet_Socket::pCallSam
 	eventQueue.m_pRefNetSession = pSession;
 	eventQueue.m_pCallFunc = pCallFunc;
 	eventQueue.m_lRevert = lRevert;
-	//‘ˆº”“˝”√
+	//Â¢ûÂä†ÂºïÁî®
 	pSession->GetRealSessionNet()->AddRef();
 	pSession->AddSocketCallFunc(&eventQueue);
 }
@@ -368,11 +368,11 @@ void CNetThread::ReadyToClose(){
 }
 
 
-//! º”»ÎµΩ»´æ÷œ˚œ¢∂”¡–
+//! Âä†ÂÖ•Âà∞ÂÖ®Â±ÄÊ∂àÊÅØÈòüÂàó
 void CNetThread::AddMessageQueue(CBasicNet_Socket* pSocket){
 	long lLength = 0;
 	{
-		//‘ˆº”“˝”√
+		//Â¢ûÂä†ÂºïÁî®
 		pSocket->GetRealSessionNet()->AddRef();
 		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lockMsg, TRUE);
 		lLength = m_smBuf.GetDataLength();
@@ -386,7 +386,7 @@ void CNetThread::AddMessageQueue(CBasicNet_Socket* pSocket){
 #endif
 	}
 }
-//! ¥¶¿Ìœ˚œ¢∂”¡–
+//! Â§ÑÁêÜÊ∂àÊÅØÈòüÂàó
 void CNetThread::RunMessageQueue(){
 	static int g_nRunMessageQueueSize = sizeof(CBasicNet_Socket*);
 	{
@@ -484,7 +484,7 @@ unsigned CNetThread::ThreadIOCPFunc(void* lpWorkContext){
 	return 0;
 }
 
-//! ø™ ºΩ” ’ ˝æ›
+//! ÂºÄÂßãÊé•Êî∂Êï∞ÊçÆ
 bool CNetThread::StartRecvData(CBasicNet_SocketTransfer* pSocket){
 	UINT nRetVal = WSARecv(pSocket->GetSocketID(), &pSocket->m_wsaInBuffer, 1, &m_dwIoSize, &m_ulFlags, &pSocket->m_olRead.m_ol, NULL);  //I know this
 	if(nRetVal == SOCKET_ERROR){
@@ -498,7 +498,7 @@ bool CNetThread::StartRecvData(CBasicNet_SocketTransfer* pSocket){
 	return true;
 }
 #else
-//! “Ï≤ΩdnsΩ‚Œˆ
+//! ÂºÇÊ≠•dnsËß£Êûê
 bool CNetThread::DNSParse(const char* pName, evdns_getaddrinfo_cb pCallback, CBasicNet_Socket* pSession) {
 	struct  evutil_addrinfo  hints;
 	memset(&hints, 0, sizeof(hints));

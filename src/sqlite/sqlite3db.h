@@ -15,9 +15,9 @@ public:
 
 	bool Open(const char *szFileName, const char* pPwd = NULL, int nLength = 0);
 	bool Close();
-	//´ò¿ªÃÜÂë
+	//æ‰“å¼€å¯†ç 
 	int SetOpenPWD(const char* pPwd, int nLength);
-	//ÉèÖÃÃÜÂë
+	//è®¾ç½®å¯†ç 
 	int SetPWD(const char* pPwd, int nLength);
 
 	bool GetDataToTable(const char *szSQL, CCQLite3DBTable* pTable);

@@ -1,42 +1,42 @@
 #ifndef BASIC_ERROR_H
 #define BASIC_ERROR_H
 
-//basicÏîÄ¿´íÎó´úÂë¶¨Òå
-//¸ß16Î»¶¨ÒåÎªÄ£¿é·ÖÀà£¬µÍ16Î»¶¨ÒåÎªÄ£¿éÄÚ²¿´íÎóºÅ
+//basicé¡¹ç›®é”™è¯¯ä»£ç å®šä¹‰
+//é«˜16ä½å®šä¹‰ä¸ºæ¨¡å—åˆ†ç±»ï¼Œä½Ž16ä½å®šä¹‰ä¸ºæ¨¡å—å†…éƒ¨é”™è¯¯å·
 
-//ÏµÍ³Àà´íÎó
+//ç³»ç»Ÿç±»é”™è¯¯
 #define _ERROR_SYS				0x00010000
 //
 
-//ÎÄ¼þÀà´íÎó
+//æ–‡ä»¶ç±»é”™è¯¯
 #define _ERROR_FILE				0x00020000
 //
 
-//ÄÚ´æÀà´íÎó
+//å†…å­˜ç±»é”™è¯¯
 #define _ERROR_MEM				0x00030000
 //
 //
-//Ïß³ÌÀà´íÎó
+//çº¿ç¨‹ç±»é”™è¯¯
 #define _ERROR_THREAD			0x00050000
-#define _ERROR_THREAD_INVALID	(_ERROR_THREAD|1)		//ÎÞÐ§Ïß³Ì
+#define _ERROR_THREAD_INVALID	(_ERROR_THREAD|1)		//æ— æ•ˆçº¿ç¨‹
 //
 
 //
-//ÈÕÖ¾Àà´íÎó
+//æ—¥å¿—ç±»é”™è¯¯
 #define _ERROR_LOG				0x00060000
-#define _ERROR_LOG_OPEN			(_ERROR_LOG|1)			//´ò¿ªÈÕÖ¾Ê§°Ü
+#define _ERROR_LOG_OPEN			(_ERROR_LOG|1)			//æ‰“å¼€æ—¥å¿—å¤±è´¥
 //
 
-//ÍøÂçÀà´íÎó
+//ç½‘ç»œç±»é”™è¯¯
 #define _ERROR_NET				0x00070000
 
-//XMLÅäÖÃÎÄ¼þÀà´íÎó
+//XMLé…ç½®æ–‡ä»¶ç±»é”™è¯¯
 #define _ERROR_XCON				0x00080000
 
-//´®ÐÐ»¯µÄ´íÎó´úÂë
+//ä¸²è¡ŒåŒ–çš„é”™è¯¯ä»£ç 
 #define _ERROR_ARC				0x00090000
 
-//Ê÷µÄ´íÎó´úÂë
+//æ ‘çš„é”™è¯¯ä»£ç 
 #define _ERROR_TREE				0x000A0000
 
 #endif //BASIC_ERROR_H

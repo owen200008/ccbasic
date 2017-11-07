@@ -14,12 +14,12 @@ public:
 
 	void ReadPBZKFileBuffer(const char* pBuffer, int nLength);
 	void AddPBZKToMap(basiclib::CBasicStringArray& ayItems);
-	//ÅĞ¶ÏÊÇ·ñ´æÔÚÃô¸Ğ´Ê
+	//åˆ¤æ–­æ˜¯å¦å­˜åœ¨æ•æ„Ÿè¯
 	bool IsContainPBZK(const char* txt, int nLength, bool bDeep = false, bool bCheckSpecialZF = false);
-	//·¢ÏÖÖ±½ÓÌæ»»
+	//å‘ç°ç›´æ¥æ›¿æ¢
 	void ReplacePBZK(char* txt, int nLength, char cReplace = '*', bool bDeep = true, bool bCheckSpecialZF = false);
 protected:
-	//! ÅĞ¶ÏÊÇ·ñÓĞ·Ç·¨×Ö·û
+	//! åˆ¤æ–­æ˜¯å¦æœ‰éæ³•å­—ç¬¦
 	int CheckPBZKExist(const char* txt, int nLength, int nBeginIndex, bool bDeep = false, bool bCheckSpecialZF = false);
 	
 protected:

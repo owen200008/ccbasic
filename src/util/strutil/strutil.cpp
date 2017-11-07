@@ -296,7 +296,7 @@ long Basic_RoundString(char* lpszBuffer, long lRoundLength)
 	for (; i >= 0; -- i)
 	{
 		if ((*(lpszBuffer + i) & 0x80) == 0)
-			break;	// ²»ÊÇË«×Ö½Ú
+			break;	// ä¸æ˜¯åŒå­—èŠ‚
 	}
 	if ((lTail - i) % 2 != 0)
 	{

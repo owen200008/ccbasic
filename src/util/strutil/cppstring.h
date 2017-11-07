@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     cppstring.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     cppstring.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 11:18:29
-// ÄÚÈİÃèÊö:   ¶ÔCWBasicStringº¯ÊıµÄÒ»¸öc++Ìæ»»¡£Ê¹ÓÃÏàÍ¬µÄº¯ÊıÃû£¬µ«Í¨¹ı²»Í¬²ÎÊıÀ´Çø·Ö¡£
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 11:18:29
+// å†…å®¹æè¿°:   å¯¹CWBasicStringå‡½æ•°çš„ä¸€ä¸ªc++æ›¿æ¢ã€‚ä½¿ç”¨ç›¸åŒçš„å‡½æ•°åï¼Œä½†é€šè¿‡ä¸åŒå‚æ•°æ¥åŒºåˆ†ã€‚
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_CPPSTRING_H
 #define BASIC_CPPSTRING_H
@@ -34,7 +34,7 @@ size_t __tcslen(const char_type *str)
 template<typename char_type1, typename char_type2>
 const char_type1 *__tcschr(const char_type1* string, char_type2 ch)
 {
-	// ±ÜÃâchar_type2ÊÇ¸ö×Ö·û´®£¬´Ó¶øÔì³ÉÔËĞĞÊ±³ö´í
+	// é¿å…char_type2æ˜¯ä¸ªå­—ç¬¦ä¸²ï¼Œä»è€Œé€ æˆè¿è¡Œæ—¶å‡ºé”™
 //	typename __private::IsString<char_type2>::Result dummy = __private::False();
 	typedef typename __private::IsString<char_type2>::Result DummyType;
 	DummyType dummy = __private::False();

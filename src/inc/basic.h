@@ -1,35 +1,35 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     basic.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     basic.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 8:18:40
-// ÄÚÈİÃèÊö:   BASIC¿âµÄÍ·ÎÄ¼ş
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 8:18:40
+// å†…å®¹æè¿°:   BASICåº“çš„å¤´æ–‡ä»¶
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_BASIC_H
 #define BASIC_BASIC_H
 
-//ÏµÍ³»·¾³¶¨Òå
+//ç³»ç»Ÿç¯å¢ƒå®šä¹‰
 #include "basic_def.h"
 
 #ifdef __BASICWINDOWS
 #ifndef _WIN32_WINNT
-//ÎªÁËÖ§³ÖIPv6,¾¡Á¿¼æÈİxpµÄ´¦Àí
+//ä¸ºäº†æ”¯æŒIPv6,å°½é‡å…¼å®¹xpçš„å¤„ç†
 #define _WIN32_WINNT	0x0600
 #define NTDDI_VERSION	NTDDI_VISTA
 #endif
-#include <winsock2.h>		  // ±ØĞëÔÚ windows.h Ç°Ãæ
+#include <winsock2.h>		  // å¿…é¡»åœ¨ windows.h å‰é¢
 #include <WS2tcpip.h>
 #endif
 
 //
-//Êı¾İÀàĞÍ¶¨Òå
+//æ•°æ®ç±»å‹å®šä¹‰
 #include "../types/types.h"
 #include "../types/basicobj.h"
 #include <stdint.h>
 //
 
-//LinuxÏµÍ³Ïà¹Ø¶¨Òå
+//Linuxç³»ç»Ÿç›¸å…³å®šä¹‰
 #if	(defined(__LINUX) || defined(__MAC) || defined(__ANDROID))
 #include "../types/linux.h"
 #include <pthread.h>
@@ -37,39 +37,39 @@
 #endif
 
 //
-//´íÎó¶¨Òå
+//é”™è¯¯å®šä¹‰
 #include "error.h"
 //
 //
-//°ó¶¨
+//ç»‘å®š
 #include "../misc/fastdelegate.h"
 #include "../misc/fastdelegatebind.h"
-//Ïß³Ì¶¨Òå
+//çº¿ç¨‹å®šä¹‰
 #include "../thread/thread.h"
 //
 //
-//Í¬²½¶ÔÏó¶¨Òå
+//åŒæ­¥å¯¹è±¡å®šä¹‰
 #include "../thread/mt.h"
-//ÊÂ¼şÇı¶¯
+//äº‹ä»¶é©±åŠ¨
 //#include "../thread/basicpoll.h"
 //
-//µ¥Ì¬ÊµÏÖ
+//å•æ€å®ç°
 #include "../misc/singleton.h"
 //
-//DEBUGºê¶¨Òå
+//DEBUGå®å®šä¹‰
 #include "../debug/debug.h"
 //
-//Òì³£±£»¤,Ê¹ÓÃ¿ªÔªstacktrace
+//å¼‚å¸¸ä¿æŠ¤,ä½¿ç”¨å¼€å…ƒstacktrace
 #include "../exception/call_stack.hpp"
 #include "../exception/exception.h"
 //
 #include "../util/functor.h"
-//ÄÚ´æ¹ÜÀí
+//å†…å­˜ç®¡ç†
 #include "../mem/mem.h"
 #include "../mem/smartbuffer.h"
 #include "../mem/tlstaticbuffer.h"
 //
-//Êı¾İÀàĞÍÏà¹Ø
+//æ•°æ®ç±»å‹ç›¸å…³
 #include "../util/strutil/strutil.h"
 #include "../util/strutil/charset.h"
 #include "../datastruct/basic_string.h"
@@ -77,24 +77,24 @@
 #include "../datastruct/extern.h"
 
 
-//ÖÇÄÜÖ¸Õë
+//æ™ºèƒ½æŒ‡é’ˆ
 #include "../misc/tlrefptr.h"
-//À©Õ¹µÄÊı¾İÀàĞÍ
+//æ‰©å±•çš„æ•°æ®ç±»å‹
 #include "../datastruct/key_value.h"
 
-// ÈİÆ÷
+// å®¹å™¨
 #include "../util/container.h"
 #include "../util/containerext.h"
 
-//ÆÁ±Î×Ö¿âÊµÏÖ
+//å±è”½å­—åº“å®ç°
 #include "../datastruct/pbzk.h"
 //
-//ÏµÍ³ĞÅÏ¢
+//ç³»ç»Ÿä¿¡æ¯
 #include "../sys/syserror.h"
 #include "../sys/sysinfo.h"
 //
 //
-//ÎÄ¼ş´¦Àí
+//æ–‡ä»¶å¤„ç†
 #include "../file/filedefine.h"
 #include "../file/filenotify.h"
 #include "../file/fileobj.h"
@@ -121,20 +121,20 @@
 #include "../time/timeutil.h"
 //#include "../time/scheduletime.h"
 //#include "../time/basicTimeDWord.h"
-//ÈÕÖ¾
+//æ—¥å¿—
 #include "../log/log.h"
 //
-//ºÍÊıÑ§¼ÆËãÏà¹ØµÄº¯Êı
+//å’Œæ•°å­¦è®¡ç®—ç›¸å…³çš„å‡½æ•°
 //#include "../algorithm/tlmath.h"
 #include <math.h>
 
-//Ì°À·¼ÓÔØ
+//è´ªå©ªåŠ è½½
 //#include "../misc/lazy_init.h"
 
 #include "../coroutine/coroutineplus.h"
 #include "../mem/bitstream.h"
 
-// Ñ¹Ëõ
+// å‹ç¼©
 #include "../algorithm/zip/tlgzip.h"
 #include "../algorithm/zip/tlzipfile.h"
 #include "../algorithm/zip/zlib.h"
@@ -144,15 +144,15 @@
 //#include "../util/xml/tldomparser.h"
 //#include "../util/xml/xmloutput.h"
 
-//ÕıÔò±í´ïÊ½
+//æ­£åˆ™è¡¨è¾¾å¼
 #if !defined(__MAC) //regex not implement
 #include "../util/regex/cgnuregexp.h"
 #endif
 
-//dll¼ÓÔØ
+//dllåŠ è½½
 #include "../dll/loaddll.h"
 
-//sqliteÖ§³Ö
+//sqliteæ”¯æŒ
 #include "../sqlite/sqlite3.h"
 #include "../sqlite/sqlite3db.h"
 
@@ -160,9 +160,9 @@
 #include "../net/net_client.h"
 #include "../net/net_server.h"
 
-//»ñÈ¡°æ±¾ºÅ
+//è·å–ç‰ˆæœ¬å·
 _BASIC_DLL_API basiclib::CBasicString& GetBasicLibVersion();
-//ÅĞ¶Ïbasic¿âÊÇ·ñ¿ÉÓÃ
+//åˆ¤æ–­basicåº“æ˜¯å¦å¯ç”¨
 _BASIC_DLL_API bool IsSupportBasiclib();
 
 #endif 

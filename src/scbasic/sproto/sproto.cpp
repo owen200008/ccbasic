@@ -1096,7 +1096,7 @@ encode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
             break;
         }
     }
-    //存的是count
+    //瀛樼殑鏄痗ount
     data[0] = nCount & 0xff;
     data[1] = (nCount >> 8) & 0xff;
 	return buffer - data;
@@ -1315,7 +1315,7 @@ encode_array(sproto_callback cb, struct sproto_arg *args, uint8_t *data, int siz
 		assert(0);
 		break;
 	}
-	//存的是count
+	//瀛樼殑鏄痗ount
 	data[0] = nCount & 0xff;
 	data[1] = (nCount >> 8) & 0xff;
 
@@ -1671,7 +1671,7 @@ decode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t * stream, int 
                 args->length = nSize - nTotalLength;
                 args->m_pMapKeyValue = &nKeyLength;
                 int nReadSize = cb(args);
-                //特殊处理
+                //鐗规畩澶勭悊
                 if (nReadSize < 0)
                     return -1;
                 stream += nTotalLength + nReadSize;
@@ -1856,7 +1856,7 @@ decode_ccmap(sproto_callback cb, struct sproto_arg *args, uint8_t * stream, int 
                 args->length = nSize;
                 args->m_pMapKeyValue = &mapkeyvalue;
                 int nReadSize = cb(args);
-                //特殊处理
+                //鐗规畩澶勭悊
                 if (nReadSize < 0)
                     return -1;
                 stream += nReadSize;
@@ -2025,7 +2025,7 @@ decode_array(sproto_callback cb, struct sproto_arg *args, uint8_t * stream, int 
 			args->value = stream;
 			args->length = nSize;
 			int nReadSize = cb(args);
-			//特殊处理
+			//鐗规畩澶勭悊
 			if (nReadSize < 0)
 				return -1;
 			stream += nReadSize;
@@ -2169,7 +2169,7 @@ sproto_decode(const struct sproto_type *st, const void * data, int size, sproto_
 				args.value = currentdata;
 				args.length = size;
 				int sz = cb(&args);
-				//特殊处理
+				//鐗规畩澶勭悊
 				if (sz < 0)
 					return -1;
 				datastream += sz;

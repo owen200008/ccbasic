@@ -115,8 +115,8 @@ void CBasicKey2Value::SetValueAt(CBasicString& strKey, const char* lpszValue)
 
 const char* CBasicKey2Value::CombineToString(basiclib::CBasicSmartBuffer& sbBuf, const char* lpszTok)
 {
-	char  m_cTok1;		//KeyºÍValueÖ®¼äµÄ·Ö¸ô·û
-	char  m_cTok2;		//ÐÐÖ®¼äµÄ·Ö¸ô·û
+	char  m_cTok1;		//Keyå’ŒValueä¹‹é—´çš„åˆ†éš”ç¬¦
+	char  m_cTok2;		//è¡Œä¹‹é—´çš„åˆ†éš”ç¬¦
 	if (lpszTok == NULL)
 	{
 		m_cTok1 = '=';

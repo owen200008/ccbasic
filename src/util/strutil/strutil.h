@@ -1,11 +1,11 @@
 /***********************************************************************************************
-// Œƒº˛√˚:     strutil.h
-// ¥¥Ω®’ﬂ:     ≤Ã’Ò«Ú
+// 文件名:     strutil.h
+// 创建者:     蔡振球
 // Email:      zqcai@w.cn
-// ¥¥Ω® ±º‰:   2012/2/17 11:17:20
-// ƒ⁄»›√Ë ˆ:   “ª–©≥£”√µƒ◊÷∑˚¥Æ¥¶¿Ì∫Ø ˝£¨∞¸¿®£∫
-≤∑÷◊÷∑˚¥Æ°¢∫œ≤¢◊÷∑˚¥Æ°¢string◊÷∑˚¥Æ¿‡µƒ“ª–©≥£”√≤Ÿ◊˜°£
-// ∞Ê±æ–≈œ¢:   1.0V
+// 创建时间:   2012/2/17 11:17:20
+// 内容描述:   一些常用的字符串处理函数，包括：
+拆分字符串、合并字符串、string字符串类的一些常用操作。
+// 版本信息:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_STRUTIL_H
 #define BASIC_STRUTIL_H
@@ -42,13 +42,13 @@ const size_t NullLen = (size_t)-1;
 const char NullAString[] = { 0 };
 #define Null_String_S		""
 
-//! ◊÷∑˚¥Æ°¢◊÷∑˚¥Æ¡˜µƒ∂®“Â°£
-//! ƒøµƒ£∫ø…“‘»´æ÷Õ≥“ªÃÊªª∑÷≈‰∆˜°£
+//! 字符串、字符串流的定义。
+//! 目的：可以全局统一替换分配器。
 
 template<typename CharType>
 struct __BasicString
 {
-	typedef typename basic_basic_string<CharType>::type			StringType;
+	typedef typename basic_basic_string<CharType>::type		StringType;
 	typedef typename basic_basic_stringstream<CharType>::type	StringStreamType;
 };
  
@@ -97,24 +97,24 @@ namespace std{
 	template<>
 	struct hash<basiclib::char_string> : public std::unary_function<basiclib::char_string, std::size_t>{
 		std::size_t operator()(const basiclib::char_string &key) const{
-			#ifdef __BASICWINDOWS
-				return _Hash_seq((const unsigned char*)key.c_str(), key.length());
-			#else
-#ifdef __GNUC__
-                hash<const char*> hash_fn;
-                return hash_fn(key.c_str());
+#ifdef __BASICWINDOWS
+			return _Hash_seq((const unsigned char*)key.c_str(), key.length());
 #else
-				hash<const char*> hash_fn;
-				return hash_fn(key.c_str(), key.length());
+#ifdef __GNUC__
+			hash<const char*> hash_fn;
+			return hash_fn(key.c_str());
+#else
+			hash<const char*> hash_fn;
+			return hash_fn(key.c_str(), key.length());
 #endif
-			#endif			
+#endif			
 		}
 	};
 }
 
 __NS_BASIC_START
 
-// ”…◊÷∑˚¿‡–Õ»°µ√∂‘”¶µƒusignedµƒ¿‡–Õ
+// 由字符类型取得对应的usigned的类型
 template<typename CharType>
 struct __CharValue
 {
@@ -127,7 +127,7 @@ struct __CharValue<char>
 	typedef unsigned char Result;
 };
 
-// ”…unsignedµƒ¿‡–Õ»°µ√∂‘”¶µƒ◊÷∑˚¿‡–Õ
+// 由unsigned的类型取得对应的字符类型
 template<typename ValueType>
 struct __ValueChar
 {
@@ -141,9 +141,10 @@ struct __ValueChar<unsigned char>
 	typedef char Result;
 };
 
-//! ≈–∂œ◊÷∑˚¥Æ «∑ÒŒ™ø’
+
+//! 判断字符串是否为空
 /*!
-\param p ≈–∂œ◊÷∑˚¥Æ «∑ÒŒ™ø’
+\param p 判断字符串是否为空
 */
 template<typename CharType>
 bool IsStringEmpty(const CharType* p)
@@ -151,12 +152,12 @@ bool IsStringEmpty(const CharType* p)
 	return (NULL == p) || ((CharType)0 == p[0]);
 }
 
-//! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì
+//! 对字符串按照指定的分隔符分割，并依次交由func函数处理
 /*!
-\param p ¥¶¿Ìµƒ◊÷∑˚¥Æ°£∫Ø ˝ª·–ﬁ∏ƒ¿Ô√Êµƒƒ⁄»›°£≤ªƒ‹Œ™ø’
-\param cTok ∑÷∏Ó∑˚
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝°£
-\remarks ∏√∫Ø ˝ª·–ﬁ∏ƒpÀ˘÷∏œÚµƒ◊÷∑˚¥Æƒ⁄»›
+\param p 处理的字符串。函数会修改里面的内容。不能为空
+\param cTok 分割符
+\param func 用于根据参数取得值的仿函数。
+\remarks 该函数会修改p所指向的字符串内容
 */
 template<class Functor, typename CharType>
 void __SpliteString(CharType* p, CharType cTok, Functor func)
@@ -171,12 +172,12 @@ void __SpliteString(CharType* p, CharType cTok, Functor func)
 		p = e;
 	}while(p != NULL);
 }
-//! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù◊÷∑˚¥Æ∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì
+//! 对字符串按照指定的分隔字符串分割，并依次交由func函数处理
 /*!
-\param p ‘¥◊÷∑˚¥Æ°£∫Ø ˝ª·–ﬁ∏ƒ¿Ô√Êµƒƒ⁄»›°£≤ªƒ‹Œ™ø’°£
-\param pszTok ∑÷∏Ó”√◊÷∑˚¥Æ
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝°£
-\remarks ∏√∫Ø ˝ª·–ﬁ∏ƒpÀ˘÷∏œÚµƒ◊÷∑˚¥Æƒ⁄»›
+\param p 源字符串。函数会修改里面的内容。不能为空。
+\param pszTok 分割用字符串
+\param func 用于根据参数取得值的仿函数。
+\remarks 该函数会修改p所指向的字符串内容
 */
 template<class Functor, typename CharType>
 void __SpliteString(CharType* p, const CharType* pszTok, Functor func)
@@ -196,13 +197,13 @@ void __SpliteString(CharType* p, const CharType* pszTok, Functor func)
 	}while(p != NULL);
 }
 
-//! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì
+//! 对字符串按照指定的分隔符分割，并依次交由func函数处理
 /*!
-\param psz ‘¥◊÷∑˚¥Æ,≤ªƒ‹Œ™ø’
-\param cTok ∑÷∏Ó∑˚∫≈
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝°£
-\remarks ∫Õ__SpliteStringµƒ«¯± «£¨∏√∫Ø ˝≤ª–ﬁ∏ƒpsz÷∏œÚƒ⁄»›°£
- æ¿˝ø…“‘≤Œøº∑¬∫Ø ˝IntoContainer
+\param psz 源字符串,不能为空
+\param cTok 分割符号
+\param func 用于根据参数取得值的仿函数。
+\remarks 和__SpliteString的区别是，该函数不修改psz指向内容。
+示例可以参考仿函数IntoContainer
 */
 template<class Functor, typename CharType>
 void BasicSpliteString(const CharType* psz, CharType cTok, Functor func)
@@ -212,13 +213,13 @@ void BasicSpliteString(const CharType* psz, CharType cTok, Functor func)
 	__SpliteString((CharType*)str.c_str(), cTok, func);
 }
 
-//! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì
+//! 对字符串按照指定的分隔符分割，并依次交由func函数处理
 /*!
-\param psz ‘¥◊÷∑˚¥Æ£¨≤ªƒ‹Œ™ø’°£
-\param pszTok ∑÷∏Ù◊÷∑˚¥Æ
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝°£
-\remarks ∫Õ__SpliteStringµƒ«¯± «£¨∏√∫Ø ˝≤ª–ﬁ∏ƒpsz÷∏œÚƒ⁄»›°£
- æ¿˝ø…“‘≤Œøº∑¬∫Ø ˝IntoContainer
+\param psz 源字符串，不能为空。
+\param pszTok 分隔字符串
+\param func 用于根据参数取得值的仿函数。
+\remarks 和__SpliteString的区别是，该函数不修改psz指向内容。
+示例可以参考仿函数IntoContainer
 */
 template<class Functor, typename CharType>
 void BasicSpliteString(const CharType* psz, const CharType* pszTok, Functor func)
@@ -228,14 +229,14 @@ void BasicSpliteString(const CharType* psz, const CharType* pszTok, Functor func
 	__SpliteString((CharType*)str.c_str(), pszTok, func);
 }
 
-//! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì
+//! 对字符串按照指定的分隔符分割，并依次交由func函数处理
 /*!
-\param psz ‘¥◊÷∑˚¥Æ
+\param psz 源字符串
 \
-\param pszTok ∑÷∏Ù◊÷∑˚¥Æ,≤ªƒ‹Œ™ø’
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝°£
-\remarks ∫Õ__SpliteStringµƒ«¯± «£¨∏√∫Ø ˝≤ª–ﬁ∏ƒpsz÷∏œÚƒ⁄»›°£
- æ¿˝ø…“‘≤Œøº∑¬∫Ø ˝IntoContainer
+\param pszTok 分隔字符串,不能为空
+\param func 用于根据参数取得值的仿函数。
+\remarks 和__SpliteString的区别是，该函数不修改psz指向内容。
+示例可以参考仿函数IntoContainer
 */
 template<class Functor, typename CharType>
 void BasicSpliteString(const CharType* psz, long length, CharType cTok, Functor func)
@@ -245,14 +246,14 @@ void BasicSpliteString(const CharType* psz, long length, CharType cTok, Functor 
 	__SpliteString((CharType*)str.c_str(), cTok, func);
 }
 
-//! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì
+//! 对字符串按照指定的分隔符分割，并依次交由func函数处理
 /*!
-\param psz ‘¥◊÷∑˚¥Æ£¨≤ªƒ‹Œ™ø’
-\param length ‘¥◊÷∑˚¥Æµƒ≥§∂»
-\param pszTok ∑÷∏Ù◊÷∑˚¥Æ
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝°£
-\remarks ∫Õ__SpliteStringµƒ«¯± «£¨∏√∫Ø ˝≤ª–ﬁ∏ƒpsz÷∏œÚƒ⁄»›°£
- æ¿˝ø…“‘≤Œøº∑¬∫Ø ˝IntoContainer
+\param psz 源字符串，不能为空
+\param length 源字符串的长度
+\param pszTok 分隔字符串
+\param func 用于根据参数取得值的仿函数。
+\remarks 和__SpliteString的区别是，该函数不修改psz指向内容。
+示例可以参考仿函数IntoContainer
 */
 template<class Functor, typename CharType>
 void BasicSpliteString(const CharType* psz, long length, const CharType* pszTok, Functor func)
@@ -263,13 +264,13 @@ void BasicSpliteString(const CharType* psz, long length, const CharType* pszTok,
 }
 
 
-//! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì
+//! 对字符串按照指定的分隔符分割，并依次交由func函数处理
 /*!
-\param psz ‘¥◊÷∑˚¥Æ£¨≤ªƒ‹Œ™ø’
-\param pszTok ‘⁄pszTok÷–µƒ◊÷∑˚∂ºª·±ªµ±◊˜∑÷∏Ù∑˚ π”√
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝°£
-\remark ∏√∫Ø ˝ª·–ﬁ∏ƒpÀ˘÷∏œÚµƒ◊÷∑˚¥Æƒ⁄»›
- æ¿˝ø…“‘≤Œøº∑¬∫Ø ˝IntoContainer
+\param psz 源字符串，不能为空
+\param pszTok 在pszTok中的字符都会被当作分隔符使用
+\param func 用于根据参数取得值的仿函数。
+\remark 该函数会修改p所指向的字符串内容
+示例可以参考仿函数IntoContainer
 */
 template<class Functor, typename CharType>
 void __Explode(CharType* psz, const CharType* pszTok, Functor func)
@@ -277,7 +278,7 @@ void __Explode(CharType* psz, const CharType* pszTok, Functor func)
 	CharType* e = psz;
 	while(0 != *e)
 	{
-		// ’“µΩ∑÷∏Ù∑˚
+		// 找到分隔符
 		if (NULL != __tcschr(pszTok, *e))
 		{
 			*e = (CharType)0;
@@ -292,11 +293,11 @@ void __Explode(CharType* psz, const CharType* pszTok, Functor func)
 		func(psz);
 	}
 }
-/*! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚±ÌΩ¯––∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì
-\param psz ‘¥◊÷∑˚¥Æ£¨≤ªƒ‹Œ™ø’
-\param pszTok ‘⁄pszTok÷–µƒ◊÷∑˚∂ºª·±ªµ±◊˜∑÷∏Ù∑˚ π”√
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝°£
-\remark ∫Õ__Explodeµƒ«¯± «∏√∫Ø ˝≤ª–ﬁ∏ƒpsz÷∏œÚƒ⁄»›°£
+/*! 对字符串按照指定的分隔符表进行分割，并依次交由func函数处理
+\param psz 源字符串，不能为空
+\param pszTok 在pszTok中的字符都会被当作分隔符使用
+\param func 用于根据参数取得值的仿函数。
+\remark 和__Explode的区别是该函数不修改psz指向内容。
 */
 template<class Functor, typename CharType>
 void Basic_Explode(const CharType* psz, const CharType* pszTok, Functor func)
@@ -306,12 +307,12 @@ void Basic_Explode(const CharType* psz, const CharType* pszTok, Functor func)
 	__Explode((CharType*)str.c_str(), pszTok, func);
 }
 
-/*! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚±ÌΩ¯––∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì
-\param psz ‘¥◊÷∑˚¥Æ£¨≤ªƒ‹Œ™ø’
-\param length psz◊÷∑˚¥Æµƒ≥§∂»
-\param pszTok ‘⁄pszTok÷–µƒ◊÷∑˚∂ºª·±ªµ±◊˜∑÷∏Ù∑˚ π”√
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝°£
-\remark ∫Õ__Explodeµƒ«¯± «∏√∫Ø ˝≤ª–ﬁ∏ƒpsz÷∏œÚƒ⁄»›°£
+/*! 对字符串按照指定的分隔符表进行分割，并依次交由func函数处理
+\param psz 源字符串，不能为空
+\param length psz字符串的长度
+\param pszTok 在pszTok中的字符都会被当作分隔符使用
+\param func 用于根据参数取得值的仿函数。
+\remark 和__Explode的区别是该函数不修改psz指向内容。
 */
 template<class Functor, typename CharType>
 void Basic_Explode(const CharType* psz, long length, const CharType* pszTok, Functor func)
@@ -324,12 +325,12 @@ void Basic_Explode(const CharType* psz, long length, const CharType* pszTok, Fun
 
 
 
-//! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì£¨÷±µΩ◊÷∑˚¥ÆŒ≤≤øªÚ’ﬂfunc∑µªÿtrue
+//! 对字符串按照指定的分隔符分割，并依次交由func函数处理，直到字符串尾部或者func返回true
 /*!
-\param psz ‘¥◊÷∑˚¥Æ£¨≤ªƒ‹Œ™ø’°£
-\param cTok ∑÷∏Ù∑˚
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝°£µ±∏√∫Ø ˝∑µªÿtrue ±£¨∫Ø ˝ÕÀ≥ˆ°£
-\remarks ∏√∫Ø ˝ª·–ﬁ∏ƒpÀ˘÷∏œÚµƒƒ⁄»›°£ 
+\param psz 源字符串，不能为空。
+\param cTok 分隔符
+\param func 用于根据参数取得值的仿函数。当该函数返回true时，函数退出。
+\remarks 该函数会修改p所指向的内容。 
 */
 template<class Functor, typename CharType>
 bool __SpliteStringBreak(CharType* p, CharType cTok, Functor func)
@@ -347,12 +348,12 @@ bool __SpliteStringBreak(CharType* p, CharType cTok, Functor func)
 	return false;
 }
 
-//! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì£¨÷±µΩ◊÷∑˚¥ÆŒ≤≤øªÚ’ﬂfunc∑µªÿtrue
+//! 对字符串按照指定的分隔符分割，并依次交由func函数处理，直到字符串尾部或者func返回true
 /*!
-\param psz ‘¥◊÷∑˚¥Æ,≤ªƒ‹Œ™ø’°£
-\param cTok ∑÷∏Ù∑˚
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝°£µ±∏√∫Ø ˝∑µªÿtrue ±£¨∫Ø ˝ÕÀ≥ˆ°£
-\remarks ∫Õ__SpliteStringBreakµƒ«¯± «£¨∏√∫Ø ˝≤ª–ﬁ∏ƒpsz÷∏œÚƒ⁄»›°£
+\param psz 源字符串,不能为空。
+\param cTok 分隔符
+\param func 用于根据参数取得值的仿函数。当该函数返回true时，函数退出。
+\remarks 和__SpliteStringBreak的区别是，该函数不修改psz指向内容。
 */
 template<class Functor, typename CharType>
 bool BasicSpliteStringBreak(const CharType* psz, CharType cTok, Functor func)
@@ -362,11 +363,11 @@ bool BasicSpliteStringBreak(const CharType* psz, CharType cTok, Functor func)
 	return __SpliteStringBreak((CharType*)str.c_str(), cTok, func);
 }
 
-//! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì°£∂‘”⁄'\'ø™Õ∑µƒ◊÷∑˚¥ÆΩ´◊ˆ◊™“Â°£
+//! 对字符串按照指定的分隔符分割，并依次交由func函数处理。对于'\'开头的字符串将做转义。
 /*!
-\param p ‘¥◊÷∑˚¥Æ,≤ªƒ‹Œ™ø’°£
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝
-\remarks ∏√∫Ø ˝ª·–ﬁ∏ƒpÀ˘÷∏œÚµƒ‘¥◊÷∑˚¥Æ°£
+\param p 源字符串,不能为空。
+\param func 用于根据参数取得值的仿函数
+\remarks 该函数会修改p所指向的源字符串。
 */
 template<class Functor, typename CharType>
 bool __SpliteStringBreakWithEscape(CharType* p, CharType cTok, Functor func)
@@ -375,7 +376,7 @@ bool __SpliteStringBreakWithEscape(CharType* p, CharType cTok, Functor func)
 	CharType* v = p;
 	while(0 != *e)
 	{
-		if ((CharType)'\\' == *e &&  0 != *(e+1))	// ◊™“Â∑˚∫≈,¬‘π˝œ¬“ª∏ˆ◊÷∑˚
+		if ((CharType)'\\' == *e &&  0 != *(e+1))	// 转义符号,略过下一个字符
 		{
 			*v++ = *++e;
 			++ e;
@@ -405,17 +406,17 @@ bool __SpliteStringBreakWithEscape(CharType* p, CharType cTok, Functor func)
 	return false;
 }
 
-//! ∂‘◊÷∑˚¥Æ∞¥’’÷∏∂®µƒ∑÷∏Ù∑˚∑÷∏Ó£¨≤¢“¿¥ŒΩª”…func∫Ø ˝¥¶¿Ì°£÷ß≥÷'\'◊™“Â
+//! 对字符串按照指定的分隔符分割，并依次交由func函数处理。支持'\'转义
 /*!
-\param psz ‘¥◊÷∑˚¥Æ,≤ªƒ‹Œ™ø’
-\param cTok ∑÷∏Ù∑˚
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝
-\remarks ∫Õ__SpliteStringBreakWithEscapeµƒ«¯± «SpliteStringBreakWithEscape≤ª–ﬁ∏ƒpszµƒƒ⁄»›°£
+\param psz 源字符串,不能为空
+\param cTok 分隔符
+\param func 用于根据参数取得值的仿函数
+\remarks 和__SpliteStringBreakWithEscape的区别是SpliteStringBreakWithEscape不修改psz的内容。
 \code
-char* buf = "a\\;;b;\\\\\\;c";	//◊÷∑˚¥Æ a\;;b;\\\;cd
+char* buf = "a\\;;b;\\\\\\;c";	//字符串 a\;;b;\\\;cd
 BasicSpliteStringBreakWithEscape(buf, ';', functor);
 
-ƒ«√¥functor ’µΩµƒ◊÷∑˚¥Æ”¶∏√ «£∫
+那么functor收到的字符串应该是：
 a;
 b
 \;c
@@ -434,13 +435,13 @@ bool BasicSpliteStringBreakWithEscape(const CharType* psz, CharType cTok, Functo
 #define BACKWARD_SPACE(a)	while(ISSPACE(*(a))) {--a;}
 
 
-const int PPS_OPS_LOWERKEY		= 1;	// Ω´µ⁄“ª∏ˆ◊÷∑˚¥Æ◊™≥…–°–¥
-const int PPS_OPS_LOWERVALUE	= 2;	// Ω´µ⁄∂˛∏ˆ◊÷∑˚¥Æ◊™≥…–°–¥
-const int PPS_OPS_SKIPBLANK		= 4;	// ¬‘π˝◊÷∑˚¥Æ«∞∫Ûµƒø’∏Ò/tab/ªª––
+const int PPS_OPS_LOWERKEY		= 1;	// 将第一个字符串转成小写
+const int PPS_OPS_LOWERVALUE	= 2;	// 将第二个字符串转成小写
+const int PPS_OPS_SKIPBLANK		= 4;	// 略过字符串前后的空格/tab/换行
 
 namespace __private
 {
-// “‘œ¬∫Ø ˝æ˘Œ™ParseParamString π”√
+// 以下函数均为ParseParamString使用
 template<class CharType, class T>
 void SkipBlank(CharType*& p, const CharType*& pException, int len, Type2Type<T>)
 {
@@ -505,13 +506,13 @@ struct Parse_Trait
 };
 }
 
-//! Ω‚Œˆ–ŒÀ∆”Î"a=b&c=d&e=f"µƒ◊÷∑˚¥Æ£¨≤¢Ω´(a,b),(c,d),(e,f)“¿¥Œ¥¶¿Ì
+//! 解析形似与"a=b&c=d&e=f"的字符串，并将(a,b),(c,d),(e,f)依次处理
 /*!
-\param psz ‘¥◊÷∑˚
-\param tok[0]∑÷±±Í ∂≈‰∂‘∑÷∏Ù∑˚°£tok[1]±Í ∂Ãıƒø∑÷∏Ù∑˚
-\param func ◊÷∑˚¥Æ∂‘Ω¯––¥¶¿Ìµƒ∫Ø ˝ªÚ’ﬂ∑¬∫Ø ˝
-\param ParseTraits	∂‘æﬂÃÂ“ª–©Ãÿ–‘µƒ›Õ»°
-\return Œﬁ∑µªÿ÷µ
+\param psz 源字符
+\param tok[0]分别标识配对分隔符。tok[1]标识条目分隔符
+\param func 字符串对进行处理的函数或者仿函数
+\param ParseTraits	对具体一些特性的萃取
+\return 无返回值
 */
 template<class Functor, typename CharType, typename ParseTraits>
 void __ParseParamString_Aux(CharType* psz, const CharType tok[], Functor func, ParseTraits)
@@ -543,7 +544,7 @@ void __ParseParamString_Aux(CharType* psz, const CharType tok[], Functor func, P
 				pKey = p;
 			}
 			else if (tok[0] == *p)
-			{	// µ⁄“ª∏ˆ∑÷∏Ó∑˚
+			{	// 第一个分割符
 				*p = 0;
 				pValue = p + 1;
 				__private::SetEnd(blank, typename ParseTraits::SkipBlank());
@@ -559,7 +560,7 @@ void __ParseParamString_Aux(CharType* psz, const CharType tok[], Functor func, P
 			break;
 		case PARSE_VALUE:
 			if (tok[1] == *p)
-			{	// µΩ¡ÀŒ≤≤ø¡À
+			{	// 到了尾部了
 				*p = 0;
 				__private::SetEnd(blank, typename ParseTraits::SkipBlank());
 				func(pKey, pValue);
@@ -595,14 +596,14 @@ public:
 	}
 };
 
-//! Ω‚Œˆ–ŒÀ∆”Î"a=b&c=d&e=f"µƒ◊÷∑˚¥Æ£¨≤¢Ω´(a,b),(c,d),(e,f)“¿¥Œ¥¶¿Ì
+//! 解析形似与"a=b&c=d&e=f"的字符串，并将(a,b),(c,d),(e,f)依次处理
 /*!
-\param psz ‘¥◊÷∑˚,≤ªƒ‹Œ™ø’
-\param psz ◊÷∑˚¥Æµƒ≥§∂»
-\param tok[0]∑÷±±Í ∂≈‰∂‘∑÷∏Ù∑˚°£tok[1]±Í ∂Ãıƒø∑÷∏Ù∑˚
-\param func ◊÷∑˚¥Æ∂‘Ω¯––¥¶¿Ìµƒ∫Ø ˝ªÚ’ﬂ∑¬∫Ø ˝
-\param Ops ≤Œ ˝—°œÓ°£÷µŒ™PPS_OPS_*
-\return Œﬁ∑µªÿ÷µ
+\param psz 源字符,不能为空
+\param psz 字符串的长度
+\param tok[0]分别标识配对分隔符。tok[1]标识条目分隔符
+\param func 字符串对进行处理的函数或者仿函数
+\param Ops 参数选项。值为PPS_OPS_*
+\return 无返回值
 */
 
 template<class Functor, typename CharType>
@@ -640,13 +641,13 @@ void Basic_ParseParamString(const CharType* psz, size_t len, const CharType tok[
 	}
 }
 
-//! Ω‚Œˆ–ŒÀ∆”Î"a=b&c=d&e=f"µƒ◊÷∑˚¥Æ£¨≤¢Ω´(a,b),(c,d),(e,f)“¿¥Œ¥¶¿Ì
+//! 解析形似与"a=b&c=d&e=f"的字符串，并将(a,b),(c,d),(e,f)依次处理
 /*!
-\param psz ‘¥◊÷∑˚,≤ªƒ‹Œ™ø’°£±ÿ–Î“‘'\0'Ω·Œ≤
-\param tok[0]∑÷±±Í ∂≈‰∂‘∑÷∏Ù∑˚°£tok[1]±Í ∂Ãıƒø∑÷∏Ù∑˚
-\param func ◊÷∑˚¥Æ∂‘Ω¯––¥¶¿Ìµƒ∫Ø ˝ªÚ’ﬂ∑¬∫Ø ˝
-\param Ops ≤Œ ˝—°œÓ°£÷µŒ™PPS_OPS_*
-\return Œﬁ∑µªÿ÷µ
+\param psz 源字符,不能为空。必须以'\0'结尾
+\param tok[0]分别标识配对分隔符。tok[1]标识条目分隔符
+\param func 字符串对进行处理的函数或者仿函数
+\param Ops 参数选项。值为PPS_OPS_*
+\return 无返回值
 */
 template<class Functor, typename CharType>
 void Basic_ParseParamString(const CharType* psz, const CharType tok[], Functor func, int nOps = PPS_OPS_LOWERKEY|PPS_OPS_SKIPBLANK)
@@ -654,12 +655,12 @@ void Basic_ParseParamString(const CharType* psz, const CharType tok[], Functor f
 	Basic_ParseParamString(psz, __tcslen(psz), tok, func, nOps);
 }
 
-//! ÃÓ≥‰◊÷∑˚¥Æ÷–tok÷∏∂®µƒƒ⁄µƒ≤Œ ˝°£≤Œ ˝µƒ÷µ”…func¿¥»°µ√°£
+//! 填充字符串中tok指定的内的参数。参数的值由func来取得。
 /*!
-\param str ‘¥◊÷∑˚¥Æ£¨≤ªƒ‹Œ™ø’°£
-\param tok ”√”⁄÷∏∂®∆ º°£¿˝»Á"<>"
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝
-\remarks strƒ⁄µƒƒ⁄»›ª·±ª–ﬁ∏ƒ°£
+\param str 源字符串，不能为空。
+\param tok 用于指定起始。例如"<>"
+\param func 用于根据参数取得值的仿函数
+\remarks str内的内容会被修改。
 */
 template<class Functor, typename CharType>
 typename __BasicString<CharType>::StringType __FillParamString(CharType* str, const CharType tok[], Functor func)
@@ -692,13 +693,13 @@ typename __BasicString<CharType>::StringType __FillParamString(CharType* str, co
 }
 
 
-//! ∏˘æ›format◊÷∑˚¥Æ£¨»°≥ˆ‘¥◊÷∑˚¥Æ÷–µƒ÷µ
+//! 根据format字符串，取出源字符串中的值
 /*!
-\param pszSrc ‘¥◊÷∑˚,≤ªƒ‹Œ™ø’
-\param tok[0]∑÷±±Í ∂≈‰∂‘∑÷∏Ù∑˚°£tok[1]±Í ∂Ãıƒø∑÷∏Ù∑˚
-\param func ◊÷∑˚¥Æ∂‘Ω¯––¥¶¿Ìµƒ∫Ø ˝ªÚ’ﬂ∑¬∫Ø ˝
-\return Œﬁ∑µªÿ÷µ
-\remarks strƒ⁄µƒƒ⁄»›ª·±ª–ﬁ∏ƒ°£
+\param pszSrc 源字符,不能为空
+\param tok[0]分别标识配对分隔符。tok[1]标识条目分隔符
+\param func 字符串对进行处理的函数或者仿函数
+\return 无返回值
+\remarks str内的内容会被修改。
 */
 template <class CharType, class Functor>
 void __GetParamString(CharType* lpszSrc, CharType* lpszFormat, const CharType tok[], Functor func)
@@ -709,7 +710,7 @@ void __GetParamString(CharType* lpszSrc, CharType* lpszFormat, const CharType to
 	pEnd = pKey = pSep = NULL;
 	size_t len = 0;
 	while(lpszFormat && lpszSrc && 
-		*lpszFormat != '\0' && *lpszSrc != '\0')
+		  *lpszFormat != '\0' && *lpszSrc != '\0')
 	{
 		if (*lpszFormat == *lpszSrc)
 		{
@@ -764,16 +765,16 @@ void __GetParamString(CharType* lpszSrc, CharType* lpszFormat, const CharType to
 	}
 }
 
-//! ∏˘æ›format◊÷∑˚¥Æ£¨»°≥ˆ‘¥◊÷∑˚¥Æ÷–µƒ÷µ
+//! 根据format字符串，取出源字符串中的值
 /*!
-\param pszSrc ‘¥◊÷∑˚,≤ªƒ‹Œ™ø’
-\param tok[0]∑÷±±Í ∂≈‰∂‘∑÷∏Ù∑˚°£tok[1]±Í ∂Ãıƒø∑÷∏Ù∑˚
-\param func ◊÷∑˚¥Æ∂‘Ω¯––¥¶¿Ìµƒ∫Ø ˝ªÚ’ﬂ∑¬∫Ø ˝
-\return Œﬁ∑µªÿ÷µ
+\param pszSrc 源字符,不能为空
+\param tok[0]分别标识配对分隔符。tok[1]标识条目分隔符
+\param func 字符串对进行处理的函数或者仿函数
+\return 无返回值
 \code
 Basic_GetParamString("/shase/600000.txt", "/{market}/{code}.txt", "{}", InfoMapContainer<tstring, tstring>());
 \endcode
- ‰≥ˆ:
+输出:
 market=>shase
 code=>600000
 */
@@ -788,12 +789,12 @@ void Basic_GetParamString(const CharType* lpszSrc, const CharType* lpszFormat, c
 }
 
 
-//! ÃÓ≥‰◊÷∑˚¥Æ÷–tok[0]∫Õtok[1]ƒ⁄µƒ≤Œ ˝°£≤Œ ˝µƒ÷µ”…func¿¥»°µ√°£
+//! 填充字符串中tok[0]和tok[1]内的参数。参数的值由func来取得。
 /*!
-\param psz ‘¥◊÷∑˚¥Æ£¨≤ªƒ‹Œ™ø’
-\param tok ±Í ∂πÿº¸◊÷«¯º‰µƒ◊÷∑˚£¨÷¡…Ÿ¡Ω∏ˆ◊÷∑˚£¨∑÷±”√”⁄±Í ∂∆ º∫ÕΩ· ¯
-\param func ”√”⁄∏˘æ›≤Œ ˝»°µ√÷µµƒ∑¬∫Ø ˝
-\remarks ∫Õ__FillParamStringµƒ«¯± «Basic_FillParamString≤ª–ﬁ∏ƒpszµƒƒ⁄»›°£
+\param psz 源字符串，不能为空
+\param tok 标识关键字区间的字符，至少两个字符，分别用于标识起始和结束
+\param func 用于根据参数取得值的仿函数
+\remarks 和__FillParamString的区别是Basic_FillParamString不修改psz的内容。
 */
 template<class Functor, typename CharType>
 typename __BasicString<CharType>::StringType	Basic_FillParamString(const CharType* psz, const CharType tok[], Functor func)
@@ -804,7 +805,7 @@ typename __BasicString<CharType>::StringType	Basic_FillParamString(const CharTyp
 
 namespace __private
 {
-	//! ∫œ≤¢ ˝æ›∂‘œÛµΩ◊÷∑˚¥Æµƒ¥¶¿Ì∑¬∫Ø ˝
+	//! 合并数据对象到字符串的处理仿函数
 	/*!
 	\struct __combine_string_helper
 	*/
@@ -846,7 +847,7 @@ namespace __private
 		StringType&	__str;
 	};
 
-	//! ∫œ≤¢ ˝æ›∂‘œÛµΩ◊÷∑˚¥Æ¡˜µƒ¥¶¿Ì∑¬∫Ø ˝
+	//! 合并数据对象到字符串流的处理仿函数
 	/*!
 	\struct __combine_stream_helper
 	*/
@@ -899,23 +900,23 @@ namespace __private
 }
 
 
-//! ∫œ≤¢»›∆˜ƒ⁄µƒ◊÷∑˚¥Æ£¨÷Æº‰”√∑÷∏Ù∑˚∑÷∏Ó
+//! 合并容器内的字符串，之间用分隔符分割
 /*!
-\param tok ∑÷∏Ù∑˚
-\param first input iterator£¨”√”⁄±Í ∂∆ º‘™Àÿ
-\param last input iterator£¨”√”⁄±Í ∂Ω· ¯‘™Àÿ
-»Áπ˚∑÷∏Ó∑˚÷µŒ™'\0',‘Ú◊÷∑˚¥Æ÷±Ω”∫œ≤¢°£
+\param tok 分隔符
+\param first input iterator，用于标识起始元素
+\param last input iterator，用于标识结束元素
+如果分割符值为'\0',则字符串直接合并。
 \code
 char* buf[] = {"aa", "bb", "cc"};
 string str = ComineString(',', buf, sizeof(buf)/sizeof(char*));
 \endcode
-’‚ ±strµƒ÷µ «"aa,bb,cc"
-¡ÌÕ‚“≤ø…“‘∂‘∑«◊÷∑˚¥Æ ˝◊È◊ˆ≤Ÿ◊˜°£¿˝»Á£∫
+这时str的值是"aa,bb,cc"
+另外也可以对非字符串数组做操作。例如：
 \code
 int buf[] = {11, 22, 33};
 string str = CombineString(',', buf, size(buf)/sizeof(int));
 \endcode
-’‚ ±strµƒ÷µ «"11,22,33"
+这时str的值是"11,22,33"
 */
 template<class InputIterator, typename CharType>
 typename __BasicString<CharType>::StringType  Basic_CombineString(CharType cTok, InputIterator first, InputIterator last)
@@ -925,15 +926,15 @@ typename __BasicString<CharType>::StringType  Basic_CombineString(CharType cTok,
 	return stream.str();
 }
 
-//! ∫œ≤¢»›∆˜ƒ⁄µƒ◊÷∑˚¥Æ£¨÷Æº‰”√∑÷∏Ù∑˚∑÷∏Ó
+//! 合并容器内的字符串，之间用分隔符分割
 /*!
-\param tok ∑÷∏Ù∑˚
-\param lhs µ⁄“ª∏ˆ◊÷∂Œ
-\param rhs µ⁄∂˛∏ˆ◊÷∂Œ
+\param tok 分隔符
+\param lhs 第一个字段
+\param rhs 第二个字段
 \code
 string str = ComineString(',', 'abc', 456);
 \endcode
-’‚ ±strµƒ÷µ «"abc,456"
+这时str的值是"abc,456"
 */
 template<typename CharType, class T1, class T2>
 typename __BasicString<CharType>::StringType Basic_CombineString(CharType cTok, const T1& lhs, const T2& rhs)
@@ -943,7 +944,7 @@ typename __BasicString<CharType>::StringType Basic_CombineString(CharType cTok, 
 	return stream.str();
 }
 
-// ∫œ≤¢Õ∑
+// 合并头
 template<typename CharType, class T>
 int Basic_StuffHeader(typename __BasicString<CharType>::StringType& str, const CharType* pszName, const T& value)
 {
@@ -953,7 +954,7 @@ int Basic_StuffHeader(typename __BasicString<CharType>::StringType& str, const C
 	return str.length();
 }
 
-//! ∫œ≤¢◊÷∑˚¥Æ
+//! 合并字符串
 template<typename CharType, class T>
 int Basic_StuffString(typename __BasicString<CharType>::StringType& str, const T& psz)
 {
@@ -961,7 +962,7 @@ int Basic_StuffString(typename __BasicString<CharType>::StringType& str, const T
 	return str.length();
 }
 
-//! ∂‘◊÷∑˚¥Æ±‡¬Î
+//! 对字符串编码
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_EnesCWBasicString(const CharType* psz)
 {
@@ -992,7 +993,7 @@ typename __BasicString<CharType>::StringType Basic_EnesCWBasicString(const CharT
 	return str;
 }
 
-//! ∂‘◊÷∑˚¥ÆΩ‚¬Î
+//! 对字符串解码
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_DeesCWBasicString(const CharType* psz)
 {
@@ -1027,7 +1028,7 @@ typename __BasicString<CharType>::StringType Basic_DeesCWBasicString(const CharT
 	return str;
 }
 
-//! ∂‘◊÷∑˚¥ÆΩ‚¬Î
+//! 对字符串解码
 template<typename CharType>
 int Basic_DeesCWBasicString(const CharType* psz, CharType* pszDest)
 {
@@ -1058,11 +1059,11 @@ int Basic_DeesCWBasicString(const CharType* psz, CharType* pszDest)
 	return n;
 }
 
-//! 	Ω´◊÷∑˚¥ÆlpszBuffer‘≤’˚µΩ≥§∂»lRoundLength,ƒ©Œ≤ÃÌº”"..."
+//! 	将字符串lpszBuffer圆整到长度lRoundLength,末尾添加"..."
 /*!
-\param lpszbuffer ¥´»Î◊÷∑˚¥Æ
-\param lRoundLength ƒø±Í≥§∂»
-\return ‘≤’˚∫Ûµƒ≥§∂»
+\param lpszbuffer 传入字符串
+\param lRoundLength 目标长度
+\return 圆整后的长度
 */
 long Basic_RoundString(char* lpszBuffer, long lRoundLength);
 
@@ -1123,10 +1124,10 @@ BOOL MatchLast(const CharType* pszFileParam, const CharType* pszSpec)
 }
 
 }
-/*!	\brief  µœ÷‘⁄windowsœ¬PathMatchSpec¿‡À∆µƒπ¶ƒ‹°£÷ß≥÷?∫Õ*Õ®≈‰∑˚
-*	\param pszFile[in] ÷∏œÚ“‘\0Ω·Œ≤µƒ◊÷∑˚¥Æ
-*	\param pszSpec[in] ÷∏œÚ“‘\0Ω·Œ≤µƒ◊÷∑˚¥Æ£¨”√”⁄√Ë ˆ∆•≈‰πÊ‘Ú°£
-*	\return ∆•≈‰∑µªÿTRUE,∑Ò‘ÚFALSE
+/*!	\brief 实现在windows下PathMatchSpec类似的功能。支持?和*通配符
+*	\param pszFile[in] 指向以\0结尾的字符串
+*	\param pszSpec[in] 指向以\0结尾的字符串，用于描述匹配规则。
+*	\return 匹配返回TRUE,否则FALSE
 */
 template<typename CharType>
 BOOL Basic_StringMatchSpec(const CharType* pszFile, const CharType* pszSpec)
@@ -1170,10 +1171,10 @@ BOOL Basic_StringMatchSpec(const CharType* pszFile, const CharType* pszSpec)
 }
 #endif
 
-const int	ENT_NOQUOTES	= 0;	//! ≤ª◊™ªªµ•“˝∫≈∫ÕÀ´“˝∫≈
-const int	ENT_COMPAT	= 1;		//! ÷ª◊™ªªÀ´“˝∫≈
-const int	ENT_SQUOTE	= 2;		//! ÷ª◊™ªªµ•“˝∫≈
-const int	ENT_QUOTES	= ENT_COMPAT|ENT_SQUOTE;	//! Õ¨ ±◊™ªªµ•“˝∫≈∫ÕÀ´“˝∫≈
+const int	ENT_NOQUOTES	= 0;	//! 不转换单引号和双引号
+const int	ENT_COMPAT	= 1;		//! 只转换双引号
+const int	ENT_SQUOTE	= 2;		//! 只转换单引号
+const int	ENT_QUOTES	= ENT_COMPAT|ENT_SQUOTE;	//! 同时转换单引号和双引号
 namespace __private
 
 {
@@ -1182,15 +1183,15 @@ namespace __private
 }
 
 
-//! \brief: ∂‘html÷–Ãÿ ‚µƒ◊÷∑˚Ω¯––±‡¬Î°£
+//! \brief: 对html中特殊的字符进行编码。
 /*!
-	\param	psz[in]			÷∏œÚ“‘\0Ω·Œ≤µƒ◊÷∑˚¥Æ
-	\param	quotestyle[in]	∂‘“˝∫≈µƒ◊™ªªπÊ‘Ú
-	\return	◊™ªª∫Ûµƒ◊÷∑˚¥Æ
-	\remark ◊™ªªµƒ◊÷∑˚±Ì:
+	\param	psz[in]			指向以\0结尾的字符串
+	\param	quotestyle[in]	对引号的转换规则
+	\return	转换后的字符串
+	\remark 转换的字符表:
 			'&' (ampersand)		=> "&amp;"
-			'"'	(double quote)	=> "&quot;"	(√ª”–…Ë÷√ENT_NOQUOTESµƒ«Èøˆœ¬)
-			''' (single quote)	=> "&#039;'	(Ωˆµ±…Ë÷√¡ÀENT_QUOTESµƒ«Èøˆœ¬)
+			'"'	(double quote)	=> "&quot;"	(没有设置ENT_NOQUOTES的情况下)
+			''' (single quote)	=> "&#039;'	(仅当设置了ENT_QUOTES的情况下)
 			'<' (less than)		=> "&lt;"
 			'>'	(greater than)	=> "&gt;"
 */
@@ -1208,7 +1209,7 @@ typename __BasicString<CharType>::StringType	Basic_HtmlEncode(const CharType* ps
 		{
 			ret += spec;
 		}
-		else if (((*psz) >= 0 && ((*psz) < 0x20)) || *psz == 127)	// ≤ªø…º˚
+		else if (((*psz) >= 0 && ((*psz) < 0x20)) || *psz == 127)	// 不可见
 		{
 			buf[0] = (CharType)'&';
 			buf[1] = (CharType)'#';
@@ -1265,17 +1266,17 @@ namespace __private
 	};
 }
 
-//! \brief: ∂‘html÷–Ãÿ ‚µƒ◊÷∑˚Ω¯––Ω‚¬Î
+//! \brief: 对html中特殊的字符进行解码
 /*!
-\param	psz[in]			÷∏œÚ“‘\0Ω·Œ≤µƒ◊÷∑˚¥Æ
-\return	◊™ªª∫Ûµƒ◊÷∑˚¥Æ
-\remark ◊™ªªµƒ◊÷∑˚±Ì:
+\param	psz[in]			指向以\0结尾的字符串
+\return	转换后的字符串
+\remark 转换的字符表:
 	'&' (ampersand)		=> "&amp;"
 	'"'	(double quote)	=> "&quot;"
 	''' (single quote)	=> "&#039;"
 	'<' (less than)		=> "&lt;"
 	'>'	(greater than)	=> "&gt;"
-	∆‰À˚“‘"&#xxx;"∏Ò Ωµƒ◊÷∑˚¥Æ°£
+	其他以"&#xxx;"格式的字符串。
 */
 template<typename CharType>
 typename __BasicString<CharType>::StringType	Basic_HtmlDecode(const CharType* psz)
@@ -1310,20 +1311,20 @@ namespace __private
 		}
 	}
 }
-//! \brirf: ∂‘◊÷∑˚¥Æ◊ˆurl±‡¬Î
+//! \brirf: 对字符串做url编码
 /*!
-\param	psz[in]		÷∏œÚ“‘\0Ω·Œ≤µƒ◊÷∑˚¥Æ
-\return ◊™ªª∫Ûµƒ◊÷∑˚¥Æ
+\param	psz[in]		指向以\0结尾的字符串
+\return 转换后的字符串
 \remark	
-◊™ªªπÊ‘Ú£∫Ω´◊÷∑˚¥Æ÷–≥˝¡À'-'∫Õ'_'Õ‚µƒÀ˘”–∑«◊÷ƒ∏∫Õ∑« ˝◊÷◊÷∑˚∂ºÃÊªª≥…%∫Û∏˙¡ΩŒª Æ¡˘Ω¯÷∆ ˝£¨ø’∏Ò‘Ú±‡¬ÎŒ™º”∫≈(+)°£
-∏√∫Ø ˝Ωˆ”–Multi∞Ê±æ£¨√ª”–UNICODE∞Ê±æ°£
+转换规则：将字符串中除了'-'和'_'外的所有非字母和非数字字符都替换成%后跟两位十六进制数，空格则编码为加号(+)。
+该函数仅有Multi版本，没有UNICODE版本。
 */
 char_string	Basic_URLEncode(const char* psz);
 
-//! ∂‘url±‡¬Î∫Ûµƒ◊÷∑˚¥Æ◊ˆΩ‚¬Î
+//! 对url编码后的字符串做解码
 /*!
-\param	psz[in]		÷∏œÚ“‘\0Ω·Œ≤µƒ◊÷∑˚¥Æ
-\return ◊™ªª∫Ûµƒ◊÷∑˚¥Æ
+\param	psz[in]		指向以\0结尾的字符串
+\return 转换后的字符串
 */
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_URLDecode(const CharType* psz)
@@ -1354,7 +1355,7 @@ typename __BasicString<CharType>::StringType Basic_URLDecode(const CharType* psz
 				status = CharNone;
 				ret += (CharType)'%';
 				break;
-			case CharSecond:	// øœ∂®≤ª «±Í◊ºµƒ,∆’Õ®¥¶¿Ì
+			case CharSecond:	// 肯定不是标准的,普通处理
 				ret += (CharType)'%';
 				ret += (CharType)c;
 				status = CharFirst;
@@ -1385,16 +1386,16 @@ typename __BasicString<CharType>::StringType Basic_URLDecode(const CharType* psz
 	return ret;
 }
 
-//! ◊™≥…16Ω¯÷∆µƒ◊÷∑˚¥Æ
+//! 转成16进制的字符串
 int Basic_ConvertStringToHexString(const char *pszSrc, int nCount, char* pszDest, int nDest);
 
-//! Ω´HEX±‡¬Î∫Ûµƒ◊÷∑˚¥Æ◊™ªØŒ™hex‘¥¥Æ
+//! 将HEX编码后的字符串转化为hex源串
 /*!
-\param	pszSrc[in]		‘¥◊÷∑˚¥Æ
-\param	nCount[in]		pszSrcµƒ≥§∂»
-\param	pszDest[out]	◊™ªª∫Û ‰≥ˆ
-\param	nDest[out]		 ‰≥ˆµƒpszDestµƒ◊÷∑˚¥Æ≥§∂»(≤ª «ƒ⁄¥Ê≥§∂»)
-\return ◊™ªª∫Ûµƒ◊÷∑˚¥Æµƒ≥§∂»
+\param	pszSrc[in]		源字符串
+\param	nCount[in]		pszSrc的长度
+\param	pszDest[out]	转换后输出
+\param	nDest[out]		输出的pszDest的字符串长度(不是内存长度)
+\return 转换后的字符串的长度
 */
 template<class CharType>
 int Basic_ConvertStringToHex(const char *pszSrc, int nCount, CharType* pszDest, int nDest)
@@ -1415,13 +1416,13 @@ int Basic_ConvertStringToHex(const char *pszSrc, int nCount, CharType* pszDest, 
 }
 
 
-//! Ω´HEX±‡¬Î∫Ûµƒ◊÷∑˚¥Æ◊™ªØŒ™hex‘¥¥Æ
+//! 将HEX编码后的字符串转化为hex源串
 /*!
-\param	pszSrc[in]		‘¥ ˝æ›
-\param	nCount[in]		pszSrcµƒ≥§∂»
-\param	pszDest[out]	◊™ªª∫Û ‰≥ˆ
-\param	nDest[out]		 ‰≥ˆµƒ◊÷∑˚¥Æ≥§∂»¥Û–°.(CharType*nDestµƒ¥Û–°)
-\return ◊™ªª∫ÛBufferµƒ≥§∂»
+\param	pszSrc[in]		源数据
+\param	nCount[in]		pszSrc的长度
+\param	pszDest[out]	转换后输出
+\param	nDest[out]		输出的字符串长度大小.(CharType*nDest的大小)
+\return 转换后Buffer的长度
 */
 template<class CharType>
 int Basic_ConvertHexToString(const CharType *pszSrc, int nCount, char* pszDest, int nDest)
@@ -1447,7 +1448,7 @@ int Basic_ConvertHexToString(const CharType *pszSrc, int nCount, char* pszDest, 
 
 //! 
 
-//! ∂‘◊÷∑˚¥Æ±‡¬Î
+//! 对字符串编码
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_EncodeString(const CharType* psz)
 {
@@ -1488,7 +1489,7 @@ typename __BasicString<CharType>::StringType Basic_EncodeString(const CharType* 
 	return str;
 }
 
-//! ∂‘◊÷∑˚¥ÆΩ‚¬Î
+//! 对字符串解码
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_DecodeString(const CharType* psz)
 {
@@ -1570,6 +1571,48 @@ CharType* Basic_Trim(CharType* str)
 	return Basic_RTrim(Basic_LTrim((CharType*)str));
 }
 
+template<class CharType>
+void Basic_InsertNumberSpace(typename __BasicString<CharType>::StringType& str, CharType tok)
+{
+	const CharType* ps = str.c_str();
+	size_t len = str.size();
+	size_t pos = len;
+	const CharType* p = __tcschr(ps, (CharType)'.');
+	if (p)
+		pos = p - ps;
+
+	do 
+	{
+		int count = pos / 3;
+		if (count == 0)
+			break;
+
+		pos = pos % 3;
+		CBasicStaticBuffer buf;
+		buf.Assign(2*(len + 1) * sizeof(CharType), 0);
+		CharType* p = (CharType*)buf.GetBuffer();
+
+		if (pos > 0)
+		{
+			p = __tcsncpy(p, ps, pos);
+			p += pos;
+			*p++ = _T(',');
+			ps += pos;
+
+		}
+		for (int i = 0; i < count - 1; ++ i)
+		{
+			__tcsncpy(p, ps, 3);
+			p += 3;
+			*p ++ = _T(',');
+			ps += 3;
+		}
+		__tcscpy(p, ps);
+		str = buf.GetString();
+	} while (false);
+}
+
+
 template<typename CharType>
 CharType* __tcscpyn(CharType* strDest, size_t nDest, const CharType* strSource, size_t nSource = NullLen, bool bTrim = false)
 {
@@ -1602,36 +1645,36 @@ CharType* __tcscpyn(CharType* strDest, size_t nDest, const CharType* strSource, 
 }
 
 /** 
-*\brief __atoi64 ◊÷∑˚¥Æ◊™64Œª’˚ ˝
+*\brief __atoi64 字符串转64位整数
 * 
 *\param str 
-*\param nLen ƒ¨»œ÷µ -1
+*\param nLen 默认值 -1
 *\return  
 */
 int64_t __atoi64_s(const char* str, int nLen/* = -1*/);
 
 
-// “ª–©∂‘”⁄basic_stringµƒ≤Ÿ◊˜
+// 一些对于basic_string的操作
 namespace strutil
 {
 	const char*		__get_blank_string(__private::Type2Type<char>);
 	const WCHAR*	__get_blank_string(__private::Type2Type<WCHAR>);
 
-	//! ◊÷∑˚¥Æ±‰¥Û–¥
+	//! 字符串变大写
 	template<class StringType>
 	void makeupper(StringType& s)
 	{
 		transform(s.begin(), s.end(), s.begin(), (int(*)(int))toupper);
 	}
 
-	//! ◊÷∑˚¥Æ±‰–°–¥
+	//! 字符串变小写
 	template<class StringType>
 	void makelower(StringType& s)
 	{
 		transform(s.begin(), s.end(), s.begin(), (int(*)(int))tolower);
 	}
 
-	//! »•≥˝◊Û≤‡∞¸∫¨‘⁄lpszTarget÷–µƒ◊÷∑˚
+	//! 去除左侧包含在lpszTarget中的字符
 	template<class StringType>
 	void ltrim(StringType& s, typename StringType::const_pointer lpszTarget)
 	{
@@ -1639,7 +1682,7 @@ namespace strutil
 	}
 
 
-	//! »•≥˝◊Û≤‡ø’◊÷∑˚
+	//! 去除左侧空字符
 	template<class StringType>
 	void ltrim(StringType& s)
 	{
@@ -1647,21 +1690,21 @@ namespace strutil
 		ltrim(s, __get_blank_string(__private::Type2Type<value_type>()));
 	}
 
-	//! »•≥˝◊Û≤‡÷∏∂®◊÷∑˚
+	//! 去除左侧指定字符
 	template<class StringType>
 	void ltrim(StringType& s, typename StringType::value_type cTarget)
 	{
 		s.erase(0, s.find_first_not_of(cTarget));
 	}
 
-	//! »•≥˝”“≤‡∞¸∫¨‘⁄lpszTarget÷–µƒ◊÷∑˚
+	//! 去除右侧包含在lpszTarget中的字符
 	template<class StringType>
 	void rtrim(StringType& s, typename StringType::const_pointer lpszTarget)
 	{
 		s.erase(s.find_last_not_of(lpszTarget) + 1);
 	}
 
-	//! »•≥˝”“≤‡ø’◊÷∑˚
+	//! 去除右侧空字符
 	template<class StringType>
 	void rtrim(StringType& s)
 	{
@@ -1669,14 +1712,14 @@ namespace strutil
 		rtrim(s, __get_blank_string(__private::Type2Type<value_type>()));
 	}
 
-	//! »•≥˝”“≤‡÷∏∂®◊÷∑˚
+	//! 去除右侧指定字符
 	template<class StringType>
 	void rtrim(StringType& s, typename StringType::value_type cTarget)
 	{
 		s.erase(s.find_last_not_of(cTarget) + 1);
 	}
 
-	//! ÃÊªª◊÷∑˚¥Æ
+	//! 替换字符串
 	template<class StringType>
 	int replace(StringType& s, typename StringType::const_pointer string_to_replace, typename StringType::const_pointer new_string)
 	{
@@ -1716,7 +1759,7 @@ namespace strutil
 		CharType	__new;
 	};
 
-	//! ÃÊªª◊÷∑˚
+	//! 替换字符
 	template<class StringType>
 	int replace(StringType& s, typename StringType::value_type cOld, typename StringType::value_type cNew)
 	{

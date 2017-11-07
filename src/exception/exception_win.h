@@ -30,11 +30,11 @@ enum BasicType  // Stolen from CVCONST.H in the DIA 2.0 SDK
 };
 
 //
-//Ӧ�ó����쳣���������� for Windows
+//应用程序异常保护处理类 for Windows
 //
-// �쳣����ԭ����ͨ��ϵͳ����SetUnhandledExceptionFilter����������쳣
-// ��ջ���ݺͷ��ű�����ͨ��dbghelp APIʵ��
-// ����DEBUG�棬�ɽ�����ǰ·���ж�Ӧ��pdb�ļ����ű�
+// 异常保护原理：通过系统调用SetUnhandledExceptionFilter，捕获程序异常
+// 堆栈回溯和符号表解析通过dbghelp API实现
+// 对于DEBUG版，可解析当前路径中对应的pdb文件符号表
 // 
 //
 class CBasicWinExceptionReport :public CBasicException
@@ -70,7 +70,7 @@ public:
     static HANDLE m_hProcess;
 protected:
 	//
-	// ����dump�ļ�
+	// 生成dump文件
 	//
 	static long WriteDumpFile( struct _EXCEPTION_POINTERS *pExceptionInfo );
 

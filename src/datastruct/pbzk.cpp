@@ -39,7 +39,7 @@ void CPBZK::ReadPBZKFileBuffer(const char* pBuffer, int nLength){
 	AddPBZKToMap(ayItems);
 }
 
-//! ÅĞ¶ÏÊÇ·ñÓĞ·Ç·¨×Ö·û
+//! åˆ¤æ–­æ˜¯å¦æœ‰éæ³•å­—ç¬¦
 int CPBZK::CheckPBZKExist(const char* txt, int nLength, int nBeginIndex, bool bDeep, bool bCheckSpecialZF){
 	if(bCheckSpecialZF){
 		if(strPBZKChar.Find(txt[nBeginIndex]) >= 0)
@@ -75,7 +75,7 @@ bool CPBZK::IsContainPBZK(const char* txt, int nLength, bool bDeep, bool bCheckS
 	return false;
 }
 
-//·¢ÏÖÖ±½ÓÌæ»»
+//å‘ç°ç›´æ¥æ›¿æ¢
 void CPBZK::ReplacePBZK(char* txt, int nLength, char cReplace, bool bDeep, bool bCheckSpecialZF){
 	for (int i = 0; i < nLength; i++){
 		int nMatch = CheckPBZKExist(txt, nLength, i, bDeep, bCheckSpecialZF);

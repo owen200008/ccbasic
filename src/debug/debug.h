@@ -1,16 +1,16 @@
 /***********************************************************************************************
-// ÎÄ¼þÃû:     debug.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     debug.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 8:33:33
-// ÄÚÈÝÃèÊö:   
-// °æ±¾ÐÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 8:33:33
+// å†…å®¹æè¿°:   
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_DEBUG_H
 #define BASIC_DEBUG_H
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-//! ¶ÏÑÔ£¬DEBUG°æÓÐÐ§£¬RELEASE°æÎÞÐ§
+//! æ–­è¨€ï¼ŒDEBUGç‰ˆæœ‰æ•ˆï¼ŒRELEASEç‰ˆæ— æ•ˆ
 #ifndef ASSERT
 
 #ifdef _DEBUG
@@ -45,7 +45,7 @@
 
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
-//! ¶ÏÑÔ£¬DEBUG°æÓÐÐ§£¬RELEASE°æºöÂÔ¶ÏÑÔ
+//! æ–­è¨€ï¼ŒDEBUGç‰ˆæœ‰æ•ˆï¼ŒRELEASEç‰ˆå¿½ç•¥æ–­è¨€
 #ifndef VERIFY
 #ifdef _DEBUG
 #define VERIFY(f)          ASSERT(f)
@@ -55,12 +55,12 @@ __NS_BASIC_START
 #endif //VERIFY
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-//ÏÂÃæµÄºê¶¨Òå ÓÃÓÚ debug °æ±¾£¬»òÕßÐèÒª¸ù¾ÝÊä³ö»òÕßÐÔÄÜµÄ°æ±¾£¨ÐèÒª¶¨Òåºê _BASIC_TRACE£©¡£
+//ä¸‹é¢çš„å®å®šä¹‰ ç”¨äºŽ debug ç‰ˆæœ¬ï¼Œæˆ–è€…éœ€è¦æ ¹æ®è¾“å‡ºæˆ–è€…æ€§èƒ½çš„ç‰ˆæœ¬ï¼ˆéœ€è¦å®šä¹‰å® _BASIC_TRACEï¼‰ã€‚
 #if defined(_DEBUG) || defined(_BASIC_TRACE)
 #define __basic_trace
 #endif
 /////////////////////////////////////////////////////////////////////////////////////////////
-//! Êä³ö¸ú×ÙÐÅÏ¢
+//! è¾“å‡ºè·Ÿè¸ªä¿¡æ¯
 #ifndef TRACE
 #ifdef __basic_trace
 #define WTRACE              basiclib::WBasicTrace
@@ -86,16 +86,16 @@ __NS_BASIC_START
 #endif	// __DEBUG __android_log_write
 #endif////__ANDROID
 
-//!¶¨Î»¶ÏÑÔ´úÂëÐÐ
+//!å®šä½æ–­è¨€ä»£ç è¡Œ
 _BASIC_DLL_API BOOL BasicAssertFailedLine(const char* lpszFileName, int nLine);
 
-//!ÖÐ¶Ï
+//!ä¸­æ–­
 _BASIC_DLL_API void BasicDebugBreak();
 
-//!Êä³ö¸ú×ÙÐÅÏ¢
+//!è¾“å‡ºè·Ÿè¸ªä¿¡æ¯
 _BASIC_DLL_API void BasicTrace(const char* lpszFormat, ...);
 
-//!Êä³ö¸ú×ÙÐÅÏ¢µ½µ÷ÊÔÆ÷
+//!è¾“å‡ºè·Ÿè¸ªä¿¡æ¯åˆ°è°ƒè¯•å™¨
 _BASIC_DLL_API void BasicTraceDebugView(const char* lpszString);
 
 ///////////////////////////////////////////////////////////////////////////////////////

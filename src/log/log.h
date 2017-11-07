@@ -1,117 +1,117 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     log.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     log.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 13:11:33
-// ÄÚÈİÃèÊö:   ÈÕÖ¾¼ÇÂ¼º¯Êı¿â
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 13:11:33
+// å†…å®¹æè¿°:   æ—¥å¿—è®°å½•å‡½æ•°åº“
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_LOG_H
 #define BASIC_LOG_H
 
 __NS_BASIC_START
 
-//¶¨Òådebuglevel
+//å®šä¹‰debuglevel
 enum DebugLevel
 {
     DebugLevel_None = 0,
     DebugLevel_Error = 1,
     DebugLevel_Info = 2,
 };
-//!ÊÂ¼ş¼ÇÂ¼
+//!äº‹ä»¶è®°å½•
 /*!
- * Ğ´µ½Ä¬ÈÏÈÕÖ¾ÎÄ¼ş
- *\remarks ÈÕÖ¾ÎÄ¼şÄ¬ÈÏÂ·¾¶¿ÉÍ¨¹ıBasicSetLogEventModeÉèÖÃ
- *\remarks ¿É¸ñÊ½»¯²ÎÊı
+ * å†™åˆ°é»˜è®¤æ—¥å¿—æ–‡ä»¶
+ *\remarks æ—¥å¿—æ–‡ä»¶é»˜è®¤è·¯å¾„å¯é€šè¿‡BasicSetLogEventModeè®¾ç½®
+ *\remarks å¯æ ¼å¼åŒ–å‚æ•°
  */
 _BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventV(DebugLevel level, const char* pszLog, ...);
 _BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventErrorV(const char* pszLog, ...);
 
-//!ÊÂ¼ş¼ÇÂ¼
+//!äº‹ä»¶è®°å½•
 /*!
-* Ğ´µ½Ä¬ÈÏÈÕÖ¾ÎÄ¼ş
-*\remarks ÈÕÖ¾ÎÄ¼şÄ¬ÈÏÂ·¾¶¿ÉÍ¨¹ıBasicSetLogEventModeÉèÖÃ
+* å†™åˆ°é»˜è®¤æ—¥å¿—æ–‡ä»¶
+*\remarks æ—¥å¿—æ–‡ä»¶é»˜è®¤è·¯å¾„å¯é€šè¿‡BasicSetLogEventModeè®¾ç½®
 */
 _BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEvent(DebugLevel level, const char* pszLog);
 _BASIC_DLL_API_C  _BASIC_DLL_API void BasicLogEventError(const char* pszLog);
 //////////////////////////////////////////////////////////////////////////////////////////////
 //
-//BasicSetLogEventModeÑ¡Ïî
-#define	LOG_BY_DAY		0x00010000		//!< °´Ìì¼ÇÂ¼¡£Èç¹û³¬¹ıÏŞÖÆµÄ´óĞ¡£¬Ò»Ìì¿ÉÄÜ»áÓĞ¶à¸öÎÄ¼ş¡£
-#define	LOG_BY_SIZE		0x00020000		//!< °´´óĞ¡¼ÇÂ¼¡£³¬¹ıÏŞÖÆµÄ´óĞ¡£¬ĞÂ½¨Ò»¸öÎÄ¼ş¡£
-#define	LOG_BY_ONEFILE	0x00040000		//!< Ê¼ÖÕÖ»ÓĞÒ»¸öÎÄ¼ş£¬Èç¹û°´Ìì£¬ÔòÉ¾³ıÇ°Ò»ÌìµÄÊı¾İ£¬³¬¹ı´óĞ¡ÏŞÖÆ£¬É¾³ıÔ­À´µÄÎÄ¼ş¡£
-#define	LOG_BY_BUFFER	0x00080000		//!< ÈÕÖ¾²»Á¢¿ÌĞ´ÅÌ£¬ÏÈ±£´æÔÚ»º´æÇøÀïÃæ£¬¶¨Ê±Ğ´ÅÌ¡£Ìá¸ßĞ§ÂÊ¡£
-#define	LOG_BY_OPEN		0x01000000		//!< ÈÕÖ¾ÎÄ¼ş±£³Ö´ò¿ª×´Ì¬£¬²»¹Ø±Õ¡£
-#define	LOG_BY_NOLIMIT	0x02000000		//!< ²»ÏŞÖÆÎÄ¼ş´óĞ¡
-#define LOG_BY_SAMENAME	0x04000000		//!< ¼á¾ö²»»»Ãû×Ö
+//BasicSetLogEventModeé€‰é¡¹
+#define	LOG_BY_DAY		0x00010000		//!< æŒ‰å¤©è®°å½•ã€‚å¦‚æœè¶…è¿‡é™åˆ¶çš„å¤§å°ï¼Œä¸€å¤©å¯èƒ½ä¼šæœ‰å¤šä¸ªæ–‡ä»¶ã€‚
+#define	LOG_BY_SIZE		0x00020000		//!< æŒ‰å¤§å°è®°å½•ã€‚è¶…è¿‡é™åˆ¶çš„å¤§å°ï¼Œæ–°å»ºä¸€ä¸ªæ–‡ä»¶ã€‚
+#define	LOG_BY_ONEFILE	0x00040000		//!< å§‹ç»ˆåªæœ‰ä¸€ä¸ªæ–‡ä»¶ï¼Œå¦‚æœæŒ‰å¤©ï¼Œåˆ™åˆ é™¤å‰ä¸€å¤©çš„æ•°æ®ï¼Œè¶…è¿‡å¤§å°é™åˆ¶ï¼Œåˆ é™¤åŸæ¥çš„æ–‡ä»¶ã€‚
+#define	LOG_BY_BUFFER	0x00080000		//!< æ—¥å¿—ä¸ç«‹åˆ»å†™ç›˜ï¼Œå…ˆä¿å­˜åœ¨ç¼“å­˜åŒºé‡Œé¢ï¼Œå®šæ—¶å†™ç›˜ã€‚æé«˜æ•ˆç‡ã€‚
+#define	LOG_BY_OPEN		0x01000000		//!< æ—¥å¿—æ–‡ä»¶ä¿æŒæ‰“å¼€çŠ¶æ€ï¼Œä¸å…³é—­ã€‚
+#define	LOG_BY_NOLIMIT	0x02000000		//!< ä¸é™åˆ¶æ–‡ä»¶å¤§å°
+#define LOG_BY_SAMENAME	0x04000000		//!< åšå†³ä¸æ¢åå­—
 
 
 //
-#define LOG_ADD_TIME	0x00100000		//!< ¼ÇÂ¼Ê±¼ä
-#define LOG_ADD_THREAD	0x00200000		//!< ¼ÇÂ¼Ïß³ÌID
+#define LOG_ADD_TIME	0x00100000		//!< è®°å½•æ—¶é—´
+#define LOG_ADD_THREAD	0x00200000		//!< è®°å½•çº¿ç¨‹ID
 //
-#define LOG_SIZE_LIMIT	0x0000ffff		//!< ÈÕÖ¾ÎÄ¼ş´óĞ¡ÏŞÖÆ	µ¥Î»£ºMB
+#define LOG_SIZE_LIMIT	0x0000ffff		//!< æ—¥å¿—æ–‡ä»¶å¤§å°é™åˆ¶	å•ä½ï¼šMB
 #define LOG_NAME_DAY_S	"S%DAY%"
 
 
-#define LOG_ERROR_NAME_EMPTY		-1	//!< ÎÄ¼şÃûÎª¿Õ
-#define LOG_ERROR_OPEN_FILE			-2	//!< ´ò¿ªÎÄ¼şÊ§°Ü
-#define LOG_ERROR_FULL				-3	//!< ÈÕÖ¾¼ÇÂ¼Í¨µÀÒÑ¾­ÂúÁË¡£
+#define LOG_ERROR_NAME_EMPTY		-1	//!< æ–‡ä»¶åä¸ºç©º
+#define LOG_ERROR_OPEN_FILE			-2	//!< æ‰“å¼€æ–‡ä»¶å¤±è´¥
+#define LOG_ERROR_FULL				-3	//!< æ—¥å¿—è®°å½•é€šé“å·²ç»æ»¡äº†ã€‚
 
-//! ÉèÖÃÈÕÖ¾¼ÇÂ¼µÄ¼¶±ğ
+//! è®¾ç½®æ—¥å¿—è®°å½•çš„çº§åˆ«
 _BASIC_DLL_API_C  _BASIC_DLL_API void InitBasicLogLevel(DebugLevel level);
 _BASIC_DLL_API_C  _BASIC_DLL_API DebugLevel GetBasicLogLevel();
-//! bThreadCheckSelf true ²»Æô¶¯Ëø(ÎŞ·¨ÊµÊ±¼ÇÂ¼) falseÆô¶¯Ëø Ïß³Ì°²È«(²»¿ªÆôbufferÄ£Ê½ÊµÊ±)
+//! bThreadCheckSelf true ä¸å¯åŠ¨é”(æ— æ³•å®æ—¶è®°å½•) falseå¯åŠ¨é” çº¿ç¨‹å®‰å…¨(ä¸å¼€å¯bufferæ¨¡å¼å®æ—¶)
 _BASIC_DLL_API_C  _BASIC_DLL_API bool InitBasicLog(bool bThreadCheckSelf);
-//! Èç¹û²»ÊÇ×Ô¼ºÏß³ÌĞèÒª30sµ÷ÓÃÒ»´Î
+//! å¦‚æœä¸æ˜¯è‡ªå·±çº¿ç¨‹éœ€è¦30sè°ƒç”¨ä¸€æ¬¡
 _BASIC_DLL_API_C  _BASIC_DLL_API void OnTimerBasicLog();
 //
-//! ÉèÖÃÄ¬ÈÏµÄÊÂ¼ş¼ÇÂ¼Ä£Ê½
+//! è®¾ç½®é»˜è®¤çš„äº‹ä»¶è®°å½•æ¨¡å¼
 /*
- * ÉèÖÃºóÈ«¾ÖÓĞĞ§£¬ÔÚÓ¦ÓÃ³ÌĞòÆô¶¯Ê±µ÷ÓÃÒ»´Î¼´¿É
+ * è®¾ç½®åå…¨å±€æœ‰æ•ˆï¼Œåœ¨åº”ç”¨ç¨‹åºå¯åŠ¨æ—¶è°ƒç”¨ä¸€æ¬¡å³å¯
  *
- *\param		nOption:	¼ÇÂ¼Ä£Ê½LOG_*
- *\param		pszLogFile:	ÈÕÖ¾ÎÄ¼şÃû,Èç´øÓĞÂ·¾¶£¬»á¶¯Ì¬´´½¨
+ *\param		nOption:	è®°å½•æ¨¡å¼LOG_*
+ *\param		pszLogFile:	æ—¥å¿—æ–‡ä»¶å,å¦‚å¸¦æœ‰è·¯å¾„ï¼Œä¼šåŠ¨æ€åˆ›å»º
  *					
- *\return		= 0 Ä¬ÈÏµÄÈÕÖ¾¾ä±ú
- *				<0 ´íÎó
- *\remarks  Ö»ÄÜÓÃÓÚÉèÖÃÄ¬ÈÏµÄÍ¨µÀ£¬¼´Í¨µÀID = 0 £¬Èç¹û²»ÉèÖÃ£¬Ê¹ÓÃÎÄ¼şÃû basiclib.log
+ *\return		= 0 é»˜è®¤çš„æ—¥å¿—å¥æŸ„
+ *				<0 é”™è¯¯
+ *\remarks  åªèƒ½ç”¨äºè®¾ç½®é»˜è®¤çš„é€šé“ï¼Œå³é€šé“ID = 0 ï¼Œå¦‚æœä¸è®¾ç½®ï¼Œä½¿ç”¨æ–‡ä»¶å basiclib.log
  */
 _BASIC_DLL_API_C  _BASIC_DLL_API long BasicSetDefaultLogEventMode(long nOption, const char* pszLogFile);
 _BASIC_DLL_API_C  _BASIC_DLL_API long BasicSetDefaultLogEventErrorMode(long nOption, const char* pszLogFile);
 //
 
 //
-//! ÉèÖÃÊÂ¼ş¼ÇÂ¼Ä£Ê½
+//! è®¾ç½®äº‹ä»¶è®°å½•æ¨¡å¼
 /*
- * ÉèÖÃºóÈ«¾ÖÓĞĞ§£¬ÔÚÓ¦ÓÃ³ÌĞòÆô¶¯Ê±µ÷ÓÃÒ»´Î¼´¿É
+ * è®¾ç½®åå…¨å±€æœ‰æ•ˆï¼Œåœ¨åº”ç”¨ç¨‹åºå¯åŠ¨æ—¶è°ƒç”¨ä¸€æ¬¡å³å¯
  *
- *\param		nOption:	¼ÇÂ¼Ä£Ê½LOG_*
- *\param		pszLogFile:	ÈÕÖ¾ÎÄ¼şÃû,Èç´øÓĞÂ·¾¶£¬»á¶¯Ì¬´´½¨
+ *\param		nOption:	è®°å½•æ¨¡å¼LOG_*
+ *\param		pszLogFile:	æ—¥å¿—æ–‡ä»¶å,å¦‚å¸¦æœ‰è·¯å¾„ï¼Œä¼šåŠ¨æ€åˆ›å»º
  *					
- *\return		>0 ÈÕÖ¾¾ä±ú£¬ÓÃÓÚ´«µİ¸øBasicLogEvent
- *				<0 ´íÎó
+ *\return		>0 æ—¥å¿—å¥æŸ„ï¼Œç”¨äºä¼ é€’ç»™BasicLogEvent
+ *				<0 é”™è¯¯
  */
 _BASIC_DLL_API_C  _BASIC_DLL_API long BasicSetLogEventMode(long nOption, const char* pszLogFile);
 //
 
-//! ¹Ø±ÕÈÕÖ¾¼ÇÂ¼
+//! å…³é—­æ—¥å¿—è®°å½•
 /*
- * ÔÚ³ÌĞòÍË³öÇ°»òÕß¹Ø±ÕÄ³¸öÈÕÖ¾¼ÇÂ¼µÄÊ±ºòµ÷ÓÃ
+ * åœ¨ç¨‹åºé€€å‡ºå‰æˆ–è€…å…³é—­æŸä¸ªæ—¥å¿—è®°å½•çš„æ—¶å€™è°ƒç”¨
  *
- *\param		lLogChannel:	ÈÕÖ¾¾ä±ú£¬º¯Êı BasicSetLogEventMode µÄ·µ»ØÖµ Èç¹ûĞ¡ÓÚ 0 £¬¹Ø±ÕËùÓĞµÄ
+ *\param		lLogChannel:	æ—¥å¿—å¥æŸ„ï¼Œå‡½æ•° BasicSetLogEventMode çš„è¿”å›å€¼ å¦‚æœå°äº 0 ï¼Œå…³é—­æ‰€æœ‰çš„
  *					
- *\return		>0 ÈÕÖ¾¾ä±ú£¬ÓÃÓÚ´«µİ¸øBasicLogEvent
- *				<0 ´íÎó
+ *\return		>0 æ—¥å¿—å¥æŸ„ï¼Œç”¨äºä¼ é€’ç»™BasicLogEvent
+ *				<0 é”™è¯¯
  */
 _BASIC_DLL_API_C  _BASIC_DLL_API long BasicCloseLogEvent(long lLogChannel);
 //
 
 //
-//!ÊÂ¼ş¼ÇÂ¼£¨Ğ´µ½ÈÕÖ¾ÎÄ¼ş£©
+//!äº‹ä»¶è®°å½•ï¼ˆå†™åˆ°æ—¥å¿—æ–‡ä»¶ï¼‰
 /*
- *\remarks ÈÕÖ¾ÎÄ¼şÂ·¾¶¿ÉÍ¨¹ıBasicSetLogEventModeÉèÖÃ
- *\remarks ¿É¸ñÊ½»¯²ÎÊı
+ *\remarks æ—¥å¿—æ–‡ä»¶è·¯å¾„å¯é€šè¿‡BasicSetLogEventModeè®¾ç½®
+ *\remarks å¯æ ¼å¼åŒ–å‚æ•°
  */
 _BASIC_DLL_API void BasicLogEventV(DebugLevel level, long lLogChannel, const char* pszLog, ...);
 //
@@ -121,9 +121,9 @@ _BASIC_DLL_API void BasicLogEventV(DebugLevel level, long lLogChannel, const cha
 
 
 //
-//!ÊÂ¼ş¼ÇÂ¼£¨Ğ´µ½ÈÕÖ¾ÎÄ¼ş£©
+//!äº‹ä»¶è®°å½•ï¼ˆå†™åˆ°æ—¥å¿—æ–‡ä»¶ï¼‰
 /*
- *\remarks ÈÕÖ¾ÎÄ¼şÂ·¾¶¿ÉÍ¨¹ıBasicSetLogEventModeÉèÖÃ
+ *\remarks æ—¥å¿—æ–‡ä»¶è·¯å¾„å¯é€šè¿‡BasicSetLogEventModeè®¾ç½®
  */
 _BASIC_DLL_API void BasicLogEvent(DebugLevel level, long lLogChannel, const char* pszLog);
 //

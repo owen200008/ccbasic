@@ -897,21 +897,21 @@ long Basic_FileOperation(uint32_t wFunc, const char* pFrom, const char* pTo)
 	char* pBuffer = _ChangeFileName(szCPath);
 	if(wFunc == BASIC_FO_DELETE)
 	{
-		/* Ö§³ÖÉ¾³ıµ¥¸öÎÄ¼ş
+		/* æ”¯æŒåˆ é™¤å•ä¸ªæ–‡ä»¶
 		if(pBuffer != NULL)
 		{
-			if(!_tcschr(pBuffer, '*') && !_tcschr(pBuffer, '?'))	//²»Ö§³ÖÉ¾³ıµ¥¸öÎÄ¼ş£¬Èç¹ûÊäÈëµ¥¸öÎÄ¼ş¾ÍÉ¾³ıÕû¸öÄ¿Â¼
+			if(!_tcschr(pBuffer, '*') && !_tcschr(pBuffer, '?'))	//ä¸æ”¯æŒåˆ é™¤å•ä¸ªæ–‡ä»¶ï¼Œå¦‚æœè¾“å…¥å•ä¸ªæ–‡ä»¶å°±åˆ é™¤æ•´ä¸ªç›®å½•
 			{
 				pBuffer--;
 				memset(pBuffer, 0, 4);
 			}
 		}
 		*/
-		pTo = NULL;		//·ÇNULL»á²úÉúÒ»¸öÄÚ´æ¼ì²âÒì³£
+		pTo = NULL;		//éNULLä¼šäº§ç”Ÿä¸€ä¸ªå†…å­˜æ£€æµ‹å¼‚å¸¸
 	}
 	else if(pTo != NULL)
 	{
-		Basic_mkdir(pTo);			//½¨ºÃÄ¿±êÄ¿Â¼
+		Basic_mkdir(pTo);			//å»ºå¥½ç›®æ ‡ç›®å½•
 	
 		lRet = Basic_GetFileFullPath(szSPath, pTo);
 		if (lRet != BASIC_FILE_OK)
@@ -1064,7 +1064,7 @@ long Basic_FindAllFileInPath(const char* lpszFilePath, const char* lpszFileName,
 	if((dwFindMode & BASIC_FIND_SUBDIR))
 	{
 		char* lpTemp = Basic_FindFileName(lpszFilePath);
-		if (__tcslen(lpTemp) > 0)		//ÓĞÎÄ¼şÃû
+		if (__tcslen(lpTemp) > 0)		//æœ‰æ–‡ä»¶å
 		{
 			strFindFileName = lpTemp;
 			strFilePath = lpszFilePath;
@@ -1112,7 +1112,7 @@ void Basic_RegulatePathString(CBasicString& strPath)
 {
 	if(!strPath.IsEmpty())
 	{
-		strPath.Replace('\\', '/');			//°ÑËùÓĞµÄ·´Ğ±¸Ü»»³ÉÕıĞ±¸Ü£¬ÕâÑù windows ºÍ linux ¾Í¿ÉÒÔÍ¨ÓÃÁË¡£
+		strPath.Replace('\\', '/');			//æŠŠæ‰€æœ‰çš„åæ–œæ æ¢æˆæ­£æ–œæ ï¼Œè¿™æ · windows å’Œ linux å°±å¯ä»¥é€šç”¨äº†ã€‚
 		if (strPath.GetAt(__tcslen(strPath.c_str()) - 1) != '/')
 		{
 			strPath += '/';
@@ -1124,11 +1124,11 @@ void Basic_RegulateFileNameString(CBasicString& strFileName)
 {
 	if(!strFileName.IsEmpty())
 	{
-		strFileName.Replace('\\', '/');			//°ÑËùÓĞµÄ·´Ğ±¸Ü»»³ÉÕıĞ±¸Ü£¬ÕâÑù windows ºÍ linux ¾Í¿ÉÒÔÍ¨ÓÃÁË¡£
+		strFileName.Replace('\\', '/');			//æŠŠæ‰€æœ‰çš„åæ–œæ æ¢æˆæ­£æ–œæ ï¼Œè¿™æ · windows å’Œ linux å°±å¯ä»¥é€šç”¨äº†ã€‚
 	}
 }
 
-//! ¶ÁÈ¡ÎÄ¼ş
+//! è¯»å–æ–‡ä»¶
 bool _BASIC_DLL_API Basic_ReadTotalFile(const char* pFileName, basiclib::CBasicSmartBuffer& smBuf) {
 	FILE* fp = fopen(pFileName, "r");
 	if (fp) {

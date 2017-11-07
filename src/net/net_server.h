@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     net_server.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     net_server.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2016-9-12 11:50:18
-// ÄÚÈİÃèÊö:   ¶¨ÒåTCPÍ¨ĞÅµÄ»ù±¾Àà
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2016-9-12 11:50:18
+// å†…å®¹æè¿°:   å®šä¹‰TCPé€šä¿¡çš„åŸºæœ¬ç±»
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_NET_SERVER_H
 #define BASIC_NET_SERVER_H
@@ -14,16 +14,16 @@
 
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
-//ÉùÃ÷
+//å£°æ˜
 //class CBasicObject;
 class CBasicSessionNetServerSession;
-class CBasicSessionNetServer;		//¼àÌı
+class CBasicSessionNetServer;		//ç›‘å¬
 /////////////////////////////////////////////////////////////////////////////////////////////
 #pragma warning (push)
 #pragma warning (disable: 4251)
 #pragma warning (disable: 4275)
 
-//! ÇëÊ¹ÓÃCreateNetServerSession
+//! è¯·ä½¿ç”¨CreateNetServerSession
 _BASIC_DLL_API CBasicSessionNetServerSession* CreateNetWithServerSession(size_t nClassSize, uint32_t nSessionID, uint16_t usRecTimeout, const std::function<CBasicSessionNetServerSession*(void*)>& func);
 
 #define DefineCreateNetServerSession(T) \
@@ -44,10 +44,10 @@ class _BASIC_DLL_API CBasicSessionNetServerSession : public CBasicSessionNetNoti
 {
 	DefineCreateNetServerSessionDefault(CBasicSessionNetServerSession)
 public:
-	//! »ñÈ¡sessionid£¬µÈÓÚsocketid
+	//! è·å–sessionidï¼Œç­‰äºsocketid
 	uint32_t GetSessionID();
 
-	//!»ñÈ¡¶Ô¶ËµÄµØÖ·ºÍ¶Ë¿Ú
+	//!è·å–å¯¹ç«¯çš„åœ°å€å’Œç«¯å£
 	const char* GetNetAddress();
 	uint32_t GetNetAddressPort();
 protected:
@@ -55,7 +55,7 @@ protected:
 };
 typedef basiclib::CBasicRefPtr<CBasicSessionNetServerSession> CRefBasicSessionNetServerSession;
 /////////////////////////////////////////////////////////////////////////////////////////////
-//! //! ÇëÊ¹ÓÃCreateNetServer
+//! //! è¯·ä½¿ç”¨CreateNetServer
 _BASIC_DLL_API CBasicSessionNetServer* CreateNetWithServer(size_t nClassSize, const std::function<CBasicSessionNetServer*(void*)>& func);
 
 #define DefineCreateNetServer(T) \
@@ -76,7 +76,7 @@ class _BASIC_DLL_API CBasicSessionNetServer : public CBasicSessionNet
 {
 	DefineCreateNetServerDefault(CBasicSessionNetServer)
 public:
-	//! ÅĞ¶ÏÊÇ·ñ¼àÌı
+	//! åˆ¤æ–­æ˜¯å¦ç›‘å¬
 	bool IsListen();
 	
 	/*formats
@@ -85,41 +85,41 @@ public:
 	*/
 	virtual int32_t Listen(const char* lpszAddress, bool bWaitSuccess = false);
 
-	//! ÉèÖÃ½ÓÊÕ³¬Ê±¶Ï¿ª
+	//! è®¾ç½®æ¥æ”¶è¶…æ—¶æ–­å¼€
 	void SetClientRecTimeout(uint16_t uTimesSecond) {
 		m_usRecTimeout = uTimesSecond;
 	}
 
-	//! ·¢ËÍ¸øËùÓĞ¿Í»§¶Ë
+	//! å‘é€ç»™æ‰€æœ‰å®¢æˆ·ç«¯
 	void SendToAll(void * pData, int nLength, DWORD dwFlag, bool bTrasmit = true);
 
-	//! ¶Ï¿ªËùÓĞÁ¬½Ó,¶Ï¿ªÇ°µÄ»Øµ÷
+	//! æ–­å¼€æ‰€æœ‰è¿æ¥,æ–­å¼€å‰çš„å›è°ƒ
 	void CloseAllSession(const std::function<void(CBasicSessionNetServerSession* pSession)>& func);
 	void CloseAll();
 
-	//! »ñÈ¡×´Ì¬ĞÅÏ¢
+	//! è·å–çŠ¶æ€ä¿¡æ¯
 	virtual void GetNetStatus(CBasicString& strStatus);
 
-	//»ñÈ¡ÓÃ»§ÔÚÏßÊı
+	//è·å–ç”¨æˆ·åœ¨çº¿æ•°
 	long GetOnlineSessionCount();
 
-	//! »ñÈ¡session
+	//! è·å–session
 	CRefBasicSessionNetServerSession GetClientBySessionID(uint32_t nSessionID);
 
-	//! ¿½±´ËùÓĞ¿Í»§¶Ë
+	//! æ‹·è´æ‰€æœ‰å®¢æˆ·ç«¯
 	void CopyClientSession(VTClientSession& vtClient);
 public:
-	//! ontimerÏß³Ì
+	//! ontimerçº¿ç¨‹
 	virtual void OnTimer(unsigned int nTick);
 protected:
-	//¹¹Ôì·şÎñÆ÷¶ÔÏó
+	//æ„é€ æœåŠ¡å™¨å¯¹è±¡
 	virtual CBasicSessionNetServerSession* CreateServerClientSession(uint32_t nSessionID);
 	virtual CBasicSessionNetServerSession* ConstructSession(uint32_t nSessionID);
 
-	//! ½ÓÊÕ¶ÔÏó
+	//! æ¥æ”¶å¯¹è±¡
 	void AcceptClient(CBasicSessionNetServerSession* pClient);
 protected:
-	//! ¶Ï¿ªÁ¬½Ó
+	//! æ–­å¼€è¿æ¥
 	int32_t OnClientDisconnectCallback(CBasicSessionNetNotify* pClient, uint32_t p2);//clientdisconnectcallback
 protected:
 	CCriticalSection						m_mtxCSession;
@@ -127,7 +127,7 @@ protected:
 
 	basiclib::CBasicString					m_strListenAddr;
 
-	uint16_t								m_usRecTimeout;				//³¬Ê±Ê±¼ä£¬0´ú±í²»³¬Ê±
+	uint16_t								m_usRecTimeout;				//è¶…æ—¶æ—¶é—´ï¼Œ0ä»£è¡¨ä¸è¶…æ—¶
 
 	friend class CBasicNet_SocketListen;
 };

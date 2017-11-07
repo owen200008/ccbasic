@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     net_client.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     net_client.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2016-9-12 11:50:18
-// ÄÚÈİÃèÊö:   ¶¨ÒåTCPÍ¨ĞÅµÄ»ù±¾Àà
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2016-9-12 11:50:18
+// å†…å®¹æè¿°:   å®šä¹‰TCPé€šä¿¡çš„åŸºæœ¬ç±»
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_NET_CLIENT_H
 #define BASIC_NET_CLIENT_H
@@ -14,14 +14,14 @@
 
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
-//ÉùÃ÷
-class CBasicSessionNetClient;		//Ö÷¶¯Á¬½Ó
+//å£°æ˜
+class CBasicSessionNetClient;		//ä¸»åŠ¨è¿æ¥
 //////////////////////////////////////////////////////////////////////////////
 #pragma warning (push)
 #pragma warning (disable: 4251)
 #pragma warning (disable: 4275)
 
-//! Çëµ÷ÓÃCreateNetClient
+//! è¯·è°ƒç”¨CreateNetClient
 _BASIC_DLL_API CBasicSessionNetClient* CreateNetWithClient(size_t nClassSize, uint16_t usRecTimeout, const std::function<CBasicSessionNetClient*(void*)>& func);
 
 #define DefineCreateNetClient(T) \
@@ -39,13 +39,13 @@ class _BASIC_DLL_API CBasicSessionNetClient : public CBasicSessionNetNotify
 {
 	DefineCreateNetClientDefault(CBasicSessionNetClient);
 public:
-	//! Á¬½Ó formats [IPv6Address]:port || IPv4Address:port
+	//! è¿æ¥ formats [IPv6Address]:port || IPv4Address:port
 	virtual int32_t Connect(const char* lpszAddress);
 
-	//! ÖØÁ¬
+	//! é‡è¿
 	int32_t DoConnect();
 
-	//! »ñÈ¡Á¬½ÓµØÖ·
+	//! è·å–è¿æ¥åœ°å€
 	basiclib::CBasicString& GetConnectAddr();
 };
 #pragma warning (pop)

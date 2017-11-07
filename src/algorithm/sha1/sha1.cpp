@@ -162,7 +162,7 @@ void SHA1Result(SHA1_CTX *context, BYTE *digest)
  *              Output : 34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F  
  *              More test vectors can be obtained from FIPS web site  
  ***************************************************************************/   
-void SHA1_Perform(BYTE *indata, DWORD inlen, BYTE *outdata) //¼ÆËãSHA-1µÄAPI   
+void SHA1_Perform(BYTE *indata, DWORD inlen, BYTE *outdata) //è®¡ç®—SHA-1çš„API   
 {   
 	SHA1_CTX sha;   
 	SHA1Reset(&sha);   

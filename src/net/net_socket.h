@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     net_socket.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     net_socket.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2016-9-12 11:50:18
-// ÄÚÈİÃèÊö:   ¶¨ÒåTCPÍ¨ĞÅµÄ»ù±¾Àà
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2016-9-12 11:50:18
+// å†…å®¹æè¿°:   å®šä¹‰TCPé€šä¿¡çš„åŸºæœ¬ç±»
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_NET_SOCKET_H
 #define BASIC_NET_SOCKET_H
@@ -69,69 +69,69 @@ public:
 	CBasicNet_Socket(uint32_t nSessionID);
 	virtual ~CBasicNet_Socket();
 public:
-	//! »ñÈ¡socketid
+	//! è·å–socketid
 	evutil_socket_t& GetSocketID(){ return m_socketfd; }
 
-	//! ¹Ø±Õ
+	//! å…³é—­
 	void Close(bool bRemote = false, bool bMustClose = false);
 
-	//! »Øµ÷ÖĞ¿ÉÒÔ°²È«É¾³ı
+	//! å›è°ƒä¸­å¯ä»¥å®‰å…¨åˆ é™¤
 	virtual void SafeDelete();
 
-	//! ×¢²á¹ıÂËÆ÷
+	//! æ³¨å†Œè¿‡æ»¤å™¨
 	int RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptions = 0);
 
-	//! »ñÈ¡×¢²áµÄ¹ıÂËÆ÷
+	//! è·å–æ³¨å†Œçš„è¿‡æ»¤å™¨
 	CBasicPreSend* GetPreSend(){ return m_pPreSend; }
 
-	//! »ñÈ¡ÕæÊµµÄsession
+	//! è·å–çœŸå®çš„session
 	virtual CBasicSessionNet* GetRealSessionNet() = 0;
 
-	//! ¼ÓÈë¶ÓÁĞ
+	//! åŠ å…¥é˜Ÿåˆ—
 	void AddSocketCallFunc(CEventQueueItem* pItem);
 
-	//! Ö´ĞĞ¶ÓÁĞ
+	//! æ‰§è¡Œé˜Ÿåˆ—
 	void RunSocketCallFunc();
 
-	//! »ñÈ¡netthread
+	//! è·å–netthread
 	CNetThread* GetSelfNetThread(){ return m_pThread; }
 #ifdef BASICWINDOWS_USE_IOCP
-	//! server¼àÌıÒì²½acceptÊ¹ÓÃ
+	//! serverç›‘å¬å¼‚æ­¥acceptä½¿ç”¨
 	virtual void ServerAcceptEx(OVERLAPPEDPLUS* pOverlapPlus){}
 
-	//! clientÁ¬½ÓÊ¹ÓÃ
+	//! clientè¿æ¥ä½¿ç”¨
 	virtual void ClientConnectEx(){}
 #endif
 public:
-	//! ÊÇ·ñÁ¬½Ó
+	//! æ˜¯å¦è¿æ¥
 	bool IsConnected();
-	//! ÊÇ·ñÈÏÖ¤³É¹¦
+	//! æ˜¯å¦è®¤è¯æˆåŠŸ
 	bool IsTransmit();
-	//! ÅĞ¶ÏÊÇ·ñ×¼±¸close
+	//! åˆ¤æ–­æ˜¯å¦å‡†å¤‡close
 	bool IsToClose();
 
-	//! ÉèÖÃ×¼±¸¹Ø±Õ
+	//! è®¾ç½®å‡†å¤‡å…³é—­
 	void SetToClose();
-	//! ÉèÖÃ°²È«É¾³ı±êÖ¾
+	//! è®¾ç½®å®‰å…¨åˆ é™¤æ ‡å¿—
 	void SetToSafeDelete();
 
-	//! ÅĞ¶ÏÊÇ·ñ¿ÉÒÔ¹Ø±Õ
+	//! åˆ¤æ–­æ˜¯å¦å¯ä»¥å…³é—­
 	virtual bool CanClose();
 
-	//! »ñÈ¡ºÍÉèÖÃ×´Ì¬
+	//! è·å–å’Œè®¾ç½®çŠ¶æ€
 	uint32_t GetSessionStatus(uint32_t dwMask){ return m_unSessionStatus & dwMask; }
 	void SetSessionStatus(uint32_t dwValue, uint32_t dwMask){ m_unSessionStatus &= ~dwMask; m_unSessionStatus |= (dwValue & dwMask); }
 public:
-	//! ontimerÏß³Ì
+	//! ontimerçº¿ç¨‹
 	virtual bool OnTimer(unsigned int nTick);
 protected:
-	//! ·¢ËÍ¶ÔÓ¦Ïß³ÌÏûÏ¢
+	//! å‘é€å¯¹åº”çº¿ç¨‹æ¶ˆæ¯
 	void SetLibEvent(pCallSameRefNetSessionFunc pCallback, intptr_t lRevert = 0);
 
-	//! ÖØĞÂ³õÊ¼»¯³ÉÔ±
+	//! é‡æ–°åˆå§‹åŒ–æˆå‘˜
 	virtual void InitMember();
 
-	//! Ïß³ÌÄÚÖ´ĞĞº¯Êı
+	//! çº¿ç¨‹å†…æ‰§è¡Œå‡½æ•°
 	virtual void CloseCallback(BOOL bRemote, DWORD dwNetCode = 0);
 protected:
 	static std::atomic<uint32_t>	m_defaultCreateSession;
@@ -143,9 +143,9 @@ protected:
 
 	CBasicPreSend*					m_pPreSend;
 
-	uint32_t						m_unSessionStatus;				//×´Ì¬  TIL_SS_*
+	uint32_t						m_unSessionStatus;				//çŠ¶æ€  TIL_SS_*
 
-	//ÏûÏ¢¶ÓÁĞ
+	//æ¶ˆæ¯é˜Ÿåˆ—
 	basiclib::SpinLock				m_lockMsg;
 	basiclib::CBasicSmartBuffer		m_smBuf;
 	basiclib::CBasicSmartBuffer		m_smIOCPBuf;
@@ -160,93 +160,93 @@ public:
 	CBasicNet_SocketTransfer(CBasicSessionNetNotify* pFather, uint32_t nSessionID, uint16_t usRecTimeout = 0);
 	virtual ~CBasicNet_SocketTransfer();
 
-	//! ·¢ËÍÊı¾İ
+	//! å‘é€æ•°æ®
 	virtual int32_t Send(void *pData, int32_t cbData, uint32_t dwFlag = 0);
 
-	//ÄÚ²¿ÊÍ·Å
+	//å†…éƒ¨é‡Šæ”¾
 	int32_t SendData(SendBufferCacheMgr& sendData);
 
-	//! ÅĞ¶ÏÊÇ·ñ¿ÉÒÔ¹Ø±Õ
+	//! åˆ¤æ–­æ˜¯å¦å¯ä»¥å…³é—­
 	virtual bool CanClose();
 
-	//! ÅĞ¶ÏÊÇ·ñ³¬Ê±Ã»ÊÕµ½Êı¾İ
+	//! åˆ¤æ–­æ˜¯å¦è¶…æ—¶æ²¡æ”¶åˆ°æ•°æ®
 	BOOL IsRecTimeout(time_t tmNow, uint16_t nTimeoutSecond);
 
-	//! »ñÈ¡netstate
+	//! è·å–netstate
 	void GetNetStatInfo(BasicNetStat& netState){ netState = m_stNet; }
 
-	//! »ñÈ¡×´Ì¬
+	//! è·å–çŠ¶æ€
 	virtual void GetNetStatus(CBasicString& strStatus) = 0;
 public:
-	//! ontimerÏß³Ì
+	//! ontimerçº¿ç¨‹
 	virtual bool OnTimer(unsigned int nTick);
 
 	//! onidle
 	void OnIdle();
 
-    //! ¶ÁÊÂ¼ş
+    //! è¯»äº‹ä»¶
     void OnReadEvent();
 
-    //! Ğ´ÊÂ¼ş
+    //! å†™äº‹ä»¶
     void OnWriteEvent();
 protected:
-	//! ÖØĞÂ³õÊ¼»¯³ÉÔ±
+	//! é‡æ–°åˆå§‹åŒ–æˆå‘˜
 	virtual void InitMember();
 
-	//! Ïß³ÌÄÚÖ´ĞĞº¯Êı
+	//! çº¿ç¨‹å†…æ‰§è¡Œå‡½æ•°
 	virtual void CloseCallback(BOOL bRemote, DWORD dwNetCode = 0);
 
-	//! Ö»ÔÚlibeventÏß³ÌÊ¹ÓÃ
+	//! åªåœ¨libeventçº¿ç¨‹ä½¿ç”¨
 	void SendDataFromQueue();
 #ifdef BASICWINDOWS_USE_IOCP
-	//! IOCP»Øµ÷·¢ËÍ³É¹¦×Ö½Ú
+	//! IOCPå›è°ƒå‘é€æˆåŠŸå­—èŠ‚
 	void SendDataSuccessAndCheckSend(DWORD dwIoSize);
 #endif
 
-	//! ¼ÓÈë·¢ËÍ¶ÓÁĞ
+	//! åŠ å…¥å‘é€é˜Ÿåˆ—
 	void AddSendQueue(SendBufferCache* pSendCache);
 
-	//! ÊÕµ½Êı¾İ
+	//! æ”¶åˆ°æ•°æ®
 	void OnReceiveData(const char* pszData, uint32_t dwIoSize);
 
-	//! ÖØÖÃ¹ıÂËÆ÷×´Ì¬
+	//! é‡ç½®è¿‡æ»¤å™¨çŠ¶æ€
 	void ResetPreSend();
 
-	//! ¶Ï¿ªÏûÏ¢
+	//! æ–­å¼€æ¶ˆæ¯
 	void OnDisconnect(uint32_t dwNetCode);
 	void OnSendData(uint32_t dwIoSize);
 	void OnConnect(uint32_t dwNetCode);
 	uint32_t OnReceive(uint32_t dwNetCode, const char *pszData, int32_t cbData);
 	void OnError(uint32_t dwNetCode, int32_t lRetCode);
-	//! ¹ıÂËÆ÷½ÓÊÜÊı¾İ
+	//! è¿‡æ»¤å™¨æ¥å—æ•°æ®
 	void PreReceiveData(uint32_t dwNetCode, const char *pszData, int32_t cbData);
 protected:
 	virtual CBasicSessionNet* GetRealSessionNet(){ return m_pFather; }
 protected:
 	static unsigned short	m_usTimeoutShakeHandle;		//default shakehandle timeout time
 	CBasicSessionNetNotify*	m_pFather;
-	uint16_t				m_usRecTimeout;				//³¬Ê±Ê±¼ä£¬0´ú±í²»³¬Ê±
-	uint32_t				m_unIdleCount;				//½øÈë¿ÕÏĞµÄ´ÎÊı
+	uint16_t				m_usRecTimeout;				//è¶…æ—¶æ—¶é—´ï¼Œ0ä»£è¡¨ä¸è¶…æ—¶
+	uint32_t				m_unIdleCount;				//è¿›å…¥ç©ºé—²çš„æ¬¡æ•°
 
 	BasicNetStat			m_stNet;
 	BasicNetStat			m_lastNet;
 
-	//Ïß³ÌÄÚÊ¹ÓÃ
+	//çº¿ç¨‹å†…ä½¿ç”¨
 	CBasicBitstream			m_bufCacheTmp;
 #ifdef BASICWINDOWS_USE_IOCP
 	bool					m_bSend;
 	OVERLAPPEDPLUS			m_olRead;
 	OVERLAPPEDPLUS			m_olWrite;
 	WSABUF					m_wsaInBuffer;
-	char					m_byInBuffer[MAX_BUFFER_SEND_BUF];		//Ô¤·ÖÅäµÄ½ÓÊÕÊı¾İ»º³åÇø
+	char					m_byInBuffer[MAX_BUFFER_SEND_BUF];		//é¢„åˆ†é…çš„æ¥æ”¶æ•°æ®ç¼“å†²åŒº
 	WSABUF					m_wsaOutBuffer;
-	char					m_byOutBuffer[MAX_BUFFER_SEND_BUF];		//Ô¤·ÖÅäµÄ·¢ËÍÊı¾İ»º³åÇø
+	char					m_byOutBuffer[MAX_BUFFER_SEND_BUF];		//é¢„åˆ†é…çš„å‘é€æ•°æ®ç¼“å†²åŒº
 #else
 	event					m_wevent;
 #endif
 
 private:
-	//·¢ËÍµÄ»º´æÇø
+	//å‘é€çš„ç¼“å­˜åŒº
 	CMsgSendBuffer			m_msgQueue;
 
 	friend class CNetThread;

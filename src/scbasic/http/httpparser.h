@@ -12,35 +12,35 @@
 class _SCBASIC_DLL_API IHttpParseHandler : public basiclib::CBasicObject
 {
 public:
-	// »ñÈ¡ÇëÇó·½Ê½.
-	// GET,POSTµÈ
+	// è·å–è¯·æ±‚æ–¹å¼.
+	// GET,POSTç­‰
 	virtual void	MethodHandler(const char* method) = 0;
-	// »ñÈ¡URI
+	// è·å–URI
 	// /index.php?a=b&c=d
 	virtual void	URIHandler(const char* URI) = 0;
-	// »ñÈ¡Ğ­Òé
+	// è·å–åè®®
 	// HTTP/1.1
 	virtual void	ProtocolHandler(const char* protocol) = 0;
-	// µÃµ½httpÍ·
+	// å¾—åˆ°httpå¤´
 	// Accept-Encoding: gzip, deflate
 	virtual void	HeaderHandler(const char* key, const char* value) = 0;
-	// »ñµÃpostµÄÄÚÈİ
+	// è·å¾—postçš„å†…å®¹
 	virtual void	PostDataHandler(const char* data, size_t len) = 0;
-	// Ò»¸öÇëÇó°ü½âÎö½áÊø
+	// ä¸€ä¸ªè¯·æ±‚åŒ…è§£æç»“æŸ
 	virtual void	RequestEndHandler() = 0;
 };
 
 
-const int	HTTP_ERROR_WANTMORE			= 1;	// ½âÎöÎ´½áÊø£¬ĞèÒªÊı¾İ
-const int	HTTP_ERROR_NEWREQUEST		= 2;	// ĞÂµÄÇëÇóµ½À´
-const int	HTTP_ERROR_FINISH			= 0;	// Õı³£
-const int	HTTP_ERROR_NODATA			= -1;	// ÎŞÊı¾İ
-const int	HTTP_ERROR_PROTOCOL			= -2;	// Ğ­Òé²»Ö§³Ö
-const int	HTTP_ERROR_URI_TOOLONG		= -3;	// URI³¬³ö×î´óÏŞÖÆ
-const int	HTTP_ERROR_HEADER_TOOLONG	= -4;	// httpÍ·³¤¶È³¬³ö×î´óÏŞÖÆ
-const int	HTTP_ERROR_SYNTAX			= -5;	// ¸ñÊ½´íÎó
-const int	HTTP_ERROR_METHOD			= -6;	// method²»Ö§³Ö
-const int	HTTP_ERROR_GENERIC			= -99;	// ´íÎó
+const int	HTTP_ERROR_WANTMORE			= 1;	// è§£ææœªç»“æŸï¼Œéœ€è¦æ•°æ®
+const int	HTTP_ERROR_NEWREQUEST		= 2;	// æ–°çš„è¯·æ±‚åˆ°æ¥
+const int	HTTP_ERROR_FINISH			= 0;	// æ­£å¸¸
+const int	HTTP_ERROR_NODATA			= -1;	// æ— æ•°æ®
+const int	HTTP_ERROR_PROTOCOL			= -2;	// åè®®ä¸æ”¯æŒ
+const int	HTTP_ERROR_URI_TOOLONG		= -3;	// URIè¶…å‡ºæœ€å¤§é™åˆ¶
+const int	HTTP_ERROR_HEADER_TOOLONG	= -4;	// httpå¤´é•¿åº¦è¶…å‡ºæœ€å¤§é™åˆ¶
+const int	HTTP_ERROR_SYNTAX			= -5;	// æ ¼å¼é”™è¯¯
+const int	HTTP_ERROR_METHOD			= -6;	// methodä¸æ”¯æŒ
+const int	HTTP_ERROR_GENERIC			= -99;	// é”™è¯¯
 
 enum HttpParseStatus
 {
@@ -56,8 +56,8 @@ enum HttpParseStatus
 struct _SCBASIC_DLL_API HttpParseContext
 {
 	HttpParseStatus	m_eStatus;
-	basiclib::CBasicSmartBuffer	m_bufTemp;	// ÁÙÊ±buffer£¬ÓÃÓÚ´æ´¢ÉÏ¸öÇëÇó°üÎ´½âÎöÍê²¿·Ö
-	basiclib::char_string		m_strKey;	// ½âÎöheaderÊ±µÄkeyÖµ¡£
+	basiclib::CBasicSmartBuffer	m_bufTemp;	// ä¸´æ—¶bufferï¼Œç”¨äºå­˜å‚¨ä¸Šä¸ªè¯·æ±‚åŒ…æœªè§£æå®Œéƒ¨åˆ†
+	basiclib::char_string		m_strKey;	// è§£æheaderæ—¶çš„keyå€¼ã€‚
 	size_t			m_nBodyLen;
 	
 	HttpParseContext()
@@ -74,7 +74,7 @@ struct _SCBASIC_DLL_API HttpParseContext
 	}
 };
 
-// httpÊı¾İÁ÷µÄ½âÎöÆ÷
+// httpæ•°æ®æµçš„è§£æå™¨
 class _SCBASIC_DLL_API CHttpParser : public basiclib::CBasicObject
 {
 public:
@@ -91,7 +91,7 @@ protected:
 
 
 /*!
-½âÎöURIĞÅÏ¢£¬°ÑkeyºÍvalue½øĞĞuri½âÂëºÍutf8½âÂë£¬·Åµ½mapÈİÆ÷ÖĞ¡£
+è§£æURIä¿¡æ¯ï¼ŒæŠŠkeyå’Œvalueè¿›è¡Œuriè§£ç å’Œutf8è§£ç ï¼Œæ”¾åˆ°mapå®¹å™¨ä¸­ã€‚
 */
 template<class MapContainer>
 class _SCBASIC_DLL_API FillURIParam

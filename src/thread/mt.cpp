@@ -213,9 +213,9 @@ BOOL CCriticalSection::Lock()
 }
 
 /** 
-*\brief CCriticalSection::Lock ¼ÓËø£¬Ö§³Ö³¬Ê±
+*\brief CCriticalSection::Lock åŠ é”ï¼Œæ”¯æŒè¶…æ—¶
 * 
-*\param dwTimeout ³¬Ê±Ê±¼ä£¬µ¥Î»ºÁÃë£¬-1²»³¬Ê±
+*\param dwTimeout è¶…æ—¶æ—¶é—´ï¼Œå•ä½æ¯«ç§’ï¼Œ-1ä¸è¶…æ—¶
 *\return  
 */
 BOOL CCriticalSection::Lock(DWORD dwTimeout)
@@ -232,7 +232,7 @@ BOOL CCriticalSection::Lock(DWORD dwTimeout)
 		}
 		else
 		{
-			//³¬Ê±
+			//è¶…æ—¶
 			return FALSE;
 		}
 	}

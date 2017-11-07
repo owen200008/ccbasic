@@ -118,15 +118,15 @@ bool Basic_IsUTF8Str(const char* str, int length)
 	if (length < 0)
 		length = __tcslen(str);
 	int i = 0;
-	unsigned long nBytes = 0;//UFT8¿ÉÓÃ1-6¸ö×Ö½Ú±àÂë,ASCIIÓÃÒ»¸ö×Ö½Ú
+	unsigned long nBytes = 0;//UFT8å¯ç”¨1-6ä¸ªå­—èŠ‚ç¼–ç ,ASCIIç”¨ä¸€ä¸ªå­—èŠ‚
 	unsigned char chr = 0;
-	bool bAllAscii = true; //Èç¹ûÈ«²¿¶¼ÊÇASCII, ËµÃ÷²»ÊÇUTF-8
+	bool bAllAscii = true; //å¦‚æœå…¨éƒ¨éƒ½æ˜¯ASCII, è¯´æ˜ä¸æ˜¯UTF-8
 	for(i = 0; i < length; ++i)
 	{
 		chr = *(str + i);
-		if( (chr & 0x80) != 0 ) // ÅĞ¶ÏÊÇ·ñASCII±àÂë,Èç¹û²»ÊÇ,ËµÃ÷ÓĞ¿ÉÄÜÊÇUTF-8,ASCIIÓÃ7Î»±àÂë,µ«ÓÃÒ»¸ö×Ö½Ú´æ,×î¸ßÎ»±ê¼ÇÎª0,o0xxxxxxx
+		if( (chr & 0x80) != 0 ) // åˆ¤æ–­æ˜¯å¦ASCIIç¼–ç ,å¦‚æœä¸æ˜¯,è¯´æ˜æœ‰å¯èƒ½æ˜¯UTF-8,ASCIIç”¨7ä½ç¼–ç ,ä½†ç”¨ä¸€ä¸ªå­—èŠ‚å­˜,æœ€é«˜ä½æ ‡è®°ä¸º0,o0xxxxxxx
 			bAllAscii = false;
-		if(nBytes == 0) //Èç¹û²»ÊÇASCIIÂë,Ó¦¸ÃÊÇ¶à×Ö½Ú·û,¼ÆËã×Ö½ÚÊı
+		if(nBytes == 0) //å¦‚æœä¸æ˜¯ASCIIç ,åº”è¯¥æ˜¯å¤šå­—èŠ‚ç¬¦,è®¡ç®—å­—èŠ‚æ•°
 		{
 			if(chr >= 0x80)
 			{
@@ -147,7 +147,7 @@ bool Basic_IsUTF8Str(const char* str, int length)
 				nBytes--;
 			}
 		}
-		else //¶à×Ö½Ú·ûµÄ·ÇÊ××Ö½Ú,Ó¦Îª 10xxxxxx
+		else //å¤šå­—èŠ‚ç¬¦çš„éé¦–å­—èŠ‚,åº”ä¸º 10xxxxxx
 		{
 			if( (chr & 0xC0) != 0x80 )
 			{
@@ -156,18 +156,18 @@ bool Basic_IsUTF8Str(const char* str, int length)
 			nBytes--;
 		}
 	}
-	if( nBytes > 0 ) //Î¥·µ¹æÔò
+	if( nBytes > 0 ) //è¿è¿”è§„åˆ™
 	{
 		return false;
 	}
-	if( bAllAscii ) //Èç¹ûÈ«²¿¶¼ÊÇASCII, ËµÃ÷²»ÊÇUTF-8
+	if( bAllAscii ) //å¦‚æœå…¨éƒ¨éƒ½æ˜¯ASCII, è¯´æ˜ä¸æ˜¯UTF-8
 	{
 		return false;
 	}
 	return true;
 } 
 
-//! °ÑÒ»¸ö TCHAR ×Ö·û´®×ª»»³É char ×Ö·û´®£¬Ö»ÊÇÔÚ UNICODE °æ±¾ÏÂÃæ²ÅÒª×ª»»¡£
+//! æŠŠä¸€ä¸ª TCHAR å­—ç¬¦ä¸²è½¬æ¢æˆ char å­—ç¬¦ä¸²ï¼Œåªæ˜¯åœ¨ UNICODE ç‰ˆæœ¬ä¸‹é¢æ‰è¦è½¬æ¢ã€‚
 CTStringToMultiString::CTStringToMultiString(LPCTSTR lpszText)
 {
 	if(lpszText != NULL)

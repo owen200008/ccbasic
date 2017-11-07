@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     list.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     list.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 9:15:46
-// ÄÚÈİÃèÊö:   ÊµÏÖlistµÄMFC like½Ó¿Ú¡£½öÓÃÓÚ¼æÈİ£¬²»½¨ÒéÊ¹ÓÃ¡£
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 9:15:46
+// å†…å®¹æè¿°:   å®ç°listçš„MFC likeæ¥å£ã€‚ä»…ç”¨äºå…¼å®¹ï¼Œä¸å»ºè®®ä½¿ç”¨ã€‚
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_LIST_H
 #define BASIC_LIST_H
@@ -19,9 +19,9 @@
 using namespace std;
 
 __NS_BASIC_START
-//! listÀà
-/*! »ùÓÚstd::listÊµÏÖMFC likeµÄ½Ó¿Ú¡£<br/>
-	\attention ½öÓÃÓÚ¼æÈİ¡£²»½¨ÒéÔÚĞÂÏîÄ¿ÖĞÊ¹ÓÃ¡£<br/>*/
+//! listç±»
+/*! åŸºäºstd::listå®ç°MFC likeçš„æ¥å£ã€‚<br/>
+	\attention ä»…ç”¨äºå…¼å®¹ã€‚ä¸å»ºè®®åœ¨æ–°é¡¹ç›®ä¸­ä½¿ç”¨ã€‚<br/>*/
 template<class TYPE, class ARG_TYPE>
 class CList : public list<TYPE, DEFAULT_ALLOCATOR<TYPE> >
 {
@@ -69,9 +69,9 @@ public:
 	void RemoveAll();
 
 	// iteration
-	//! ·µ»ØÍ·²¿ÓÃÓÚPOSITION
+	//! è¿”å›å¤´éƒ¨ç”¨äºPOSITION
 	POSITION GetHeadPosition() const;
-	//! ·µ»ØÎ²²¿ÓÃÓÚPOSITION
+	//! è¿”å›å°¾éƒ¨ç”¨äºPOSITION
 	POSITION GetTailPosition() const;
 
 	//! return *Position++
@@ -114,7 +114,7 @@ public:
 protected:
 	POSITION GetPosition(const_iterator iter) const
 	{
-#if defined(__GNUC__) || defined(__SGI_SBASIC_PORT)	// SGI ÊµÏÖ
+#if defined(__GNUC__) || defined(__SGI_SBASIC_PORT)	// SGI å®ç°
 		return (POSITION)iter._M_node;
 #else
 		return (POSITION)iter._Mynode();
@@ -123,7 +123,7 @@ protected:
  
 	POSITION GetPosition(iterator iter) const
 	{
-#if defined(__GNUC__) || defined(__SGI_SBASIC_PORT)	// SGI ÊµÏÖ
+#if defined(__GNUC__) || defined(__SGI_SBASIC_PORT)	// SGI å®ç°
 		return (POSITION)iter._M_node;
 #else
 		return (POSITION)iter._Mynode();
@@ -132,17 +132,17 @@ protected:
 
 	iterator GetIterator(POSITION position) const
 	{
-#if defined(__GNUC__) || defined(__SGI_SBASIC_PORT)	// SGI ÊµÏÖ
+#if defined(__GNUC__) || defined(__SGI_SBASIC_PORT)	// SGI å®ç°
 		typedef typename iterator::_Node* _Nodeptr;
 		return iterator((_Nodeptr)position);
-#else // P.J. °æ±¾ÊµÏÖ
+#else // P.J. ç‰ˆæœ¬å®ç°
 		return iterator((_Nodeptr)position, _STD addressof(this->_Get_data()));
 #endif
 	}
 
 	const_iterator GetConstIterator(POSITION position) const
 	{
-#if defined(__GNUC__) || defined(__SGI_SBASIC_PORT)	// SGI ÊµÏÖ
+#if defined(__GNUC__) || defined(__SGI_SBASIC_PORT)	// SGI å®ç°
 		typedef typename const_iterator::_Node* _Nodeptr;
 		return iterator((_Nodeptr)position);
 #else

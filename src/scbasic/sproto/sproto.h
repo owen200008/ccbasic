@@ -33,7 +33,7 @@ struct sproto_type {
     struct field *f;
 };
 
-//Ö§³ÖµÄÀàĞÍ
+//æ”¯æŒçš„ç±»å‹
 #define SPROTO_CC_CHAR		10
 #define SPROTO_CC_SHORT		11
 #define SPROTO_CC_INT		12
@@ -58,8 +58,8 @@ struct sproto_type {
 #define SPROTO_CC_INT_SIZE		4
 #define SPROTO_CC_LONGLONG_SIZE	8
 #define SPROTO_CC_DOUBLE_SIZE	8
-#define SPROTO_CC_STRING_SIZE	2//+³¤¶È
-#define SPROTO_CC_STRUCT_SIZE	0//+ÄÚÈİ
+#define SPROTO_CC_STRING_SIZE	2//+é•¿åº¦
+#define SPROTO_CC_STRUCT_SIZE	0//+å†…å®¹
 
 struct sproto * sproto_create(const void * proto, size_t sz);
 void sproto_release(struct sproto *);

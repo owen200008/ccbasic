@@ -20,7 +20,7 @@ void HttpRequest::MethodHandler(const char* method)
 	m_strMethod = method;
 	HeaderHandler(HTTP_HTTP_METHOD, method);
 }
-// »ñÈ¡URI
+// è·å–URI
 // /index.php?a=b&c=d
 void  HttpRequest::URIHandler(const char* URI)
 {
@@ -28,14 +28,14 @@ void  HttpRequest::URIHandler(const char* URI)
 	HeaderHandler(HTTP_HTTP_URI, URI);
 	ParseURI(URI);
 }
-// »ñÈ¡Ğ­Òé
+// è·å–åè®®
 // HTTP/1.1
 void HttpRequest::ProtocolHandler(const char* protocol)
 {
 	m_strProtocol = protocol;
 	HeaderHandler(HTTP_HTTP_PROTOCOL, protocol);
 }
-// µÃµ½httpÍ·
+// å¾—åˆ°httpå¤´
 // Accept-Encoding: gzip, deflate
 void HttpRequest::HeaderHandler(const char* key, const char* value)
 {
@@ -44,13 +44,13 @@ void HttpRequest::HeaderHandler(const char* key, const char* value)
 		v = Basic_MultiStringToMultiString(v.c_str(), v.length(), CP_UTF8, CP_ACP);
 	m_Headers[key] = v;
 }
-// »ñµÃpostµÄÄÚÈİ
+// è·å¾—postçš„å†…å®¹
 void HttpRequest::PostDataHandler(const char* data, size_t len)
 {
 	m_bufBody.Release();
 	m_bufBody.AppendBuffer(data, len);
 }
-// Ò»¸öÇëÇó°ü½âÎö½áÊø
+// ä¸€ä¸ªè¯·æ±‚åŒ…è§£æç»“æŸ
 void HttpRequest::RequestEndHandler()
 {
 	const char* pszCookie = GetHeaderValue(HTTP_COOKIE);
@@ -213,7 +213,7 @@ unsigned long HttpRequest::GetContentLength() const
 }
 
 void HttpRequest::Reset()
-{	//ÖØÖÃ
+{	//é‡ç½®
 	m_strMethod	= "";
 	m_strURI	= "";
 	m_strProtocol	= "";
@@ -245,7 +245,7 @@ BOOL HttpRequest::IsKeepAlive() const
 	}
 	else
 	{
-		return (0 == _stricmp(m_strProtocol.c_str(), "HTTP/1.1"));	// HTTP/1.1Ä¬ÈÏÖ§³ÖKeep-Alive
+		return (0 == _stricmp(m_strProtocol.c_str(), "HTTP/1.1"));	// HTTP/1.1é»˜è®¤æ”¯æŒKeep-Alive
 	}
 	return FALSE;
 }

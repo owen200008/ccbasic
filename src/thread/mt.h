@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// �ļ���:     mt.h
-// ������:     ������
+// 文件名:     mt.h
+// 创建者:     蔡振球
 // Email:      zqcai@w.cn
-// ����ʱ��:   2012/2/17 12:00:18
-// ��������:   ͬ���������ļ�
-// �汾��Ϣ:   1.0V
+// 创建时间:   2012/2/17 12:00:18
+// 内容描述:   同步对象定义文件
+// 版本信息:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_MT_H
 #define BASIC_MT_H
@@ -22,7 +22,7 @@ __NS_BASIC_START
 class CSingleLock;
 
 /////////////////////////////////////////////////////////////////////////////
-//! ͬ���������
+//! 同步对象基类
 /*! 
 *  
 */
@@ -39,16 +39,16 @@ public:
 	operator HANDLE() const;
 	HANDLE  m_hObject;
 
-	//! ����
+	//! 加锁
 	/*! 
-	*\param dwTimeOut ��ʱʱ��,��λ���롣INFINITE��ʾ���賬ʱʱ��
-	*\return TRUE�����ɹ� FALSE����ʧ��
+	*\param dwTimeOut 超时时间,单位毫秒。INFINITE表示不设超时时间
+	*\return TRUE加锁成功 FALSE加锁失败
 	*/
 	virtual BOOL Lock(DWORD dwTimeout = INFINITE);
 
-	//! ����
+	//! 解锁
 	/*! 
-	*\return TRUE�����ɹ� FALSE����ʧ��
+	*\return TRUE解锁成功 FALSE解锁失败
 	*/
 	virtual BOOL Unlock() = 0;
 
@@ -62,7 +62,7 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-//! �ź�����
+//! 信号量类
 /*! 
 *  
 */
@@ -83,7 +83,7 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-//! ��������
+//! 互斥量类
 /*! 
 *  
 */
@@ -106,7 +106,7 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-//! �¼���
+//! 事件类
 /*! 
 *  
 */
@@ -136,7 +136,7 @@ public:
 #if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
 typedef struct _RBASIC_CRITICAL_SECTION {
 	uint32_t	m_nAcquired;
-	HANDLE		LockSemaphore;		//!< �ź�������
+	HANDLE		LockSemaphore;		//!< 信号量对象
 } RBASIC_CRITICAL_SECTION, *PRBASIC_CRITICAL_SECTION;
 
 typedef RBASIC_CRITICAL_SECTION CRITICAL_SECTION;
@@ -145,7 +145,7 @@ typedef PRBASIC_CRITICAL_SECTION LPCRITICAL_SECTION;
 
 #endif
 
-//! �ٽ�����
+//! 临界区类
 /*! 
 *  
 */
@@ -165,16 +165,16 @@ public:
 public:
 	BOOL Unlock();
 
-	//! ����
+	//! 加锁
 	/*! 
-	*\return TRUE�����ɹ� FALSE����ʧ��
+	*\return TRUE加锁成功 FALSE加锁失败
 	*/
 	BOOL Lock();
 
-	//! ����
+	//! 加锁
 	/*! 
-	*\param dwTimeOut ��ʱʱ��
-	*\return TRUE�����ɹ� FALSE����ʧ��
+	*\param dwTimeOut 超时时间
+	*\return TRUE加锁成功 FALSE加锁失败
 	*/
 	BOOL Lock(DWORD dwTimeout);
 
@@ -184,7 +184,7 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-//! ��������
+//! 锁对象类
 /*! 
 *  
 */
@@ -197,16 +197,16 @@ public:
 
 // Operations
 public:
-	//! ����
+	//! 加锁
 	/*! 
-	*\param dwTimeOut ��ʱʱ��,��λ���롣INFINITE��ʾ���賬ʱʱ��
-	*\return TRUE�����ɹ� FALSE����ʧ��
+	*\param dwTimeOut 超时时间,单位毫秒。INFINITE表示不设超时时间
+	*\return TRUE加锁成功 FALSE加锁失败
 	*/
 	BOOL Lock(DWORD dwTimeOut = INFINITE);
 
-	//! ����
+	//! 解锁
 	/*! 
-	*\return TRUE�����ɹ� FALSE����ʧ��
+	*\return TRUE解锁成功 FALSE解锁失败
 	*/
 	BOOL Unlock();
 
@@ -215,13 +215,13 @@ public:
 	~CSingleLock();
 
 protected:
-	CBasicSyncObject*	m_pObject;		//!< ͬ������
-	BOOL			m_bAcquired;	//!< �Ƿ�ռ�ñ��
+	CBasicSyncObject*	m_pObject;		//!< 同步对象
+	BOOL			m_bAcquired;	//!< 是否被占用标记
 };
 
 
 #ifdef __BASICWINDOWS
-//������vista�Լ�server 2008������ϵͳ
+//适用于vista以及server 2008及以上系统
 #define RWLOCK_VAR					SRWLOCK
 #define INIT_RWLOCK_VAR(v)			InitializeSRWLock(&(v))
 #define ENTER_READ_LOCK_VAR(v)		AcquireSRWLockShared(&(v))
@@ -313,105 +313,105 @@ protected:
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//! ԭ�Ӳ�������������
+//! 原子操作，变量递增
 /*! 
-*\param lpAddend ����ָ��
+*\param lpAddend 变量指针
 *\return *lpAddend + 1
 *\remarks *lpAddend = *lpAddend + 1
 */
 _BASIC_DLL_API LONG BasicInterlockedIncrement(LONG volatile *lpAddend);
 
-//! ԭ�Ӳ����������ݼ�
+//! 原子操作，变量递减
 /*! 
-*\param lpAddend ����ָ��
+*\param lpAddend 变量指针
 *\return *lpAddend - 1
 *\remarks *lpAddend = *lpAddend - 1
 */
 _BASIC_DLL_API LONG BasicInterlockedDecrement(LONG volatile *lpAddend);
 
-//! ԭ�Ӳ������������
+//! 原子操作，变量相加
 /*! 
-*\param Addend	Ŀ�����
-*\param Value	�Ӳ�������
-*\return *Addend��ʼֵ
+*\param Addend	目标变量
+*\param Value	加操作变量
+*\return *Addend初始值
 *\remarks *Addend = *Addend + Value
 */
 _BASIC_DLL_API LONG BasicInterlockedExchangeAdd(LONG volatile *Addend, LONG Value);
 _BASIC_DLL_API LONG BasicInterlockedExchangeSub(LONG volatile *Addend, LONG Value);
-//! ԭ�Ӳ����������Ƚ�
+//! 原子操作，变量比较
 /*! 
-*\param Destination	Ŀ�����
-*\param Exchange	��ֵ����
-*\param Comperand	�Ƚϱ���
-*\return �Ƿ����
-*\remarks ��Comperand==*Destination,��ִ��*Destination=Exchange
+*\param Destination	目标变量
+*\param Exchange	赋值变量
+*\param Comperand	比较变量
+*\return 是否相等
+*\remarks 如Comperand==*Destination,则执行*Destination=Exchange
 */
 _BASIC_DLL_API bool BasicInterlockedCompareExchange(LONG volatile *Destination, LONG Exchange, LONG Comperand);
 
-//! �����¼�����
+//! 创建事件对象
 /*! 
-*\param bManualReset	��λ��ʽ
+*\param bManualReset	复位方式
 *  <ul>
-*  <li> ��λ��ʽ
+*  <li> 复位方式
 *     <ol>
-*     <li> TRUE		������BasicResetEvent�ֹ��ָ������ź�״̬
-*     <li> FALSE	�¼����ȴ��߳��ͷź��Զ��ָ������ź�״̬
+*     <li> TRUE		必须用BasicResetEvent手工恢复到无信号状态
+*     <li> FALSE	事件被等待线程释放后，自动恢复到无信号状态
 *     </ol>
 *  </ul>
-*\param bInitialState	��ʼ״̬����TRUE��ʼΪ���ź�״̬������Ϊ���ź�״̬
-*\param lpName			�¼���������������������
-*\return �¼�����������ʧ�ܷ���NULL
+*\param bInitialState	初始状态，如TRUE初始为有信号状态，否则为无信号状态
+*\param lpName			事件对象命名，可以是无名
+*\return 事件对象句柄，如失败返回NULL
 */
 _BASIC_DLL_API HANDLE BasicCreateEvent(BOOL bManualReset, BOOL bInitialState, LPCTSTR lpName);
 
-//! �����¼��ź�
+//! 设置事件信号
 /*! 
-*\param hEvent	�¼�������
-*\return ������ɹ����ط���ֵ�����򷵻�0
+*\param hEvent	事件对象句柄
+*\return 如操作成功返回非零值，否则返回0
 */
 _BASIC_DLL_API BOOL BasicSetEvent(HANDLE hEvent);
 
-//! �����¼������ź�״̬
+//! 重置事件到无信号状态
 /*! 
-*\param hEvent	�¼�������
-*\return ������ɹ����ط���ֵ�����򷵻�0
+*\param hEvent	事件对象句柄
+*\return 如操作成功返回非零值，否则返回0
 */
 _BASIC_DLL_API BOOL BasicResetEvent(HANDLE hEvent);
 
-//! �����¼��ź�
+//! 销毁事件信号
 /*! 
-*\param hEvent	�¼�������
-*\return ������ɹ����ط���ֵ�����򷵻�0
+*\param hEvent	事件对象句柄
+*\return 如操作成功返回非零值，否则返回0
 */
 _BASIC_DLL_API BOOL BasicDestoryEvent(HANDLE hEvent);
 
-//! ���ٶ�����
+//! 销毁对象句柄
 /*! 
-*\param hObject	������
-*\return ������ɹ����ط���ֵ�����򷵻�0
+*\param hObject	对象句柄
+*\return 如操作成功返回非零值，否则返回0
 */
 _BASIC_DLL_API BOOL BasicCloseHandle(HANDLE hObject);
 
 
-//! �ȴ��¼��ź�
+//! 等待事件信号
 /*! 
-*\param hHandle	������
-*\param dwMilliseconds ��ʱʱ�䣬��λ���롣-1Ϊ����ʱ��
-*\return ���ź�״̬����WAIT_OBJECT_0����ʱ����WAIT_TIMEOUT
+*\param hHandle	对象句柄
+*\param dwMilliseconds 超时时间，单位毫秒。-1为不超时。
+*\return 有信号状态返回WAIT_OBJECT_0，超时返回WAIT_TIMEOUT
 */
 _BASIC_DLL_API DWORD BasicWaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds);
 
-//�ź�״̬����ֵ����
+//信号状态返回值定义
 #ifndef WAIT_OBJECT_0
 #define STATUS_WAIT_0                    ((DWORD   )0x00000000L)
-#define WAIT_OBJECT_0                    ((STATUS_WAIT_0 ) + 0 )	//!< ���ź�״̬����
-#define WAIT_FAILED                     (DWORD)0xFFFFFFFF			//!< �ź�״̬ʧ��
+#define WAIT_OBJECT_0                    ((STATUS_WAIT_0 ) + 0 )	//!< 有信号状态返回
+#define WAIT_FAILED                     (DWORD)0xFFFFFFFF			//!< 信号状态失败
 #define STATUS_TIMEOUT                   ((DWORD   )0x00000102L)
-#define WAIT_TIMEOUT                        STATUS_TIMEOUT			//!< ��ʱ����
+#define WAIT_TIMEOUT                        STATUS_TIMEOUT			//!< 超时返回
 #endif
 
 #ifndef INVALID_HANDLE_VALUE
-#define INVALID_HANDLE_VALUE (HANDLE)-1		//!< ��Ч������
+#define INVALID_HANDLE_VALUE (HANDLE)-1		//!< 无效对象句柄
 #endif
 
 __NS_BASIC_END

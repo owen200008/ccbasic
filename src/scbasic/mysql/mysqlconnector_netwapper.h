@@ -17,21 +17,21 @@ typedef fastdelegate::FastDelegate3<NotifyNetWapper, void*, void*, bool> OnNotif
 class CMySQLConnector_NetWapper : public basiclib::CBasicObject
 {
 public:
-	//! ³õÊ¼»¯
+	//! åˆå§‹åŒ–
 	virtual bool InitNetWapper() = 0;
-	//! Á¬½Ómysql·şÎñÆ÷
+	//! è¿æ¥mysqlæœåŠ¡å™¨
 	virtual bool ConnectToServer(const char* pAddressPort) = 0;
-	//! ÖØÁ¬mysql·şÎñÆ÷
+	//! é‡è¿mysqlæœåŠ¡å™¨
 	virtual bool ReconnectToServer() = 0;
-	//! ¶Ï¿ªmysqlµÄÁ¬½Ó
+	//! æ–­å¼€mysqlçš„è¿æ¥
 	virtual void DisconnectToServer() = 0;
-	//! ·¢ËÍÊı¾İ
+	//! å‘é€æ•°æ®
 	virtual void SendDataToServer(const char* pData, int nLength) = 0;
-	//! °ó¶¨½ÓÊÕ°ü
+	//! ç»‘å®šæ¥æ”¶åŒ…
 	void BindNotifyNetWapper(OnNotifyNetWapper func){
 		m_notifyFunc = func;
 	}
-	//! ÅĞ¶ÏÍøÂçÊÇ·ñ¿ÉÒÔ´«Êä
+	//! åˆ¤æ–­ç½‘ç»œæ˜¯å¦å¯ä»¥ä¼ è¾“
 	virtual bool IsTransmit() = 0;
 protected:
 	OnNotifyNetWapper			m_notifyFunc;

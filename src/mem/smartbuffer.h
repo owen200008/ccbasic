@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     smartbuffer.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     smartbuffer.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 11:23:31
-// ÄÚÈİÃèÊö:   ÄÚ´æ¿é¹ÜÀí
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 11:23:31
+// å†…å®¹æè¿°:   å†…å­˜å—ç®¡ç†
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_SMARTBUFFER_H
 #define BASIC_SMARTBUFFER_H
@@ -12,9 +12,9 @@
 __NS_BASIC_START
 //////////////////////////////////////////////////////////////////////////////////////////////
 //class CBasicObject;
-//	class CWBasicSmartBuffer;						//¿É±ä³¤¶ÈµÄÄÚ´æ¿é
+//	class CWBasicSmartBuffer;						//å¯å˜é•¿åº¦çš„å†…å­˜å—
 //////////////////////////////////////////////////////////////////////////////////////////////
-//! ¿É±ä³¤¶ÈµÄÄÚ´æ¿é
+//! å¯å˜é•¿åº¦çš„å†…å­˜å—
 /*!
 *  
 */
@@ -49,7 +49,7 @@ public:
 	CBasicSmartBuffer(const basiclib::CBasicSmartBuffer &smBuf);
 	virtual ~CBasicSmartBuffer();
 public:
-	//binddatatosmartbuffer,°ó¶¨µÄÊı¾İÍâ²¿¾Í²»ÄÜÊ¹ÓÃÁË£¬ÀïÃæµÄÊı¾İ»á±»¸Ä±ä
+	//binddatatosmartbuffer,ç»‘å®šçš„æ•°æ®å¤–éƒ¨å°±ä¸èƒ½ä½¿ç”¨äº†ï¼Œé‡Œé¢çš„æ•°æ®ä¼šè¢«æ”¹å˜
 	void BindOutData(char* pData, int nLength);
 	bool ExportOutData(SmartBufferExportOutData& data);
 	//reset readerror
@@ -67,7 +67,7 @@ public:
 
 	char* AppendData(const char* pszData, long lLength);
 	char* AppendDataEx(const char* pszData, long lLength);
-	char* CommitData(long lLength);		//Ôö¼ÓÊı¾İµÄ³¤¶È£¨±ØÒªÊ±ÖØĞÂ·ÖÅäÄÚ´æ£©¡£·µ»ØÔ­À´µÄÖ¸Õë£¬ÓÃÓÚÌî³äÊı¾İ
+	char* CommitData(long lLength);		//å¢åŠ æ•°æ®çš„é•¿åº¦ï¼ˆå¿…è¦æ—¶é‡æ–°åˆ†é…å†…å­˜ï¼‰ã€‚è¿”å›åŸæ¥çš„æŒ‡é’ˆï¼Œç”¨äºå¡«å……æ•°æ®
 
 	void AppendString(const char* lpszText);
 	void AppendData(long lVal);
@@ -83,13 +83,13 @@ public:
 		AppendString(lpszText);
 		return *this;
 	}
-	//¶ÁÈ¡Êı¾İ
+	//è¯»å–æ•°æ®
 	virtual void ReadData(void* pData, int nLength);
 
-	//ÉèÖÃºÍ»ñÈ¡³¤¶È
+	//è®¾ç½®å’Œè·å–é•¿åº¦
 	long GetAllocBufferLength(){ return m_cbAlloc; }
 
-	//·ÏÆúÇ°ÃæÊı¾İ
+	//åºŸå¼ƒå‰é¢æ•°æ®
 	void ThrowDataLength(int nLength);
 protected:
 	char* AllocBuffer(long lLength, long lGrowLength = 0);

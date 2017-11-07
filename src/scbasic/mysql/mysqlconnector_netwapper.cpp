@@ -29,7 +29,7 @@ Net_Int CMySQLConnector_NetWapperBasicClient::OnNetReceiveData(basiclib::CBasicS
 Net_Int CMySQLConnector_NetWapperBasicClient::OnNetDisconnect(basiclib::CBasicSessionNetClient*, Net_UInt dwNetCode)
 {
 	if (0 == dwNetCode){
-		//Èç¹ûÊÇÖ÷¶¯¶Ï¿ª¾Í²»ÌáÊ¾
+		//å¦‚æœæ˜¯ä¸»åŠ¨æ–­å¼€å°±ä¸æç¤º
 		m_notifyFunc(NotifyNetWapper_SelfDisconnect, nullptr, nullptr);
 	}
 	else if (0x40 & dwNetCode){
@@ -48,7 +48,7 @@ Net_Int CMySQLConnector_NetWapperBasicClient::OnNetDisconnect(basiclib::CBasicSe
 
 Net_Int CMySQLConnector_NetWapperBasicClient::OnNetIdle(basiclib::CBasicSessionNetClient*, Net_UInt nIdle){
     if (nIdle % 15 == 14){
-        //15sÍ¨ÖªÒ»´Î
+        //15sé€šçŸ¥ä¸€æ¬¡
         m_notifyFunc(NotifyNetWapper_Idle, nullptr, nullptr);
     }
 }

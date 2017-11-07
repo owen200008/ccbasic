@@ -74,7 +74,7 @@ uint32_t Basic_crc32(unsigned char* pszData, unsigned int nDataLength)
 long Basic_crc32_File(const char* lpszFileName, uint32_t &crc)
 {
 	basiclib::CBasicFileObj  file;
-	//´ò¿ªÎÄ¼ş
+	//æ‰“å¼€æ–‡ä»¶
 	long fileResult = file.Open(lpszFileName, PF_DISK_FILE | PF_READ_ONLY);
 
 	if (fileResult != BASIC_FILE_OK)
@@ -93,10 +93,10 @@ long Basic_crc32_File(const char* lpszFileName, uint32_t &crc)
 		return BASIC_FILE_NO_MEMORY;
 	}
 
-	//crc32³õÊ¼»¯
+	//crc32åˆå§‹åŒ–
 	crc = Basic_crc32_Init();
 	file.SeekToBegin();
-	//¶ÁÈ¡ÎÄ¼ş£¬½øĞĞCRC32¼ÆËã
+	//è¯»å–æ–‡ä»¶ï¼Œè¿›è¡ŒCRC32è®¡ç®—
 	for(int i = 0; i < lRepeat; i++)
 	{
 		memset(pBuffer, 0, lReadCount);
@@ -111,7 +111,7 @@ long Basic_crc32_File(const char* lpszFileName, uint32_t &crc)
 		crc = Basic_crc32_Update(crc, (unsigned char*)pBuffer, lLeft);
 	}
 
-	//CRC32¼ÆËãÍê³É
+	//CRC32è®¡ç®—å®Œæˆ
     crc =  Basic_crec32_End(crc);
 	return BASIC_FILE_OK;
 }

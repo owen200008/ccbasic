@@ -12,7 +12,7 @@ extern int			g_nIntThreadCount;
 ///////////////////////////////////////////////////////////////////////////////
 std::atomic<uint32_t> CBasicNet_Socket::m_defaultCreateSession(0);
 CBasicNet_Socket::CBasicNet_Socket(uint32_t nSessionID){
-	//µÚÒ»´Î²»ÄÜÓÃm_gNetMgrPoint£¬ĞèÒª±£Ö¤¹¹Ôì³ö¶ÔÏó
+	//ç¬¬ä¸€æ¬¡ä¸èƒ½ç”¨m_gNetMgrPointï¼Œéœ€è¦ä¿è¯æ„é€ å‡ºå¯¹è±¡
 	CBasicSingletonNetMgv::Instance().AddToTimer(this);
 	m_pThread = &g_pEventThreads[nSessionID % g_nEventThreadCount];
 	m_socketfd = INVALID_SOCKET;
@@ -43,7 +43,7 @@ int CBasicNet_Socket::RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptio
 	return 1;
 }
 
-//! ¹Ø±Õ
+//! å…³é—­
 void CBasicNet_Socket::Close(bool bRemote, bool bMustClose){
 	if(m_socketfd == INVALID_SOCKET)
 		return;
@@ -64,19 +64,19 @@ void CBasicNet_Socket::Close(bool bRemote, bool bMustClose){
 	}, nSetRevert);
 }
 
-//! »Øµ÷ÖĞ¿ÉÒÔ°²È«É¾³ı
+//! å›è°ƒä¸­å¯ä»¥å®‰å…¨åˆ é™¤
 void CBasicNet_Socket::SafeDelete(){
 	SetToSafeDelete();
 	SetLibEvent([](CBasicNet_Socket* pSession, intptr_t lRevert)->void{
 		if(pSession->GetSocketID() != INVALID_SOCKET){
 			pSession->CloseCallback(FALSE);
 		}
-		//´ÓontimerÉ¾³ı
+		//ä»ontimeråˆ é™¤
 		m_gNetMgrPoint->DelToTimer(pSession);
 	});
 }
 
-//! ÅĞ¶ÏÊÇ·ñ¿ÉÒÔ¹Ø±Õ
+//! åˆ¤æ–­æ˜¯å¦å¯ä»¥å…³é—­
 bool CBasicNet_Socket::CanClose(){
 	return GetSessionStatus(TIL_SS_LINK) != TIL_SS_CONNECTING;
 }
@@ -84,17 +84,17 @@ bool CBasicNet_Socket::CanClose(){
 bool CBasicNet_Socket::IsConnected(){
 	return GetSessionStatus(TIL_SS_LINK) == TIL_SS_CONNECTED;
 }
-//! ÊÇ·ñÈÏÖ¤³É¹¦
+//! æ˜¯å¦è®¤è¯æˆåŠŸ
 bool CBasicNet_Socket::IsTransmit(){
 	return GetSessionStatus(TIL_SS_SHAKEHANDLE_MASK) == TIL_SS_SHAKEHANDLE_TRANSMIT;
 }
 
-//! ÅĞ¶ÏÊÇ·ñ×¼±¸close
+//! åˆ¤æ–­æ˜¯å¦å‡†å¤‡close
 bool CBasicNet_Socket::IsToClose(){
 	return GetSessionStatus(TIL_SS_CLOSE) >= TIL_SS_TOCLOSE;
 }
 
-//! ÉèÖÃ×¼±¸¹Ø±Õ
+//! è®¾ç½®å‡†å¤‡å…³é—­
 void CBasicNet_Socket::SetToClose(){
 	SetSessionStatus(TIL_SS_TOCLOSE, TIL_SS_CLOSE);
 }
@@ -102,7 +102,7 @@ void CBasicNet_Socket::SetToSafeDelete(){
 	SetSessionStatus(TIL_SS_TOSAFEDELETE, TIL_SS_RELEASE_MASK);
 }
 /////////////////////////////////////////////////////////////////////////////////////
-//! ontimerÏß³Ì
+//! ontimerçº¿ç¨‹
 bool CBasicNet_Socket::OnTimer(unsigned int nTick){
 	if(GetSessionStatus(TIL_SS_CLOSE) == TIL_SS_TOCLOSE){
 		Close();
@@ -111,7 +111,7 @@ bool CBasicNet_Socket::OnTimer(unsigned int nTick){
 	return GetSessionStatus(TIL_SS_RELEASE_MASK) == 0;
 }
 /////////////////////////////////////////////////////////////////////////////////////
-//! ¼ÓÈë¶ÓÁĞ
+//! åŠ å…¥é˜Ÿåˆ—
 void CBasicNet_Socket::AddSocketCallFunc(CEventQueueItem* pItem){
 	long lLength = 0;
 	{
@@ -199,13 +199,13 @@ CBasicNet_SocketTransfer::~CBasicNet_SocketTransfer(){
 
 }
 /////////////////////////////////////////////////////////////////////////////////////
-//! ontimerÏß³Ì
+//! ontimerçº¿ç¨‹
 bool CBasicNet_SocketTransfer::OnTimer(unsigned int nTick){
 	if(CBasicNet_Socket::OnTimer(nTick)){
 		if(IsConnected()){
-			//Ã¿´Î·¢ËÍ»áÖØÖÃidlecount
+			//æ¯æ¬¡å‘é€ä¼šé‡ç½®idlecount
 			OnIdle();
-			//10s¼ì²é³¬Ê±
+			//10sæ£€æŸ¥è¶…æ—¶
 			if(m_usRecTimeout != 0 && nTick % 10 == 9){
 				time_t tmNow = time(NULL);
 				if(IsRecTimeout(tmNow, m_usRecTimeout)){
@@ -231,7 +231,7 @@ void CBasicNet_SocketTransfer::OnIdle(){
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-//! ÖØĞÂ³õÊ¼»¯³ÉÔ±
+//! é‡æ–°åˆå§‹åŒ–æˆå‘˜
 void CBasicNet_SocketTransfer::InitMember(){
 	CBasicNet_Socket::InitMember();
 	m_unIdleCount = 0;
@@ -242,7 +242,7 @@ void CBasicNet_SocketTransfer::InitMember(){
 #endif
 }
 
-//! Ïß³ÌÄÚÖ´ĞĞº¯Êı
+//! çº¿ç¨‹å†…æ‰§è¡Œå‡½æ•°
 void CBasicNet_SocketTransfer::CloseCallback(BOOL bRemote, DWORD dwNetCode){
 	if(m_socketfd != INVALID_SOCKET){
 		if(bRemote){
@@ -257,7 +257,7 @@ void CBasicNet_SocketTransfer::CloseCallback(BOOL bRemote, DWORD dwNetCode){
 	}
 }
 
-//! ¶Ï¿ªÏûÏ¢
+//! æ–­å¼€æ¶ˆæ¯
 void CBasicNet_SocketTransfer::OnDisconnect(uint32_t dwNetCode){
 	m_pFather->OnDisconnect(dwNetCode);
 }
@@ -265,13 +265,13 @@ void CBasicNet_SocketTransfer::OnSendData(uint32_t dwIoSize){
 	if(IsToClose() || !IsConnected())
 		return;
 	m_stNet.OnSendData(dwIoSize);
-	//Ã¿´Î·¢ËÍÖØÖÃidle
+	//æ¯æ¬¡å‘é€é‡ç½®idle
 	m_unIdleCount = 0;
 }
 
 void CBasicNet_SocketTransfer::OnConnect(uint32_t dwNetCode){
 	if(dwNetCode & BASIC_NETCODE_SUCC){
-		//ÉèÖÃ×îºóÊÕµ½µÄÊ±¼ä
+		//è®¾ç½®æœ€åæ”¶åˆ°çš„æ—¶é—´
 		SetSessionStatus(TIL_SS_CONNECTED, TIL_SS_LINK);
 		m_stNet.Empty();
 		m_stNet.OnReceiveData(0);
@@ -282,7 +282,7 @@ void CBasicNet_SocketTransfer::OnConnect(uint32_t dwNetCode){
 	}
 	ResetPreSend();
 	int32_t lRet = m_pFather->OnConnect(dwNetCode);
-	//Èç¹ûº¯Êı·µ»Ø BASIC_NET_HC_RET_HANDSHAKE£¬±íÊ¾¸ÃÁ¬½ÓĞèÒª½øĞĞÎÕÊÖ¡£·ñÔòÈÏÎªÎÕÊÖ³É¹¦¡£
+	//å¦‚æœå‡½æ•°è¿”å› BASIC_NET_HC_RET_HANDSHAKEï¼Œè¡¨ç¤ºè¯¥è¿æ¥éœ€è¦è¿›è¡Œæ¡æ‰‹ã€‚å¦åˆ™è®¤ä¸ºæ¡æ‰‹æˆåŠŸã€‚
 	if(lRet == BASIC_NET_OK){
 		SetSessionStatus(TIL_SS_SHAKEHANDLE_TRANSMIT, TIL_SS_SHAKEHANDLE_MASK);
 	}
@@ -293,7 +293,7 @@ void CBasicNet_SocketTransfer::OnConnect(uint32_t dwNetCode){
 
 uint32_t CBasicNet_SocketTransfer::OnReceive(uint32_t dwNetCode, const char *pszData, int32_t cbData){
 	int32_t lRet = m_pFather->OnReceive(dwNetCode, pszData, cbData);
-	//·µ»Ø BASIC_NET_HR_RET_HANDSHAKE£¬±íÊ¾ÎÕÊÖ³É¹¦¡£¶ÔÓÚĞèÒªÎÕÊÖµÄÁ¬½Ó£¬Ò»¶¨ÒªÔÚ½ÓÊÕÊı¾İµÄ´¦Àíº¯ÊıÀïÃæ·µ»ØÕâ¸öÖµ¡£
+	//è¿”å› BASIC_NET_HR_RET_HANDSHAKEï¼Œè¡¨ç¤ºæ¡æ‰‹æˆåŠŸã€‚å¯¹äºéœ€è¦æ¡æ‰‹çš„è¿æ¥ï¼Œä¸€å®šè¦åœ¨æ¥æ”¶æ•°æ®çš„å¤„ç†å‡½æ•°é‡Œé¢è¿”å›è¿™ä¸ªå€¼ã€‚
 	if((lRet & BASIC_NET_HR_RET_HANDSHAKE) && !(lRet & NET_ERROR)){
 		SetSessionStatus(TIL_SS_SHAKEHANDLE_TRANSMIT, TIL_SS_SHAKEHANDLE_MASK);
 	}
@@ -364,9 +364,9 @@ void CBasicNet_SocketTransfer::PreReceiveData(uint32_t dwNetCode, const char *ps
 	m_bufCacheTmp.SetDataLength(0);
 	rRet = m_pPreSend->OnPreReceive(pPack, lPackLen, m_bufCacheTmp, m_pFather);
 	while(rRet == PACK_FILTER_NEXT){
-		//Í¬Ò»´Î½ÓÊÕ£¬ÏìÓ¦¶à´ÎÏûÏ¢
+		//åŒä¸€æ¬¡æ¥æ”¶ï¼Œå“åº”å¤šæ¬¡æ¶ˆæ¯
 		int32_t lRecRet = OnReceive(dwNetCode | BASIC_NETCODE_FILTER_HANDLE, m_bufCacheTmp.GetDataBuffer(), m_bufCacheTmp.GetDataLength());
-		if(lRecRet < BASIC_NET_OK)	//ÊÕµ½´íÎó°üºó¿ÉÄÜ±»¶Ï¿ª
+		if(lRecRet < BASIC_NET_OK)	//æ”¶åˆ°é”™è¯¯åŒ…åå¯èƒ½è¢«æ–­å¼€
 			return;
 		m_bufCacheTmp.SetDataLength(0);
 		rRet = m_pPreSend->OnPreReceive(NULL, 0, m_bufCacheTmp, m_pFather);
@@ -414,7 +414,7 @@ void CBasicNet_SocketTransfer::OnWriteEvent(){
 }
 
 #ifdef BASICWINDOWS_USE_IOCP
-//! IOCP»Øµ÷·¢ËÍ³É¹¦×Ö½Ú
+//! IOCPå›è°ƒå‘é€æˆåŠŸå­—èŠ‚
 void CBasicNet_SocketTransfer::SendDataSuccessAndCheckSend(DWORD dwIoSize){
 	if(dwIoSize > 0){
 		OnSendData(dwIoSize);
@@ -442,7 +442,7 @@ void CBasicNet_SocketTransfer::SendDataSuccessAndCheckSend(DWORD dwIoSize){
 	}
 }
 #endif
-//±£Ö¤ÊÇlibeventÏß³Ì´¦Àí
+//ä¿è¯æ˜¯libeventçº¿ç¨‹å¤„ç†
 void CBasicNet_SocketTransfer::SendDataFromQueue(){
 	if(!IsConnected()){
 		return;
@@ -493,7 +493,7 @@ void CBasicNet_SocketTransfer::SendDataFromQueue(){
 		}
 	}
 	if(bError){
-		//ÓĞ´íÎó
+		//æœ‰é”™è¯¯
 		Close(TRUE);
 	}
 	else{

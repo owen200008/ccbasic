@@ -83,7 +83,7 @@ public:
 
 	//time_t GetTime() const;
     __time64_t Get64Time() const;
-	long GetTime32() const;		//32Î»Ê±¼äÖµ
+	long GetTime32() const;		//32ä½æ—¶é—´å€¼
 	
 	int GetYear() const;
 	int GetMonth() const;       // month of year (1 = Jan)
@@ -93,7 +93,7 @@ public:
 	int GetSecond() const;
 	int GetDayOfWeek() const;   // 1=Sun, 2=Mon, ..., 7=Sat
 
-	//½âÎö¸ñÊ½MMMMMMMMMMMMMM ÀıÈç 20140402174213,±ØĞë14Î»
+	//è§£ææ ¼å¼MMMMMMMMMMMMMM ä¾‹å¦‚ 20140402174213,å¿…é¡»14ä½
 	BOOL ParseString(const char* lpszTimeFormat);
 	
 // Operations
@@ -114,7 +114,7 @@ public:
 	CBasicString Format_S(const char* pFormat) const;
 	void FormatToBuffer(const char* pFormat, char* pBuffer, int nLength) const;
 private:
-	__time64_t m_time;              //Õâ±ßÊ¹ÓÃ64Î»±£Ö¤²»»áÒç³ö
+	__time64_t m_time;              //è¿™è¾¹ä½¿ç”¨64ä½ä¿è¯ä¸ä¼šæº¢å‡º
 };
 
 enum BasicTimeSpliteType
@@ -126,9 +126,9 @@ enum BasicTimeSpliteType
 
 enum BasicTimeSpliteReturnType
 {
-    TimeBasic_NotReady  = 0,        //»¹Ã»µ½¿ªÊ¼Ê±¼ä
-    TimeBasic_In        = 1,        //ÔÚÊ±¼ä¶ÎÄÚ
-    TimeBasic_Finish    = 2,        //¹ıÁËÊ±¼ä¶ÎÁË
+    TimeBasic_NotReady  = 0,        //è¿˜æ²¡åˆ°å¼€å§‹æ—¶é—´
+    TimeBasic_In        = 1,        //åœ¨æ—¶é—´æ®µå†…
+    TimeBasic_Finish    = 2,        //è¿‡äº†æ—¶é—´æ®µäº†
 };
 
 struct BasicTimeSplite
@@ -140,27 +140,27 @@ struct BasicTimeSplite
 #pragma warning (push)
 #pragma warning (disable: 4251)
 #pragma warning (disable: 4275)
-//¶¨ÒåÁ½¶ËÊ±¼äµÄ¹ÜÀí
+//å®šä¹‰ä¸¤ç«¯æ—¶é—´çš„ç®¡ç†
 class _BASIC_DLL_API CBasicTimeSplite
 {
 public:
     CBasicTimeSplite();
     virtual ~CBasicTimeSplite();
 
-    //³õÊ¼»¯Ê±¼ä¶Î
+    //åˆå§‹åŒ–æ—¶é—´æ®µ
     int InitBasicTimeSplite(BasicTimeSpliteType basicTimeSpliteType, CTimeSpan& timeSpan, const char* lpszFormat, int nBeginDelay = 0, int nEndDelay = 0);
-    //ÅĞ¶ÏÊ±¼äÊÇ·ñÎªÊ±¼ä¶ÎÄÚ
+    //åˆ¤æ–­æ—¶é—´æ˜¯å¦ä¸ºæ—¶é—´æ®µå†…
     BasicTimeSpliteReturnType IsTimeInTime(time_t tmNow);
-    //»ñÈ¡×î½üµÄÊ±¼ä
+    //è·å–æœ€è¿‘çš„æ—¶é—´
     BasicTimeSplite GetLastBasicTimeSplite();
 
-	// ×ª³É×Ö·û´®
+	// è½¬æˆå­—ç¬¦ä¸²
 	CBasicString FormatToString();
-	// ´Ó×Ö·û´®³õÊ¼»¯
+	// ä»å­—ç¬¦ä¸²åˆå§‹åŒ–
 	int	InitFromString(CBasicString& strData);
 protected:
     void Empty();
-    //¸üĞÂÊ±¼ä
+    //æ›´æ–°æ—¶é—´
     void UpdateBasicTime(time_t tmNow);
 public:
     typedef basic_vector<BasicTimeSplite>		 VTTimeSpliteInfo;
@@ -173,38 +173,38 @@ public:
     int                                         m_nEndDelayTime;
 };
 
-//Ö§³Öµ¥Ê±¼äµÄÊ±¼äµãÅĞ¶ÏÀà
+//æ”¯æŒå•æ—¶é—´çš„æ—¶é—´ç‚¹åˆ¤æ–­ç±»
 class _BASIC_DLL_API CStatisticsTime
 {
 public:
 	CStatisticsTime(void);
 	virtual ~CStatisticsTime(void);
 
-	//! Í¨¹ı×Ö·û´®³õÊ¼»¯¸ÄÀà	
+	//! é€šè¿‡å­—ç¬¦ä¸²åˆå§‹åŒ–æ”¹ç±»	
 	void InitFromString(const char* lpszTime, time_t tmNow);
-	//! ×ª³É×Ö·û´®
+	//! è½¬æˆå­—ç¬¦ä¸²
 	basiclib::CBasicString FormatToString();
 
-	//! »ñÈ¡×î½üµÄÊ±¼äµã
+	//! è·å–æœ€è¿‘çš„æ—¶é—´ç‚¹
 	basiclib::CTime GetLastPrizeTime();
-	//! »ñÈ¡ÖÜÆÚÊı
+	//! è·å–å‘¨æœŸæ•°
 	int  GetCycle(){return m_nCycle;}
 
-	//! ÅĞ¶ÏÊÇ·ñµ½°ä½±µÄÊ±¼ä£¬Èç¹ûµ½¾ÍÉèÖÃÏÂÒ»¸ö°ä½±Ê±¼ä	
+	//! åˆ¤æ–­æ˜¯å¦åˆ°é¢å¥–çš„æ—¶é—´ï¼Œå¦‚æœåˆ°å°±è®¾ç½®ä¸‹ä¸€ä¸ªé¢å¥–æ—¶é—´	
 	BOOL IsPrizeTime(time_t tmNow);		
 
-	//! dump³öÄ¿Ç°µÄ³ÉÔ±±äÁ¿ĞÅÏ¢
+	//! dumpå‡ºç›®å‰çš„æˆå‘˜å˜é‡ä¿¡æ¯
 	void DumpTimeInfo(basiclib::CBasicString& strInfo);
 protected:
-	//¸üĞÂÊ±¼ä
+	//æ›´æ–°æ—¶é—´
 	void UpdateBasicTime(time_t tmNow);
 
 protected:
 	typedef basiclib::basic_vector<basiclib::CTime>			VTPrizeTime;
 	typedef VTPrizeTime::iterator							VTPrizeTimeIterator;
 	VTPrizeTime												m_vtPrizeTime;
-	basiclib::CTimeSpan										m_tmSpan;		//°ä½±µÄÖÜÆÚÊ±¼ä
-	int														m_nCycle;		//±íÊ¾µÚ¼¸¸öÖÜÆÚÁË
+	basiclib::CTimeSpan										m_tmSpan;		//é¢å¥–çš„å‘¨æœŸæ—¶é—´
+	int														m_nCycle;		//è¡¨ç¤ºç¬¬å‡ ä¸ªå‘¨æœŸäº†
 	CBasicString											m_strFormat;
 };
 #pragma warning (pop)

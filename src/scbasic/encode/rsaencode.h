@@ -15,19 +15,19 @@ public:
 	void GenerateRSAKey(unsigned int keyLength, const char *privFilename, const char *pubFilename);
 	void GenerateRSAKey(unsigned int keyLength, string& strPub, string& strPri);
 
-	//! ÉèÖÃpublic&private
+	//! è®¾ç½®public&private
 	void SetPublicFileName(const char* pPubFileName);
 	void SetPublicKey(const char* pData);
 	void SetPrivateFileName(const char* pPrivateFileName);
 	void SetPrivateKey(const char* pData);
 
-	//! ¼ÆËã¼ÓÃÜËùĞèµÄÊı¾İ³¤¶È
+	//! è®¡ç®—åŠ å¯†æ‰€éœ€çš„æ•°æ®é•¿åº¦
 	size_t CalcEncryptNeedLength(int nLength);
 
 	size_t Encrypt(const char* pEncode, int nLength, byte* pOutput, int nOutputLength);
 	size_t Decrypt(const char* pDecode, int nLength, byte* pOutput, int nOutputLength);
 
-	//! ×î´ó²»ÄÜ³¬¹ımax signlength, 0´ú±íÊ§°Ü
+	//! æœ€å¤§ä¸èƒ½è¶…è¿‡max signlength, 0ä»£è¡¨å¤±è´¥
 	size_t Sign(const char* pEncode, int nLength, byte* pOutput, int nOutputLength);
 	bool Verify(const char* pDecode, int nLength, const char* pVerify, int nVerifyLength);
 

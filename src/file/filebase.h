@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     filebase.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     filebase.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 12:41:35
-// ÄÚÈİÃèÊö:   ¶¨Òå»ù±¾µÄÎÄ¼ş²Ù×÷Àà
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 12:41:35
+// å†…å®¹æè¿°:   å®šä¹‰åŸºæœ¬çš„æ–‡ä»¶æ“ä½œç±»
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_FILEBASE_H
 #define BASIC_FILEBASE_H
@@ -13,11 +13,11 @@
 
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
-//ÉùÃ÷
+//å£°æ˜
 //class CBasicObject;
 	class CFileBase;
-		class CDiskFile;					//´ÅÅÌÎÄ¼ş
-		class CMemFileBase;					//ÄÚ´æÎÄ¼ş
+		class CDiskFile;					//ç£ç›˜æ–‡ä»¶
+		class CMemFileBase;					//å†…å­˜æ–‡ä»¶
 /////////////////////////////////////////////////////////////////////////////////////////////
 class CFileBase : public basiclib::CBasicObject
 {
@@ -50,7 +50,7 @@ public:
 
 	//only for memory files
 	virtual void* GetDataBuffer() = 0;
-	virtual void* GetCurDataBuffer(long& lCount) = 0;	//·µ»Øµ±Ç°Î»ÖÃµÄÊı¾İ
+	virtual void* GetCurDataBuffer(long& lCount) = 0;	//è¿”å›å½“å‰ä½ç½®çš„æ•°æ®
 
 	virtual long CopyTo(const char* lpszThisFileName, const char* lpszFileName) = 0;
 	virtual long CopyFrom(const char* lpszThisFileName, const char* lpszFileName) = 0;
@@ -88,7 +88,7 @@ public:
 
 	//only for memory files
 	virtual void* GetDataBuffer();
-	virtual void* GetCurDataBuffer(long& lCount);	//·µ»Øµ±Ç°Î»ÖÃµÄÊı¾İ
+	virtual void* GetCurDataBuffer(long& lCount);	//è¿”å›å½“å‰ä½ç½®çš„æ•°æ®
 
 	virtual long CopyTo(const char* lpszThisFileName, const char* lpszFileName);
 	virtual long CopyFrom(const char* lpszThisFileName, const char* lpszFileName);

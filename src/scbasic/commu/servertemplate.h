@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
-// ÎÄ¼şÃû:		servertemplate.h
-// ´´½¨Õß:		²ÌÕñÇò
-// ´´½¨Ê±¼ä:	2010/07/07
-// ÄÚÈİÃèÊö:	·şÎñ³ÌĞòµÄÄ£°å
+// æ–‡ä»¶å:		servertemplate.h
+// åˆ›å»ºè€…:		è”¡æŒ¯çƒ
+// åˆ›å»ºæ—¶é—´:	2010/07/07
+// å†…å®¹æè¿°:	æœåŠ¡ç¨‹åºçš„æ¨¡æ¿
 /////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef INC_SERVERTEMPLATE_H
 #define INC_SERVERTEMPLATE_H
@@ -21,17 +21,17 @@ class _SCBASIC_DLL_API CNetServerControl : public basiclib::CBasicSessionNetServ
 public:
 	typedef fastdelegate::FastDelegate1<CNetServerControlSession*, bool> HandleVerifySuccess;
 public:
-	//! ÉèÖÃ²ÎÊı
+	//! è®¾ç½®å‚æ•°
 	void SetIpTrust(const char* lpszIpTrust);
 	void SetSessionMaxCount(int nCount);
 
-	//! °ó¶¨ÈÏÖ¤³É¹¦»Øµ÷
+	//! ç»‘å®šè®¤è¯æˆåŠŸå›è°ƒ
 	void bind_verifysuccess(const HandleVerifySuccess& func){ m_handleVerifySuccess = func; }
 
-	//! Æô¶¯·şÎñ
+	//! å¯åŠ¨æœåŠ¡
 	virtual int32_t StartServer(const char* lpszAddress, basiclib::CBasicPreSend* pPreSend = nullptr);
 protected:
-	//! °ó¶¨ÈÏÖ¤³É¹¦£¬¾Í²»ĞèÒªconnect
+	//! ç»‘å®šè®¤è¯æˆåŠŸï¼Œå°±ä¸éœ€è¦connect
 	virtual int32_t OnUserConnect(basiclib::CBasicSessionNetNotify* pNotify, Net_UInt dwNetCode);
 
 	virtual basiclib::CBasicSessionNetServerSession* ConstructSession(uint32_t nSessionID);
@@ -40,9 +40,9 @@ protected:
 	virtual ~CNetServerControl();
 protected:
 	HandleVerifySuccess			m_handleVerifySuccess;
-	//ipĞÅÈÎµØÖ·
+	//ipä¿¡ä»»åœ°å€
 	CIpVerify					m_ipTrust;
-	// ×î´óÔÊĞísessionÁ¬½ÓÊıÁ¿	Ğ¡ÓÚ0 ±íÊ¾²»ÏŞÖÆ
+	// æœ€å¤§å…è®¸sessionè¿æ¥æ•°é‡	å°äº0 è¡¨ç¤ºä¸é™åˆ¶
 	int							m_nSessionMaxCount;
 
 	friend class CNetServerControlSession;

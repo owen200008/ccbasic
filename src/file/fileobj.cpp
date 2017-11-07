@@ -348,7 +348,7 @@ void CBasicFileObj::ClearMember()
 	m_pFileObj = NULL;
 }
 
-#define _RW_MAX_SIZE		(1 * 1024 * 1024)		//Ò»´ÎÐ´Èë(¶Á³ö)µÄ×î´ó³¤¶È£¬³¬³öÕâ¸ö³¤¶ÈÒª·ÖÅú´¦Àí¡£
+#define _RW_MAX_SIZE		(1 * 1024 * 1024)		//ä¸€æ¬¡å†™å…¥(è¯»å‡º)çš„æœ€å¤§é•¿åº¦ï¼Œè¶…å‡ºè¿™ä¸ªé•¿åº¦è¦åˆ†æ‰¹å¤„ç†ã€‚
 long CBasicFileObj::CopyFileContent(CBasicFileObj* pFile)
 {
 	long lTotalSize = pFile->GetLength();

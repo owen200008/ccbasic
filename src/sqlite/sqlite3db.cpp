@@ -29,7 +29,7 @@ bool CCQLite3DB::Open(const char *szFileName, const char* pPwd, int nLength)
 		CCQLite3DBTable tableDB;
 		if (!GetDataToTable("select count(*) FROM sqlite_master WHERE type='table'", &tableDB))
 		{
-			//Ê¹ÓÃÃ»ÓÐÃÜÂëµÄ´ò¿ª
+			//ä½¿ç”¨æ²¡æœ‰å¯†ç çš„æ‰“å¼€
 			Close();
 			return Open(szFileName, NULL, 0);
 		}
@@ -43,7 +43,7 @@ bool CCQLite3DB::Close()
 	{
 		if (sqlite3_close(m_pDB) == SQLITE_OK)
 		{
-			m_pDB = 0; //Ò»µ©¹Ø±ÕÊý¾Ý¿âÖ¸Õë£¬ÒªÖÃÎª0£¬·ÀÖ¹¶à´Î¹Ø±Õ³ö´í  
+			m_pDB = 0; //ä¸€æ—¦å…³é—­æ•°æ®åº“æŒ‡é’ˆï¼Œè¦ç½®ä¸º0ï¼Œé˜²æ­¢å¤šæ¬¡å…³é—­å‡ºé”™  
 		}
 		else
 		{
@@ -55,12 +55,12 @@ bool CCQLite3DB::Close()
 	return true;
 }
 
-//´ò¿ªÃÜÂë
+//æ‰“å¼€å¯†ç 
 int CCQLite3DB::SetOpenPWD(const char* pPwd, int nLength)
 {
 	return sqlite3_key(m_pDB, pPwd, nLength);
 }
-//ÉèÖÃÃÜÂë
+//è®¾ç½®å¯†ç 
 int CCQLite3DB::SetPWD(const char* pPwd, int nLength)
 {
 	return sqlite3_rekey(m_pDB, pPwd, nLength);
@@ -105,7 +105,7 @@ int CCQLite3DB::ExecSQL(const char *szSQL)
 
 	if (nRet == SQLITE_OK)
 	{
-		return sqlite3_changes(m_pDB);  //·µ»ØÕâ¸öÖ´ÐÐÓ°ÏìµÄÐÐÊý  
+		return sqlite3_changes(m_pDB);  //è¿”å›žè¿™ä¸ªæ‰§è¡Œå½±å“çš„è¡Œæ•°  
 	}
 	else
 	{
@@ -152,8 +152,8 @@ bool CCQLite3DB::ExecQuery(const char *szSQL, CCQLite3DBQuery* pQuery)
 		return false;
 	}
 
-	//±àÒëÒ»ÌõÖ¸Õë¶ÔÏó£¬ÓÃÁÙÊ±±äÁ¿´æ´¢£¬´«µÝ¸øCCQLite3DBQueryºó£¬  
-	//Õâ¸öÁÙÊ±sqlite3_stmt*¶ÔÏó»á×Ô¶¯ÏûÊ§£¬×îºóÖ»ÓÐÒ»·Ý±£ÁôÔÚCCQLite3DBQueryÖÐ  
+	//ç¼–è¯‘ä¸€æ¡æŒ‡é’ˆå¯¹è±¡ï¼Œç”¨ä¸´æ—¶å˜é‡å­˜å‚¨ï¼Œä¼ é€’ç»™CCQLite3DBQueryåŽï¼Œ  
+	//è¿™ä¸ªä¸´æ—¶sqlite3_stmt*å¯¹è±¡ä¼šè‡ªåŠ¨æ¶ˆå¤±ï¼Œæœ€åŽåªæœ‰ä¸€ä»½ä¿ç•™åœ¨CCQLite3DBQueryä¸­  
 	sqlite3_stmt *pStmt = Compile(szSQL);
 	if (NULL == pStmt)
 	{
@@ -162,11 +162,11 @@ bool CCQLite3DB::ExecQuery(const char *szSQL, CCQLite3DBQuery* pQuery)
 
 	int nRet = sqlite3_step(pStmt);
 
-	if (nRet == SQLITE_DONE) //±íÃ÷Õâ¸ö²éÑ¯Ã»ÓÐ·µ»Ø½á¹û  
+	if (nRet == SQLITE_DONE) //è¡¨æ˜Žè¿™ä¸ªæŸ¥è¯¢æ²¡æœ‰è¿”å›žç»“æžœ  
 	{
 		pQuery->InitQuery(m_pDB, pStmt, true);
 	}
-	else if (nRet == SQLITE_ROW) //Õâ¸ö²éÑ¯ÖÐÖÁÉÙÓÐÒ»ÐÐ¼ÇÂ¼  
+	else if (nRet == SQLITE_ROW) //è¿™ä¸ªæŸ¥è¯¢ä¸­è‡³å°‘æœ‰ä¸€è¡Œè®°å½•  
 	{
 		pQuery->InitQuery(m_pDB, pStmt, false);
 	}

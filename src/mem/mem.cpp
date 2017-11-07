@@ -1,4 +1,4 @@
-// mem.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+// mem.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include "../inc/basic.h"
@@ -9,7 +9,7 @@ extern "C" {
 #endif
 __NS_BASIC_START
 
-//ÕâÀï²»ÄÜÓÃ×ÔĞıËø£¬»á¶ñ»¯
+//è¿™é‡Œä¸èƒ½ç”¨è‡ªæ—‹é”ï¼Œä¼šæ¶åŒ–
 basiclib::CCriticalSection g_lockCheck;
 std::map<void*, stacktrace::call_stack> g_mapCheck;
 #ifdef _DEBUG
@@ -154,7 +154,7 @@ inline void* Clean_prefix(char* ptr)
 #ifdef _DEBUG
 	if(pFix->m_bBegin != 1 || pFix->m_bEnd != 1)
 	{
-		//µ÷ÓÃ¶ÑÕ»
+		//è°ƒç”¨å †æ ˆ
 		stacktrace::call_stack st(0);
 		BasicLogEventErrorV("Free prefix error");
 		BasicLogEventErrorV(st.to_string().c_str());
@@ -208,7 +208,7 @@ void CheckFunc_deallocate(void* p)
 	Fast_deallocate(p);
 }
 
-///È¡ÄÚ´æ·ÖÅäĞÅÏ¢
+///å–å†…å­˜åˆ†é…ä¿¡æ¯
 void BasicGetOperationInfo(
 			size_t& nAllocateCount, 
 			size_t& nDeallocateCount,

@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     filedefine.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     filedefine.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 12:42:04
-// ÄÚÈİÃèÊö:   ¶¨ÒåÎÄ¼şÏµÍ³µÄÒ»Ğ©½á¹¹ºÍ´íÎóĞÅÏ¢
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 12:42:04
+// å†…å®¹æè¿°:   å®šä¹‰æ–‡ä»¶ç³»ç»Ÿçš„ä¸€äº›ç»“æ„å’Œé”™è¯¯ä¿¡æ¯
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_FILEDEFINE_H
 #define BASIC_FILEDEFINE_H
@@ -14,23 +14,23 @@
 #pragma	pack(1)
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
-//ÉùÃ÷
+//å£°æ˜
 struct TLFileStatusW;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-//! ÎÄ¼şµÄ×´Ì¬ĞÅÏ¢
+//! æ–‡ä»¶çš„çŠ¶æ€ä¿¡æ¯
 /*!
-*  ÓÃÔÚ CWBasicFileObj::GetStatus º¯ÊıÈ¡µÃÎÄ¼ş×´Ì¬ĞÅÏ¢
+*  ç”¨åœ¨ CWBasicFileObj::GetStatus å‡½æ•°å–å¾—æ–‡ä»¶çŠ¶æ€ä¿¡æ¯
 */
 struct TLFileStatusW
 {
-	time_t m_ctime;          /*!< ÎÄ¼şµÄ´´½¨ÈÕÆÚ */
-	time_t m_mtime;          /*!< ÎÄ¼şµÄ×îºóĞŞ¸ÄÈÕÆÚ */
-	time_t m_atime;          /*!< ÎÄ¼şµÄ×îºó·ÃÎÊÈÕÆÚ */
-	long   m_size;           /*!< ÎÄ¼ş³¤¶È£¨×Ö½Ú£© */
-	BYTE   m_attribute;      /*!< ÎÄ¼şµÄÊôĞÔ¡£ÊÇÃ¶¾Ù TLFileAttribute µÄÖµ */
-	BYTE   m_padding;        /*!< ½á¹¹¶ÔÆë */
-	TCHAR  m_szFullName[MAX_PATH]; /*!< ÎÄ¼şµÄÈ«Â·¾¶ */
+	time_t m_ctime;          /*!< æ–‡ä»¶çš„åˆ›å»ºæ—¥æœŸ */
+	time_t m_mtime;          /*!< æ–‡ä»¶çš„æœ€åä¿®æ”¹æ—¥æœŸ */
+	time_t m_atime;          /*!< æ–‡ä»¶çš„æœ€åè®¿é—®æ—¥æœŸ */
+	long   m_size;           /*!< æ–‡ä»¶é•¿åº¦ï¼ˆå­—èŠ‚ï¼‰ */
+	BYTE   m_attribute;      /*!< æ–‡ä»¶çš„å±æ€§ã€‚æ˜¯æšä¸¾ TLFileAttribute çš„å€¼ */
+	BYTE   m_padding;        /*!< ç»“æ„å¯¹é½ */
+	TCHAR  m_szFullName[MAX_PATH]; /*!< æ–‡ä»¶çš„å…¨è·¯å¾„ */
 
 	TLFileStatusW()
 	{
@@ -41,13 +41,13 @@ struct TLFileStatusW
 
 struct TLFileStatus
 {
-	time_t m_ctime;          /*!< ÎÄ¼şµÄ´´½¨ÈÕÆÚ */
-	time_t m_mtime;          /*!< ÎÄ¼şµÄ×îºóĞŞ¸ÄÈÕÆÚ */
-	time_t m_atime;          /*!< ÎÄ¼şµÄ×îºó·ÃÎÊÈÕÆÚ */
-	long   m_size;           /*!< ÎÄ¼ş³¤¶È£¨×Ö½Ú£© */
-	BYTE   m_attribute;      /*!< ÎÄ¼şµÄÊôĞÔ¡£ÊÇÃ¶¾Ù TLFileAttribute µÄÖµ */
-	BYTE   m_padding;        /*!< ½á¹¹¶ÔÆë */
-	char  m_szFullName[MAX_PATH]; /*!< ÎÄ¼şµÄÈ«Â·¾¶ */
+	time_t m_ctime;          /*!< æ–‡ä»¶çš„åˆ›å»ºæ—¥æœŸ */
+	time_t m_mtime;          /*!< æ–‡ä»¶çš„æœ€åä¿®æ”¹æ—¥æœŸ */
+	time_t m_atime;          /*!< æ–‡ä»¶çš„æœ€åè®¿é—®æ—¥æœŸ */
+	long   m_size;           /*!< æ–‡ä»¶é•¿åº¦ï¼ˆå­—èŠ‚ï¼‰ */
+	BYTE   m_attribute;      /*!< æ–‡ä»¶çš„å±æ€§ã€‚æ˜¯æšä¸¾ TLFileAttribute çš„å€¼ */
+	BYTE   m_padding;        /*!< ç»“æ„å¯¹é½ */
+	char  m_szFullName[MAX_PATH]; /*!< æ–‡ä»¶çš„å…¨è·¯å¾„ */
 
 	TLFileStatus()
 	{
@@ -56,64 +56,64 @@ struct TLFileStatus
 
 };
 
-//! ÎÄ¼şµÄÊôĞÔ
+//! æ–‡ä»¶çš„å±æ€§
 enum TLFileAttribute 
 {
-	_basic_fa_normal =    0x00,		/*!< Õı³£ */
-	_basic_fa_readOnly =  0x01,		/*!< Ö»¶Á */
-	_basic_fa_hidden =    0x02,		/*!< Òş²Ø */
-	_basic_fa_sys    =    0x04,		/*!< ÏµÍ³ */
+	_basic_fa_normal =    0x00,		/*!< æ­£å¸¸ */
+	_basic_fa_readOnly =  0x01,		/*!< åªè¯» */
+	_basic_fa_hidden =    0x02,		/*!< éšè— */
+	_basic_fa_sys    =    0x04,		/*!< ç³»ç»Ÿ */
 	_basic_fa_volume =    0x08,		/*!<  */
-	_basic_fa_directory = 0x10,		/*!< Ä¿Â¼ */
-	_basic_fa_archive =   0x20		/*!< ¹éµµ */
+	_basic_fa_directory = 0x10,		/*!< ç›®å½• */
+	_basic_fa_archive =   0x20		/*!< å½’æ¡£ */
 };
 
 //seek
-#define BASIC_FILE_BEGIN           0				//ÎÄ¼şÍ·
-#define BASIC_FILE_CURRENT         1				//µ±Ç°Î»ÖÃ
-#define BASIC_FILE_END             2				//ÎÄ¼şÎ²
+#define BASIC_FILE_BEGIN           0				//æ–‡ä»¶å¤´
+#define BASIC_FILE_CURRENT         1				//å½“å‰ä½ç½®
+#define BASIC_FILE_END             2				//æ–‡ä»¶å°¾
 
 //////////////////////////////////////////////////////////////////////////////
-//·µ»Ø´íÎó¶¨Òå
-#define FILE_ERROR							(0xE0000000 | _ERROR_FILE)	    //ÎÄ¼ş´íÎó
-#define FATFILE_ERROR						(0xF0000000 | _ERROR_FILE)		//FATFILEÎÄ¼ş´íÎó
+//è¿”å›é”™è¯¯å®šä¹‰
+#define FILE_ERROR							(0xE0000000 | _ERROR_FILE)	    //æ–‡ä»¶é”™è¯¯
+#define FATFILE_ERROR						(0xF0000000 | _ERROR_FILE)		//FATFILEæ–‡ä»¶é”™è¯¯
 
-#define BASIC_FILE_OK						0								//³É¹¦£¬Ã»ÓĞ´íÎó
+#define BASIC_FILE_OK						0								//æˆåŠŸï¼Œæ²¡æœ‰é”™è¯¯
 
-#define BASIC_FILE_GENERIC_ERROR			(FILE_ERROR | 0x0001)			//Ò»°ãĞÔ´íÎó£¬¼´Î´ÖªµÄ´íÎó
-#define BASIC_FILE_NOT_FOUND				(FILE_ERROR | 0x0002)			//ÎÄ¼ş²»´æÔÚ
-#define BASIC_FILE_BAD_PATH					(FILE_ERROR | 0x0003)			//Â·¾¶²»ºÏ·¨
-#define BASIC_FILE_TOO_MANY_OPEN			(FILE_ERROR | 0x0004)			//´ò¿ªµÄÎÄ¼şÌ«¶à
-#define BASIC_FILE_ACCESS_DENIED			(FILE_ERROR | 0x0005)			//½ûÖ¹·ÃÎÊ
-#define BASIC_FILE_INVALID					(FILE_ERROR | 0x0006)			//ÎÄ¼ş²»ºÏ·¨
-#define BASIC_FILE_REMOVE_CUR_DIR			(FILE_ERROR | 0x0007)			//É¾³ıµ±Ç°µÄÄ¿Â¼
-#define BASIC_FILE_DIR_FULL					(FILE_ERROR | 0x0008)			//Ä¿Â¼ÂúÁË
-#define BASIC_FILE_BAD_SEEK					(FILE_ERROR | 0x0009)			//ÒÆ¶¯ÎÄ¼şÖ¸ÕëÊ§°Ü
-#define BASIC_FILE_HARD_IO					(FILE_ERROR | 0x000a)			//IO ´íÎó
-#define BASIC_FILE_SHARING_VIOLATION		(FILE_ERROR | 0x000b)			//Î¥·´¹²Ïí
-#define BASIC_FILE_LOCK_VIOLATION			(FILE_ERROR | 0x000c)			//Î¥·´¼ÓËø
-#define BASIC_FILE_DISK_FULL				(FILE_ERROR | 0x000d)			//´ÅÅÌÂú
-#define BASIC_FILE_END_OF_FILE				(FILE_ERROR | 0x000e)			//ÎÄ¼ş½áÊø
-#define BASIC_FILE_BAD_NET_PATH				(FILE_ERROR | 0x000f)			//ÍøÂçÂ·¾¶²»ºÏ·¨
-#define BASIC_FILE_ALREADY_EXISTS			(FILE_ERROR | 0x0010)			//ÎÄ¼şÒÑ´æÔÚ
-#define BASIC_FILE_NET_ACCESS_DENIED		(FILE_ERROR | 0x0011)			//ÍøÂç·ÃÎÊ´íÎó
-#define BASIC_FILE_WRITE_FAULT				(FILE_ERROR | 0x0012)			//Ğ´ÎÄ¼ş´íÎó
-#define BASIC_FILE_NET_WRITE_FAULT			(FILE_ERROR | 0x0013)			//Ğ´ÍøÂçÎÄ¼ş´íÎó
-#define BASIC_FILE_NOT_SUPPORT				(FILE_ERROR | 0x0014)			//²»Ö§³Ö
-#define BASIC_FILE_TOO_LARGE				(FILE_ERROR | 0x0015)			//ÎÄ¼şÌ«´ó£¬Ö»Ö§³Ö 2G 
-#define BASIC_FILE_ALREADY_OEPN				(FILE_ERROR | 0x0016)			//ÎÄ¼şÒÑ¾­´ò¿ª
-#define BASIC_FILE_NOT_OEPN					(FILE_ERROR | 0x0017)			//ÎÄ¼şÃ»ÓĞ´ò¿ª
-#define BASIC_FILE_WRITE_DENIED				(FILE_ERROR | 0x0018)			//ÎÄ¼ş½ûÖ¹Ğ´£¬ÒÔÖ»¶Á·½Ê½´ò¿ª£¬²»ÄÜĞ´ºÍ¸Ä±äÎÄ¼ş³¤¶È
-#define BASIC_FILE_SETLEN_DENIED			(FILE_ERROR | 0x0019)			//ÎÄ¼ş½ûÖ¹¸Ä±ä³¤¶È¡£ÄÚ´æÎÄ¼ş£¬ÒÔPF_MEM_ONLY·½Ê½´ò¿ª¡£
-#define BASIC_FILE_NO_BUFFER				(FILE_ERROR | 0x001a)			//Ã»ÓĞºÏ·¨µÄ»º³åÇø
-#define BASIC_FILE_MKDIR_ERROR				(FILE_ERROR | 0x001b)			//´´½¨Ä¿Â¼Ê§°Ü
-#define BASIC_FILE_NO_MEMORY				(FILE_ERROR | 0x001c)			//ÄÚ´æ²»×ã
+#define BASIC_FILE_GENERIC_ERROR			(FILE_ERROR | 0x0001)			//ä¸€èˆ¬æ€§é”™è¯¯ï¼Œå³æœªçŸ¥çš„é”™è¯¯
+#define BASIC_FILE_NOT_FOUND				(FILE_ERROR | 0x0002)			//æ–‡ä»¶ä¸å­˜åœ¨
+#define BASIC_FILE_BAD_PATH					(FILE_ERROR | 0x0003)			//è·¯å¾„ä¸åˆæ³•
+#define BASIC_FILE_TOO_MANY_OPEN			(FILE_ERROR | 0x0004)			//æ‰“å¼€çš„æ–‡ä»¶å¤ªå¤š
+#define BASIC_FILE_ACCESS_DENIED			(FILE_ERROR | 0x0005)			//ç¦æ­¢è®¿é—®
+#define BASIC_FILE_INVALID					(FILE_ERROR | 0x0006)			//æ–‡ä»¶ä¸åˆæ³•
+#define BASIC_FILE_REMOVE_CUR_DIR			(FILE_ERROR | 0x0007)			//åˆ é™¤å½“å‰çš„ç›®å½•
+#define BASIC_FILE_DIR_FULL					(FILE_ERROR | 0x0008)			//ç›®å½•æ»¡äº†
+#define BASIC_FILE_BAD_SEEK					(FILE_ERROR | 0x0009)			//ç§»åŠ¨æ–‡ä»¶æŒ‡é’ˆå¤±è´¥
+#define BASIC_FILE_HARD_IO					(FILE_ERROR | 0x000a)			//IO é”™è¯¯
+#define BASIC_FILE_SHARING_VIOLATION		(FILE_ERROR | 0x000b)			//è¿åå…±äº«
+#define BASIC_FILE_LOCK_VIOLATION			(FILE_ERROR | 0x000c)			//è¿ååŠ é”
+#define BASIC_FILE_DISK_FULL				(FILE_ERROR | 0x000d)			//ç£ç›˜æ»¡
+#define BASIC_FILE_END_OF_FILE				(FILE_ERROR | 0x000e)			//æ–‡ä»¶ç»“æŸ
+#define BASIC_FILE_BAD_NET_PATH				(FILE_ERROR | 0x000f)			//ç½‘ç»œè·¯å¾„ä¸åˆæ³•
+#define BASIC_FILE_ALREADY_EXISTS			(FILE_ERROR | 0x0010)			//æ–‡ä»¶å·²å­˜åœ¨
+#define BASIC_FILE_NET_ACCESS_DENIED		(FILE_ERROR | 0x0011)			//ç½‘ç»œè®¿é—®é”™è¯¯
+#define BASIC_FILE_WRITE_FAULT				(FILE_ERROR | 0x0012)			//å†™æ–‡ä»¶é”™è¯¯
+#define BASIC_FILE_NET_WRITE_FAULT			(FILE_ERROR | 0x0013)			//å†™ç½‘ç»œæ–‡ä»¶é”™è¯¯
+#define BASIC_FILE_NOT_SUPPORT				(FILE_ERROR | 0x0014)			//ä¸æ”¯æŒ
+#define BASIC_FILE_TOO_LARGE				(FILE_ERROR | 0x0015)			//æ–‡ä»¶å¤ªå¤§ï¼Œåªæ”¯æŒ 2G 
+#define BASIC_FILE_ALREADY_OEPN				(FILE_ERROR | 0x0016)			//æ–‡ä»¶å·²ç»æ‰“å¼€
+#define BASIC_FILE_NOT_OEPN					(FILE_ERROR | 0x0017)			//æ–‡ä»¶æ²¡æœ‰æ‰“å¼€
+#define BASIC_FILE_WRITE_DENIED				(FILE_ERROR | 0x0018)			//æ–‡ä»¶ç¦æ­¢å†™ï¼Œä»¥åªè¯»æ–¹å¼æ‰“å¼€ï¼Œä¸èƒ½å†™å’Œæ”¹å˜æ–‡ä»¶é•¿åº¦
+#define BASIC_FILE_SETLEN_DENIED			(FILE_ERROR | 0x0019)			//æ–‡ä»¶ç¦æ­¢æ”¹å˜é•¿åº¦ã€‚å†…å­˜æ–‡ä»¶ï¼Œä»¥PF_MEM_ONLYæ–¹å¼æ‰“å¼€ã€‚
+#define BASIC_FILE_NO_BUFFER				(FILE_ERROR | 0x001a)			//æ²¡æœ‰åˆæ³•çš„ç¼“å†²åŒº
+#define BASIC_FILE_MKDIR_ERROR				(FILE_ERROR | 0x001b)			//åˆ›å»ºç›®å½•å¤±è´¥
+#define BASIC_FILE_NO_MEMORY				(FILE_ERROR | 0x001c)			//å†…å­˜ä¸è¶³
 
-#define BASIC_FILE_BAD_PARAM				(FILE_ERROR | 0x001d)			//º¯Êıµ÷ÓÃ²ÎÊı´íÎó
-#define BASIC_FILE_BAD_RESOURCE				(FILE_ERROR | 0x001e)			//ºÍ×ÊÔ´Ïà¹ØµÄ´íÎó
-#define BASIC_FILE_BAD_PROCESS				(FILE_ERROR | 0x001f)			//ºÍ½ø³Ì¡¢º¯Êıµ÷ÓÃ¡¢×Ó½ø³ÌÏà¹ØµÄ´íÎó
-#define BASIC_FILE_NO_EXEC					(FILE_ERROR | 0x0020)			//ÎŞ·¨Ö´ĞĞ
-#define BASIC_FILE_BAD_PIPE					(FILE_ERROR | 0x0021)			//ºÍ¹ÜµÀÏà¹ØµÄ´íÎó
+#define BASIC_FILE_BAD_PARAM				(FILE_ERROR | 0x001d)			//å‡½æ•°è°ƒç”¨å‚æ•°é”™è¯¯
+#define BASIC_FILE_BAD_RESOURCE				(FILE_ERROR | 0x001e)			//å’Œèµ„æºç›¸å…³çš„é”™è¯¯
+#define BASIC_FILE_BAD_PROCESS				(FILE_ERROR | 0x001f)			//å’Œè¿›ç¨‹ã€å‡½æ•°è°ƒç”¨ã€å­è¿›ç¨‹ç›¸å…³çš„é”™è¯¯
+#define BASIC_FILE_NO_EXEC					(FILE_ERROR | 0x0020)			//æ— æ³•æ‰§è¡Œ
+#define BASIC_FILE_BAD_PIPE					(FILE_ERROR | 0x0021)			//å’Œç®¡é“ç›¸å…³çš„é”™è¯¯
 
 __NS_BASIC_END
 //////////////////////////////////////////////////////////////////////////////////////////////////

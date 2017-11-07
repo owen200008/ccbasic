@@ -20,7 +20,7 @@ void HttpResponse::SetStatus(unsigned short uStatus)
 
 void HttpResponse::SetVersion(const char* pszVersion)
 {
-	// ¶ÔÓÚversionĞÅÏ¢²»×öĞ£Ñé£¬µ÷ÓÃÕß×Ô¼º±ØĞë±£Ö¤¸ñÊ½ÕıÈ·¡£
+	// å¯¹äºversionä¿¡æ¯ä¸åšæ ¡éªŒï¼Œè°ƒç”¨è€…è‡ªå·±å¿…é¡»ä¿è¯æ ¼å¼æ­£ç¡®ã€‚
 	m_strVersion = pszVersion;
 }
 
@@ -40,7 +40,7 @@ void HttpResponse::AppendContent(const char* buf, size_t len)
 
 void HttpResponse::SetHeader(const char* key, const char* value, bool replace)
 {
-	// HeaderµÄÍ·µÄÃ¿Ò»¸ö×ÖÄ¸¿ªÍ·Òª´óĞ´¡£
+	// Headerçš„å¤´çš„æ¯ä¸€ä¸ªå­—æ¯å¼€å¤´è¦å¤§å†™ã€‚
 	char_string strKey = key;
 	for (size_t i = 0; i < strKey.length(); ++ i)
 	{
@@ -161,7 +161,7 @@ bool HttpResponse::ZipOutput()
 	if (m_bZipped)
 		return true;
 
-    //Ä¿Ç°²»Ö§³ÖÑ¹Ëõ
+    //ç›®å‰ä¸æ”¯æŒå‹ç¼©
 	return false;
 }
 

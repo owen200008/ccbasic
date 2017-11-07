@@ -51,7 +51,7 @@ int     g_nStartMode = 0;
 //
 GlobalShutdownFunc g_funcShutdown = NULL;
 GlobalExceptionFunc g_funcException = NULL;
-// ÉèÖÃÒì³£±£»¤Ä£Ê½
+// è®¾ç½®å¼‚å¸¸ä¿æŠ¤æ¨¡å¼
 //
 int KillExistProcess()
 {
@@ -99,21 +99,21 @@ BOOL WINAPI ConsoleHandlerRoutine( DWORD dwCtrlType)
 }
 
 //
-// ÉèÖÃÒì³£±£»¤Ä£Ê½
+// è®¾ç½®å¼‚å¸¸ä¿æŠ¤æ¨¡å¼
 //
 void BasicSetExceptionMode(int nMode, int nInstance)
 {
 	g_nStartMode = nMode;
 	if(nMode&BASIC_EXCEPTION_DISABLE)
 	{
-		//½ûÓÃÒì³£±£»¤
+		//ç¦ç”¨å¼‚å¸¸ä¿æŠ¤
 		SetUnhandledExceptionFilter(NULL);
 		return;
 	}
 	//
 	if(nMode&BASIC_EXCEPTION_KILLEXIST)
 	{
-		//É±µôÒÑÓĞ½ø³Ì
+		//æ€æ‰å·²æœ‰è¿›ç¨‹
 		KillExistProcess();
 	}
 	//
@@ -124,23 +124,23 @@ void BasicSetExceptionMode(int nMode, int nInstance)
 	//
 	if(nMode&BASIC_EXCEPTION_NORESTART)
 	{
-		//²»ÖØÆô
+		//ä¸é‡å¯
 		CBasicWinExceptionReport::m_bRestart = FALSE;
 	}
 	//
 	if(nMode&BASIC_EXCEPTION_NOLOG)
 	{
-		//²»¼ÇÂ¼ÈÕÖ¾
+		//ä¸è®°å½•æ—¥å¿—
 		CBasicWinExceptionReport::m_bLog = FALSE;
 	}
 
-	//¿ØÖÆÌ¨Ä£Ê½, winÃ»ÓĞ·şÎñÄ£Ê½
+	//æ§åˆ¶å°æ¨¡å¼, winæ²¡æœ‰æœåŠ¡æ¨¡å¼
 	SetConsoleCtrlHandler(ConsoleHandlerRoutine, TRUE);
 	g_nStartMode &= ~BASIC_DAEMONMODE;
 }
 
 //
-// Ó¦ÓÃ³ÌĞò¹Ø±ÕÇ°µ÷ÓÃ£¬ºöÂÔÍË³öÊ±³öÏÖµÄÒì³£
+// åº”ç”¨ç¨‹åºå…³é—­å‰è°ƒç”¨ï¼Œå¿½ç•¥é€€å‡ºæ—¶å‡ºç°çš„å¼‚å¸¸
 //
 void BasicClearException()
 {
@@ -154,7 +154,7 @@ void BasicClearException()
 }
 
 //
-//ÖØÆô½ø³Ì
+//é‡å¯è¿›ç¨‹
 //
 void BasicRestart()
 {
@@ -262,7 +262,7 @@ LONG WINAPI CBasicWinExceptionReport::WheatyUnhandledExceptionFilter(
 {
 	try
 	{
-		//Éú³ÉdumpÎÄ¼ş
+		//ç”Ÿæˆdumpæ–‡ä»¶
 		WriteDumpFile(pExceptionInfo);
 
         if (g_funcException)
@@ -270,7 +270,7 @@ LONG WINAPI CBasicWinExceptionReport::WheatyUnhandledExceptionFilter(
             g_funcException(pExceptionInfo);
         }
 
-		//Éú³ÉÒì³£ÈÕÖ¾
+		//ç”Ÿæˆå¼‚å¸¸æ—¥å¿—
 		if(m_bLog)
 		{
 			HANDLE hReportFile = CreateFile(m_szLogFileName,
@@ -299,7 +299,7 @@ LONG WINAPI CBasicWinExceptionReport::WheatyUnhandledExceptionFilter(
 	}
 
 #ifdef _DEBUG
-	//µ÷ÓÃÍâ²¿µ÷ÊÔÆ÷
+	//è°ƒç”¨å¤–éƒ¨è°ƒè¯•å™¨
  	if ( m_previousFilter )
  		return m_previousFilter( pExceptionInfo );
 #endif
@@ -446,7 +446,7 @@ typedef BOOL (WINAPI *MINIDUMPWRITEDUMP)(
 	);
 
 //
-// Éú³ÉdumpÎÄ¼ş
+// ç”Ÿæˆdumpæ–‡ä»¶
 //
 long CBasicWinExceptionReport::WriteDumpFile( struct _EXCEPTION_POINTERS *pExceptionInfo )
 {

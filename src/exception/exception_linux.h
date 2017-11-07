@@ -1,7 +1,7 @@
 #ifndef __EXCEPTION_LINUX_H_
 #define __EXCEPTION_LINUX_H_
 
-#define ALLOCTO_STACK_MEMORY  8192	//Òì³£¶ÑÕ»µÄ´óĞ¡
+#define ALLOCTO_STACK_MEMORY  8192	//å¼‚å¸¸å †æ ˆçš„å¤§å°
 
 __NS_BASIC_START
 
@@ -22,11 +22,11 @@ protected:
 protected:
 	char m_pszLockFile[_MAX_PATH];
 
-	//·ÖÅäÒ»¿éÄÚ´æ×÷ÎªÒì³£´¦ÀíµÄ¶ÑÕ»
+	//åˆ†é…ä¸€å—å†…å­˜ä½œä¸ºå¼‚å¸¸å¤„ç†çš„å †æ ˆ
 	void *	m_pAllocStack;
 
-	char** 	m_pszCmdline;	//ÃüÁîĞĞ²ÎÊı
-	int	m_nParaNum;	//ÃüÁîĞĞ²ÎÊı¸öÊı
+	char** 	m_pszCmdline;	//å‘½ä»¤è¡Œå‚æ•°
+	int	m_nParaNum;	//å‘½ä»¤è¡Œå‚æ•°ä¸ªæ•°
 };
 
 __NS_BASIC_END

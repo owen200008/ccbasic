@@ -3,7 +3,7 @@
 using namespace basiclib;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//! ¿ªÊ¼Á¬½Ó
+//! å¼€å§‹è¿žæŽ¥
 int32_t CCommonClientSession::Connect(const char* lpszAddress){
     BasicLogEventV(DebugLevel_Info, "start connect to server IP:%s........", lpszAddress);
 	int32_t nRet = basiclib::CBasicSessionNetClient::Connect(lpszAddress);
@@ -13,7 +13,7 @@ int32_t CCommonClientSession::Connect(const char* lpszAddress){
 	return nRet;
 }
 uint32_t CCommonClientSession::OnDisconnect(uint32_t dwNetCode){
-	//ÈÕÖ¾¼ÇÂ¼
+	//æ—¥å¿—è®°å½•
     BasicLogEventV(DebugLevel_Info, "disconnect to server IP:%s(%d)", GetConnectAddr().c_str(), dwNetCode);
 	return basiclib::CBasicSessionNetClient::OnDisconnect(dwNetCode);
 }

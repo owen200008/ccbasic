@@ -40,7 +40,7 @@ const char* CCQLite3DBTable::NameOfField(int nField)
 		return NULL;
 	}
 
-	return m_paszResults[nField]; //Ò»Î»Êı×éµÄÍ·m_nCols¸öÔªËØ´æ·ÅµÄÊÇ±íµÄ×Ö¶ÎÃû³Æ£¬´æ´¢¾ßÌåÎ»ÖÃÊÇm_paszResults[0,,,m_nCols-1]¡£  
+	return m_paszResults[nField]; //ä¸€ä½æ•°ç»„çš„å¤´m_nColsä¸ªå…ƒç´ å­˜æ”¾çš„æ˜¯è¡¨çš„å­—æ®µåç§°ï¼Œå­˜å‚¨å…·ä½“ä½ç½®æ˜¯m_paszResults[0,,,m_nCols-1]ã€‚  
 }
 
 const char* CCQLite3DBTable::ValueOfField(int nField)
@@ -55,12 +55,12 @@ const char* CCQLite3DBTable::ValueOfField(int nField)
 		return NULL;
 	}
 
-	//¸ù¾İÒª²éÑ¯µÄµ±Ç°ĞĞÓëÁĞÖµËã³öÔÚÒ»Î»Êı×éÖĞµÄË÷ÒıÏÂ±ê£¬¶îÍâ¼ÓÒ»¸öm_nColsÊÇµÚÒ»ĞĞ´æ´¢µÄÊÇ×Ö¶ÎÃû  
+	//æ ¹æ®è¦æŸ¥è¯¢çš„å½“å‰è¡Œä¸åˆ—å€¼ç®—å‡ºåœ¨ä¸€ä½æ•°ç»„ä¸­çš„ç´¢å¼•ä¸‹æ ‡ï¼Œé¢å¤–åŠ ä¸€ä¸ªm_nColsæ˜¯ç¬¬ä¸€è¡Œå­˜å‚¨çš„æ˜¯å­—æ®µå  
 	int nIndex = m_nCurrentRow*m_nCols + m_nCols + nField;
 	return m_paszResults[nIndex];
 }
 
-//¸ù¾İ×Ö¶ÎÃû³ÆÀ´·ÃÎÊÄ³Ò»ÁĞµÄÊı¾İ  
+//æ ¹æ®å­—æ®µåç§°æ¥è®¿é—®æŸä¸€åˆ—çš„æ•°æ®  
 const char* CCQLite3DBTable::ValueOfField(const char *szField)
 {
 	if (!CheckResluts())
@@ -140,7 +140,7 @@ const char* CCQLite3DBTable::GetStringField(const char *szField)
 	return "";
 }
 
-//ÔÚÃ¿Ò»´ÎĞèÒª»ñÈ¡Êı¾İµÄÊ±ºò¶¼ÒªÉèÖÃÒª·ÃÎÊµÄĞĞÖµ  
+//åœ¨æ¯ä¸€æ¬¡éœ€è¦è·å–æ•°æ®çš„æ—¶å€™éƒ½è¦è®¾ç½®è¦è®¿é—®çš„è¡Œå€¼  
 bool CCQLite3DBTable::SetRow(int nRow)
 {
 	if (!CheckResluts())
@@ -169,13 +169,13 @@ void CCQLite3DBTable::finalizeClose()
 {
 	if (m_paszResults)
 	{
-		sqlite3_free_table(m_paszResults);  //ÀûÓÃ¿âº¯ÊıÏú»Ù±í´æ´¢ÄÚÈİ  
+		sqlite3_free_table(m_paszResults);  //åˆ©ç”¨åº“å‡½æ•°é”€æ¯è¡¨å­˜å‚¨å†…å®¹  
 		m_paszResults = 0;
 	}
 }
 void CCQLite3DBTable::InitTable(char **paszResults, int nRows, int nCols)
 {
-	m_paszResults = paszResults; //¸ø³öÒ»¸öÒ»Î¬Ö¸ÕëÊı×é£¬³õÊ¼»¯Ò»¸ö±í  
+	m_paszResults = paszResults; //ç»™å‡ºä¸€ä¸ªä¸€ç»´æŒ‡é’ˆæ•°ç»„ï¼Œåˆå§‹åŒ–ä¸€ä¸ªè¡¨  
 	m_nCols = nCols;
 	m_nRows = nRows;
 	m_nCurrentRow = 0;

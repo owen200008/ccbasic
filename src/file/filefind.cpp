@@ -233,7 +233,7 @@ long CBasicFileFind::FindFile(const char* lpszFilePath, const char* lpszFileName
 	}
 
 	char* lpTemp = Basic_FindFileName(szFullPath);
-	if (strlen(lpTemp) > 0)		//有文件名
+	if (strlen(lpTemp) > 0)		//鏈夋枃浠跺悕
 	{
 		char cTemp = *lpTemp;
 		*lpTemp = '\0';

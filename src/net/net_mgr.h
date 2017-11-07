@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     net_mgr.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     net_mgr.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2016-9-12 11:50:18
-// ÄÚÈİÃèÊö:   ¶¨ÒåTCPÍ¨ĞÅµÄ»ù±¾Àà
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2016-9-12 11:50:18
+// å†…å®¹æè¿°:   å®šä¹‰TCPé€šä¿¡çš„åŸºæœ¬ç±»
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_NET_MGR_H
 #define BASIC_NET_MGR_H
@@ -25,28 +25,28 @@ public:
 	CNetThread();
 	virtual ~CNetThread();
 
-	//! ·¢ËÍÊÂ¼ş
+	//! å‘é€äº‹ä»¶
 	void SetEvent(CBasicNet_Socket* pSession, CBasicNet_Socket::pCallSameRefNetSessionFunc pCallFunc, intptr_t lRevert);
 
-	//! ×¼±¸¹Ø±Õ
+	//! å‡†å¤‡å…³é—­
 	void ReadyToClose();
 
-	//! ¼ÓÈëµ½È«¾ÖÏûÏ¢¶ÓÁĞ
+	//! åŠ å…¥åˆ°å…¨å±€æ¶ˆæ¯é˜Ÿåˆ—
 	void AddMessageQueue(CBasicNet_Socket* pSocket);
 
-	//! ´¦ÀíÏûÏ¢¶ÓÁĞ
+	//! å¤„ç†æ¶ˆæ¯é˜Ÿåˆ—
 	void RunMessageQueue();
 #ifdef BASICWINDOWS_USE_IOCP
-	//! IOCPÏß³Ì
+	//! IOCPçº¿ç¨‹
 	static unsigned __stdcall ThreadIOCPFunc(void* lpWorkContext);
 
-	//! ¿ªÊ¼½ÓÊÕÊı¾İ
+	//! å¼€å§‹æ¥æ”¶æ•°æ®
 	bool StartRecvData(CBasicNet_SocketTransfer* pSocket);
 
-	//! »ñÈ¡À©Õ¹func
+	//! è·å–æ‰©å±•func
 	static IOCPExt_Func& GetExtFunc(){ return m_funcExt; }
 #else
-	//! Òì²½dns½âÎö
+	//! å¼‚æ­¥dnsè§£æ
 	bool DNSParse(const char* pName, evdns_getaddrinfo_cb pCallback, CBasicNet_Socket* pSession);
 #endif
 
@@ -69,7 +69,7 @@ public:
 	struct event				notify_event;
 #endif
 
-	//È«¾ÖµÄÏûÏ¢Í¨Öª
+	//å…¨å±€çš„æ¶ˆæ¯é€šçŸ¥
 	basiclib::SpinLock				m_lockMsg;
 	basiclib::CBasicSmartBuffer		m_smBuf;
 	basiclib::CBasicSmartBuffer		m_smRunBuf;
@@ -84,22 +84,22 @@ public:
 	CBasicNetMgv();
 	virtual ~CBasicNetMgv();
 
-	//! ontimerÏß³Ì
+	//! ontimerçº¿ç¨‹
 	static THREAD_RETURN ThreadCheckFunc(void* lpWorkContext);
 
-	//! ³õÊ¼»¯Ïß³Ì
+	//! åˆå§‹åŒ–çº¿ç¨‹
 	void Initialize(pGetConfFunc func);
 
-	//! ÍË³ö
+	//! é€€å‡º
 	void CloseNetSocket();
 
-	//! ¼ÓÈëtimer
+	//! åŠ å…¥timer
 	void AddToTimer(CBasicNet_Socket* pSocket);
 
-	//! É¾³ıtimer
+	//! åˆ é™¤timer
 	void DelToTimer(CBasicNet_Socket* pSocket);
 
-	//! ontimerÏß³Ì
+	//! ontimerçº¿ç¨‹
 	void OnTimer();
 public:
 	BOOL					m_bTimeToKill;
@@ -119,7 +119,7 @@ public:
 	VTDeathSessionList		m_vtDeathSessionDeal;
 };
 
-//¶¨Òåµ¥Ì¬
+//å®šä¹‰å•æ€
 typedef CBasicSingleton<CBasicNetMgv>	CBasicSingletonNetMgv;
 
 __NS_BASIC_END

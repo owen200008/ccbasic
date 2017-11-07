@@ -44,111 +44,111 @@ DWORD GetLastError()
 {
 	switch(errno)
 	{
-		case EACCES:                                //´ò¿ªÖ»¶ÁÎÄ¼şĞ´²Ù×÷
-		case EROFS:                                 //ĞŞ¸ÄÖ»¶ÁÎÄ¼şÏµÍ³
-		case  EBADF:                                //Ê¹ÓÃ´íÎóÎÄ¼şÃèÊö·û»òÕßĞ´ÈëÖ»¶Á·½Ê½µÄÎÄ¼ş
+		case EACCES:                                //æ‰“å¼€åªè¯»æ–‡ä»¶å†™æ“ä½œ
+		case EROFS:                                 //ä¿®æ”¹åªè¯»æ–‡ä»¶ç³»ç»Ÿ
+		case  EBADF:                                //ä½¿ç”¨é”™è¯¯æ–‡ä»¶æè¿°ç¬¦æˆ–è€…å†™å…¥åªè¯»æ–¹å¼çš„æ–‡ä»¶
 		{
 			return BASIC_FILE_WRITE_DENIED;
 			break;
 		}
-		case EISDIR:                                //´«µİµÄÊÇÄ¿Â¼²»ÊÇÎÄ¼ş
-		case ENOENT:                                //ÎŞ´ËÎÄ¼ş»òÕßÄ¿Â¼
+		case EISDIR:                                //ä¼ é€’çš„æ˜¯ç›®å½•ä¸æ˜¯æ–‡ä»¶
+		case ENOENT:                                //æ— æ­¤æ–‡ä»¶æˆ–è€…ç›®å½•
 		{
 			return BASIC_FILE_NOT_FOUND;
 			break;
 		}
-		case ELOOP:                                 //·ûºÅÁ¬½ÓÎÊÌâ
-		case ENOTDIR:                               //Â·¾¶±ØĞëÎªÄ¿Â¼
-		case ENAMETOOLONG:                          //ÎÄ¼şÃû»òÕßÂ·¾¶ > MAX_NAME
+		case ELOOP:                                 //ç¬¦å·è¿æ¥é—®é¢˜
+		case ENOTDIR:                               //è·¯å¾„å¿…é¡»ä¸ºç›®å½•
+		case ENAMETOOLONG:                          //æ–‡ä»¶åæˆ–è€…è·¯å¾„ > MAX_NAME
 		{
 			return BASIC_FILE_BAD_PATH;
 			break;
 		}
-		case EMFILE:                                //¹ı¶àµÄÎÄ¼şÃèÊö·û
-		case ENFILE:                                //Ì«¶àÍ¬Ê±´ò¿ªµÄÎÄ¼ş
-		case EMLINK:                                //º¯Êıµ÷ÓÃµ¼ÖÂÎÄ¼ş³¬¹ıLINK_MAX¸öÁ´½Ó 
+		case EMFILE:                                //è¿‡å¤šçš„æ–‡ä»¶æè¿°ç¬¦
+		case ENFILE:                                //å¤ªå¤šåŒæ—¶æ‰“å¼€çš„æ–‡ä»¶
+		case EMLINK:                                //å‡½æ•°è°ƒç”¨å¯¼è‡´æ–‡ä»¶è¶…è¿‡LINK_MAXä¸ªé“¾æ¥ 
 		{
 			return BASIC_FILE_TOO_MANY_OPEN;
 			break;
 		}
-		case ENOSPC:                                //Éè±¸ÉÏÊ£Óà¿Õ¼ä²»×ã
-		case ENXIO:                                 //²»´æÔÚµÄÉè±¸ÔÚÌØÊâÎÄ¼şÉÏÖ´ĞĞI/O²Ù×÷
-		case EIO:                                   //I/O´íÎó
+		case ENOSPC:                                //è®¾å¤‡ä¸Šå‰©ä½™ç©ºé—´ä¸è¶³
+		case ENXIO:                                 //ä¸å­˜åœ¨çš„è®¾å¤‡åœ¨ç‰¹æ®Šæ–‡ä»¶ä¸Šæ‰§è¡ŒI/Oæ“ä½œ
+		case EIO:                                   //I/Oé”™è¯¯
 		case ENOTTY:
 		{
 			return BASIC_FILE_HARD_IO;
 			break;
 		}
-		case ENOMEM:                                //ÄÚ´æ²»×ã
+		case ENOMEM:                                //å†…å­˜ä¸è¶³
 		{
 			return BASIC_FILE_NO_MEMORY;
 			break;
 		}
-		case EEXIST:                                //ËùÖ¸ÎÄ¼şÒÑ´æÔÚ
+		case EEXIST:                                //æ‰€æŒ‡æ–‡ä»¶å·²å­˜åœ¨
 		{
 			return BASIC_FILE_ALREADY_EXISTS;
 			break;
 		}
-		case EFBIG:                                 //ÎÄ¼ş¹ı´ó
+		case EFBIG:                                 //æ–‡ä»¶è¿‡å¤§
 		{
 			return BASIC_FILE_TOO_LARGE;
 			break;
 		}
-		case EXDEV:                                //ÒÆ¶¯ÎÄ¼ş²Ù×÷
+		case EXDEV:                                //ç§»åŠ¨æ–‡ä»¶æ“ä½œ
 		{
 			return BASIC_FILE_BAD_SEEK;
 			break;
 		}
-		case EPERM:                                 //²»ÔÊĞíÖ´ĞĞ¸Ã²Ù×÷
-		case ENOTEMPTY:                             //Ö¸¶¨µÄÄ¿Â¼²»Îª¿Õ£¬Ó¦¸ÃÎª¿Õ
+		case EPERM:                                 //ä¸å…è®¸æ‰§è¡Œè¯¥æ“ä½œ
+		case ENOTEMPTY:                             //æŒ‡å®šçš„ç›®å½•ä¸ä¸ºç©ºï¼Œåº”è¯¥ä¸ºç©º
 		{
 			return BASIC_FILE_ACCESS_DENIED;
 			break;
 		}
-		case ETXTBSY:                               //Ö´ĞĞÒ»¸öÕıÔÚĞ´µÄÎÄ¼ş»òÕßĞ´Ò»¸öÕıÔÚÖ´ĞĞµÄÎÄ¼ş
-		case ENOLCK:                                //Ã»ÓĞ¿ÉÓÃµÄËø
+		case ETXTBSY:                               //æ‰§è¡Œä¸€ä¸ªæ­£åœ¨å†™çš„æ–‡ä»¶æˆ–è€…å†™ä¸€ä¸ªæ­£åœ¨æ‰§è¡Œçš„æ–‡ä»¶
+		case ENOLCK:                                //æ²¡æœ‰å¯ç”¨çš„é”
 		{
 			return BASIC_FILE_LOCK_VIOLATION;
 			break;
 		}
-		case E2BIG:                                //Ëù´«µİµÄº¯Êı²ÎÊıÁĞ±íÌ«³¤
-		case EINVAL:                                //²ÎÊı´íÎó
-		case EDOM:                                  //ÊäÈëµÄ²ÎÊıÔÚÊı×Öº¯ÊıÓòÖ®Íâ
-		case EFAULT:                                //º¯Êı²ÎÊıÖ®Ò»ÒıÓÃÎŞĞ§µØÖ·
+		case E2BIG:                                //æ‰€ä¼ é€’çš„å‡½æ•°å‚æ•°åˆ—è¡¨å¤ªé•¿
+		case EINVAL:                                //å‚æ•°é”™è¯¯
+		case EDOM:                                  //è¾“å…¥çš„å‚æ•°åœ¨æ•°å­—å‡½æ•°åŸŸä¹‹å¤–
+		case EFAULT:                                //å‡½æ•°å‚æ•°ä¹‹ä¸€å¼•ç”¨æ— æ•ˆåœ°å€
 		{
 			return BASIC_FILE_BAD_PARAM;
 			break;
 		}
-		case ENOSR:                                 //×ÊÔ´Ïà¹ØµÄ·ÇÖÂÃü´íÎó
-		case EAGAIN:                                //ËùÒªÇóµÄ×ÊÔ´ÔİÊ±²»¿ÉÓÃ
-		case EBUSY:                                 //ÇëÇóµÄ×ÊÔ´²»¿ÉÓÃ
-		case EDEADLK:                               //Èç¹û¼ÌĞøÇëÇó£¬»á³öÏÖ×ÊÔ´ËÀËø
+		case ENOSR:                                 //èµ„æºç›¸å…³çš„éè‡´å‘½é”™è¯¯
+		case EAGAIN:                                //æ‰€è¦æ±‚çš„èµ„æºæš‚æ—¶ä¸å¯ç”¨
+		case EBUSY:                                 //è¯·æ±‚çš„èµ„æºä¸å¯ç”¨
+		case EDEADLK:                               //å¦‚æœç»§ç»­è¯·æ±‚ï¼Œä¼šå‡ºç°èµ„æºæ­»é”
 		{
 			return BASIC_FILE_BAD_RESOURCE;
 			break;
 		}
-		case EINTR:                                 //´¦Àí¹ı³Ì±»ÖĞ¶Ï
-		case EOVERFLOW:                             //¸¡µãÒç³ö
-		case ECHILD:                                //º¯ÊıµÈ´ıÍÆ³ö×Ó½ø³Ì£¬µ«ËùÓĞ×Ó½ø³ÌÒÑ¾­ÍÆ³ö
-		case  ESRCH:                                //Ö¸¶¨ÎŞĞ§µÄ½ø³ÌIDºÍ½ø³Ì×é
-		case ERANGE:                                //µ÷ÓÃº¯Êı·µ»ØÖµ¹ı´óÎŞ·¨ÓÃ·µ»ØÀàĞÍ³ÊÏÖ
+		case EINTR:                                 //å¤„ç†è¿‡ç¨‹è¢«ä¸­æ–­
+		case EOVERFLOW:                             //æµ®ç‚¹æº¢å‡º
+		case ECHILD:                                //å‡½æ•°ç­‰å¾…æ¨å‡ºå­è¿›ç¨‹ï¼Œä½†æ‰€æœ‰å­è¿›ç¨‹å·²ç»æ¨å‡º
+		case  ESRCH:                                //æŒ‡å®šæ— æ•ˆçš„è¿›ç¨‹IDå’Œè¿›ç¨‹ç»„
+		case ERANGE:                                //è°ƒç”¨å‡½æ•°è¿”å›å€¼è¿‡å¤§æ— æ³•ç”¨è¿”å›ç±»å‹å‘ˆç°
 		{
 			return BASIC_FILE_BAD_PROCESS;
 			break;
 		}
-		case ENODEV:                                //Ã»ÓĞÕâÑùµÄÉè±¸
-		case ENOSYS:                                //ÏµÍ³²»Ö§³Ö¸Ãº¯Êı
+		case ENODEV:                                //æ²¡æœ‰è¿™æ ·çš„è®¾å¤‡
+		case ENOSYS:                                //ç³»ç»Ÿä¸æ”¯æŒè¯¥å‡½æ•°
 		{
 			return BASIC_FILE_NOT_SUPPORT;
 			break;
 		}
-		case ENOEXEC:                               //²ÎÊıÔËĞĞÎŞ·¨Ö´ĞĞµÄÎÄ¼ş
+		case ENOEXEC:                               //å‚æ•°è¿è¡Œæ— æ³•æ‰§è¡Œçš„æ–‡ä»¶
 		{
 			return BASIC_FILE_NO_EXEC;
 			break;
 		}
-		case EPIPE:                                 //²»´æÔÚµÄ¹ÜµÀ¶ÁÈëÊı¾İ
-		case ESPIPE:                                //³¢ÊÔÔÚ¹ÜµÀ»òFIFO¶ÑÕ»ÉÏ²éÕÒ
+		case EPIPE:                                 //ä¸å­˜åœ¨çš„ç®¡é“è¯»å…¥æ•°æ®
+		case ESPIPE:                                //å°è¯•åœ¨ç®¡é“æˆ–FIFOå †æ ˆä¸ŠæŸ¥æ‰¾
 		{
 			return BASIC_FILE_BAD_PIPE;
 			break;
@@ -170,7 +170,7 @@ int _basic_system(LPCTSTR lpCmd)
 		{
 			bIn = !bIn;
 		}
-		else if(bIn && (*pS == ' ' || *pS == '(' || *pS == ')'))		//×ªÒå¿Õ¸ñµÈ
+		else if(bIn && (*pS == ' ' || *pS == '(' || *pS == ')'))		//è½¬ä¹‰ç©ºæ ¼ç­‰
 		{
 			*pD++ = '\\';
 			*pD++ = *pS;
@@ -193,7 +193,7 @@ HANDLE	CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, 
 	{
 		case CREATE_NEW:
 		{
-			if (_taccess(lpFileName, F_OK) == 0)	//ÎÄ¼ş´æÔÚ£¬Ê§°Ü
+			if (_taccess(lpFileName, F_OK) == 0)	//æ–‡ä»¶å­˜åœ¨ï¼Œå¤±è´¥
 			{
 				SetLastError(EEXIST);
 				return INVALID_HANDLE_VALUE;
@@ -206,11 +206,11 @@ HANDLE	CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, 
 		}
 		case OPEN_ALWAYS:
 		{
-			if (_taccess(lpFileName, F_OK) == 0)	//ÎÄ¼ş´æÔÚ£¬´ò¿ª
+			if (_taccess(lpFileName, F_OK) == 0)	//æ–‡ä»¶å­˜åœ¨ï¼Œæ‰“å¼€
 			{
 				szOpenFlag[0] = 'r';
 			}
-			else	//´´½¨
+			else	//åˆ›å»º
 			{
 				szOpenFlag[0] = 'w';
 			}
@@ -218,7 +218,7 @@ HANDLE	CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, 
 		}
 		case TRUNCATE_EXISTING:
 		{
-			if (_taccess(lpFileName, F_OK) != 0)	//ÎÄ¼ş²»´æÔÚ£¬Ê§°Ü
+			if (_taccess(lpFileName, F_OK) != 0)	//æ–‡ä»¶ä¸å­˜åœ¨ï¼Œå¤±è´¥
 			{
 				SetLastError(ENOENT);
 				return INVALID_HANDLE_VALUE;
@@ -343,9 +343,9 @@ BOOL DeleteFile(LPCTSTR lpFileName)
 	return _tremove(lpFileName) == 0;
 }
 
-#define CHECK_BUFFER        if(++lAbsLen >= lBufLen) { return _MAX_PATH;}      //¼ì²é·µ»ØµÄ»º³åÇøÊÇ·ñ×ã¹»´ó
-#define RETURN_ERROR		SetLastError(ELOOP);return 0;					   //·µ»Ø´íÎó£ºÂ·¾¶Ãû²»ºÏ·¨
-#define NORMAL_COPY		    CHECK_BUFFER;*(++pAbsTail) = *pRelHead++;		   //¸´ÖÆÊı¾İ
+#define CHECK_BUFFER        if(++lAbsLen >= lBufLen) { return _MAX_PATH;}      //æ£€æŸ¥è¿”å›çš„ç¼“å†²åŒºæ˜¯å¦è¶³å¤Ÿå¤§
+#define RETURN_ERROR		SetLastError(ELOOP);return 0;					   //è¿”å›é”™è¯¯ï¼šè·¯å¾„åä¸åˆæ³•
+#define NORMAL_COPY		    CHECK_BUFFER;*(++pAbsTail) = *pRelHead++;		   //å¤åˆ¶æ•°æ®
 
 DWORD GetFullPathName(LPCTSTR lpFileName,DWORD nBufferLength,LPTSTR lpBuffer,LPTSTR *lpFilePart)
 {
@@ -358,7 +358,7 @@ DWORD GetFullPathName(LPCTSTR lpFileName,DWORD nBufferLength,LPTSTR lpBuffer,LPT
 	memset(lpBuffer, 0, lBufLen * sizeof(TCHAR));
 	if(_tgetcwd(lpBuffer, lBufLen) == NULL)
 	{
-		if(errno == EINVAL || errno == ERANGE)		//Èç¹ûÊäÈëµÄbuffer¿Õ¼ä²»×ã£¬ĞèÇóÖØĞÂµ÷ÓÃº¯Êı¡£
+		if(errno == EINVAL || errno == ERANGE)		//å¦‚æœè¾“å…¥çš„bufferç©ºé—´ä¸è¶³ï¼Œéœ€æ±‚é‡æ–°è°ƒç”¨å‡½æ•°ã€‚
 		{
 			return _MAX_PATH;
 		}
@@ -582,7 +582,7 @@ DWORD GetFileAttributes(LPCTSTR lpFileName)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//ÎÄ¼ş²éÕÒ
+//æ–‡ä»¶æŸ¥æ‰¾
 const TCHAR CURR_PATH[] = "./";
 class CFileFindHandle
 {

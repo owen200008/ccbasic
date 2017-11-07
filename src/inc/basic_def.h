@@ -1,16 +1,16 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     basic_def.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     basic_def.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 8:20:48
-// ÄÚÈİÃèÊö:   ±àÒë»·¾³µÄÉèÖÃ
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 8:20:48
+// å†…å®¹æè¿°:   ç¼–è¯‘ç¯å¢ƒçš„è®¾ç½®
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_BASIC_DEF_H
 #define BASIC_BASIC_DEF_H
 
 #ifdef __BASICWINDOWS
-#define __WINDOWS		// windowsÆ½Ì¨
+#define __WINDOWS		// windowså¹³å°
 #ifndef _WIN64
 #ifndef _WIN32
 #define _WIN32
@@ -20,30 +20,30 @@
 #endif
 #endif
 #elif defined (__MAC)
-//#define _DARWIN_C_SOURCE			// macosÆ½Ì¨
+//#define _DARWIN_C_SOURCE			// macoså¹³å°
 #elif defined(__ANDROID)
 #else
 #ifndef __LINUX
-#define __LINUX			// linuxÆ½Ì¨
+#define __LINUX			// linuxå¹³å°
 #endif
 #endif
 
 #ifdef __GNUC__
-#define __GCC		// gcc±àÒëÆ÷
+#define __GCC		// gccç¼–è¯‘å™¨
 #elif defined(_MSC_VER)
-#define __MSVC		// MSVC±àÒëÆ÷
+#define __MSVC		// MSVCç¼–è¯‘å™¨
 #if _MSC_VER >= 1600
 #define USING_MORE_10
 #endif
 #endif
 
-#ifdef BASIC_DLL_EXPORTS	//¶¯Ì¬¿â°æ±¾
+#ifdef BASIC_DLL_EXPORTS	//åŠ¨æ€åº“ç‰ˆæœ¬
 #ifdef __BASICWINDOWS
 #define _BASIC_DLL_API 	__declspec(dllexport)
 #endif
 #endif	//BASIC_DLL_EXPORTS
 
-#ifdef BASIC_DLL_IMPORTS	//¶¯Ì¬¿â°æ±¾£¨Ó¦ÓÃ³ÌĞòĞèÒª¶¨ÒåµÄºê£©
+#ifdef BASIC_DLL_IMPORTS	//åŠ¨æ€åº“ç‰ˆæœ¬ï¼ˆåº”ç”¨ç¨‹åºéœ€è¦å®šä¹‰çš„å®ï¼‰
 #ifdef __BASICWINDOWS
 #define _BASIC_DLL_API __declspec(dllimport)
 #else
@@ -67,13 +67,13 @@
 
 #define _BASIC_DLL_API_C extern "C"
 
-//¶¨ÒåÃüÃû¿Õ¼ä
+//å®šä¹‰å‘½åç©ºé—´
 #define __NS_BASIC_START	namespace basiclib{
 #define __NS_BASIC_END	}
 
 #define DEFAULT_ALLOCATOR	basicallocator
 
-#define _NO_TRY			//²»Ê¹ÓÃ try catch
+#define _NO_TRY			//ä¸ä½¿ç”¨ try catch
 
 #ifdef _NO_TRY
 #define _basic_try

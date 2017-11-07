@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     basicpoll.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     basicpoll.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2017/2/9 12:00:18
-// ÄÚÈİÃèÊö:   ÊÂ¼şÇı¶¯
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2017/2/9 12:00:18
+// å†…å®¹æè¿°:   äº‹ä»¶é©±åŠ¨
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_BASICPOLL_H
 #define BASIC_BASICPOLL_H
@@ -18,14 +18,14 @@ struct CBasicPollNotify
 	void*											m_ud;
 };
 
-//»ùÓÚlibeventÊµÏÖ,µ×²ãÈç¹û²»ÊÇfdÇı¶¯µÄ»á¿¨ËÀ
+//åŸºäºlibeventå®ç°,åº•å±‚å¦‚æœä¸æ˜¯fdé©±åŠ¨çš„ä¼šå¡æ­»
 class CBasicPoll : public basiclib::CBasicObject
 {
 public:
 	CBasicPoll();
 	virtual ~CBasicPoll();
 
-	/* ³õÊ¼»¯Ïß³Ìbasicpool
+	/* åˆå§‹åŒ–çº¿ç¨‹basicpool
 	*/
 	bool Init(event_config *cfg);
 protected:

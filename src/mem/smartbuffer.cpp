@@ -6,8 +6,8 @@ __NS_BASIC_START
 
 #define GROW_SIZE		1024
 
-#define GROW_MODE_NORMAL		0			//Ä¬ÈÏµÄ·ÖÅä²ßÂÔ
-#define GROW_MODE_FAST			-1			//¿ìËÙÔö³¤µÄ·ÖÅä²ßÂÔ
+#define GROW_MODE_NORMAL		0			//é»˜è®¤çš„åˆ†é…ç­–ç•¥
+#define GROW_MODE_FAST			-1			//å¿«é€Ÿå¢é•¿çš„åˆ†é…ç­–ç•¥
 
 
 inline long _GetGrowLength(long lOldLength, long lLength, long lGrowMode)
@@ -93,7 +93,7 @@ void CBasicSmartBuffer::SetDataLength(long lLength)
 {
 	if (lLength < 0)
 	{
-		//ÕâÀïÒÔºó¿ÉÄÜ×÷ÎªÌØÊâ²ÎÊı´¦Àí
+		//è¿™é‡Œä»¥åå¯èƒ½ä½œä¸ºç‰¹æ®Šå‚æ•°å¤„ç†
 	}
 	else
 	{
@@ -121,7 +121,7 @@ char* CBasicSmartBuffer::AppendData(const char* pszData, long lLength)
 	return pBuffer;
 }
 
-//ÓÃ¿ìËÙÔö³¤·ÖÅä²ßÂÔ
+//ç”¨å¿«é€Ÿå¢é•¿åˆ†é…ç­–ç•¥
 char* CBasicSmartBuffer::AppendDataEx(const char* pszData, long lLength)
 {
 	char* pBuffer = AllocBuffer(lLength, GROW_MODE_FAST);
@@ -148,7 +148,7 @@ void CBasicSmartBuffer::AppendString(const char* lpszText)
 	if (lpszText != NULL && lpszText[0] != '\0')
 	{
 		long lLength = strlen(lpszText) * sizeof(char);
-		AllocBuffer(lLength + sizeof(char), GROW_MODE_FAST);	//¶à·ÖÅäÒ»¸ö×Ö·û
+		AllocBuffer(lLength + sizeof(char), GROW_MODE_FAST);	//å¤šåˆ†é…ä¸€ä¸ªå­—ç¬¦
 		AppendData((const char*)lpszText, lLength);
 	}
 }
@@ -238,7 +238,7 @@ bool operator == (CBasicSmartBuffer& b1, CBasicSmartBuffer& b2)
 	return memcmp(b1.GetDataBuffer(), b2.GetDataBuffer(), b1.GetDataLength()) == 0;
 }
 
-//·ÏÆúÇ°ÃæÊı¾İ
+//åºŸå¼ƒå‰é¢æ•°æ®
 void CBasicSmartBuffer::ThrowDataLength(int nLength){
 	if(m_cbBuffer < nLength)
 		m_cbBuffer = 0;
@@ -246,10 +246,10 @@ void CBasicSmartBuffer::ThrowDataLength(int nLength){
 	if(m_bSelfBuf)
 		memmove(m_pszBuffer, m_pszBuffer + nLength, m_cbBuffer);
 	else
-		//¾¡Á¿²»¸Ä±äÔ­À´µÄÄÚ´æ¿é
+		//å°½é‡ä¸æ”¹å˜åŸæ¥çš„å†…å­˜å—
 		m_pszBuffer += nLength;
 }
-//¶ÁÈ¡Êı¾İ
+//è¯»å–æ•°æ®
 void CBasicSmartBuffer::ReadData(void* pBuffer, int nLength)
 {
 	if (m_cbBuffer < nLength || nLength <= 0){
@@ -263,7 +263,7 @@ void CBasicSmartBuffer::ReadData(void* pBuffer, int nLength)
 	if (m_bSelfBuf)
 		memmove(m_pszBuffer, m_pszBuffer + nLength, m_cbBuffer);
 	else
-		//¾¡Á¿²»¸Ä±äÔ­À´µÄÄÚ´æ¿é
+		//å°½é‡ä¸æ”¹å˜åŸæ¥çš„å†…å­˜å—
 		m_pszBuffer += nLength;
 }
 //binddatatosmartbuffer

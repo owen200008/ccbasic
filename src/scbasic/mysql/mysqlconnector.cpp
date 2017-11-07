@@ -9,7 +9,7 @@ CParseMySQLPacketBuffer::~CParseMySQLPacketBuffer()
 
 }
 
-//¶¨Î»Êı¾İÍ·
+//å®šä½æ•°æ®å¤´
 long CParseMySQLPacketBuffer::IsPacketFull(long lMaxPacketSize)
 {
 	if (m_cbBuffer < 4)
@@ -25,7 +25,7 @@ long CParseMySQLPacketBuffer::IsPacketFull(long lMaxPacketSize)
 	return MYSQLCONNECT_LOCATION_HEADER_NOENOUGH;
 }
 
-/*ÏÂÒ»¸öÍ·*/
+/*ä¸‹ä¸€ä¸ªå¤´*/
 bool CParseMySQLPacketBuffer::ResetHeader()
 {
 	if (0 == m_nPacketLength)

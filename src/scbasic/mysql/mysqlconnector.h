@@ -16,13 +16,13 @@ public:
 	CParseMySQLPacketBuffer();
 	virtual ~CParseMySQLPacketBuffer();
 
-	//! ¶¨Î»Êı¾İÍ·
+	//! å®šä½æ•°æ®å¤´
 	long IsPacketFull(long lMaxPacketSize);
 
-	//! »ñÈ¡°ü³¤
+	//! è·å–åŒ…é•¿
 	Net_UInt GetTotalPacketLength(){ return m_nPacketLength + 4; }
 
-	//! ÏÂÒ»¸ö
+	//! ä¸‹ä¸€ä¸ª
 	bool ResetHeader();
 protected:
 	Net_UInt	m_nPacketLength;
@@ -113,11 +113,11 @@ struct _SCBASIC_DLL_API MysqlResultData : public basiclib::CBasicObject{
             delete m_pRowData;
         }
     }
-    //ÏÂÒ»ĞĞ
+    //ä¸‹ä¸€è¡Œ
     bool NextRow();
-    //»ñÈ¡Êı¾İ
+    //è·å–æ•°æ®
     MysqlRowColData* GetCurrentRowDataByIndex(int nIndex);
-    //»ñÈ¡Êı¾İ
+    //è·å–æ•°æ®
     bool GetColCString(const char* pColName, basiclib::CBasicString& strRet);
 	bool GetColSmartBuffer(const char* pColName, basiclib::CBasicSmartBuffer& strRet);
     bool GetColUIntData(const char* pColName, Net_UInt& nValue);
@@ -173,7 +173,7 @@ struct _SCBASIC_DLL_API MysqlReplyQuery : basiclib::CBasicObject{
     }
 };
 
-//¶àÓï¾äÖ´ĞĞÇëÇó°ü
+//å¤šè¯­å¥æ‰§è¡Œè¯·æ±‚åŒ…
 class _SCBASIC_DLL_API MysqlMultiRequest : public basiclib::CBasicObject{
 public:
     MysqlMultiRequest(int nType, const char* pSQL){ 

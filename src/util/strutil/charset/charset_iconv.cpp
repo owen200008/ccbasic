@@ -10,7 +10,7 @@ __NS_BASIC_START
 
 const size_t wchar_len = sizeof(WCHAR);
 const char* CPS_UNICODE_TYPES[] = {CPS_UTF16LE, CPS_UTF32LE};
-const char* CPS_UNICODE_TYPE = CPS_UNICODE_TYPES[wchar_len / 4];	// ³ıÒÔ4À´È·¶¨ÏÂ±ê
+const char* CPS_UNICODE_TYPE = CPS_UNICODE_TYPES[wchar_len / 4];	// é™¤ä»¥4æ¥ç¡®å®šä¸‹æ ‡
 
 wchar_string& Basic_MultiStringToWideString(const char* str, int len, wchar_string& dest, const char* from)
 {
@@ -66,24 +66,24 @@ char_string& Basic_MultiStringToUTF8(const char* str, int len, char_string& dest
 	return Basic_MultiStringToMultiString(str, len, dest, from, CPS_UTF8);
 }
 
-/*!×Ö·û´®×ªÎªUNICODE(UTF-16LE/UTF-32LE)±àÂë*/
+/*!å­—ç¬¦ä¸²è½¬ä¸ºUNICODE(UTF-16LE/UTF-32LE)ç¼–ç */
 wchar_string& Basic_MultiStringToWideString(const char* str, int len, wchar_string& dest, unsigned int nCodePage /*= 0*/)
 {
 	return Basic_MultiStringToWideString(str, len, dest, CPCodeToCPStr(nCodePage));
 }
-/*!UNICODE(UTF-16)±àÂëµÄ×Ö·û´®×ªÎªÄ¿±ê×Ö·û´®±àÂë*/
+/*!UNICODE(UTF-16)ç¼–ç çš„å­—ç¬¦ä¸²è½¬ä¸ºç›®æ ‡å­—ç¬¦ä¸²ç¼–ç */
 char_string& Basic_WideStringToMultiString(const WCHAR* str, int len, char_string& dest, unsigned int nCodePage /*= 0*/)
 {
 	return Basic_WideStringToMultiString(str, len, dest, CPCodeToCPStr(nCodePage));
 }
 
-/*!Á½ÖÖ·ÇUTF-16±àÂë¼äµÄ×ª»»*/
+/*!ä¸¤ç§éUTF-16ç¼–ç é—´çš„è½¬æ¢*/
 char_string& Basic_MultiStringToMultiString(const char* str, int len, char_string& dest, unsigned int nCPFrom, unsigned int nCPTo)
 {
 	return Basic_MultiStringToMultiString(str, len, dest, CPCodeToCPStr(nCPFrom), CPCodeToCPStr(nCPTo));
 }
 
-/*!×Ö·û´®×ª»¯ÎªUTF8,strÎª·ÇUNICODE6±àÂë*/
+/*!å­—ç¬¦ä¸²è½¬åŒ–ä¸ºUTF8,strä¸ºéUNICODE6ç¼–ç */
 char_string& Basic_MultiStringToUTF8(const char* str, int len, char_string& dest, unsigned int nCodePage /*= 0*/)
 {
 	return Basic_MultiStringToUTF8(str, len, dest, CPCodeToCPStr(nCodePage));

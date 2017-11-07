@@ -1,11 +1,11 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     charset.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     charset.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 11:18:55
-// ÄÚÈİÃèÊö:   ÓÃÓÚ±àÂë×ª»»µÄÍ·ÎÄ¼ş¡£
-ÔÚ¾ßÌåÊµÏÖºÍ²Ù×÷ÏµÍ³ÓĞ¹Ø¡£
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 11:18:55
+// å†…å®¹æè¿°:   ç”¨äºç¼–ç è½¬æ¢çš„å¤´æ–‡ä»¶ã€‚
+åœ¨å…·ä½“å®ç°å’Œæ“ä½œç³»ç»Ÿæœ‰å…³ã€‚
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_CHARSET_H
 #define BASIC_CHARSET_H
@@ -20,156 +20,156 @@ __NS_BASIC_START
 _BASIC_DLL_API const char*	CPCodeToCPStr(int nCPCode);
 _BASIC_DLL_API int CPStrToCPCode(const char* strCPStr);
 
-/*!×Ö·û´®×ªÎªUNICODE(UTF-16LE)±àÂë
-* \param str [in]Ô´×Ö·û´®
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param nCodePage [in]Ô´×Ö·û´®µÄcode page¡£Ä¬ÈÏ0
-* \return ×ª»»ºóµÄ¿í×Ö·û´®
+/*!å­—ç¬¦ä¸²è½¬ä¸ºUNICODE(UTF-16LE)ç¼–ç 
+* \param str [in]æºå­—ç¬¦ä¸²
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param nCodePage [in]æºå­—ç¬¦ä¸²çš„code pageã€‚é»˜è®¤0
+* \return è½¬æ¢åçš„å®½å­—ç¬¦ä¸²
 */
 _BASIC_DLL_API wchar_string Basic_MultiStringToWideString(const char* str, int len, unsigned int nCodePage = 0);
 
-/*!×Ö·û´®×ªÎªUNICODE(UTF-16LE)±àÂë
-* \param src [in]Ô´×Ö·û´®
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param dest [out]×ª»»ºóÊä³öµÄ×Ö·û´®¡£
-* \param nCodePage [in]Ô´×Ö·û´®µÄcode page
-* \return ×ª»»ºóµÄ¿í×Ö·û´®,Í¬dest
+/*!å­—ç¬¦ä¸²è½¬ä¸ºUNICODE(UTF-16LE)ç¼–ç 
+* \param src [in]æºå­—ç¬¦ä¸²
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param dest [out]è½¬æ¢åè¾“å‡ºçš„å­—ç¬¦ä¸²ã€‚
+* \param nCodePage [in]æºå­—ç¬¦ä¸²çš„code page
+* \return è½¬æ¢åçš„å®½å­—ç¬¦ä¸²,åŒdest
 */
 _BASIC_DLL_API wchar_string& Basic_MultiStringToWideString(const char* src, int len, wchar_string& dest, unsigned int nCodePage = 0);
 
-/*!UNICODE(UTF-16)±àÂëµÄ×Ö·û´®×ªÎªÄ¿±ê×Ö·û´®±àÂë
-* \param str [in]Ô´×Ö·û´®
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param nCodePage [in]Ä¿±ê×Ö·û´®µÄcode page
-* \return ×ª»»ºóµÄ×Ö·û´®
+/*!UNICODE(UTF-16)ç¼–ç çš„å­—ç¬¦ä¸²è½¬ä¸ºç›®æ ‡å­—ç¬¦ä¸²ç¼–ç 
+* \param str [in]æºå­—ç¬¦ä¸²
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param nCodePage [in]ç›®æ ‡å­—ç¬¦ä¸²çš„code page
+* \return è½¬æ¢åçš„å­—ç¬¦ä¸²
 */
 _BASIC_DLL_API char_string Basic_WideStringToMultiString(const WCHAR* str, int len, unsigned int nCodePage = 0);
 
-/*!UNICODE(UTF-16)±àÂëµÄ×Ö·û´®×ªÎªÄ¿±ê×Ö·û´®±àÂë
-* \param src [in]Ô´×Ö·û´®
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param dest [out]Ä¿±ê×Ö·û´®
-* \param nCodePage [in]Ä¿±ê×Ö·û´®µÄcode page
-* \return ×ª»»ºó×Ö·û´®,Í¬dest
+/*!UNICODE(UTF-16)ç¼–ç çš„å­—ç¬¦ä¸²è½¬ä¸ºç›®æ ‡å­—ç¬¦ä¸²ç¼–ç 
+* \param src [in]æºå­—ç¬¦ä¸²
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param dest [out]ç›®æ ‡å­—ç¬¦ä¸²
+* \param nCodePage [in]ç›®æ ‡å­—ç¬¦ä¸²çš„code page
+* \return è½¬æ¢åå­—ç¬¦ä¸²,åŒdest
 */
 _BASIC_DLL_API char_string& Basic_WideStringToMultiString(const WCHAR* src, int len, char_string& dest, unsigned int nCodePage = 0);
 
 
-/*!Á½ÖÖ·ÇUTF-16±àÂë¼äµÄ×ª»»
-* \param str [in]Ô´×Ö·û´®
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param nCPFrom [in]Ô´×Ö·û´®µÄcode page
-* \param nCPTo [in]Ä¿±ê×Ö·û´®µÄcode page
-* \return ×ª»»ºóµÄ×Ö·û´®
+/*!ä¸¤ç§éUTF-16ç¼–ç é—´çš„è½¬æ¢
+* \param str [in]æºå­—ç¬¦ä¸²
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param nCPFrom [in]æºå­—ç¬¦ä¸²çš„code page
+* \param nCPTo [in]ç›®æ ‡å­—ç¬¦ä¸²çš„code page
+* \return è½¬æ¢åçš„å­—ç¬¦ä¸²
 */
 _BASIC_DLL_API char_string Basic_MultiStringToMultiString(const char* str, int len, unsigned int nCPFrom, unsigned int nCPTo);
 
-/*!Á½ÖÖ·ÇUTF-16±àÂë¼äµÄ×ª»»
-* \param src [in]Ô´×Ö·û´®
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param dest [out]Ä¿±ê×Ö·û´®
-* \param nCPFrom [in]Ô´×Ö·û´®µÄcode page
-* \param nCPTo [in]Ä¿±ê×Ö·û´®µÄcode page
-* \return  ×ª»»ºó×Ö·û´®µÄ³¤¶È
+/*!ä¸¤ç§éUTF-16ç¼–ç é—´çš„è½¬æ¢
+* \param src [in]æºå­—ç¬¦ä¸²
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param dest [out]ç›®æ ‡å­—ç¬¦ä¸²
+* \param nCPFrom [in]æºå­—ç¬¦ä¸²çš„code page
+* \param nCPTo [in]ç›®æ ‡å­—ç¬¦ä¸²çš„code page
+* \return  è½¬æ¢åå­—ç¬¦ä¸²çš„é•¿åº¦
 */
 _BASIC_DLL_API char_string& Basic_MultiStringToMultiString(const char* src, int len, char_string& dest, unsigned int nCPFrom, unsigned int nCPTo);
 
 
-/*!×Ö·û´®×ª»¯ÎªUTF8
-* \param str [in]Ô´×Ö·û´®¡£·ÇUTF-16±àÂë
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param nCodePage [in]Ô­×Ö·û´®code page
-* \return ×ª»»ºóµÄ×Ö·û´®¡£
+/*!å­—ç¬¦ä¸²è½¬åŒ–ä¸ºUTF8
+* \param str [in]æºå­—ç¬¦ä¸²ã€‚éUTF-16ç¼–ç 
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param nCodePage [in]åŸå­—ç¬¦ä¸²code page
+* \return è½¬æ¢åçš„å­—ç¬¦ä¸²ã€‚
 */
 _BASIC_DLL_API char_string Basic_MultiStringToUTF8(const char* str, int len, unsigned int nCodePage = 0);
 
-/*!×Ö·û´®×ª»¯ÎªUTF8,strÎª·ÇUNICODE6±àÂë
-* \param src [in]Ô´×Ö·û´®¡£·ÇUTF-16±àÂë
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param dest [out]Ä¿±ê×Ö·û´®
-* \param nCodePage [in]Ô´×Ö·û´®code page
-* \return ×ª»»ºóµÄ×Ö·û´®¡£Í¬dest
+/*!å­—ç¬¦ä¸²è½¬åŒ–ä¸ºUTF8,strä¸ºéUNICODE6ç¼–ç 
+* \param src [in]æºå­—ç¬¦ä¸²ã€‚éUTF-16ç¼–ç 
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param dest [out]ç›®æ ‡å­—ç¬¦ä¸²
+* \param nCodePage [in]æºå­—ç¬¦ä¸²code page
+* \return è½¬æ¢åçš„å­—ç¬¦ä¸²ã€‚åŒdest
 */
 _BASIC_DLL_API char_string& Basic_MultiStringToUTF8(const char* src, int len, char_string& dest, unsigned int nCodePage = 0);
 
-//---------------------8<------------------code page ²»Í¬µÄ·Ö¸îÏß--------------------
+//---------------------8<------------------code page ä¸åŒçš„åˆ†å‰²çº¿--------------------
 
-/*!×Ö·û´®×ªÎªUNICODE(UTF-16)±àÂë
-* \param str [in]Ô´×Ö·û´®¡£·ÇUTF-16±àÂë
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param from [in]Ô­×Ö·û´®±àÂë
-* \return ×ª»»ºóµÄ×Ö·û´®
+/*!å­—ç¬¦ä¸²è½¬ä¸ºUNICODE(UTF-16)ç¼–ç 
+* \param str [in]æºå­—ç¬¦ä¸²ã€‚éUTF-16ç¼–ç 
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param from [in]åŸå­—ç¬¦ä¸²ç¼–ç 
+* \return è½¬æ¢åçš„å­—ç¬¦ä¸²
 */
 _BASIC_DLL_API wchar_string Basic_MultiStringToWideString(const char* str, int len, const char* from);
 
-/*!×Ö·û´®×ªÎªUNICODE(UTF-16)±àÂë
-* \param src [in]Ô´×Ö·û´®¡£·ÇUTF-16±àÂë
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param dest [out]Ä¿±ê×Ö·û´®
-* \param from [in]Ô­×Ö·û´®±àÂë
-* \return ×ª»»ºóµÄ×Ö·û´®£¬Í¬dest
+/*!å­—ç¬¦ä¸²è½¬ä¸ºUNICODE(UTF-16)ç¼–ç 
+* \param src [in]æºå­—ç¬¦ä¸²ã€‚éUTF-16ç¼–ç 
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param dest [out]ç›®æ ‡å­—ç¬¦ä¸²
+* \param from [in]åŸå­—ç¬¦ä¸²ç¼–ç 
+* \return è½¬æ¢åçš„å­—ç¬¦ä¸²ï¼ŒåŒdest
 */
 _BASIC_DLL_API wchar_string& Basic_MultiStringToWideString(const char* src, int len, wchar_string& dest, const char* from);
 
-/*!UNICODE(UTF-16)±àÂëµÄ×Ö·û´®×ªÎªÄ¿±ê×Ö·û´®±àÂë
-* \param str [in]Ô´×Ö·û´®
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param to [in]Ä¿±ê×Ö·û´®µÄcode page
-* \return char_string ×ª»»ºóµÄ×Ö·û´®
+/*!UNICODE(UTF-16)ç¼–ç çš„å­—ç¬¦ä¸²è½¬ä¸ºç›®æ ‡å­—ç¬¦ä¸²ç¼–ç 
+* \param str [in]æºå­—ç¬¦ä¸²
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param to [in]ç›®æ ‡å­—ç¬¦ä¸²çš„code page
+* \return char_string è½¬æ¢åçš„å­—ç¬¦ä¸²
 */
 _BASIC_DLL_API char_string	Basic_WideStringToMultiString(const WCHAR* str, int len, const char* to);
 
 
-/*!UNICODE(UTF-16)±àÂëµÄ×Ö·û´®×ªÎªÄ¿±ê×Ö·û´®±àÂë
-* \param src [in]Ô´×Ö·û´®
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param dest [out]Ä¿±ê×Ö·û´®
-* \param to [in]Ä¿±ê×Ö·û´®µÄcode page
-* \return ×ª»»ºó×Ö·û´®,Í¬dest
+/*!UNICODE(UTF-16)ç¼–ç çš„å­—ç¬¦ä¸²è½¬ä¸ºç›®æ ‡å­—ç¬¦ä¸²ç¼–ç 
+* \param src [in]æºå­—ç¬¦ä¸²
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param dest [out]ç›®æ ‡å­—ç¬¦ä¸²
+* \param to [in]ç›®æ ‡å­—ç¬¦ä¸²çš„code page
+* \return è½¬æ¢åå­—ç¬¦ä¸²,åŒdest
 */
 _BASIC_DLL_API char_string& Basic_WideStringToMultiString(const WCHAR* src, int len, char_string& dest, const char* to);
 
 
-/*!Á½ÖÖ·ÇUTF-16±àÂë¼äµÄ×ª»»
-* \param str [in]Ô´×Ö·û´®
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param from [in]Ô´×Ö·û´®µÄcode page
-* \param to [in]Ä¿±ê×Ö·û´®µÄcode page
-* \return ×ª»»ºóµÄ×Ö·û´®
+/*!ä¸¤ç§éUTF-16ç¼–ç é—´çš„è½¬æ¢
+* \param str [in]æºå­—ç¬¦ä¸²
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param from [in]æºå­—ç¬¦ä¸²çš„code page
+* \param to [in]ç›®æ ‡å­—ç¬¦ä¸²çš„code page
+* \return è½¬æ¢åçš„å­—ç¬¦ä¸²
 */
 _BASIC_DLL_API char_string	Basic_MultiStringToMultiString(const char* str, int len, const char* from, const char* to);
 
-/*!Á½ÖÖ·ÇUTF-16±àÂë¼äµÄ×ª»»
-* \param src [in]Ô´×Ö·û´®
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param dest [out]Ä¿±ê×Ö·û´®
-* \param from [in]Ô´×Ö·û´®µÄcode page
-* \param to [in]Ä¿±ê×Ö·û´®µÄcode page
-* \return  ×ª»»ºó×Ö·û´®µÄ³¤¶È
+/*!ä¸¤ç§éUTF-16ç¼–ç é—´çš„è½¬æ¢
+* \param src [in]æºå­—ç¬¦ä¸²
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param dest [out]ç›®æ ‡å­—ç¬¦ä¸²
+* \param from [in]æºå­—ç¬¦ä¸²çš„code page
+* \param to [in]ç›®æ ‡å­—ç¬¦ä¸²çš„code page
+* \return  è½¬æ¢åå­—ç¬¦ä¸²çš„é•¿åº¦
 */
 _BASIC_DLL_API char_string& Basic_MultiStringToMultiString(const char* src, int len, char_string& dest, const char* from, const char* to);
 
 
-/*!×Ö·û´®×ª»¯ÎªUTF8
-* \param str [in]Ô´×Ö·û´®¡£·ÇUTF-16±àÂë
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param from [in]Ô­×Ö·û´®code page
-* \return ×ª»»ºóµÄ×Ö·û´®¡£
+/*!å­—ç¬¦ä¸²è½¬åŒ–ä¸ºUTF8
+* \param str [in]æºå­—ç¬¦ä¸²ã€‚éUTF-16ç¼–ç 
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param from [in]åŸå­—ç¬¦ä¸²code page
+* \return è½¬æ¢åçš„å­—ç¬¦ä¸²ã€‚
 */
 _BASIC_DLL_API char_string	Basic_MultiStringToUTF8(const char* str, int len, const char* from);
 
-/*!×Ö·û´®×ª»¯ÎªUTF8,strÎª·ÇUNICODE6±àÂë
-* \param src [in]Ô´×Ö·û´®¡£·ÇUTF-16±àÂë
-* \param len [in]Ô´×Ö·û´®³¤¶È
-* \param dest [out]Ä¿±ê×Ö·û´®
-* \param from [in]Ô´×Ö·û´®code page
-* \return ×ª»»ºóµÄ×Ö·û´®¡£Í¬dest
+/*!å­—ç¬¦ä¸²è½¬åŒ–ä¸ºUTF8,strä¸ºéUNICODE6ç¼–ç 
+* \param src [in]æºå­—ç¬¦ä¸²ã€‚éUTF-16ç¼–ç 
+* \param len [in]æºå­—ç¬¦ä¸²é•¿åº¦
+* \param dest [out]ç›®æ ‡å­—ç¬¦ä¸²
+* \param from [in]æºå­—ç¬¦ä¸²code page
+* \return è½¬æ¢åçš„å­—ç¬¦ä¸²ã€‚åŒdest
 */
 _BASIC_DLL_API char_string& Basic_MultiStringToUTF8(const char* src, int len, char_string& dest, const char* from);
 
-// --------------------8<-----------------¼ò·±Ìå´¦ÀíµÄ·Ö¸îÏß------------------
+// --------------------8<-----------------ç®€ç¹ä½“å¤„ç†çš„åˆ†å‰²çº¿------------------
 
-/*!¼òÌå×ª·±Ìå*/
+/*!ç®€ä½“è½¬ç¹ä½“*/
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_GbToBig5(const CharType* str, int len)
 {
@@ -178,12 +178,12 @@ typename __BasicString<CharType>::StringType Basic_GbToBig5(const CharType* str,
 	return Basic_GbToBig5(str, len, dest);
 
 }
-/*!¼òÌå×ª·±Ìå*/
+/*!ç®€ä½“è½¬ç¹ä½“*/
 _BASIC_DLL_API char_string&	Basic_GbToBig5(const char* src, int len, char_string& dest);
-/*!¼òÌå×ª·±Ìå*/
+/*!ç®€ä½“è½¬ç¹ä½“*/
 _BASIC_DLL_API wchar_string&	Basic_GbToBig5(const WCHAR* str, int len, wchar_string& dest);
 
-/*!·±Ìå×ª¼òÌå*/
+/*!ç¹ä½“è½¬ç®€ä½“*/
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_Big5ToGb(const CharType* str, int len)
 {
@@ -191,16 +191,16 @@ typename __BasicString<CharType>::StringType Basic_Big5ToGb(const CharType* str,
 	StringType dest;
 	return Basic_Big5ToGb(str, len, dest);
 }
-/*!¼òÌå×ª·±Ìå*/
+/*!ç®€ä½“è½¬ç¹ä½“*/
 _BASIC_DLL_API char_string&	Basic_Big5ToGb(const char* str, int len, char_string& dest);
-/*!·±Ìå×ª¼òÌå*/
+/*!ç¹ä½“è½¬ç®€ä½“*/
 _BASIC_DLL_API wchar_string&	Basic_Big5ToGb(const WCHAR* str, int len, wchar_string& dest);
 
 
-/*!ÅĞ¶ÏÒ»¸ö×Ö·û´®ÊÇ·ñÊÇUTF8±àÂë*/
+/*!åˆ¤æ–­ä¸€ä¸ªå­—ç¬¦ä¸²æ˜¯å¦æ˜¯UTF8ç¼–ç */
 _BASIC_DLL_API bool			Basic_IsUTF8Str(const char* str, int len);
 
-//! °ÑÒ»¸ö TCHAR ×Ö·û´®×ª»»³É char ×Ö·û´®£¬Ö»ÊÇÔÚ UNICODE °æ±¾ÏÂÃæ²ÅÒª×ª»»¡£
+//! æŠŠä¸€ä¸ª TCHAR å­—ç¬¦ä¸²è½¬æ¢æˆ char å­—ç¬¦ä¸²ï¼Œåªæ˜¯åœ¨ UNICODE ç‰ˆæœ¬ä¸‹é¢æ‰è¦è½¬æ¢ã€‚
 class _BASIC_DLL_API CTStringToMultiString
 {
 public:

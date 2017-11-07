@@ -1,10 +1,10 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     array.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// æ–‡ä»¶å:     array.h
+// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 9:14:11
-// ÄÚÈİÃèÊö:   Ê¹ÓÃstlµÄvectorÊµÏÖMFC CArrayµÄ½Ó¿Ú
-// °æ±¾ĞÅÏ¢:   1.0V
+// åˆ›å»ºæ—¶é—´:   2012/2/17 9:14:11
+// å†…å®¹æè¿°:   ä½¿ç”¨stlçš„vectorå®ç°MFC CArrayçš„æ¥å£
+// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_ARRAY_H
 #define BASIC_ARRAY_H
@@ -32,50 +32,50 @@ public:
 	CArray();
 
 // Attributes
-	//! È¡µÃArray´óĞ¡
+	//! å–å¾—Arrayå¤§å°
 	int GetSize() const;
-	//! È¡µÃArray×î´óµÄ¿ÉÓÃÏÂ±ê
+	//! å–å¾—Arrayæœ€å¤§çš„å¯ç”¨ä¸‹æ ‡
 	int GetUpperBound() const;
-	//! ÉèÖÃÊı×é´óĞ¡
+	//! è®¾ç½®æ•°ç»„å¤§å°
 	void SetSize(int nNewSize);
 
 // Operations
 	// Clean up
-	//! ÎªÁË¼æÈİMFC CArray±£Áô£¬Êµ¼ÊÊ²Ã´¶¼²»×ö¡£
+	//! ä¸ºäº†å…¼å®¹MFC CArrayä¿ç•™ï¼Œå®é™…ä»€ä¹ˆéƒ½ä¸åšã€‚
 	void FreeExtra();
-	//! Çå¿ÕÊı×é
+	//! æ¸…ç©ºæ•°ç»„
 	void RemoveAll();
 
 	// Accessing elements
-	//!È¡µÃnIndexÎ»ÖÃµÄ¶ÔÏóÖµ
+	//!å–å¾—nIndexä½ç½®çš„å¯¹è±¡å€¼
 	TYPE GetAt(int nIndex) const;
-	//!ÉèÖÃnIndexÎ»ÖÃµÄÖµ
+	//!è®¾ç½®nIndexä½ç½®çš„å€¼
 	void SetAt(int nIndex, ARG_TYPE newElement);
-	//! È¡µÃnIndexÎ»ÖÃ¶ÔÏóµÄÖµ
+	//! å–å¾—nIndexä½ç½®å¯¹è±¡çš„å€¼
 	TYPE& ElementAt(int nIndex);
 
 	// Direct Access to the element data(may return NULL)
-	//! ×ª»¯ÎªÖ¸ÕëÁĞ±í
+	//! è½¬åŒ–ä¸ºæŒ‡é’ˆåˆ—è¡¨
 	const TYPE* GetData() const;
-	//! ×ª»¯ÎªÖ¸ÕëÁĞ±í
+	//! è½¬åŒ–ä¸ºæŒ‡é’ˆåˆ—è¡¨
 	TYPE* GetData();
 
 	// Potentially growing the array
-	//! ÉèÖÃnIndexÎ»ÖÃµÄÖµ£¬Èç¹û¸ÃµØÖ·³¬³öÊı×é´óĞ¡£¬ÔòÀ©Õ¹¸ÃÊı×é
+	//! è®¾ç½®nIndexä½ç½®çš„å€¼ï¼Œå¦‚æœè¯¥åœ°å€è¶…å‡ºæ•°ç»„å¤§å°ï¼Œåˆ™æ‰©å±•è¯¥æ•°ç»„
 	void SetAtGrow(int nIndex, ARG_TYPE newElement);
-	//! Î²²¿×·¼ÓÒ»¸ö¶ÔÏó
+	//! å°¾éƒ¨è¿½åŠ ä¸€ä¸ªå¯¹è±¡
 	int Add(ARG_TYPE newElement);
-	//! Î²²¿×·¼ÓsrcÖĞµÄ¶ÔÏó
+	//! å°¾éƒ¨è¿½åŠ srcä¸­çš„å¯¹è±¡
 	int Append(const CArray& src);
-	//! ´Ósrc¸³Öµ
+	//! ä»srcèµ‹å€¼
 	void Copy(const CArray& src);
 
 	// Operations that move elements arround
-	//! ÔÚnIndexÎ»ÖÃ²åÈë¶ÔÏó
+	//! åœ¨nIndexä½ç½®æ’å…¥å¯¹è±¡
 	void InsertAt(int nIndex, ARG_TYPE newElement, int nCount = 1);
-	//! ´ÓÊı×éÖĞÒÆ³ınIndexÎ»ÖÃµÄ¶ÔÏó
+	//! ä»æ•°ç»„ä¸­ç§»é™¤nIndexä½ç½®çš„å¯¹è±¡
 	void RemoveAt(int nIndex, int nCount = 1);
-	//! ÔÚnIndexÎ»ÖÃ²åÈë¶ÔÏópNewArrayÖĞµÄÖµ¡£
+	//! åœ¨nIndexä½ç½®æ’å…¥å¯¹è±¡pNewArrayä¸­çš„å€¼ã€‚
 	void InsertAt(int nStartIndex, CArray* pNewArray);
 public:
 	~CArray();	

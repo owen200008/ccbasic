@@ -27,7 +27,7 @@ void BasicRegisteShutDown(GlobalShutdownFunc funcShutdown)
 }
 
 #if	!(defined(__LINUX) || defined(__MAC) || defined(__ANDROID))
-//!注册异常回调函数处理
+//!娉ㄥ唽寮傚父鍥炶皟鍑芥暟澶勭悊
 extern GlobalExceptionFunc g_funcException;
 void BasicRegisteExceptionFunction(GlobalExceptionFunc funcException)
 {
