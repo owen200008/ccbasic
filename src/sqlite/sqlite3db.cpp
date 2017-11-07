@@ -1,4 +1,4 @@
-#include "../inc/basic.h"
+﻿#include "../inc/basic.h"
 
 CCQLite3DB::CCQLite3DB()
 {

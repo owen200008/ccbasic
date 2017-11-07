@@ -1,4 +1,4 @@
-#ifndef __EXCEPTION_LINUX_H_
+﻿#ifndef __EXCEPTION_LINUX_H_
 #define __EXCEPTION_LINUX_H_
 
 #define ALLOCTO_STACK_MEMORY  8192	//异常堆栈的大小

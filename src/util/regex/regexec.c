@@ -1,4 +1,4 @@
-/*
+﻿/*
  * the outer shell of regexec()
  *
  * This file includes engine.c *twice*, after muchos fiddling with the

@@ -1,4 +1,4 @@
-#include "../inc/basic.h"
+﻿#include "../inc/basic.h"
 #include "net_mgr.h"
 
 __NS_BASIC_START

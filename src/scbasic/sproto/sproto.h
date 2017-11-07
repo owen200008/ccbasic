@@ -1,4 +1,4 @@
-#ifndef sproto_h
+﻿#ifndef sproto_h
 #define sproto_h
 
 #include <stddef.h>

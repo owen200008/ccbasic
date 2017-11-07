@@ -1,4 +1,4 @@
-/*
+﻿/*
  * First, the stuff that ends up in the outside-world include file
  = #ifdef WIN32
  = #define API_EXPORT(type)    __declspec(dllexport) type __stdcall

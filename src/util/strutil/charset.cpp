@@ -1,4 +1,4 @@
-#include "charset/charset_def.h"
+﻿#include "charset/charset_def.h"
 #include "charset.h"
 #include "cppstring.h"
 

@@ -1,4 +1,4 @@
-#include "basic.h"
+﻿#include "basic.h"
 #include "basicversion.h"
 
 static basiclib::CBasicString* g_strBasiclibVersion = nullptr;

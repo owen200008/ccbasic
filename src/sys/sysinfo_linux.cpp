@@ -1,4 +1,4 @@
-#ifdef __LINUX
+﻿#ifdef __LINUX
 //
 //取得系统信息系列函数
 //

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef INC_CIFOX_HTTPRESPONSE_H__
 #define INC_CIFOX_HTTPRESPONSE_H__
 

@@ -1,4 +1,4 @@
-#ifndef SCBASIC_RSA_H
+﻿#ifndef SCBASIC_RSA_H
 #define SCBASIC_RSA_H
 
 #include <basic.h>

@@ -1,4 +1,4 @@
-#include "mysqlconnector_netwapper.h"
+﻿#include "mysqlconnector_netwapper.h"
 /////////////////////////////////////////////////////////////////////////////////////////////
 CMySQLConnector_NetWapperBasicClient::CMySQLConnector_NetWapperBasicClient()
 {

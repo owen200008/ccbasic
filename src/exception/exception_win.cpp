@@ -1,4 +1,4 @@
-#ifdef __BASICWINDOWS
+﻿#ifdef __BASICWINDOWS
 
 // #ifndef _WIN32_WINNT
 // #ifdef WINVER

@@ -1,4 +1,4 @@
-#ifndef BASIC_TIME_H
+﻿#ifndef BASIC_TIME_H
 #define BASIC_TIME_H
 
 #include <time.h>

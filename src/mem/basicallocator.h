@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef BASIC_basicallocator_H__
 #define BASIC_basicallocator_H__
 

@@ -1,4 +1,4 @@
-#ifndef __cocos2dx_xmqxz_lsproto_h__
+﻿#ifndef __cocos2dx_xmqxz_lsproto_h__
 #define __cocos2dx_xmqxz_lsproto_h__
 
 #ifdef __cplusplus

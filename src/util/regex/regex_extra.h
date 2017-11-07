@@ -1,4 +1,4 @@
-/* do not frame this - we must be able to include this file multiple times */
+﻿/* do not frame this - we must be able to include this file multiple times */
 
 #undef regexec
 #undef regerror

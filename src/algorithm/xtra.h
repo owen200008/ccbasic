@@ -1,4 +1,4 @@
-#ifndef BASIC_XTRA_H
+﻿#ifndef BASIC_XTRA_H
 #define BASIC_XTRA_H
 
 #include <stdint.h>

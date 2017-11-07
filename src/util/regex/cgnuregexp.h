@@ -1,4 +1,4 @@
-#ifndef __GNU_CREGEXP_H__
+﻿#ifndef __GNU_CREGEXP_H__
 #define __GNU_CREGEXP_H__
 /*
  * 这是对gnu regexp函数的c++封装

@@ -1,4 +1,4 @@
-#include "httpparser.h"
+﻿#include "httpparser.h"
 using namespace basiclib;
 
 const char*	key_content_length = "content-length";

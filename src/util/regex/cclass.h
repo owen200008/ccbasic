@@ -1,4 +1,4 @@
-/* character-class table */
+﻿/* character-class table */
 static struct cclass {
 	unsigned char *name;
 	unsigned char *chars;

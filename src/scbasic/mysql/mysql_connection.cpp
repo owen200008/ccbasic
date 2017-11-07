@@ -1,4 +1,4 @@
-#include "mysql_connection.h"
+﻿#include "mysql_connection.h"
 
 
 #define bit_uint1korr(A)	(*(((uint8_t*)(A))))

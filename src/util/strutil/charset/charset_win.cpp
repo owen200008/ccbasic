@@ -1,4 +1,4 @@
-#include "../../../inc/basic.h"
+﻿#include "../../../inc/basic.h"
 #ifdef __BASICWINDOWS
 #include "charset_win.h"
 #include <windows.h>

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * The matching engine and friends.  This file is #included by regexec.c
  * after suitable #defines of a variety of macros used herein, so that
  * different state representations can be used without duplicating masses

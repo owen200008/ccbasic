@@ -1,4 +1,4 @@
-#ifndef _MYSQL_CONNECTOR_NETWAPPER_H_
+﻿#ifndef _MYSQL_CONNECTOR_NETWAPPER_H_
 #define _MYSQL_CONNECTOR_NETWAPPER_H_
 
 #include "../scbasic/commu/basicclient.h"

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef BASIC_TIMEUTIL_H__
 #define BASIC_TIMEUTIL_H__
 

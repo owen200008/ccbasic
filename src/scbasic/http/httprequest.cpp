@@ -1,4 +1,4 @@
-#include "../../inc/basic.h"
+﻿#include "../../inc/basic.h"
 #include "httprequest.h"
 #include "httpdefine.h"
 using namespace basiclib;

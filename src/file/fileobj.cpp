@@ -1,4 +1,4 @@
-#include "../inc/basic.h"
+﻿#include "../inc/basic.h"
 #include "filebase.h"
 
 #define CHECK_OPEN			if(!IsOpen()){ return BASIC_FILE_NOT_OEPN; }

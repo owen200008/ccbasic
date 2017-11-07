@@ -1,4 +1,4 @@
-//						FastDelegateBind.h 
+﻿//						FastDelegateBind.h 
 //  Helper file for FastDelegates. Provides bind() function, enabling
 //  FastDelegates to be rapidly compared to programs using boost::function and boost::bind.
 //

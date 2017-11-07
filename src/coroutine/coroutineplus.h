@@ -1,4 +1,4 @@
-#ifndef INC_COROUTINEPLUS_H
+﻿#ifndef INC_COROUTINEPLUS_H
 #define INC_COROUTINEPLUS_H
 
 typedef void(*coctx_pfn_t)(const char* s);

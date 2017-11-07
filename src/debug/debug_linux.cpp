@@ -1,4 +1,4 @@
-
+﻿
 #include "../inc/basic.h"
 
 #ifdef __LINUX

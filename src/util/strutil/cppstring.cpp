@@ -1,4 +1,4 @@
-#include "cppstring.h"
+﻿#include "cppstring.h"
 #include "../../inc/basic_def.h"
 #include <wchar.h>
 #include <stdlib.h>

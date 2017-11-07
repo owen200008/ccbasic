@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, Fredrik Orderud
+﻿/* Copyright (c) 2009, Fredrik Orderud
    License: BSD licence (http://www.opensource.org/licenses/bsd-license.php) */
 
 /* Windows (Microsoft visual studio) implementation of the call_stack class. */

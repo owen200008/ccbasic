@@ -1,4 +1,4 @@
-#ifndef INC_IPVERIFY_H_
+﻿#ifndef INC_IPVERIFY_H_
 #define INC_IPVERIFY_H_
 
 #include "../../inc/basic.h"

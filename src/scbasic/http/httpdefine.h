@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef INC_CIFOX_HTTPDEFINE_H__
 #define INC_CIFOX_HTTPDEFINE_H__
 

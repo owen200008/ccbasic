@@ -1,4 +1,4 @@
-#include "mysqlconnector.h"
+﻿#include "mysqlconnector.h"
 
 CParseMySQLPacketBuffer::CParseMySQLPacketBuffer()
 {

@@ -1,4 +1,4 @@
-#include "servertemplate.h"
+﻿#include "servertemplate.h"
 
 CNetServerControlSession::CNetServerControlSession(){
     m_bVerify = false;

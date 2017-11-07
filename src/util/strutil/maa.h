@@ -1,4 +1,4 @@
-#ifndef _INC_MAA_H
+﻿#ifndef _INC_MAA_H
 #define _INC_MAA_H
 
 __NS_BASIC_START

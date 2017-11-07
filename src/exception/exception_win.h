@@ -1,4 +1,4 @@
-#ifndef _WIN_EXCEPTION_H
+﻿#ifndef _WIN_EXCEPTION_H
 #define _WIN_EXCEPTION_H
 
 #include "exception.h"

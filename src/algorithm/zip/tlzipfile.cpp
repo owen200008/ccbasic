@@ -1,4 +1,4 @@
-#include "../../inc/basic.h"
+﻿#include "../../inc/basic.h"
 #include <iostream>
 using namespace std;
 using namespace basiclib;

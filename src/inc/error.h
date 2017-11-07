@@ -1,4 +1,4 @@
-#ifndef BASIC_ERROR_H
+﻿#ifndef BASIC_ERROR_H
 #define BASIC_ERROR_H
 
 //basic项目错误代码定义

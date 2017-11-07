@@ -1,4 +1,4 @@
-#ifndef BASIC_PBZK_H
+﻿#ifndef BASIC_PBZK_H
 #define BASIC_PBZK_H
 
 #define PBZK_END_STRING 0xFFFF

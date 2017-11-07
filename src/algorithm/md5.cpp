@@ -1,4 +1,4 @@
-// MD5.CC - source code for the C++/object oriented translation and 
+﻿// MD5.CC - source code for the C++/object oriented translation and 
 //          modification of MD5.
 
 // Translation and modification (c) 1995 by Mordechai T. Abzug 

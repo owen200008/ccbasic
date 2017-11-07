@@ -1,4 +1,4 @@
-/*
+﻿/*
 This library will provide common mathematical and string functions in
 SQL queries using the operating system libraries or provided
 definitions.  It includes the following functions:

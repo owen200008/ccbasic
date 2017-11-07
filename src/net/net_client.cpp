@@ -1,4 +1,4 @@
-#include "../inc/basic.h"
+﻿#include "../inc/basic.h"
 #include "net_client.h"
 #include "net_mgr.h"
 #ifdef __BASICWINDOWS

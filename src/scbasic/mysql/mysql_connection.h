@@ -1,4 +1,4 @@
-#ifndef _MYSQL_CONNECTION_H_
+﻿#ifndef _MYSQL_CONNECTION_H_
 #define _MYSQL_CONNECTION_H_
 
 #include <basic.h>

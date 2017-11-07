@@ -1,4 +1,4 @@
-/* character-name table */
+﻿/* character-name table */
 static struct cname {
 	char *name;
 	char code;

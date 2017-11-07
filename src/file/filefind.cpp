@@ -1,4 +1,4 @@
-#include "../inc/basic.h"
+﻿#include "../inc/basic.h"
 #include "file_linux.h"
 
 #ifdef __BASICWINDOWS

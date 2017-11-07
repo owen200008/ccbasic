@@ -1,4 +1,4 @@
-/***
+﻿/***
 *tchar.h - definitions for generic international text functions
 *
 *       Copyright (c) 1991-1997, Microsoft Corporation. All rights reserved.

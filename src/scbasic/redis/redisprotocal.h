@@ -1,4 +1,4 @@
-#ifndef BASICLIB_REDISPROTOCAL_H
+﻿#ifndef BASICLIB_REDISPROTOCAL_H
 #define BASICLIB_REDISPROTOCAL_H
 
 #include <basic.h>

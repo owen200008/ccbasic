@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef BASIC_TLSTATICBUFFER_H__
 #define BASIC_TLSTATICBUFFER_H__
 

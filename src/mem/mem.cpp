@@ -1,4 +1,4 @@
-// mem.cpp : 定义控制台应用程序的入口点。
+﻿// mem.cpp : 定义控制台应用程序的入口点。
 //
 
 #include "../inc/basic.h"

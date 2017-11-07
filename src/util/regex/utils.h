@@ -1,4 +1,4 @@
-/* utility definitions */
+﻿/* utility definitions */
 
 #include "regex_extra.h"
 

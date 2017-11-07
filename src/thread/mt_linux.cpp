@@ -1,4 +1,4 @@
-#include "../inc/basic.h"
+﻿#include "../inc/basic.h"
 #ifndef __ANDROID
 #include <sys/timeb.h>
 #endif

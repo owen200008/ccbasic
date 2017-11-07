@@ -1,4 +1,4 @@
-//异常处理 Linux
+﻿//异常处理 Linux
 //
 #include "../inc/basic.h"
 #ifndef __BASICWINDOWS

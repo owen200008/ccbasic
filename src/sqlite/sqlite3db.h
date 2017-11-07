@@ -1,4 +1,4 @@
-#ifndef BASIC_SQLITE3DB_H
+﻿#ifndef BASIC_SQLITE3DB_H
 #define BASIC_SQLITE3DB_H
 
 #include "sqlite3dbquery.h"

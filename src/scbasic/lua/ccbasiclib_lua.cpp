@@ -1,4 +1,4 @@
-#include "ccbasiclib_lua.h"
+﻿#include "ccbasiclib_lua.h"
 namespace kaguya {
 	class CCQLite3DBTable_Warp {
 	public:

@@ -1,4 +1,4 @@
-//linux线程定义
+﻿//linux线程定义
 // 编译选项 -lpthread
 
 #include "../inc/basic.h"

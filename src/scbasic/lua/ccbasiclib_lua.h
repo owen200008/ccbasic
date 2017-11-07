@@ -1,4 +1,4 @@
-#ifndef _CCBASICLIB_LUA_H_
+﻿#ifndef _CCBASICLIB_LUA_H_
 #define _CCBASICLIB_LUA_H_
 
 extern "C" {

@@ -1,4 +1,4 @@
-// FileNotify.cpp: implementation of the CBasicFileNotify class.
+﻿// FileNotify.cpp: implementation of the CBasicFileNotify class.
 //
 //////////////////////////////////////////////////////////////////////
 #include "../inc/basic.h"

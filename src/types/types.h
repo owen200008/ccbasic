@@ -1,4 +1,4 @@
-/* 基础类型定义 */
+﻿/* 基础类型定义 */
 
 #ifndef __TYPES_H__
 #define __TYPES_H__
