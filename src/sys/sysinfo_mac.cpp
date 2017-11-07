@@ -532,7 +532,7 @@ CProcessInfo::~CProcessInfo()
 
 int CProcessInfo::GetProcessCpu()
 {
-	return BasicGetCpuUsage();	
+	return BasicGetCPUUse();
 }
  
 

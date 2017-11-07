@@ -1,11 +1,11 @@
 /***********************************************************************************************
-// ÎÄ¼şÃû:     strutil.h
-// ´´½¨Õß:     ²ÌÕñÇò
+// Å’Æ’ÂºË›âˆšËš:     strutil.h
+// Â¥Â¥Î©Â®â€™ï¬‚:     â‰¤Ãƒâ€™Ã’Â«Ãš
 // Email:      zqcai@w.cn
-// ´´½¨Ê±¼ä:   2012/2/17 11:17:20
-// ÄÚÈİÃèÊö:   Ò»Ğ©³£ÓÃµÄ×Ö·û´®´¦Àíº¯Êı£¬°üÀ¨£º
-²ğ·Ö×Ö·û´®¡¢ºÏ²¢×Ö·û´®¡¢string×Ö·û´®ÀàµÄÒ»Ğ©³£ÓÃ²Ù×÷¡£
-// °æ±¾ĞÅÏ¢:   1.0V
+// Â¥Â¥Î©Â®Â Â±Âºâ€°:   2012/2/17 11:17:20
+// Æ’â„Â»â€ºâˆšÃ‹Â Ë†:   â€œÂªâ€“Â©â‰¥Â£â€âˆšÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Â¥Â¶Â¿ÃŒâˆ«Ã˜Â ËÂ£Â¨âˆÂ¸Â¿Â®Â£âˆ«
+â‰¤ï£¿âˆ‘Ã·â—ŠÃ·âˆ‘ËšÂ¥Ã†Â°Â¢âˆ«Å“â‰¤Â¢â—ŠÃ·âˆ‘ËšÂ¥Ã†Â°Â¢stringâ—ŠÃ·âˆ‘ËšÂ¥Ã†Â¿â€¡ÂµÆ’â€œÂªâ€“Â©â‰¥Â£â€âˆšâ‰¤Å¸â—ŠËœÂ°Â£
+// âˆÃŠÂ±Ã¦â€“â‰ˆÅ“Â¢:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_STRUTIL_H
 #define BASIC_STRUTIL_H
@@ -42,8 +42,8 @@ const size_t NullLen = (size_t)-1;
 const char NullAString[] = { 0 };
 #define Null_String_S		""
 
-//! ×Ö·û´®¡¢×Ö·û´®Á÷µÄ¶¨Òå¡£
-//! Ä¿µÄ£º¿ÉÒÔÈ«¾ÖÍ³Ò»Ìæ»»·ÖÅäÆ÷¡£
+//! â—ŠÃ·âˆ‘ËšÂ¥Ã†Â°Â¢â—ŠÃ·âˆ‘ËšÂ¥Ã†Â¡ËœÂµÆ’âˆ‚Â®â€œÃ‚Â°Â£
+//! Æ’Ã¸ÂµÆ’Â£âˆ«Ã¸â€¦â€œâ€˜Â»Â´Ã¦Ã·Ã•â‰¥â€œÂªÃƒÃŠÂªÂªâˆ‘Ã·â‰ˆâ€°âˆ†ËœÂ°Â£
 
 template<typename CharType>
 struct __BasicString
@@ -90,7 +90,9 @@ namespace __private
 typedef	tstring_s									char_string;
 typedef tstring										wchar_string;
 __NS_BASIC_END
-
+#ifdef __GNUC__
+#include <functional>
+#endif
 namespace std{
 	template<>
 	struct hash<basiclib::char_string> : public std::unary_function<basiclib::char_string, std::size_t>{
@@ -99,7 +101,8 @@ namespace std{
 				return _Hash_seq((const unsigned char*)key.c_str(), key.length());
 			#else
 #ifdef __GNUC__
-				return std::_Hash_impl::hash(key.c_str(), key.length());
+                hash<const char*> hash_fn;
+                return hash_fn(key.c_str());
 #else
 				hash<const char*> hash_fn;
 				return hash_fn(key.c_str(), key.length());
@@ -111,7 +114,7 @@ namespace std{
 
 __NS_BASIC_START
 
-// ÓÉ×Ö·ûÀàĞÍÈ¡µÃ¶ÔÓ¦µÄusignedµÄÀàĞÍ
+// â€â€¦â—ŠÃ·âˆ‘ËšÂ¿â€¡â€“Ã•Â»Â°Âµâˆšâˆ‚â€˜â€Â¶ÂµÆ’usignedÂµÆ’Â¿â€¡â€“Ã•
 template<typename CharType>
 struct __CharValue
 {
@@ -124,7 +127,7 @@ struct __CharValue<char>
 	typedef unsigned char Result;
 };
 
-// ÓÉunsignedµÄÀàĞÍÈ¡µÃ¶ÔÓ¦µÄ×Ö·ûÀàĞÍ
+// â€â€¦unsignedÂµÆ’Â¿â€¡â€“Ã•Â»Â°Âµâˆšâˆ‚â€˜â€Â¶ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¿â€¡â€“Ã•
 template<typename ValueType>
 struct __ValueChar
 {
@@ -138,9 +141,9 @@ struct __ValueChar<unsigned char>
 	typedef char Result;
 };
 
-//! ÅĞ¶Ï×Ö·û´®ÊÇ·ñÎª¿Õ
+//! â‰ˆâ€“âˆ‚Å“â—ŠÃ·âˆ‘ËšÂ¥Ã†Â Â«âˆ‘Ã’Å’â„¢Ã¸â€™
 /*!
-\param p ÅĞ¶Ï×Ö·û´®ÊÇ·ñÎª¿Õ
+\param p â‰ˆâ€“âˆ‚Å“â—ŠÃ·âˆ‘ËšÂ¥Ã†Â Â«âˆ‘Ã’Å’â„¢Ã¸â€™
 */
 template<typename CharType>
 bool IsStringEmpty(const CharType* p)
@@ -148,12 +151,12 @@ bool IsStringEmpty(const CharType* p)
 	return (NULL == p) || ((CharType)0 == p[0]);
 }
 
-//! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒ
 /*!
-\param p ´¦ÀíµÄ×Ö·û´®¡£º¯Êı»áĞŞ¸ÄÀïÃæµÄÄÚÈİ¡£²»ÄÜÎª¿Õ
-\param cTok ·Ö¸î·û
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı¡£
-\remarks ¸Ãº¯Êı»áĞŞ¸ÄpËùÖ¸ÏòµÄ×Ö·û´®ÄÚÈİ
+\param p Â¥Â¶Â¿ÃŒÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Â°Â£âˆ«Ã˜Â ËÂªÂ·â€“ï¬âˆÆ’Â¿Ã”âˆšÃŠÂµÆ’Æ’â„Â»â€ºÂ°Â£â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param cTok âˆ‘Ã·âˆÃ“âˆ‘Ëš
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â ËÂ°Â£
+\remarks âˆâˆšâˆ«Ã˜Â ËÂªÂ·â€“ï¬âˆÆ’pÃ€Ë˜Ã·âˆÅ“ÃšÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Æ’â„Â»â€º
 */
 template<class Functor, typename CharType>
 void __SpliteString(CharType* p, CharType cTok, Functor func)
@@ -168,12 +171,12 @@ void __SpliteString(CharType* p, CharType cTok, Functor func)
 		p = e;
 	}while(p != NULL);
 }
-//! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô×Ö·û´®·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒ
 /*!
-\param p Ô´×Ö·û´®¡£º¯Êı»áĞŞ¸ÄÀïÃæµÄÄÚÈİ¡£²»ÄÜÎª¿Õ¡£
-\param pszTok ·Ö¸îÓÃ×Ö·û´®
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı¡£
-\remarks ¸Ãº¯Êı»áĞŞ¸ÄpËùÖ¸ÏòµÄ×Ö·û´®ÄÚÈİ
+\param p â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Â°Â£âˆ«Ã˜Â ËÂªÂ·â€“ï¬âˆÆ’Â¿Ã”âˆšÃŠÂµÆ’Æ’â„Â»â€ºÂ°Â£â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™Â°Â£
+\param pszTok âˆ‘Ã·âˆÃ“â€âˆšâ—ŠÃ·âˆ‘ËšÂ¥Ã†
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â ËÂ°Â£
+\remarks âˆâˆšâˆ«Ã˜Â ËÂªÂ·â€“ï¬âˆÆ’pÃ€Ë˜Ã·âˆÅ“ÃšÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Æ’â„Â»â€º
 */
 template<class Functor, typename CharType>
 void __SpliteString(CharType* p, const CharType* pszTok, Functor func)
@@ -193,13 +196,13 @@ void __SpliteString(CharType* p, const CharType* pszTok, Functor func)
 	}while(p != NULL);
 }
 
-//! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒ
 /*!
-\param psz Ô´×Ö·û´®,²»ÄÜÎª¿Õ
-\param cTok ·Ö¸î·ûºÅ
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı¡£
-\remarks ºÍ__SpliteStringµÄÇø±ğÊÇ£¬¸Ãº¯Êı²»ĞŞ¸ÄpszÖ¸ÏòÄÚÈİ¡£
-Ê¾Àı¿ÉÒÔ²Î¿¼·Âº¯ÊıIntoContainer
+\param psz â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†,â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param cTok âˆ‘Ã·âˆÃ“âˆ‘Ëšâˆ«â‰ˆ
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â ËÂ°Â£
+\remarks âˆ«Ã•__SpliteStringÂµÆ’Â«Â¯Â±ï£¿Â Â«Â£Â¨âˆâˆšâˆ«Ã˜Â Ëâ‰¤Âªâ€“ï¬âˆÆ’pszÃ·âˆÅ“ÃšÆ’â„Â»â€ºÂ°Â£
+Â Ã¦Â¿ËÃ¸â€¦â€œâ€˜â‰¤Å’Ã¸Âºâˆ‘Â¬âˆ«Ã˜Â ËIntoContainer
 */
 template<class Functor, typename CharType>
 void BasicSpliteString(const CharType* psz, CharType cTok, Functor func)
@@ -209,13 +212,13 @@ void BasicSpliteString(const CharType* psz, CharType cTok, Functor func)
 	__SpliteString((CharType*)str.c_str(), cTok, func);
 }
 
-//! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒ
 /*!
-\param psz Ô´×Ö·û´®£¬²»ÄÜÎª¿Õ¡£
-\param pszTok ·Ö¸ô×Ö·û´®
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı¡£
-\remarks ºÍ__SpliteStringµÄÇø±ğÊÇ£¬¸Ãº¯Êı²»ĞŞ¸ÄpszÖ¸ÏòÄÚÈİ¡£
-Ê¾Àı¿ÉÒÔ²Î¿¼·Âº¯ÊıIntoContainer
+\param psz â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™Â°Â£
+\param pszTok âˆ‘Ã·âˆÃ™â—ŠÃ·âˆ‘ËšÂ¥Ã†
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â ËÂ°Â£
+\remarks âˆ«Ã•__SpliteStringÂµÆ’Â«Â¯Â±ï£¿Â Â«Â£Â¨âˆâˆšâˆ«Ã˜Â Ëâ‰¤Âªâ€“ï¬âˆÆ’pszÃ·âˆÅ“ÃšÆ’â„Â»â€ºÂ°Â£
+Â Ã¦Â¿ËÃ¸â€¦â€œâ€˜â‰¤Å’Ã¸Âºâˆ‘Â¬âˆ«Ã˜Â ËIntoContainer
 */
 template<class Functor, typename CharType>
 void BasicSpliteString(const CharType* psz, const CharType* pszTok, Functor func)
@@ -225,14 +228,14 @@ void BasicSpliteString(const CharType* psz, const CharType* pszTok, Functor func
 	__SpliteString((CharType*)str.c_str(), pszTok, func);
 }
 
-//! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒ
 /*!
-\param psz Ô´×Ö·û´®
+\param psz â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†
 \
-\param pszTok ·Ö¸ô×Ö·û´®,²»ÄÜÎª¿Õ
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı¡£
-\remarks ºÍ__SpliteStringµÄÇø±ğÊÇ£¬¸Ãº¯Êı²»ĞŞ¸ÄpszÖ¸ÏòÄÚÈİ¡£
-Ê¾Àı¿ÉÒÔ²Î¿¼·Âº¯ÊıIntoContainer
+\param pszTok âˆ‘Ã·âˆÃ™â—ŠÃ·âˆ‘ËšÂ¥Ã†,â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â ËÂ°Â£
+\remarks âˆ«Ã•__SpliteStringÂµÆ’Â«Â¯Â±ï£¿Â Â«Â£Â¨âˆâˆšâˆ«Ã˜Â Ëâ‰¤Âªâ€“ï¬âˆÆ’pszÃ·âˆÅ“ÃšÆ’â„Â»â€ºÂ°Â£
+Â Ã¦Â¿ËÃ¸â€¦â€œâ€˜â‰¤Å’Ã¸Âºâˆ‘Â¬âˆ«Ã˜Â ËIntoContainer
 */
 template<class Functor, typename CharType>
 void BasicSpliteString(const CharType* psz, long length, CharType cTok, Functor func)
@@ -242,14 +245,14 @@ void BasicSpliteString(const CharType* psz, long length, CharType cTok, Functor 
 	__SpliteString((CharType*)str.c_str(), cTok, func);
 }
 
-//! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒ
 /*!
-\param psz Ô´×Ö·û´®£¬²»ÄÜÎª¿Õ
-\param length Ô´×Ö·û´®µÄ³¤¶È
-\param pszTok ·Ö¸ô×Ö·û´®
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı¡£
-\remarks ºÍ__SpliteStringµÄÇø±ğÊÇ£¬¸Ãº¯Êı²»ĞŞ¸ÄpszÖ¸ÏòÄÚÈİ¡£
-Ê¾Àı¿ÉÒÔ²Î¿¼·Âº¯ÊıIntoContainer
+\param psz â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param length â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†ÂµÆ’â‰¥Â§âˆ‚Â»
+\param pszTok âˆ‘Ã·âˆÃ™â—ŠÃ·âˆ‘ËšÂ¥Ã†
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â ËÂ°Â£
+\remarks âˆ«Ã•__SpliteStringÂµÆ’Â«Â¯Â±ï£¿Â Â«Â£Â¨âˆâˆšâˆ«Ã˜Â Ëâ‰¤Âªâ€“ï¬âˆÆ’pszÃ·âˆÅ“ÃšÆ’â„Â»â€ºÂ°Â£
+Â Ã¦Â¿ËÃ¸â€¦â€œâ€˜â‰¤Å’Ã¸Âºâˆ‘Â¬âˆ«Ã˜Â ËIntoContainer
 */
 template<class Functor, typename CharType>
 void BasicSpliteString(const CharType* psz, long length, const CharType* pszTok, Functor func)
@@ -260,13 +263,13 @@ void BasicSpliteString(const CharType* psz, long length, const CharType* pszTok,
 }
 
 
-//! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒ
 /*!
-\param psz Ô´×Ö·û´®£¬²»ÄÜÎª¿Õ
-\param pszTok ÔÚpszTokÖĞµÄ×Ö·û¶¼»á±»µ±×÷·Ö¸ô·ûÊ¹ÓÃ
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı¡£
-\remark ¸Ãº¯Êı»áĞŞ¸ÄpËùÖ¸ÏòµÄ×Ö·û´®ÄÚÈİ
-Ê¾Àı¿ÉÒÔ²Î¿¼·Âº¯ÊıIntoContainer
+\param psz â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param pszTok â€˜â„pszTokÃ·â€“ÂµÆ’â—ŠÃ·âˆ‘Ëšâˆ‚ÂºÂªÂ·Â±ÂªÂµÂ±â—ŠËœâˆ‘Ã·âˆÃ™âˆ‘ËšÂ Ï€â€âˆš
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â ËÂ°Â£
+\remark âˆâˆšâˆ«Ã˜Â ËÂªÂ·â€“ï¬âˆÆ’pÃ€Ë˜Ã·âˆÅ“ÃšÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Æ’â„Â»â€º
+Â Ã¦Â¿ËÃ¸â€¦â€œâ€˜â‰¤Å’Ã¸Âºâˆ‘Â¬âˆ«Ã˜Â ËIntoContainer
 */
 template<class Functor, typename CharType>
 void __Explode(CharType* psz, const CharType* pszTok, Functor func)
@@ -274,7 +277,7 @@ void __Explode(CharType* psz, const CharType* pszTok, Functor func)
 	CharType* e = psz;
 	while(0 != *e)
 	{
-		// ÕÒµ½·Ö¸ô·û
+		// â€™â€œÂµÎ©âˆ‘Ã·âˆÃ™âˆ‘Ëš
 		if (NULL != __tcschr(pszTok, *e))
 		{
 			*e = (CharType)0;
@@ -289,11 +292,11 @@ void __Explode(CharType* psz, const CharType* pszTok, Functor func)
 		func(psz);
 	}
 }
-/*! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û±í½øĞĞ·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí
-\param psz Ô´×Ö·û´®£¬²»ÄÜÎª¿Õ
-\param pszTok ÔÚpszTokÖĞµÄ×Ö·û¶¼»á±»µ±×÷·Ö¸ô·ûÊ¹ÓÃ
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı¡£
-\remark ºÍ__ExplodeµÄÇø±ğÊÇ¸Ãº¯Êı²»ĞŞ¸ÄpszÖ¸ÏòÄÚÈİ¡£
+/*! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘ËšÂ±ÃŒÎ©Â¯â€“â€“âˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒ
+\param psz â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param pszTok â€˜â„pszTokÃ·â€“ÂµÆ’â—ŠÃ·âˆ‘Ëšâˆ‚ÂºÂªÂ·Â±ÂªÂµÂ±â—ŠËœâˆ‘Ã·âˆÃ™âˆ‘ËšÂ Ï€â€âˆš
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â ËÂ°Â£
+\remark âˆ«Ã•__ExplodeÂµÆ’Â«Â¯Â±ï£¿Â Â«âˆâˆšâˆ«Ã˜Â Ëâ‰¤Âªâ€“ï¬âˆÆ’pszÃ·âˆÅ“ÃšÆ’â„Â»â€ºÂ°Â£
 */
 template<class Functor, typename CharType>
 void Basic_Explode(const CharType* psz, const CharType* pszTok, Functor func)
@@ -303,12 +306,12 @@ void Basic_Explode(const CharType* psz, const CharType* pszTok, Functor func)
 	__Explode((CharType*)str.c_str(), pszTok, func);
 }
 
-/*! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û±í½øĞĞ·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí
-\param psz Ô´×Ö·û´®£¬²»ÄÜÎª¿Õ
-\param length psz×Ö·û´®µÄ³¤¶È
-\param pszTok ÔÚpszTokÖĞµÄ×Ö·û¶¼»á±»µ±×÷·Ö¸ô·ûÊ¹ÓÃ
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı¡£
-\remark ºÍ__ExplodeµÄÇø±ğÊÇ¸Ãº¯Êı²»ĞŞ¸ÄpszÖ¸ÏòÄÚÈİ¡£
+/*! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘ËšÂ±ÃŒÎ©Â¯â€“â€“âˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒ
+\param psz â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param length pszâ—ŠÃ·âˆ‘ËšÂ¥Ã†ÂµÆ’â‰¥Â§âˆ‚Â»
+\param pszTok â€˜â„pszTokÃ·â€“ÂµÆ’â—ŠÃ·âˆ‘Ëšâˆ‚ÂºÂªÂ·Â±ÂªÂµÂ±â—ŠËœâˆ‘Ã·âˆÃ™âˆ‘ËšÂ Ï€â€âˆš
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â ËÂ°Â£
+\remark âˆ«Ã•__ExplodeÂµÆ’Â«Â¯Â±ï£¿Â Â«âˆâˆšâˆ«Ã˜Â Ëâ‰¤Âªâ€“ï¬âˆÆ’pszÃ·âˆÅ“ÃšÆ’â„Â»â€ºÂ°Â£
 */
 template<class Functor, typename CharType>
 void Basic_Explode(const CharType* psz, long length, const CharType* pszTok, Functor func)
@@ -321,12 +324,12 @@ void Basic_Explode(const CharType* psz, long length, const CharType* pszTok, Fun
 
 
 
-//! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí£¬Ö±µ½×Ö·û´®Î²²¿»òÕßfunc·µ»Øtrue
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒÂ£Â¨Ã·Â±ÂµÎ©â—ŠÃ·âˆ‘ËšÂ¥Ã†Å’â‰¤â‰¤Ã¸ÂªÃšâ€™ï¬‚funcâˆ‘ÂµÂªÃ¿true
 /*!
-\param psz Ô´×Ö·û´®£¬²»ÄÜÎª¿Õ¡£
-\param cTok ·Ö¸ô·û
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı¡£µ±¸Ãº¯Êı·µ»ØtrueÊ±£¬º¯ÊıÍË³ö¡£
-\remarks ¸Ãº¯Êı»áĞŞ¸ÄpËùÖ¸ÏòµÄÄÚÈİ¡£ 
+\param psz â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™Â°Â£
+\param cTok âˆ‘Ã·âˆÃ™âˆ‘Ëš
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â ËÂ°Â£ÂµÂ±âˆâˆšâˆ«Ã˜Â Ëâˆ‘ÂµÂªÃ¿trueÂ Â±Â£Â¨âˆ«Ã˜Â ËÃ•Ã€â‰¥Ë†Â°Â£
+\remarks âˆâˆšâˆ«Ã˜Â ËÂªÂ·â€“ï¬âˆÆ’pÃ€Ë˜Ã·âˆÅ“ÃšÂµÆ’Æ’â„Â»â€ºÂ°Â£ 
 */
 template<class Functor, typename CharType>
 bool __SpliteStringBreak(CharType* p, CharType cTok, Functor func)
@@ -344,12 +347,12 @@ bool __SpliteStringBreak(CharType* p, CharType cTok, Functor func)
 	return false;
 }
 
-//! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí£¬Ö±µ½×Ö·û´®Î²²¿»òÕßfunc·µ»Øtrue
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒÂ£Â¨Ã·Â±ÂµÎ©â—ŠÃ·âˆ‘ËšÂ¥Ã†Å’â‰¤â‰¤Ã¸ÂªÃšâ€™ï¬‚funcâˆ‘ÂµÂªÃ¿true
 /*!
-\param psz Ô´×Ö·û´®,²»ÄÜÎª¿Õ¡£
-\param cTok ·Ö¸ô·û
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı¡£µ±¸Ãº¯Êı·µ»ØtrueÊ±£¬º¯ÊıÍË³ö¡£
-\remarks ºÍ__SpliteStringBreakµÄÇø±ğÊÇ£¬¸Ãº¯Êı²»ĞŞ¸ÄpszÖ¸ÏòÄÚÈİ¡£
+\param psz â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†,â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™Â°Â£
+\param cTok âˆ‘Ã·âˆÃ™âˆ‘Ëš
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â ËÂ°Â£ÂµÂ±âˆâˆšâˆ«Ã˜Â Ëâˆ‘ÂµÂªÃ¿trueÂ Â±Â£Â¨âˆ«Ã˜Â ËÃ•Ã€â‰¥Ë†Â°Â£
+\remarks âˆ«Ã•__SpliteStringBreakÂµÆ’Â«Â¯Â±ï£¿Â Â«Â£Â¨âˆâˆšâˆ«Ã˜Â Ëâ‰¤Âªâ€“ï¬âˆÆ’pszÃ·âˆÅ“ÃšÆ’â„Â»â€ºÂ°Â£
 */
 template<class Functor, typename CharType>
 bool BasicSpliteStringBreak(const CharType* psz, CharType cTok, Functor func)
@@ -359,11 +362,11 @@ bool BasicSpliteStringBreak(const CharType* psz, CharType cTok, Functor func)
 	return __SpliteStringBreak((CharType*)str.c_str(), cTok, func);
 }
 
-//! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí¡£¶ÔÓÚ'\'¿ªÍ·µÄ×Ö·û´®½«×ö×ªÒå¡£
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒÂ°Â£âˆ‚â€˜â€â„'\'Ã¸â„¢Ã•âˆ‘ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Î©Â´â—ŠË†â—Šâ„¢â€œÃ‚Â°Â£
 /*!
-\param p Ô´×Ö·û´®,²»ÄÜÎª¿Õ¡£
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı
-\remarks ¸Ãº¯Êı»áĞŞ¸ÄpËùÖ¸ÏòµÄÔ´×Ö·û´®¡£
+\param p â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†,â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™Â°Â£
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â Ë
+\remarks âˆâˆšâˆ«Ã˜Â ËÂªÂ·â€“ï¬âˆÆ’pÃ€Ë˜Ã·âˆÅ“ÃšÂµÆ’â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Â°Â£
 */
 template<class Functor, typename CharType>
 bool __SpliteStringBreakWithEscape(CharType* p, CharType cTok, Functor func)
@@ -372,7 +375,7 @@ bool __SpliteStringBreakWithEscape(CharType* p, CharType cTok, Functor func)
 	CharType* v = p;
 	while(0 != *e)
 	{
-		if ((CharType)'\\' == *e &&  0 != *(e+1))	// ×ªÒå·ûºÅ,ÂÔ¹ıÏÂÒ»¸ö×Ö·û
+		if ((CharType)'\\' == *e &&  0 != *(e+1))	// â—Šâ„¢â€œÃ‚âˆ‘Ëšâˆ«â‰ˆ,Â¬â€˜Ï€ËÅ“Â¬â€œÂªâˆË†â—ŠÃ·âˆ‘Ëš
 		{
 			*v++ = *++e;
 			++ e;
@@ -402,17 +405,17 @@ bool __SpliteStringBreakWithEscape(CharType* p, CharType cTok, Functor func)
 	return false;
 }
 
-//! ¶Ô×Ö·û´®°´ÕÕÖ¸¶¨µÄ·Ö¸ô·û·Ö¸î£¬²¢ÒÀ´Î½»ÓÉfuncº¯Êı´¦Àí¡£Ö§³Ö'\'×ªÒå
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆÂ¥â€™â€™Ã·âˆâˆ‚Â®ÂµÆ’âˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“Â£Â¨â‰¤Â¢â€œÂ¿Â¥Å’Î©Âªâ€â€¦funcâˆ«Ã˜Â ËÂ¥Â¶Â¿ÃŒÂ°Â£Ã·ÃŸâ‰¥Ã·'\'â—Šâ„¢â€œÃ‚
 /*!
-\param psz Ô´×Ö·û´®,²»ÄÜÎª¿Õ
-\param cTok ·Ö¸ô·û
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı
-\remarks ºÍ__SpliteStringBreakWithEscapeµÄÇø±ğÊÇSpliteStringBreakWithEscape²»ĞŞ¸ÄpszµÄÄÚÈİ¡£
+\param psz â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†,â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param cTok âˆ‘Ã·âˆÃ™âˆ‘Ëš
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â Ë
+\remarks âˆ«Ã•__SpliteStringBreakWithEscapeÂµÆ’Â«Â¯Â±ï£¿Â Â«SpliteStringBreakWithEscapeâ‰¤Âªâ€“ï¬âˆÆ’pszÂµÆ’Æ’â„Â»â€ºÂ°Â£
 \code
-char* buf = "a\\;;b;\\\\\\;c";	//×Ö·û´® a\;;b;\\\;cd
+char* buf = "a\\;;b;\\\\\\;c";	//â—ŠÃ·âˆ‘ËšÂ¥Ã† a\;;b;\\\;cd
 BasicSpliteStringBreakWithEscape(buf, ';', functor);
 
-ÄÇÃ´functorÊÕµ½µÄ×Ö·û´®Ó¦¸ÃÊÇ£º
+Æ’Â«âˆšÂ¥functorÂ â€™ÂµÎ©ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†â€Â¶âˆâˆšÂ Â«Â£âˆ«
 a;
 b
 \;c
@@ -431,13 +434,13 @@ bool BasicSpliteStringBreakWithEscape(const CharType* psz, CharType cTok, Functo
 #define BACKWARD_SPACE(a)	while(ISSPACE(*(a))) {--a;}
 
 
-const int PPS_OPS_LOWERKEY		= 1;	// ½«µÚÒ»¸ö×Ö·û´®×ª³ÉĞ¡Ğ´
-const int PPS_OPS_LOWERVALUE	= 2;	// ½«µÚ¶ş¸ö×Ö·û´®×ª³ÉĞ¡Ğ´
-const int PPS_OPS_SKIPBLANK		= 4;	// ÂÔ¹ı×Ö·û´®Ç°ºóµÄ¿Õ¸ñ/tab/»»ĞĞ
+const int PPS_OPS_LOWERKEY		= 1;	// Î©Â´Âµâ„â€œÂªâˆË†â—ŠÃ·âˆ‘ËšÂ¥Ã†â—Šâ„¢â‰¥â€¦â€“Â°â€“Â¥
+const int PPS_OPS_LOWERVALUE	= 2;	// Î©Â´Âµâ„âˆ‚Ë›âˆË†â—ŠÃ·âˆ‘ËšÂ¥Ã†â—Šâ„¢â‰¥â€¦â€“Â°â€“Â¥
+const int PPS_OPS_SKIPBLANK		= 4;	// Â¬â€˜Ï€Ëâ—ŠÃ·âˆ‘ËšÂ¥Ã†Â«âˆâˆ«Ã›ÂµÆ’Ã¸â€™âˆÃ’/tab/ÂªÂªâ€“â€“
 
 namespace __private
 {
-// ÒÔÏÂº¯Êı¾ùÎªParseParamStringÊ¹ÓÃ
+// â€œâ€˜Å“Â¬âˆ«Ã˜Â ËÃ¦Ë˜Å’â„¢ParseParamStringÂ Ï€â€âˆš
 template<class CharType, class T>
 void SkipBlank(CharType*& p, const CharType*& pException, int len, Type2Type<T>)
 {
@@ -502,13 +505,13 @@ struct Parse_Trait
 };
 }
 
-//! ½âÎöĞÎËÆÓë"a=b&c=d&e=f"µÄ×Ö·û´®£¬²¢½«(a,b),(c,d),(e,f)ÒÀ´Î´¦Àí
+//! Î©â€šÅ’Ë†â€“Å’Ã€âˆ†â€Ã"a=b&c=d&e=f"ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â‰¤Â¢Î©Â´(a,b),(c,d),(e,f)â€œÂ¿Â¥Å’Â¥Â¶Â¿ÃŒ
 /*!
-\param psz Ô´×Ö·û
-\param tok[0]·Ö±ğ±êÊ¶Åä¶Ô·Ö¸ô·û¡£tok[1]±êÊ¶ÌõÄ¿·Ö¸ô·û
-\param func ×Ö·û´®¶Ô½øĞĞ´¦ÀíµÄº¯Êı»òÕß·Âº¯Êı
-\param ParseTraits	¶Ô¾ßÌåÒ»Ğ©ÌØĞÔµÄİÍÈ¡
-\return ÎŞ·µ»ØÖµ
+\param psz â€˜Â¥â—ŠÃ·âˆ‘Ëš
+\param tok[0]âˆ‘Ã·Â±ï£¿Â±ÃÂ âˆ‚â‰ˆâ€°âˆ‚â€˜âˆ‘Ã·âˆÃ™âˆ‘ËšÂ°Â£tok[1]Â±ÃÂ âˆ‚ÃƒÄ±Æ’Ã¸âˆ‘Ã·âˆÃ™âˆ‘Ëš
+\param func â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆ‚â€˜Î©Â¯â€“â€“Â¥Â¶Â¿ÃŒÂµÆ’âˆ«Ã˜Â ËÂªÃšâ€™ï¬‚âˆ‘Â¬âˆ«Ã˜Â Ë
+\param ParseTraits	âˆ‚â€˜Ã¦ï¬‚ÃƒÃ‚â€œÂªâ€“Â©ÃƒÃ¿â€“â€˜ÂµÆ’â€ºÃ•Â»Â°
+\return Å’ï¬âˆ‘ÂµÂªÃ¿Ã·Âµ
 */
 template<class Functor, typename CharType, typename ParseTraits>
 void __ParseParamString_Aux(CharType* psz, const CharType tok[], Functor func, ParseTraits)
@@ -540,7 +543,7 @@ void __ParseParamString_Aux(CharType* psz, const CharType tok[], Functor func, P
 				pKey = p;
 			}
 			else if (tok[0] == *p)
-			{	// µÚÒ»¸ö·Ö¸î·û
+			{	// Âµâ„â€œÂªâˆË†âˆ‘Ã·âˆÃ“âˆ‘Ëš
 				*p = 0;
 				pValue = p + 1;
 				__private::SetEnd(blank, typename ParseTraits::SkipBlank());
@@ -556,7 +559,7 @@ void __ParseParamString_Aux(CharType* psz, const CharType tok[], Functor func, P
 			break;
 		case PARSE_VALUE:
 			if (tok[1] == *p)
-			{	// µ½ÁËÎ²²¿ÁË
+			{	// ÂµÎ©Â¡Ã€Å’â‰¤â‰¤Ã¸Â¡Ã€
 				*p = 0;
 				__private::SetEnd(blank, typename ParseTraits::SkipBlank());
 				func(pKey, pValue);
@@ -592,14 +595,14 @@ public:
 	}
 };
 
-//! ½âÎöĞÎËÆÓë"a=b&c=d&e=f"µÄ×Ö·û´®£¬²¢½«(a,b),(c,d),(e,f)ÒÀ´Î´¦Àí
+//! Î©â€šÅ’Ë†â€“Å’Ã€âˆ†â€Ã"a=b&c=d&e=f"ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â‰¤Â¢Î©Â´(a,b),(c,d),(e,f)â€œÂ¿Â¥Å’Â¥Â¶Â¿ÃŒ
 /*!
-\param psz Ô´×Ö·û,²»ÄÜÎª¿Õ
-\param psz ×Ö·û´®µÄ³¤¶È
-\param tok[0]·Ö±ğ±êÊ¶Åä¶Ô·Ö¸ô·û¡£tok[1]±êÊ¶ÌõÄ¿·Ö¸ô·û
-\param func ×Ö·û´®¶Ô½øĞĞ´¦ÀíµÄº¯Êı»òÕß·Âº¯Êı
-\param Ops ²ÎÊıÑ¡Ïî¡£ÖµÎªPPS_OPS_*
-\return ÎŞ·µ»ØÖµ
+\param psz â€˜Â¥â—ŠÃ·âˆ‘Ëš,â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param psz â—ŠÃ·âˆ‘ËšÂ¥Ã†ÂµÆ’â‰¥Â§âˆ‚Â»
+\param tok[0]âˆ‘Ã·Â±ï£¿Â±ÃÂ âˆ‚â‰ˆâ€°âˆ‚â€˜âˆ‘Ã·âˆÃ™âˆ‘ËšÂ°Â£tok[1]Â±ÃÂ âˆ‚ÃƒÄ±Æ’Ã¸âˆ‘Ã·âˆÃ™âˆ‘Ëš
+\param func â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆ‚â€˜Î©Â¯â€“â€“Â¥Â¶Â¿ÃŒÂµÆ’âˆ«Ã˜Â ËÂªÃšâ€™ï¬‚âˆ‘Â¬âˆ«Ã˜Â Ë
+\param Ops â‰¤Å’Â Ëâ€”Â°Å“Ã“Â°Â£Ã·ÂµÅ’â„¢PPS_OPS_*
+\return Å’ï¬âˆ‘ÂµÂªÃ¿Ã·Âµ
 */
 
 template<class Functor, typename CharType>
@@ -637,13 +640,13 @@ void Basic_ParseParamString(const CharType* psz, size_t len, const CharType tok[
 	}
 }
 
-//! ½âÎöĞÎËÆÓë"a=b&c=d&e=f"µÄ×Ö·û´®£¬²¢½«(a,b),(c,d),(e,f)ÒÀ´Î´¦Àí
+//! Î©â€šÅ’Ë†â€“Å’Ã€âˆ†â€Ã"a=b&c=d&e=f"ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â‰¤Â¢Î©Â´(a,b),(c,d),(e,f)â€œÂ¿Â¥Å’Â¥Â¶Â¿ÃŒ
 /*!
-\param psz Ô´×Ö·û,²»ÄÜÎª¿Õ¡£±ØĞëÒÔ'\0'½áÎ²
-\param tok[0]·Ö±ğ±êÊ¶Åä¶Ô·Ö¸ô·û¡£tok[1]±êÊ¶ÌõÄ¿·Ö¸ô·û
-\param func ×Ö·û´®¶Ô½øĞĞ´¦ÀíµÄº¯Êı»òÕß·Âº¯Êı
-\param Ops ²ÎÊıÑ¡Ïî¡£ÖµÎªPPS_OPS_*
-\return ÎŞ·µ»ØÖµ
+\param psz â€˜Â¥â—ŠÃ·âˆ‘Ëš,â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™Â°Â£Â±Ã¿â€“Ãâ€œâ€˜'\0'Î©Â·Å’â‰¤
+\param tok[0]âˆ‘Ã·Â±ï£¿Â±ÃÂ âˆ‚â‰ˆâ€°âˆ‚â€˜âˆ‘Ã·âˆÃ™âˆ‘ËšÂ°Â£tok[1]Â±ÃÂ âˆ‚ÃƒÄ±Æ’Ã¸âˆ‘Ã·âˆÃ™âˆ‘Ëš
+\param func â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆ‚â€˜Î©Â¯â€“â€“Â¥Â¶Â¿ÃŒÂµÆ’âˆ«Ã˜Â ËÂªÃšâ€™ï¬‚âˆ‘Â¬âˆ«Ã˜Â Ë
+\param Ops â‰¤Å’Â Ëâ€”Â°Å“Ã“Â°Â£Ã·ÂµÅ’â„¢PPS_OPS_*
+\return Å’ï¬âˆ‘ÂµÂªÃ¿Ã·Âµ
 */
 template<class Functor, typename CharType>
 void Basic_ParseParamString(const CharType* psz, const CharType tok[], Functor func, int nOps = PPS_OPS_LOWERKEY|PPS_OPS_SKIPBLANK)
@@ -651,12 +654,12 @@ void Basic_ParseParamString(const CharType* psz, const CharType tok[], Functor f
 	Basic_ParseParamString(psz, __tcslen(psz), tok, func, nOps);
 }
 
-//! Ìî³ä×Ö·û´®ÖĞtokÖ¸¶¨µÄÄÚµÄ²ÎÊı¡£²ÎÊıµÄÖµÓÉfuncÀ´È¡µÃ¡£
+//! ÃƒÃ“â‰¥â€°â—ŠÃ·âˆ‘ËšÂ¥Ã†Ã·â€“tokÃ·âˆâˆ‚Â®ÂµÆ’Æ’â„ÂµÆ’â‰¤Å’Â ËÂ°Â£â‰¤Å’Â ËÂµÆ’Ã·Âµâ€â€¦funcÂ¿Â¥Â»Â°ÂµâˆšÂ°Â£
 /*!
-\param str Ô´×Ö·û´®£¬²»ÄÜÎª¿Õ¡£
-\param tok ÓÃÓÚÖ¸¶¨ÆğÊ¼¡£ÀıÈç"<>"
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı
-\remarks strÄÚµÄÄÚÈİ»á±»ĞŞ¸Ä¡£
+\param str â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™Â°Â£
+\param tok â€âˆšâ€â„Ã·âˆâˆ‚Â®âˆ†ï£¿Â ÂºÂ°Â£Â¿ËÂ»Ã"<>"
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â Ë
+\remarks strÆ’â„ÂµÆ’Æ’â„Â»â€ºÂªÂ·Â±Âªâ€“ï¬âˆÆ’Â°Â£
 */
 template<class Functor, typename CharType>
 typename __BasicString<CharType>::StringType __FillParamString(CharType* str, const CharType tok[], Functor func)
@@ -689,13 +692,13 @@ typename __BasicString<CharType>::StringType __FillParamString(CharType* str, co
 }
 
 
-//! ¸ù¾İformat×Ö·û´®£¬È¡³öÔ´×Ö·û´®ÖĞµÄÖµ
+//! âˆË˜Ã¦â€ºformatâ—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨Â»Â°â‰¥Ë†â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Ã·â€“ÂµÆ’Ã·Âµ
 /*!
-\param pszSrc Ô´×Ö·û,²»ÄÜÎª¿Õ
-\param tok[0]·Ö±ğ±êÊ¶Åä¶Ô·Ö¸ô·û¡£tok[1]±êÊ¶ÌõÄ¿·Ö¸ô·û
-\param func ×Ö·û´®¶Ô½øĞĞ´¦ÀíµÄº¯Êı»òÕß·Âº¯Êı
-\return ÎŞ·µ»ØÖµ
-\remarks strÄÚµÄÄÚÈİ»á±»ĞŞ¸Ä¡£
+\param pszSrc â€˜Â¥â—ŠÃ·âˆ‘Ëš,â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param tok[0]âˆ‘Ã·Â±ï£¿Â±ÃÂ âˆ‚â‰ˆâ€°âˆ‚â€˜âˆ‘Ã·âˆÃ™âˆ‘ËšÂ°Â£tok[1]Â±ÃÂ âˆ‚ÃƒÄ±Æ’Ã¸âˆ‘Ã·âˆÃ™âˆ‘Ëš
+\param func â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆ‚â€˜Î©Â¯â€“â€“Â¥Â¶Â¿ÃŒÂµÆ’âˆ«Ã˜Â ËÂªÃšâ€™ï¬‚âˆ‘Â¬âˆ«Ã˜Â Ë
+\return Å’ï¬âˆ‘ÂµÂªÃ¿Ã·Âµ
+\remarks strÆ’â„ÂµÆ’Æ’â„Â»â€ºÂªÂ·Â±Âªâ€“ï¬âˆÆ’Â°Â£
 */
 template <class CharType, class Functor>
 void __GetParamString(CharType* lpszSrc, CharType* lpszFormat, const CharType tok[], Functor func)
@@ -761,16 +764,16 @@ void __GetParamString(CharType* lpszSrc, CharType* lpszFormat, const CharType to
 	}
 }
 
-//! ¸ù¾İformat×Ö·û´®£¬È¡³öÔ´×Ö·û´®ÖĞµÄÖµ
+//! âˆË˜Ã¦â€ºformatâ—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨Â»Â°â‰¥Ë†â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Ã·â€“ÂµÆ’Ã·Âµ
 /*!
-\param pszSrc Ô´×Ö·û,²»ÄÜÎª¿Õ
-\param tok[0]·Ö±ğ±êÊ¶Åä¶Ô·Ö¸ô·û¡£tok[1]±êÊ¶ÌõÄ¿·Ö¸ô·û
-\param func ×Ö·û´®¶Ô½øĞĞ´¦ÀíµÄº¯Êı»òÕß·Âº¯Êı
-\return ÎŞ·µ»ØÖµ
+\param pszSrc â€˜Â¥â—ŠÃ·âˆ‘Ëš,â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param tok[0]âˆ‘Ã·Â±ï£¿Â±ÃÂ âˆ‚â‰ˆâ€°âˆ‚â€˜âˆ‘Ã·âˆÃ™âˆ‘ËšÂ°Â£tok[1]Â±ÃÂ âˆ‚ÃƒÄ±Æ’Ã¸âˆ‘Ã·âˆÃ™âˆ‘Ëš
+\param func â—ŠÃ·âˆ‘ËšÂ¥Ã†âˆ‚â€˜Î©Â¯â€“â€“Â¥Â¶Â¿ÃŒÂµÆ’âˆ«Ã˜Â ËÂªÃšâ€™ï¬‚âˆ‘Â¬âˆ«Ã˜Â Ë
+\return Å’ï¬âˆ‘ÂµÂªÃ¿Ã·Âµ
 \code
 Basic_GetParamString("/shase/600000.txt", "/{market}/{code}.txt", "{}", InfoMapContainer<tstring, tstring>());
 \endcode
-Êä³ö:
+Â â€°â‰¥Ë†:
 market=>shase
 code=>600000
 */
@@ -785,12 +788,12 @@ void Basic_GetParamString(const CharType* lpszSrc, const CharType* lpszFormat, c
 }
 
 
-//! Ìî³ä×Ö·û´®ÖĞtok[0]ºÍtok[1]ÄÚµÄ²ÎÊı¡£²ÎÊıµÄÖµÓÉfuncÀ´È¡µÃ¡£
+//! ÃƒÃ“â‰¥â€°â—ŠÃ·âˆ‘ËšÂ¥Ã†Ã·â€“tok[0]âˆ«Ã•tok[1]Æ’â„ÂµÆ’â‰¤Å’Â ËÂ°Â£â‰¤Å’Â ËÂµÆ’Ã·Âµâ€â€¦funcÂ¿Â¥Â»Â°ÂµâˆšÂ°Â£
 /*!
-\param psz Ô´×Ö·û´®£¬²»ÄÜÎª¿Õ
-\param tok ±êÊ¶¹Ø¼ü×ÖÇø¼äµÄ×Ö·û£¬ÖÁÉÙÁ½¸ö×Ö·û£¬·Ö±ğÓÃÓÚ±êÊ¶ÆğÊ¼ºÍ½áÊø
-\param func ÓÃÓÚ¸ù¾İ²ÎÊıÈ¡µÃÖµµÄ·Âº¯Êı
-\remarks ºÍ__FillParamStringµÄÇø±ğÊÇBasic_FillParamString²»ĞŞ¸ÄpszµÄÄÚÈİ¡£
+\param psz â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â‰¤ÂªÆ’â€¹Å’â„¢Ã¸â€™
+\param tok Â±ÃÂ âˆ‚Ï€Ã¿ÂºÂ¸â—ŠÃ·Â«Â¯Âºâ€°ÂµÆ’â—ŠÃ·âˆ‘ËšÂ£Â¨Ã·Â¡â€¦Å¸Â¡Î©âˆË†â—ŠÃ·âˆ‘ËšÂ£Â¨âˆ‘Ã·Â±ï£¿â€âˆšâ€â„Â±ÃÂ âˆ‚âˆ†ï£¿Â Âºâˆ«Ã•Î©Â·Â Â¯
+\param func â€âˆšâ€â„âˆË˜Ã¦â€ºâ‰¤Å’Â ËÂ»Â°ÂµâˆšÃ·ÂµÂµÆ’âˆ‘Â¬âˆ«Ã˜Â Ë
+\remarks âˆ«Ã•__FillParamStringÂµÆ’Â«Â¯Â±ï£¿Â Â«Basic_FillParamStringâ‰¤Âªâ€“ï¬âˆÆ’pszÂµÆ’Æ’â„Â»â€ºÂ°Â£
 */
 template<class Functor, typename CharType>
 typename __BasicString<CharType>::StringType	Basic_FillParamString(const CharType* psz, const CharType tok[], Functor func)
@@ -801,7 +804,7 @@ typename __BasicString<CharType>::StringType	Basic_FillParamString(const CharTyp
 
 namespace __private
 {
-	//! ºÏ²¢Êı¾İ¶ÔÏóµ½×Ö·û´®µÄ´¦Àí·Âº¯Êı
+	//! âˆ«Å“â‰¤Â¢Â ËÃ¦â€ºâˆ‚â€˜Å“Ã›ÂµÎ©â—ŠÃ·âˆ‘ËšÂ¥Ã†ÂµÆ’Â¥Â¶Â¿ÃŒâˆ‘Â¬âˆ«Ã˜Â Ë
 	/*!
 	\struct __combine_string_helper
 	*/
@@ -843,7 +846,7 @@ namespace __private
 		StringType&	__str;
 	};
 
-	//! ºÏ²¢Êı¾İ¶ÔÏóµ½×Ö·û´®Á÷µÄ´¦Àí·Âº¯Êı
+	//! âˆ«Å“â‰¤Â¢Â ËÃ¦â€ºâˆ‚â€˜Å“Ã›ÂµÎ©â—ŠÃ·âˆ‘ËšÂ¥Ã†Â¡ËœÂµÆ’Â¥Â¶Â¿ÃŒâˆ‘Â¬âˆ«Ã˜Â Ë
 	/*!
 	\struct __combine_stream_helper
 	*/
@@ -896,23 +899,23 @@ namespace __private
 }
 
 
-//! ºÏ²¢ÈİÆ÷ÄÚµÄ×Ö·û´®£¬Ö®¼äÓÃ·Ö¸ô·û·Ö¸î
+//! âˆ«Å“â‰¤Â¢Â»â€ºâˆ†ËœÆ’â„ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨Ã·Ã†Âºâ€°â€âˆšâˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“
 /*!
-\param tok ·Ö¸ô·û
-\param first input iterator£¬ÓÃÓÚ±êÊ¶ÆğÊ¼ÔªËØ
-\param last input iterator£¬ÓÃÓÚ±êÊ¶½áÊøÔªËØ
-Èç¹û·Ö¸î·ûÖµÎª'\0',Ôò×Ö·û´®Ö±½ÓºÏ²¢¡£
+\param tok âˆ‘Ã·âˆÃ™âˆ‘Ëš
+\param first input iteratorÂ£Â¨â€âˆšâ€â„Â±ÃÂ âˆ‚âˆ†ï£¿Â Âºâ€˜â„¢Ã€Ã¿
+\param last input iteratorÂ£Â¨â€âˆšâ€â„Â±ÃÂ âˆ‚Î©Â·Â Â¯â€˜â„¢Ã€Ã¿
+Â»ÃÏ€Ëšâˆ‘Ã·âˆÃ“âˆ‘ËšÃ·ÂµÅ’â„¢'\0',â€˜Ãšâ—ŠÃ·âˆ‘ËšÂ¥Ã†Ã·Â±Î©â€âˆ«Å“â‰¤Â¢Â°Â£
 \code
 char* buf[] = {"aa", "bb", "cc"};
 string str = ComineString(',', buf, sizeof(buf)/sizeof(char*));
 \endcode
-ÕâÊ±strµÄÖµÊÇ"aa,bb,cc"
-ÁíÍâÒ²¿ÉÒÔ¶Ô·Ç×Ö·û´®Êı×é×ö²Ù×÷¡£ÀıÈç£º
+â€™â€šÂ Â±strÂµÆ’Ã·ÂµÂ Â«"aa,bb,cc"
+Â¡ÃŒÃ•â€šâ€œâ‰¤Ã¸â€¦â€œâ€˜âˆ‚â€˜âˆ‘Â«â—ŠÃ·âˆ‘ËšÂ¥Ã†Â Ëâ—ŠÃˆâ—ŠË†â‰¤Å¸â—ŠËœÂ°Â£Â¿ËÂ»ÃÂ£âˆ«
 \code
 int buf[] = {11, 22, 33};
 string str = CombineString(',', buf, size(buf)/sizeof(int));
 \endcode
-ÕâÊ±strµÄÖµÊÇ"11,22,33"
+â€™â€šÂ Â±strÂµÆ’Ã·ÂµÂ Â«"11,22,33"
 */
 template<class InputIterator, typename CharType>
 typename __BasicString<CharType>::StringType  Basic_CombineString(CharType cTok, InputIterator first, InputIterator last)
@@ -922,15 +925,15 @@ typename __BasicString<CharType>::StringType  Basic_CombineString(CharType cTok,
 	return stream.str();
 }
 
-//! ºÏ²¢ÈİÆ÷ÄÚµÄ×Ö·û´®£¬Ö®¼äÓÃ·Ö¸ô·û·Ö¸î
+//! âˆ«Å“â‰¤Â¢Â»â€ºâˆ†ËœÆ’â„ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨Ã·Ã†Âºâ€°â€âˆšâˆ‘Ã·âˆÃ™âˆ‘Ëšâˆ‘Ã·âˆÃ“
 /*!
-\param tok ·Ö¸ô·û
-\param lhs µÚÒ»¸ö×Ö¶Î
-\param rhs µÚ¶ş¸ö×Ö¶Î
+\param tok âˆ‘Ã·âˆÃ™âˆ‘Ëš
+\param lhs Âµâ„â€œÂªâˆË†â—ŠÃ·âˆ‚Å’
+\param rhs Âµâ„âˆ‚Ë›âˆË†â—ŠÃ·âˆ‚Å’
 \code
 string str = ComineString(',', 'abc', 456);
 \endcode
-ÕâÊ±strµÄÖµÊÇ"abc,456"
+â€™â€šÂ Â±strÂµÆ’Ã·ÂµÂ Â«"abc,456"
 */
 template<typename CharType, class T1, class T2>
 typename __BasicString<CharType>::StringType Basic_CombineString(CharType cTok, const T1& lhs, const T2& rhs)
@@ -940,7 +943,7 @@ typename __BasicString<CharType>::StringType Basic_CombineString(CharType cTok, 
 	return stream.str();
 }
 
-// ºÏ²¢Í·
+// âˆ«Å“â‰¤Â¢Ã•âˆ‘
 template<typename CharType, class T>
 int Basic_StuffHeader(typename __BasicString<CharType>::StringType& str, const CharType* pszName, const T& value)
 {
@@ -950,7 +953,7 @@ int Basic_StuffHeader(typename __BasicString<CharType>::StringType& str, const C
 	return str.length();
 }
 
-//! ºÏ²¢×Ö·û´®
+//! âˆ«Å“â‰¤Â¢â—ŠÃ·âˆ‘ËšÂ¥Ã†
 template<typename CharType, class T>
 int Basic_StuffString(typename __BasicString<CharType>::StringType& str, const T& psz)
 {
@@ -958,7 +961,7 @@ int Basic_StuffString(typename __BasicString<CharType>::StringType& str, const T
 	return str.length();
 }
 
-//! ¶Ô×Ö·û´®±àÂë
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†Â±â€¡Â¬Ã
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_EnesCWBasicString(const CharType* psz)
 {
@@ -989,7 +992,7 @@ typename __BasicString<CharType>::StringType Basic_EnesCWBasicString(const CharT
 	return str;
 }
 
-//! ¶Ô×Ö·û´®½âÂë
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†Î©â€šÂ¬Ã
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_DeesCWBasicString(const CharType* psz)
 {
@@ -1024,7 +1027,7 @@ typename __BasicString<CharType>::StringType Basic_DeesCWBasicString(const CharT
 	return str;
 }
 
-//! ¶Ô×Ö·û´®½âÂë
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†Î©â€šÂ¬Ã
 template<typename CharType>
 int Basic_DeesCWBasicString(const CharType* psz, CharType* pszDest)
 {
@@ -1055,11 +1058,11 @@ int Basic_DeesCWBasicString(const CharType* psz, CharType* pszDest)
 	return n;
 }
 
-//! 	½«×Ö·û´®lpszBufferÔ²Õûµ½³¤¶ÈlRoundLength,Ä©Î²Ìí¼Ó"..."
+//! 	Î©Â´â—ŠÃ·âˆ‘ËšÂ¥Ã†lpszBufferâ€˜â‰¤â€™ËšÂµÎ©â‰¥Â§âˆ‚Â»lRoundLength,Æ’Â©Å’â‰¤ÃƒÃŒÂºâ€"..."
 /*!
-\param lpszbuffer ´«Èë×Ö·û´®
-\param lRoundLength Ä¿±ê³¤¶È
-\return Ô²ÕûºóµÄ³¤¶È
+\param lpszbuffer Â¥Â´Â»Ãâ—ŠÃ·âˆ‘ËšÂ¥Ã†
+\param lRoundLength Æ’Ã¸Â±Ãâ‰¥Â§âˆ‚Â»
+\return â€˜â‰¤â€™Ëšâˆ«Ã›ÂµÆ’â‰¥Â§âˆ‚Â»
 */
 long Basic_RoundString(char* lpszBuffer, long lRoundLength);
 
@@ -1120,10 +1123,10 @@ BOOL MatchLast(const CharType* pszFileParam, const CharType* pszSpec)
 }
 
 }
-/*!	\brief ÊµÏÖÔÚwindowsÏÂPathMatchSpecÀàËÆµÄ¹¦ÄÜ¡£Ö§³Ö?ºÍ*Í¨Åä·û
-*	\param pszFile[in] Ö¸ÏòÒÔ\0½áÎ²µÄ×Ö·û´®
-*	\param pszSpec[in] Ö¸ÏòÒÔ\0½áÎ²µÄ×Ö·û´®£¬ÓÃÓÚÃèÊöÆ¥Åä¹æÔò¡£
-*	\return Æ¥Åä·µ»ØTRUE,·ñÔòFALSE
+/*!	\brief Â ÂµÅ“Ã·â€˜â„windowsÅ“Â¬PathMatchSpecÂ¿â€¡Ã€âˆ†ÂµÆ’Ï€Â¶Æ’â€¹Â°Â£Ã·ÃŸâ‰¥Ã·?âˆ«Ã•*Ã•Â®â‰ˆâ€°âˆ‘Ëš
+*	\param pszFile[in] Ã·âˆÅ“Ãšâ€œâ€˜\0Î©Â·Å’â‰¤ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†
+*	\param pszSpec[in] Ã·âˆÅ“Ãšâ€œâ€˜\0Î©Â·Å’â‰¤ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Â£Â¨â€âˆšâ€â„âˆšÃ‹Â Ë†âˆ†â€¢â‰ˆâ€°Ï€ÃŠâ€˜ÃšÂ°Â£
+*	\return âˆ†â€¢â‰ˆâ€°âˆ‘ÂµÂªÃ¿TRUE,âˆ‘Ã’â€˜ÃšFALSE
 */
 template<typename CharType>
 BOOL Basic_StringMatchSpec(const CharType* pszFile, const CharType* pszSpec)
@@ -1167,10 +1170,10 @@ BOOL Basic_StringMatchSpec(const CharType* pszFile, const CharType* pszSpec)
 }
 #endif
 
-const int	ENT_NOQUOTES	= 0;	//! ²»×ª»»µ¥ÒıºÅºÍË«ÒıºÅ
-const int	ENT_COMPAT	= 1;		//! Ö»×ª»»Ë«ÒıºÅ
-const int	ENT_SQUOTE	= 2;		//! Ö»×ª»»µ¥ÒıºÅ
-const int	ENT_QUOTES	= ENT_COMPAT|ENT_SQUOTE;	//! Í¬Ê±×ª»»µ¥ÒıºÅºÍË«ÒıºÅ
+const int	ENT_NOQUOTES	= 0;	//! â‰¤Âªâ—Šâ„¢ÂªÂªÂµâ€¢â€œËâˆ«â‰ˆâˆ«Ã•Ã€Â´â€œËâˆ«â‰ˆ
+const int	ENT_COMPAT	= 1;		//! Ã·Âªâ—Šâ„¢ÂªÂªÃ€Â´â€œËâˆ«â‰ˆ
+const int	ENT_SQUOTE	= 2;		//! Ã·Âªâ—Šâ„¢ÂªÂªÂµâ€¢â€œËâˆ«â‰ˆ
+const int	ENT_QUOTES	= ENT_COMPAT|ENT_SQUOTE;	//! Ã•Â¨Â Â±â—Šâ„¢ÂªÂªÂµâ€¢â€œËâˆ«â‰ˆâˆ«Ã•Ã€Â´â€œËâˆ«â‰ˆ
 namespace __private
 
 {
@@ -1179,15 +1182,15 @@ namespace __private
 }
 
 
-//! \brief: ¶ÔhtmlÖĞÌØÊâµÄ×Ö·û½øĞĞ±àÂë¡£
+//! \brief: âˆ‚â€˜htmlÃ·â€“ÃƒÃ¿Â â€šÂµÆ’â—ŠÃ·âˆ‘ËšÎ©Â¯â€“â€“Â±â€¡Â¬ÃÂ°Â£
 /*!
-	\param	psz[in]			Ö¸ÏòÒÔ\0½áÎ²µÄ×Ö·û´®
-	\param	quotestyle[in]	¶ÔÒıºÅµÄ×ª»»¹æÔò
-	\return	×ª»»ºóµÄ×Ö·û´®
-	\remark ×ª»»µÄ×Ö·û±í:
+	\param	psz[in]			Ã·âˆÅ“Ãšâ€œâ€˜\0Î©Â·Å’â‰¤ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†
+	\param	quotestyle[in]	âˆ‚â€˜â€œËâˆ«â‰ˆÂµÆ’â—Šâ„¢ÂªÂªÏ€ÃŠâ€˜Ãš
+	\return	â—Šâ„¢ÂªÂªâˆ«Ã›ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†
+	\remark â—Šâ„¢ÂªÂªÂµÆ’â—ŠÃ·âˆ‘ËšÂ±ÃŒ:
 			'&' (ampersand)		=> "&amp;"
-			'"'	(double quote)	=> "&quot;"	(Ã»ÓĞÉèÖÃENT_NOQUOTESµÄÇé¿öÏÂ)
-			''' (single quote)	=> "&#039;'	(½öµ±ÉèÖÃÁËENT_QUOTESµÄÇé¿öÏÂ)
+			'"'	(double quote)	=> "&quot;"	(âˆšÂªâ€â€“â€¦Ã‹Ã·âˆšENT_NOQUOTESÂµÆ’Â«ÃˆÃ¸Ë†Å“Â¬)
+			''' (single quote)	=> "&#039;'	(Î©Ë†ÂµÂ±â€¦Ã‹Ã·âˆšÂ¡Ã€ENT_QUOTESÂµÆ’Â«ÃˆÃ¸Ë†Å“Â¬)
 			'<' (less than)		=> "&lt;"
 			'>'	(greater than)	=> "&gt;"
 */
@@ -1205,7 +1208,7 @@ typename __BasicString<CharType>::StringType	Basic_HtmlEncode(const CharType* ps
 		{
 			ret += spec;
 		}
-		else if (((*psz) >= 0 && ((*psz) < 0x20)) || *psz == 127)	// ²»¿É¼û
+		else if (((*psz) >= 0 && ((*psz) < 0x20)) || *psz == 127)	// â‰¤ÂªÃ¸â€¦ÂºËš
 		{
 			buf[0] = (CharType)'&';
 			buf[1] = (CharType)'#';
@@ -1262,17 +1265,17 @@ namespace __private
 	};
 }
 
-//! \brief: ¶ÔhtmlÖĞÌØÊâµÄ×Ö·û½øĞĞ½âÂë
+//! \brief: âˆ‚â€˜htmlÃ·â€“ÃƒÃ¿Â â€šÂµÆ’â—ŠÃ·âˆ‘ËšÎ©Â¯â€“â€“Î©â€šÂ¬Ã
 /*!
-\param	psz[in]			Ö¸ÏòÒÔ\0½áÎ²µÄ×Ö·û´®
-\return	×ª»»ºóµÄ×Ö·û´®
-\remark ×ª»»µÄ×Ö·û±í:
+\param	psz[in]			Ã·âˆÅ“Ãšâ€œâ€˜\0Î©Â·Å’â‰¤ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†
+\return	â—Šâ„¢ÂªÂªâˆ«Ã›ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†
+\remark â—Šâ„¢ÂªÂªÂµÆ’â—ŠÃ·âˆ‘ËšÂ±ÃŒ:
 	'&' (ampersand)		=> "&amp;"
 	'"'	(double quote)	=> "&quot;"
 	''' (single quote)	=> "&#039;"
 	'<' (less than)		=> "&lt;"
 	'>'	(greater than)	=> "&gt;"
-	ÆäËûÒÔ"&#xxx;"¸ñÊ½µÄ×Ö·û´®¡£
+	âˆ†â€°Ã€Ëšâ€œâ€˜"&#xxx;"âˆÃ’Â Î©ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†Â°Â£
 */
 template<typename CharType>
 typename __BasicString<CharType>::StringType	Basic_HtmlDecode(const CharType* psz)
@@ -1307,20 +1310,20 @@ namespace __private
 		}
 	}
 }
-//! \brirf: ¶Ô×Ö·û´®×öurl±àÂë
+//! \brirf: âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†â—ŠË†urlÂ±â€¡Â¬Ã
 /*!
-\param	psz[in]		Ö¸ÏòÒÔ\0½áÎ²µÄ×Ö·û´®
-\return ×ª»»ºóµÄ×Ö·û´®
+\param	psz[in]		Ã·âˆÅ“Ãšâ€œâ€˜\0Î©Â·Å’â‰¤ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†
+\return â—Šâ„¢ÂªÂªâˆ«Ã›ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†
 \remark	
-×ª»»¹æÔò£º½«×Ö·û´®ÖĞ³ıÁË'-'ºÍ'_'ÍâµÄËùÓĞ·Ç×ÖÄ¸ºÍ·ÇÊı×Ö×Ö·û¶¼Ìæ»»³É%ºó¸úÁ½Î»Ê®Áù½øÖÆÊı£¬¿Õ¸ñÔò±àÂëÎª¼ÓºÅ(+)¡£
-¸Ãº¯Êı½öÓĞMulti°æ±¾£¬Ã»ÓĞUNICODE°æ±¾¡£
+â—Šâ„¢ÂªÂªÏ€ÃŠâ€˜ÃšÂ£âˆ«Î©Â´â—ŠÃ·âˆ‘ËšÂ¥Ã†Ã·â€“â‰¥ËÂ¡Ã€'-'âˆ«Ã•'_'Ã•â€šÂµÆ’Ã€Ë˜â€â€“âˆ‘Â«â—ŠÃ·Æ’âˆâˆ«Ã•âˆ‘Â«Â Ëâ—ŠÃ·â—ŠÃ·âˆ‘Ëšâˆ‚ÂºÃƒÃŠÂªÂªâ‰¥â€¦%âˆ«Ã›âˆË™Â¡Î©Å’ÂªÂ Ã†Â¡Ë˜Î©Â¯Ã·âˆ†Â ËÂ£Â¨Ã¸â€™âˆÃ’â€˜ÃšÂ±â€¡Â¬ÃÅ’â„¢Âºâ€âˆ«â‰ˆ(+)Â°Â£
+âˆâˆšâˆ«Ã˜Â ËÎ©Ë†â€â€“MultiâˆÃŠÂ±Ã¦Â£Â¨âˆšÂªâ€â€“UNICODEâˆÃŠÂ±Ã¦Â°Â£
 */
 char_string	Basic_URLEncode(const char* psz);
 
-//! ¶Ôurl±àÂëºóµÄ×Ö·û´®×ö½âÂë
+//! âˆ‚â€˜urlÂ±â€¡Â¬Ãâˆ«Ã›ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†â—ŠË†Î©â€šÂ¬Ã
 /*!
-\param	psz[in]		Ö¸ÏòÒÔ\0½áÎ²µÄ×Ö·û´®
-\return ×ª»»ºóµÄ×Ö·û´®
+\param	psz[in]		Ã·âˆÅ“Ãšâ€œâ€˜\0Î©Â·Å’â‰¤ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†
+\return â—Šâ„¢ÂªÂªâˆ«Ã›ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†
 */
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_URLDecode(const CharType* psz)
@@ -1351,7 +1354,7 @@ typename __BasicString<CharType>::StringType Basic_URLDecode(const CharType* psz
 				status = CharNone;
 				ret += (CharType)'%';
 				break;
-			case CharSecond:	// ¿Ï¶¨²»ÊÇ±ê×¼µÄ,ÆÕÍ¨´¦Àí
+			case CharSecond:	// Ã¸Å“âˆ‚Â®â‰¤ÂªÂ Â«Â±Ãâ—ŠÂºÂµÆ’,âˆ†â€™Ã•Â®Â¥Â¶Â¿ÃŒ
 				ret += (CharType)'%';
 				ret += (CharType)c;
 				status = CharFirst;
@@ -1382,16 +1385,16 @@ typename __BasicString<CharType>::StringType Basic_URLDecode(const CharType* psz
 	return ret;
 }
 
-//! ×ª³É16½øÖÆµÄ×Ö·û´®
+//! â—Šâ„¢â‰¥â€¦16Î©Â¯Ã·âˆ†ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†
 int Basic_ConvertStringToHexString(const char *pszSrc, int nCount, char* pszDest, int nDest);
 
-//! ½«HEX±àÂëºóµÄ×Ö·û´®×ª»¯ÎªhexÔ´´®
+//! Î©Â´HEXÂ±â€¡Â¬Ãâˆ«Ã›ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†â—Šâ„¢ÂªÃ˜Å’â„¢hexâ€˜Â¥Â¥Ã†
 /*!
-\param	pszSrc[in]		Ô´×Ö·û´®
-\param	nCount[in]		pszSrcµÄ³¤¶È
-\param	pszDest[out]	×ª»»ºóÊä³ö
-\param	nDest[out]		Êä³öµÄpszDestµÄ×Ö·û´®³¤¶È(²»ÊÇÄÚ´æ³¤¶È)
-\return ×ª»»ºóµÄ×Ö·û´®µÄ³¤¶È
+\param	pszSrc[in]		â€˜Â¥â—ŠÃ·âˆ‘ËšÂ¥Ã†
+\param	nCount[in]		pszSrcÂµÆ’â‰¥Â§âˆ‚Â»
+\param	pszDest[out]	â—Šâ„¢ÂªÂªâˆ«Ã›Â â€°â‰¥Ë†
+\param	nDest[out]		Â â€°â‰¥Ë†ÂµÆ’pszDestÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†â‰¥Â§âˆ‚Â»(â‰¤ÂªÂ Â«Æ’â„Â¥ÃŠâ‰¥Â§âˆ‚Â»)
+\return â—Šâ„¢ÂªÂªâˆ«Ã›ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†ÂµÆ’â‰¥Â§âˆ‚Â»
 */
 template<class CharType>
 int Basic_ConvertStringToHex(const char *pszSrc, int nCount, CharType* pszDest, int nDest)
@@ -1412,13 +1415,13 @@ int Basic_ConvertStringToHex(const char *pszSrc, int nCount, CharType* pszDest, 
 }
 
 
-//! ½«HEX±àÂëºóµÄ×Ö·û´®×ª»¯ÎªhexÔ´´®
+//! Î©Â´HEXÂ±â€¡Â¬Ãâˆ«Ã›ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†â—Šâ„¢ÂªÃ˜Å’â„¢hexâ€˜Â¥Â¥Ã†
 /*!
-\param	pszSrc[in]		Ô´Êı¾İ
-\param	nCount[in]		pszSrcµÄ³¤¶È
-\param	pszDest[out]	×ª»»ºóÊä³ö
-\param	nDest[out]		Êä³öµÄ×Ö·û´®³¤¶È´óĞ¡.(CharType*nDestµÄ´óĞ¡)
-\return ×ª»»ºóBufferµÄ³¤¶È
+\param	pszSrc[in]		â€˜Â¥Â ËÃ¦â€º
+\param	nCount[in]		pszSrcÂµÆ’â‰¥Â§âˆ‚Â»
+\param	pszDest[out]	â—Šâ„¢ÂªÂªâˆ«Ã›Â â€°â‰¥Ë†
+\param	nDest[out]		Â â€°â‰¥Ë†ÂµÆ’â—ŠÃ·âˆ‘ËšÂ¥Ã†â‰¥Â§âˆ‚Â»Â¥Ã›â€“Â°.(CharType*nDestÂµÆ’Â¥Ã›â€“Â°)
+\return â—Šâ„¢ÂªÂªâˆ«Ã›BufferÂµÆ’â‰¥Â§âˆ‚Â»
 */
 template<class CharType>
 int Basic_ConvertHexToString(const CharType *pszSrc, int nCount, char* pszDest, int nDest)
@@ -1444,7 +1447,7 @@ int Basic_ConvertHexToString(const CharType *pszSrc, int nCount, char* pszDest, 
 
 //! 
 
-//! ¶Ô×Ö·û´®±àÂë
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†Â±â€¡Â¬Ã
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_EncodeString(const CharType* psz)
 {
@@ -1485,7 +1488,7 @@ typename __BasicString<CharType>::StringType Basic_EncodeString(const CharType* 
 	return str;
 }
 
-//! ¶Ô×Ö·û´®½âÂë
+//! âˆ‚â€˜â—ŠÃ·âˆ‘ËšÂ¥Ã†Î©â€šÂ¬Ã
 template<typename CharType>
 typename __BasicString<CharType>::StringType Basic_DecodeString(const CharType* psz)
 {
@@ -1599,36 +1602,36 @@ CharType* __tcscpyn(CharType* strDest, size_t nDest, const CharType* strSource, 
 }
 
 /** 
-*\brief __atoi64 ×Ö·û´®×ª64Î»ÕûÊı
+*\brief __atoi64 â—ŠÃ·âˆ‘ËšÂ¥Ã†â—Šâ„¢64Å’Âªâ€™ËšÂ Ë
 * 
 *\param str 
-*\param nLen Ä¬ÈÏÖµ -1
+*\param nLen Æ’Â¨Â»Å“Ã·Âµ -1
 *\return  
 */
 int64_t __atoi64_s(const char* str, int nLen/* = -1*/);
 
 
-// Ò»Ğ©¶ÔÓÚbasic_stringµÄ²Ù×÷
+// â€œÂªâ€“Â©âˆ‚â€˜â€â„basic_stringÂµÆ’â‰¤Å¸â—ŠËœ
 namespace strutil
 {
 	const char*		__get_blank_string(__private::Type2Type<char>);
 	const WCHAR*	__get_blank_string(__private::Type2Type<WCHAR>);
 
-	//! ×Ö·û´®±ä´óĞ´
+	//! â—ŠÃ·âˆ‘ËšÂ¥Ã†Â±â€°Â¥Ã›â€“Â¥
 	template<class StringType>
 	void makeupper(StringType& s)
 	{
 		transform(s.begin(), s.end(), s.begin(), (int(*)(int))toupper);
 	}
 
-	//! ×Ö·û´®±äĞ¡Ğ´
+	//! â—ŠÃ·âˆ‘ËšÂ¥Ã†Â±â€°â€“Â°â€“Â¥
 	template<class StringType>
 	void makelower(StringType& s)
 	{
 		transform(s.begin(), s.end(), s.begin(), (int(*)(int))tolower);
 	}
 
-	//! È¥³ı×ó²à°üº¬ÔÚlpszTargetÖĞµÄ×Ö·û
+	//! Â»â€¢â‰¥Ëâ—ŠÃ›â‰¤â€¡âˆÂ¸âˆ«Â¨â€˜â„lpszTargetÃ·â€“ÂµÆ’â—ŠÃ·âˆ‘Ëš
 	template<class StringType>
 	void ltrim(StringType& s, typename StringType::const_pointer lpszTarget)
 	{
@@ -1636,7 +1639,7 @@ namespace strutil
 	}
 
 
-	//! È¥³ı×ó²à¿Õ×Ö·û
+	//! Â»â€¢â‰¥Ëâ—ŠÃ›â‰¤â€¡Ã¸â€™â—ŠÃ·âˆ‘Ëš
 	template<class StringType>
 	void ltrim(StringType& s)
 	{
@@ -1644,21 +1647,21 @@ namespace strutil
 		ltrim(s, __get_blank_string(__private::Type2Type<value_type>()));
 	}
 
-	//! È¥³ı×ó²àÖ¸¶¨×Ö·û
+	//! Â»â€¢â‰¥Ëâ—ŠÃ›â‰¤â€¡Ã·âˆâˆ‚Â®â—ŠÃ·âˆ‘Ëš
 	template<class StringType>
 	void ltrim(StringType& s, typename StringType::value_type cTarget)
 	{
 		s.erase(0, s.find_first_not_of(cTarget));
 	}
 
-	//! È¥³ıÓÒ²à°üº¬ÔÚlpszTargetÖĞµÄ×Ö·û
+	//! Â»â€¢â‰¥Ëâ€â€œâ‰¤â€¡âˆÂ¸âˆ«Â¨â€˜â„lpszTargetÃ·â€“ÂµÆ’â—ŠÃ·âˆ‘Ëš
 	template<class StringType>
 	void rtrim(StringType& s, typename StringType::const_pointer lpszTarget)
 	{
 		s.erase(s.find_last_not_of(lpszTarget) + 1);
 	}
 
-	//! È¥³ıÓÒ²à¿Õ×Ö·û
+	//! Â»â€¢â‰¥Ëâ€â€œâ‰¤â€¡Ã¸â€™â—ŠÃ·âˆ‘Ëš
 	template<class StringType>
 	void rtrim(StringType& s)
 	{
@@ -1666,14 +1669,14 @@ namespace strutil
 		rtrim(s, __get_blank_string(__private::Type2Type<value_type>()));
 	}
 
-	//! È¥³ıÓÒ²àÖ¸¶¨×Ö·û
+	//! Â»â€¢â‰¥Ëâ€â€œâ‰¤â€¡Ã·âˆâˆ‚Â®â—ŠÃ·âˆ‘Ëš
 	template<class StringType>
 	void rtrim(StringType& s, typename StringType::value_type cTarget)
 	{
 		s.erase(s.find_last_not_of(cTarget) + 1);
 	}
 
-	//! Ìæ»»×Ö·û´®
+	//! ÃƒÃŠÂªÂªâ—ŠÃ·âˆ‘ËšÂ¥Ã†
 	template<class StringType>
 	int replace(StringType& s, typename StringType::const_pointer string_to_replace, typename StringType::const_pointer new_string)
 	{
@@ -1713,7 +1716,7 @@ namespace strutil
 		CharType	__new;
 	};
 
-	//! Ìæ»»×Ö·û
+	//! ÃƒÃŠÂªÂªâ—ŠÃ·âˆ‘Ëš
 	template<class StringType>
 	int replace(StringType& s, typename StringType::value_type cOld, typename StringType::value_type cNew)
 	{

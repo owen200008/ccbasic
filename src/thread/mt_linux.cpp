@@ -2,7 +2,7 @@
 #ifndef __ANDROID
 #include <sys/timeb.h>
 #endif
-#if defined(IPHONE_AVCH_32)
+#if defined(__MAC)
 #include <libkern/OSAtomic.h>
 #endif
 #if	(defined(__LINUX) || defined(__MAC) || defined(__ANDROID))
@@ -56,7 +56,7 @@ BasicInterlockedIncrement(
     )
 {
 #ifdef __MAC
-	return OSAtomicAdd32(1, (volatile int32_t*)Addend);
+	return OSAtomicAdd32(1, (volatile int32_t*)lpAddend);
 #else
 	return __sync_add_and_fetch(lpAddend, 1);
 #endif
@@ -68,7 +68,7 @@ BasicInterlockedDecrement(
     )
 {
 #ifdef __MAC
-	return OSAtomicAdd32(-1, (volatile int32_t*)Addend);
+	return OSAtomicAdd32(-1, (volatile int32_t*)lpAddend);
 #else
 	return __sync_sub_and_fetch(lpAddend, 1);
 #endif
@@ -78,7 +78,7 @@ bool
 BasicInterlockedCompareExchange(LONG volatile *dest, long exch, long comp)
 {
 #ifdef __MAC
-	return OSAtomicCompareAndSwap32((int32_t)comp, (int32_t)exch, (volatile int32_t*)dest)
+    return OSAtomicCompareAndSwap32((int32_t)comp, (int32_t)exch, (volatile int32_t*)dest);
 #else
 	return __sync_bool_compare_and_swap(dest, comp, exch);
 #endif

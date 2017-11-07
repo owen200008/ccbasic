@@ -345,7 +345,8 @@ namespace std{
 			return _Hash_seq((const unsigned char*)key.c_str(), key.length());
 #else
 #ifdef __GNUC__
-			return std::_Hash_impl::hash(key.c_str(), key.length());
+            hash<const char*> hash_fn;
+            return hash_fn(key.c_str());
 #else
 			hash<const char*> hash_fn;
 			return hash_fn(key.c_str(), key.length());
