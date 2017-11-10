@@ -70,7 +70,7 @@ uint32_t BasiclibLua_Basic_crc32(const string& strEncode) {
 void ExportBasiclibClassToLua(lua_State* L) {
 	kaguya::State luaState(L);
 	int(basiclib::CBasicString::*pReplaceFunc)(const char*, const char*) = &basiclib::CBasicString::Replace;
-	BOOL(basiclib::CBasicString::*pLoadStringFunc)(const char*, const char*) = &basiclib::CBasicString::LoadString;
+	bool(basiclib::CBasicString::*pLoadStringFunc)(const char*, const char*) = &basiclib::CBasicString::LoadString;
 	void(basiclib::CBasicString::*pTrimLeftFunc)(const char*) = &basiclib::CBasicString::TrimLeft;
 	void(basiclib::CBasicString::*pTrimRightFunc)(const char*) = &basiclib::CBasicString::TrimRight;
 	int(basiclib::CBasicString::*pFindFunc)(const char*, int) const = &basiclib::CBasicString::Find;
