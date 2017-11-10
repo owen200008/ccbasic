@@ -132,8 +132,6 @@ set(basiclib_SOURCES
     ${BasicLibSrcPath}/datastruct/basic_string.h
     ${BasicLibSrcPath}/datastruct/extern.h
     ${BasicLibSrcPath}/datastruct/key_value.h
-    ${BasicLibSrcPath}/datastruct/list.h
-    ${BasicLibSrcPath}/datastruct/map.h
     ${BasicLibSrcPath}/datastruct/pbzk.h
     ${BasicLibSrcPath}/datastruct/stringex.h
     ${BasicLibSrcPath}/debug/debug.h
