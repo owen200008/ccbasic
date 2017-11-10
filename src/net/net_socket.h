@@ -132,7 +132,7 @@ protected:
 	virtual void InitMember();
 
 	//! 线程内执行函数
-	virtual void CloseCallback(BOOL bRemote, DWORD dwNetCode = 0);
+	virtual void CloseCallback(bool bRemote, DWORD dwNetCode = 0);
 protected:
 	static std::atomic<uint32_t>	m_defaultCreateSession;
 	CNetThread*						m_pThread;
@@ -170,7 +170,7 @@ public:
 	virtual bool CanClose();
 
 	//! 判断是否超时没收到数据
-	BOOL IsRecTimeout(time_t tmNow, uint16_t nTimeoutSecond);
+	bool IsRecTimeout(time_t tmNow, uint16_t nTimeoutSecond);
 
 	//! 获取netstate
 	void GetNetStatInfo(BasicNetStat& netState){ netState = m_stNet; }
@@ -194,7 +194,7 @@ protected:
 	virtual void InitMember();
 
 	//! 线程内执行函数
-	virtual void CloseCallback(BOOL bRemote, DWORD dwNetCode = 0);
+	virtual void CloseCallback(bool bRemote, DWORD dwNetCode = 0);
 
 	//! 只在libevent线程使用
 	void SendDataFromQueue();

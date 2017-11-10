@@ -17,7 +17,7 @@ CMsgSendBuffer::~CMsgSendBuffer(){
 
 int32_t CMsgSendBuffer::SendBuffer(int32_t lSend){
 	if(m_cbBuffer < lSend){
-		ASSERT(FALSE);
+		ASSERT(false);
 		m_cbBuffer = 0;
 		return 0;
 	}

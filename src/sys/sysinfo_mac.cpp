@@ -198,9 +198,9 @@ _BASIC_DLL_API void BasicGetMemoryInfo(DWORD& dwPhysicalMemory,
 //! 取得进程使用内存 单位K
 /*!
  *\param  hProcess，进程句柄，如hProcess==NULL,则取当前进程
- *\param  bKeepHandle，如果应用程序需要长期定时调用，则置为TRUE
+ *\param  bKeepHandle，如果应用程序需要长期定时调用，则置为true
  */
-_BASIC_DLL_API DWORD BasicGetProcessMemory(HANDLE hProcess, BOOL bKeepHandle )
+_BASIC_DLL_API DWORD BasicGetProcessMemory(HANDLE hProcess, bool bKeepHandle )
 {
         struct task_basic_info t_info;
         mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
@@ -309,7 +309,7 @@ _BASIC_DLL_API long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBuf
  *\param bExt 是否包括扩展名
  *\return 模块名
  */
-_BASIC_DLL_API CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
+_BASIC_DLL_API CBasicString BasicGetModuleTitle(HANDLE hModule, bool bExt)
 {
 	CBasicString strModule = BasicGetModuleName(hModule);
 	int nPos = strModule.ReverseFind(PATHSPLIT);
@@ -339,7 +339,7 @@ _BASIC_DLL_API CBasicString BasicGetModulePath(HANDLE hModule)
 /*!
 *\param dwProcessID	进程ID
  */
-_BASIC_DLL_API BOOL BasicProcessIsTerminated(DWORD dwProcessID)
+_BASIC_DLL_API bool BasicProcessIsTerminated(DWORD dwProcessID)
 {
 	CBasicString strFile;
 	CBasicString strCmd;
@@ -357,16 +357,16 @@ _BASIC_DLL_API BOOL BasicProcessIsTerminated(DWORD dwProcessID)
 	}
 	if (strFile.GetLength() <= 0)
 	{
-		return TRUE;
+		return true;
 	}
 	CBasicStringArray ayItem;
 	BasicSpliteString(strFile.c_str(), '\n', IntoContainer_s<CBasicStringArray>(ayItem));
 	int nLineCnt = ayItem.GetSize();
 	if (nLineCnt == 2)
 	{
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 
 //! 修改系统时间
@@ -374,9 +374,9 @@ _BASIC_DLL_API BOOL BasicProcessIsTerminated(DWORD dwProcessID)
 * \param tTime:需要设置的时间，精确到秒
 * \return 修改成功或者失败
  */
-_BASIC_DLL_API BOOL BasicSetSysTime(time_t tTime)
+_BASIC_DLL_API bool BasicSetSysTime(time_t tTime)
 {
-	return TRUE;
+	return true;
 }
 
 #define MAC_PROCESS_CMD				"ps -el"		// Linux

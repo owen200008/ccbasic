@@ -67,15 +67,15 @@ HANDLE BasicCreateThread(
 
 
 //等待线程退出
-BOOL BasicWaitThread(
+bool BasicWaitThread(
 	HANDLE hThread,
 	DWORD  dwWaitTime
 	)
 {
 	if(hThread == NULL)
-		return FALSE;
+		return false;
 	pthread_join((pthread_t)hThread, NULL);
-	return TRUE;
+	return true;
 }
 
 void BasicTerminateThread(HANDLE hThread)
@@ -145,7 +145,7 @@ void* CBasicThreadTLS::GetValue()
 {
 	return pthread_getspecific(m_key);
 }
-BOOL CBasicThreadTLS::SetValue(void* pValue)
+bool CBasicThreadTLS::SetValue(void* pValue)
 {
 	return pthread_setspecific(m_key, pValue) == 0;
 }

@@ -47,16 +47,16 @@ public:
 	//! number of elements
 	int GetCount() const;
 	//! if is empty
-	BOOL IsEmpty() const;
+	bool IsEmpty() const;
 
 	//! get value by key
-	BOOL Lookup(ARG_KEY key, VALUE& rValue) const;
+	bool Lookup(ARG_KEY key, VALUE& rValue) const;
 
 	//! add a new (key, value) pair
 	void SetAt(ARG_KEY key, ARG_VALUE newValue);
 
 	//! removing existing (key, ?) pair
-	BOOL RemoveKey(ARG_KEY key);
+	bool RemoveKey(ARG_KEY key);
 
 	//! removing all existing pair
 	void RemoveAll();
@@ -71,7 +71,7 @@ public:
 	//! get hash table size
 	uint32_t GetHashTableSize() const;
 	//! set hash table size, for MFC compatible, not really implement
-	void InitHashTable(uint32_t hashSize, BOOL bAllocNow = TRUE);
+	void InitHashTable(uint32_t hashSize, bool bAllocNow = true);
 
 // Implementation
 protected:
@@ -153,7 +153,7 @@ inline int CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::GetCount() const
 }
 
 template<class KEY, class ARG_KEY, class VALUE, class ARG_VALUE>
-inline BOOL CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::IsEmpty() const
+inline bool CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::IsEmpty() const
 {
 	return _Self::empty();
 }
@@ -186,7 +186,7 @@ CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::CMap(int nBlockSize)
 
 template<class KEY, class ARG_KEY, class VALUE, class ARG_VALUE>
 void CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::InitHashTable(
-	uint32_t nHashSize, BOOL bAllocNow)
+	uint32_t nHashSize, bool bAllocNow)
 //
 // Used to force allocation of a hash table or to override the default
 //   hash table size of (which is fairly small)
@@ -206,24 +206,24 @@ CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::~CMap()
 }
 
 template<class KEY, class ARG_KEY, class VALUE, class ARG_VALUE>
-BOOL CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::Lookup(ARG_KEY key, VALUE& rValue) const
+bool CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::Lookup(ARG_KEY key, VALUE& rValue) const
 {
 	const_iterator iter = _Self::find(key);
 	if (_Self::end() == iter)
 	{
-		return FALSE;
+		return false;
 	}
 	else
 	{
 		rValue = iter->second;
-		return TRUE;
+		return true;
 	}
 	
 }
 
 template<class KEY, class ARG_KEY, class VALUE, class ARG_VALUE>
-BOOL CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::RemoveKey(ARG_KEY key)
-// remove key - return TRUE if removed
+bool CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::RemoveKey(ARG_KEY key)
+// remove key - return true if removed
 {
 	return _Self::erase(key) > 0;
 }

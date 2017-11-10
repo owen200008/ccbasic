@@ -71,7 +71,7 @@ int CBasicTimeSplite::InitBasicTimeSplite(BasicTimeSpliteType basicTimeSpliteTyp
     return nRet;
 }
 
-BOOL CompareTimeSplite(const BasicTimeSplite& first, const BasicTimeSplite& second)
+bool CompareTimeSplite(const BasicTimeSplite& first, const BasicTimeSplite& second)
 {
     return first.m_tmBegin < second.m_tmBegin;
 }
@@ -273,7 +273,7 @@ basiclib::CBasicString CStatisticsTime::FormatToString()
 	return m_strFormat;
 }
 
-BOOL CompareStatisticsTimeSplite(const basiclib::CTime& first, const basiclib::CTime& second)
+bool CompareStatisticsTimeSplite(const basiclib::CTime& first, const basiclib::CTime& second)
 {
 	return first < second;
 }
@@ -330,15 +330,15 @@ basiclib::CTime CStatisticsTime::GetLastPrizeTime()
 }
 
 //判断是否到颁奖的时间，如果到就设置下一个颁奖时间	
-BOOL CStatisticsTime::IsPrizeTime(time_t tmNow)
+bool CStatisticsTime::IsPrizeTime(time_t tmNow)
 {
-	BOOL bRet = FALSE;
+	bool bRet = false;
 	if (m_vtPrizeTime.size() > 0)
 	{
 		if (tmNow >= m_vtPrizeTime[0].GetTime32())
 		{
 			UpdateBasicTime(tmNow);
-			bRet = TRUE;
+			bRet = true;
 		}
 	}
 	return bRet;
@@ -439,9 +439,9 @@ CTime::CTime(const FILETIME& fileTime, int nDST)
 #endif
 
 //解析格式MMMM-MM-MM MM:MM:MM 例如 2014-04-02 17:42:13  
-BOOL CTime::ParseString(const char* lpszTimeFormat)
+bool CTime::ParseString(const char* lpszTimeFormat)
 {
-	BOOL nResult = FALSE;
+	bool nResult = false;
 	if (__tcslen(lpszTimeFormat) == 14)
 	{
 		struct tm atm;
@@ -457,7 +457,7 @@ BOOL CTime::ParseString(const char* lpszTimeFormat)
 			atm.tm_isdst = -1;
 
 			m_time = _mktime64(&atm);
-			nResult = TRUE;
+			nResult = true;
 		}
 	}
 	return nResult;
@@ -501,12 +501,12 @@ struct tm* CTime::GetLocalTm(struct tm* ptm) const
 #endif //
 
 #ifdef __BASICWINDOWS
-BOOL CTime::GetAsSystemTime(SYSTEMTIME& timeDest) const
+bool CTime::GetAsSystemTime(SYSTEMTIME& timeDest) const
 {
 	struct tm ti;
 	struct tm* ptm = GetLocalTm(&ti);
 	if (ptm == NULL)
-		return FALSE;
+		return false;
 
 	timeDest.wYear = (WORD) (1900 + ptm->tm_year);
 	timeDest.wMonth = (WORD) (1 + ptm->tm_mon);
@@ -517,7 +517,7 @@ BOOL CTime::GetAsSystemTime(SYSTEMTIME& timeDest) const
 	timeDest.wSecond = (WORD) ptm->tm_sec;
 	timeDest.wMilliseconds = 0;
 
-	return TRUE;
+	return true;
 }
 #endif
 
@@ -551,7 +551,7 @@ CBasicString CTimeSpan::FormatMultiByte(const char* pFormat) const
 			switch (ch = *pFormat++)
 			{
 			default:
-				ASSERT(FALSE);      // probably a bad format character
+				ASSERT(false);      // probably a bad format character
 			case '%':
 				*pch++ = ch;
 				break;

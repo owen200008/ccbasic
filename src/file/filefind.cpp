@@ -144,9 +144,9 @@ time_t CBasicFileFind::GetCreationTime() const
 	return 0;
 }
 
-BOOL CBasicFileFind::IsDots() const
+bool CBasicFileFind::IsDots() const
 {
-	BOOL bResult = FALSE;
+	bool bResult = false;
 	if (m_pFoundInfo != NULL && IsDirectory())
 	{
 		LPWIN32_FIND_DATAA pFindData = (LPWIN32_FIND_DATAA)m_pFoundInfo;
@@ -154,7 +154,7 @@ BOOL CBasicFileFind::IsDots() const
 		{
 			if (pFindData->cFileName[1] == '\0' || (pFindData->cFileName[1] == '.' && pFindData->cFileName[2] == '\0'))
 			{
-				bResult = TRUE;
+				bResult = true;
 			}
 		}
 	}
@@ -162,53 +162,53 @@ BOOL CBasicFileFind::IsDots() const
 	return bResult;
 }
 
-BOOL CBasicFileFind::IsReadOnly() const
+bool CBasicFileFind::IsReadOnly() const
 {
 	return MatchesMask(FILE_ATTRIBUTE_READONLY);
 }
 
-BOOL CBasicFileFind::IsDirectory() const
+bool CBasicFileFind::IsDirectory() const
 {
 	return MatchesMask(FILE_ATTRIBUTE_DIRECTORY);
 }
 
-BOOL CBasicFileFind::IsCompressed() const
+bool CBasicFileFind::IsCompressed() const
 {
 	return MatchesMask(FILE_ATTRIBUTE_COMPRESSED);
 }
 
-BOOL CBasicFileFind::IsSystem() const
+bool CBasicFileFind::IsSystem() const
 {
 	return MatchesMask(FILE_ATTRIBUTE_SYSTEM);
 }
 
-BOOL CBasicFileFind::IsHidden() const
+bool CBasicFileFind::IsHidden() const
 {
 	return MatchesMask(FILE_ATTRIBUTE_HIDDEN);
 }
 
-BOOL CBasicFileFind::IsTemporary() const
+bool CBasicFileFind::IsTemporary() const
 {
 	return MatchesMask(FILE_ATTRIBUTE_TEMPORARY);
 }
 
-BOOL CBasicFileFind::IsNormal() const
+bool CBasicFileFind::IsNormal() const
 {
 	return MatchesMask(FILE_ATTRIBUTE_NORMAL);
 }
 
-BOOL CBasicFileFind::IsArchived() const
+bool CBasicFileFind::IsArchived() const
 {
 	return MatchesMask(FILE_ATTRIBUTE_ARCHIVE);
 }
 
-BOOL CBasicFileFind::MatchesMask(DWORD dwMask) const
+bool CBasicFileFind::MatchesMask(DWORD dwMask) const
 {
 	if (m_pFoundInfo != NULL)
 	{
 		return (!!(((LPWIN32_FIND_DATAA)m_pFoundInfo)->dwFileAttributes & dwMask));
 	}
-	return FALSE;
+	return false;
 }
 long CBasicFileFind::FindFile(const char* lpszFilePath, const char* lpszFileName)
 {

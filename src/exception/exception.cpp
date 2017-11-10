@@ -15,7 +15,7 @@ void CBasicException::BeforeQuit()
 }
 
 extern int     g_nStartMode;
-BOOL BasicIsDaemonMode()
+bool BasicIsDaemonMode()
 {
 	return (g_nStartMode&BASIC_DAEMONMODE);
 }

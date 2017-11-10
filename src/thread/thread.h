@@ -56,7 +56,7 @@ _BASIC_DLL_API HANDLE BasicCreateThread(LPBASIC_THREAD_START_ROUTINE lpStartAddr
 * \param dwWaitTime 等待退出的时间(毫秒)
 * \return 句柄无效或者成功退出返回true，超时返回false
 */
-_BASIC_DLL_API BOOL BasicWaitThread(HANDLE hThread, DWORD  dwWaitTime = INFINITE);
+_BASIC_DLL_API bool BasicWaitThread(HANDLE hThread, DWORD  dwWaitTime = INFINITE);
 
 /*!
 * 强行结束线程
@@ -153,7 +153,7 @@ public:
 
 	bool CreateTLS();
 	void* GetValue();
-	BOOL SetValue(void* pValue);
+	bool SetValue(void* pValue);
 protected:
 	bool			m_bCreate;
 	BasicTLS_Key	m_key;

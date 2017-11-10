@@ -56,7 +56,7 @@ public:
 	void ResetReadError(){ m_bReadError = false; }
 	bool IsReadError(){ return m_bReadError; }
 
-	BOOL IsEmpty() const { return m_pszBuffer == NULL; }
+	bool IsEmpty() const { return m_pszBuffer == NULL; }
 	void Free();
 
 	char* GetDataBuffer(long& lLength) const;
@@ -73,7 +73,7 @@ public:
 	void AppendData(long lVal);
 	void AppendData(double fVal);
 
-	BOOL InitFormFile(const char* lpszFile);
+	bool InitFormFile(const char* lpszFile);
 
 	CBasicSmartBuffer& operator = (const CBasicSmartBuffer& buffer);
 	friend bool operator == (CBasicSmartBuffer& b1, CBasicSmartBuffer& b2);

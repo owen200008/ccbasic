@@ -36,7 +36,7 @@ public:
 	/*! count of elements*/
 	int GetCount() const; //! count of elements in list</br>
 	/*! if list is emtpy*/
-	BOOL IsEmpty() const;
+	bool IsEmpty() const;
 
 	// peek at head or tail
 	//! Returns the head element of the list (cannot be empty).
@@ -166,7 +166,7 @@ inline int CList<TYPE, ARG_TYPE>::GetCount() const
 }
 
 template<class TYPE, class ARG_TYPE>
-inline BOOL CList<TYPE, ARG_TYPE>::IsEmpty() const
+inline bool CList<TYPE, ARG_TYPE>::IsEmpty() const
 {
 	return _Self::empty();
 }

@@ -8,8 +8,8 @@ struct _BASIC_DLL_API BasicStaticBuffer
 {
 public:
 	void*		Alloc(unsigned short len);
-	BOOL		IsEmpty() const;
-	BOOL		Assign(unsigned short len, unsigned char c);
+	bool		IsEmpty() const;
+	bool		Assign(unsigned short len, unsigned char c);
 	void		Release();
 	void*		AppendBuffer(const void* buf, unsigned short len);
 	void*		AppendString(const char* str, unsigned short len);
@@ -34,11 +34,11 @@ public:
 	CBasicStaticBuffer();
 	~CBasicStaticBuffer(void);
 
-	BOOL	FromFile(const char* lpszFile);
+	bool	FromFile(const char* lpszFile);
 	void	Release();
 
-	BOOL	Assign(size_t len, unsigned char c);
-	BOOL	IsEmpty() const;
+	bool	Assign(size_t len, unsigned char c);
+	bool	IsEmpty() const;
 	void*	SetLength(size_t len);
 	void*	Alloc(size_t len);
 	void	Clone(const CBasicStaticBuffer& buffer);

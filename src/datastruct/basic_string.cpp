@@ -55,8 +55,8 @@ int CBasicString::GetLength() const
 {
 	return length();
 }
-// TRUE if zero length
-BOOL CBasicString::IsEmpty() const
+// true if zero length
+bool CBasicString::IsEmpty() const
 {
 	return empty();
 }
@@ -469,7 +469,7 @@ void CBasicString::FormatV(const char* lpszFormat, va_list argList)
 				break;
 
 			default:
-				assert(FALSE);  // unknown formatting option
+				assert(false);  // unknown formatting option
 			}
 		}
 
@@ -643,8 +643,8 @@ int CWBasicString::GetLength() const
 	return length();
 }
 
-// TRUE if zero length
-BOOL CWBasicString::IsEmpty() const
+// true if zero length
+bool CWBasicString::IsEmpty() const
 {
 	return empty();
 }
@@ -1171,7 +1171,7 @@ void CWBasicString::FormatV(LPCTSTR lpszFormat, va_list argList)
 				break;
 
 			default:
-				assert(FALSE);  // unknown formatting option
+				assert(false);  // unknown formatting option
 			}
 		}
 

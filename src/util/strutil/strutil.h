@@ -1068,8 +1068,8 @@ int Basic_DeesCWBasicString(const CharType* psz, CharType* pszDest)
 long Basic_RoundString(char* lpszBuffer, long lRoundLength);
 
 #ifdef __BASICWINDOWS
-BOOL Basic_StringMatchSpec(const WCHAR* pszFile, const WCHAR* pszSpec);
-BOOL Basic_StringMatchSpec(const char* pszFile, const char* pszSpec);
+bool Basic_StringMatchSpec(const WCHAR* pszFile, const WCHAR* pszSpec);
+bool Basic_StringMatchSpec(const char* pszFile, const char* pszSpec);
 
 #else
 namespace __private
@@ -1108,16 +1108,16 @@ const CharType* StepSpec(const CharType* pszFileParam, const CharType* pszSpec, 
 
 
 template<typename CharType>
-BOOL MatchLast(const CharType* pszFileParam, const CharType* pszSpec)
+bool MatchLast(const CharType* pszFileParam, const CharType* pszSpec)
 {
 	if ( (CharType)'\0' == *pszSpec)
-		return TRUE;
+		return true;
 
 	int nSpecLen = __tcslen(pszSpec);
 	int nFileParamLen = __tcslen(pszFileParam);
 
 	if (nSpecLen > nFileParamLen)
-		return FALSE;
+		return false;
 
 	return NULL != StepSpec(pszFileParam + nFileParamLen - nSpecLen, pszSpec, false);
 //	return  memcmp(pszFileParam + nFileParamLen - nSpecLen, pszSpec, nSpecLen * sizeof(CharType)) == 0;
@@ -1127,15 +1127,15 @@ BOOL MatchLast(const CharType* pszFileParam, const CharType* pszSpec)
 /*!	\brief 实现在windows下PathMatchSpec类似的功能。支持?和*通配符
 *	\param pszFile[in] 指向以\0结尾的字符串
 *	\param pszSpec[in] 指向以\0结尾的字符串，用于描述匹配规则。
-*	\return 匹配返回TRUE,否则FALSE
+*	\return 匹配返回true,否则false
 */
 template<typename CharType>
-BOOL Basic_StringMatchSpec(const CharType* pszFile, const CharType* pszSpec)
+bool Basic_StringMatchSpec(const CharType* pszFile, const CharType* pszSpec)
 {
 	ASSERT(NULL != pszFile);
 	ASSERT(NULL != pszSpec);
 
-	BOOL bMatch = TRUE;
+	bool bMatch = true;
 	int nLenSpec = __tcslen(pszSpec);
 	size_t nAlloc = (nLenSpec + 1) * sizeof(CharType);
 	CharType* p = (CharType*)BasicAllocate(nAlloc);
@@ -1161,7 +1161,7 @@ BOOL Basic_StringMatchSpec(const CharType* pszFile, const CharType* pszSpec)
 		pszFile = __private::StepSpec(pszFile, p, bWildMatch);
 		if (NULL == pszFile)
 		{
-			bMatch = FALSE;
+			bMatch = false;
 			break;
 		}
 		p = e;

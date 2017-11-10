@@ -309,13 +309,13 @@ long Basic_RoundString(char* lpszBuffer, long lRoundLength)
 
 
 #ifdef __BASICWINDOWS
-BOOL Basic_StringMatchSpec(const WCHAR* pszFile, const WCHAR* pszSpec)
+bool Basic_StringMatchSpec(const WCHAR* pszFile, const WCHAR* pszSpec)
 {
 	return PathMatchSpecW(pszFile, pszSpec);
 }
 
 
-BOOL Basic_StringMatchSpec(const char* pszFile, const char* pszSpec)
+bool Basic_StringMatchSpec(const char* pszFile, const char* pszSpec)
 {
 	return PathMatchSpecA(pszFile, pszSpec);
 }

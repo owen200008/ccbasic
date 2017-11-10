@@ -59,9 +59,9 @@ _BASIC_DLL_API_C  void _BASIC_DLL_API BasicGetMemoryInfo(DWORD& dwPhysicalMemory
 //! 取得进程使用内存 单位K
 /*!
  *\param  hProcess，进程句柄，如hProcess==NULL,则取当前进程
- *\param  bKeepHandle，如果应用程序需要长期定时调用，则置为TRUE
+ *\param  bKeepHandle，如果应用程序需要长期定时调用，则置为true
  */
-_BASIC_DLL_API_C  DWORD _BASIC_DLL_API BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle = FALSE);
+_BASIC_DLL_API_C  DWORD _BASIC_DLL_API BasicGetProcessMem(HANDLE hProcess, bool bKeepHandle = false);
 //
 
 //! 取得硬盘信息
@@ -110,8 +110,8 @@ long _BASIC_DLL_API BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBuf
  *\param bExt 是否包括扩展名
  *\return 模块名
  */
-CBasicString _BASIC_DLL_API BasicGetModuleTitle(HANDLE hModule = NULL, BOOL bExt = FALSE);
-CWBasicString _BASIC_DLL_API WBasicGetModuleTitle(HANDLE hModule = NULL, BOOL bExt = FALSE);
+CBasicString _BASIC_DLL_API BasicGetModuleTitle(HANDLE hModule = NULL, bool bExt = false);
+CWBasicString _BASIC_DLL_API WBasicGetModuleTitle(HANDLE hModule = NULL, bool bExt = false);
 
 //! 取得模块路径
 /*!
@@ -130,14 +130,14 @@ CWBasicString _BASIC_DLL_API WBasicGetModuleTitle(HANDLE hModule = NULL, BOOL bE
 /*!
 *\param dwProcessID	进程ID
  */
-_BASIC_DLL_API_C  BOOL _BASIC_DLL_API BasicProcessIsTerminated(DWORD dwProcessID);
+_BASIC_DLL_API_C  bool _BASIC_DLL_API BasicProcessIsTerminated(DWORD dwProcessID);
 
 //! 修改系统时间
 /*!
 * \param tTime:需要设置的时间，精确到秒
 * \return 修改成功或者失败
  */
-_BASIC_DLL_API_C  BOOL _BASIC_DLL_API BasicSetSysTime(time_t tTime);
+_BASIC_DLL_API_C  bool _BASIC_DLL_API BasicSetSysTime(time_t tTime);
 
 #ifdef __BASICWINDOWS
 //

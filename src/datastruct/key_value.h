@@ -21,14 +21,14 @@ class _BASIC_DLL_API CBasicKey2Value : public basiclib::CBasicObject
 public:
 	CBasicKey2Value(int nHashSize = 7);
 
-	BOOL HasValue(const char* lpszKey, CBasicString& strValue);
+	bool HasValue(const char* lpszKey, CBasicString& strValue);
 	CBasicString GetValue(const char* lpszKey) const;
 	const char* GetValueRef(const char* lpszKey) const;
 
 	void SetValue(const char* lpszKey, const char* lpszValue);
 	void SetValue(const char* lpszKey, long lValue);
 
-	BOOL RemoveKey(const char* lpszKey);
+	bool RemoveKey(const char* lpszKey);
 
 	void RemoveAll()
 	{
@@ -41,7 +41,7 @@ public:
 		return m_map[strKey];
 	}
 
-	BOOL IsEmpty()
+	bool IsEmpty()
 	{
 		return m_map.IsEmpty();
 	}

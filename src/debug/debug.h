@@ -87,7 +87,7 @@ __NS_BASIC_START
 #endif////__ANDROID
 
 //!定位断言代码行
-_BASIC_DLL_API BOOL BasicAssertFailedLine(const char* lpszFileName, int nLine);
+_BASIC_DLL_API bool BasicAssertFailedLine(const char* lpszFileName, int nLine);
 
 //!中断
 _BASIC_DLL_API void BasicDebugBreak();

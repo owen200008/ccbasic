@@ -227,7 +227,7 @@ protected:
 
 
 template<class T>
-BOOL IsThisClass(T cClass, T* pClass, int nClassCount)
+bool IsThisClass(T cClass, T* pClass, int nClassCount)
 {
 	return find(pClass, pClass + nClassCount, cClass) != pClass + nClassCount;
 }

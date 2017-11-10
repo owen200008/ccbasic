@@ -105,7 +105,7 @@ long CMemFileBase::Close()
 	return BASIC_FILE_OK;
 }
 
-BOOL CMemFileBase::IsOpen() const
+bool CMemFileBase::IsOpen() const
 {
 	return m_pFileObj != NULL;
 }

@@ -109,7 +109,7 @@ __NS_BASIC_END
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL
+bool
 ReleaseSemaphore(
     HANDLE hSemaphore,
     LONG lReleaseCount,
@@ -134,7 +134,7 @@ CreateSemaphore(
 HANDLE
 CreateMutex(
     LPSECURITY_ATTRIBUTES lpMutexAttributes,
-    BOOL bInitialOwner,
+    bool bInitialOwner,
     LPCSTR lpName
     )
 {
@@ -143,7 +143,7 @@ CreateMutex(
 	return (HANDLE)mutex;
 }
 
-BOOL
+bool
 ReleaseMutex(
     HANDLE hMutex
     )
@@ -154,7 +154,7 @@ ReleaseMutex(
 
 //��ʱ��
 //ʱ�䵥λ������
-BOOL
+bool
 LockMutex(HANDLE hMutex, DWORD dwTimeout)
 {
 	pthread_mutex_t* mutex = (pthread_mutex_t*)hMutex;
@@ -204,7 +204,7 @@ LockMutex(HANDLE hMutex, DWORD dwTimeout)
 	return false;
 }
 
-BOOL
+bool
 DestoryMutex(HANDLE hMutex)
 {
 	pthread_mutex_t* pmutex = (pthread_mutex_t*)hMutex;
@@ -215,7 +215,7 @@ DestoryMutex(HANDLE hMutex)
 }
 
 
-BOOL
+bool
 PulseEvent(
     HANDLE hEvent
     )
@@ -227,7 +227,7 @@ DWORD
 MsgWaitForMultipleObjects(
     DWORD nCount,
     LPHANDLE pHandles,
-    BOOL fWaitAll,
+    bool fWaitAll,
     DWORD dwMilliseconds,
     DWORD dwWakeMask)
 {
@@ -239,8 +239,8 @@ __NS_BASIC_START
 
 HANDLE
 BasicCreateEvent(
-BOOL bManualReset,
-BOOL bInitialState,
+bool bManualReset,
+bool bInitialState,
 LPCSTR lpName
 )
 {
@@ -262,7 +262,7 @@ LPCSTR lpName
 	return (HANDLE)token;
 }
 
-BOOL
+bool
 BasicSetEvent(
 HANDLE hEvent
 )
@@ -277,7 +277,7 @@ HANDLE hEvent
 	return true;
 }
 
-BOOL
+bool
 BasicResetEvent(
 HANDLE hEvent
 )
@@ -289,7 +289,7 @@ HANDLE hEvent
 	return true;
 }
 
-BOOL
+bool
 BasicDestoryEvent(HANDLE hEvent)
 {
 	sem_private token = (sem_private)hEvent;
@@ -381,7 +381,7 @@ BasicWaitForSingleObject(
 	return WAIT_OBJECT_0;
 }
 
-BOOL BasicCloseHandle(HANDLE hObject)
+bool BasicCloseHandle(HANDLE hObject)
 {
 
 }
@@ -420,7 +420,7 @@ LPCRITICAL_SECTION lpCriticalSection
 	lpCriticalSection->m_nAcquired++;
 }
 
-BOOL
+bool
 TryEnterCriticalSection(
 LPCRITICAL_SECTION lpCriticalSection
 )

@@ -7,16 +7,16 @@ __NS_BASIC_START
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
-BOOL BasicAssertFailedLine(const char* lpszFileName, int nLine)
+bool BasicAssertFailedLine(const char* lpszFileName, int nLine)
 {
 	BasicTrace("ASSERT @%s:%d\n", lpszFileName, nLine);
-	return TRUE;
+	return true;
 }
 
 //
 void BasicDebugBreak()
 {
-	assert(FALSE);
+	assert(false);
 }
 
 void BasicTraceV(const char* lpszFormat, va_list argList)

@@ -42,15 +42,15 @@ public:
 	//! 加锁
 	/*! 
 	*\param dwTimeOut 超时时间,单位毫秒。INFINITE表示不设超时时间
-	*\return TRUE加锁成功 FALSE加锁失败
+	*\return true加锁成功 false加锁失败
 	*/
-	virtual BOOL Lock(DWORD dwTimeout = INFINITE);
+	virtual bool Lock(DWORD dwTimeout = INFINITE);
 
 	//! 解锁
 	/*! 
-	*\return TRUE解锁成功 FALSE解锁失败
+	*\return true解锁成功 false解锁失败
 	*/
-	virtual BOOL Unlock() = 0;
+	virtual bool Unlock() = 0;
 
 // Implementation
 public:
@@ -78,8 +78,8 @@ public:
 // Implementation
 public:
 	virtual ~CSemaphore();
-	virtual BOOL Unlock();
-	virtual BOOL Unlock(LONG lCount, LPLONG lprevCount = NULL);
+	virtual bool Unlock();
+	virtual bool Unlock(LONG lCount, LPLONG lprevCount = NULL);
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -93,16 +93,16 @@ class _BASIC_DLL_API CMutex : public CBasicSyncObject
 
 // Constructor
 public:
-	CMutex(BOOL bInitiallyOwn = FALSE, LPCTSTR lpszName = NULL);
+	CMutex(bool bInitiallyOwn = false, LPCTSTR lpszName = NULL);
 
 #if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
-	virtual BOOL Lock(DWORD dwTimeout = INFINITE);
+	virtual bool Lock(DWORD dwTimeout = INFINITE);
 #endif
 	
 // Implementation
 public:
 	virtual ~CMutex();
-	BOOL Unlock();
+	bool Unlock();
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -116,15 +116,15 @@ class _BASIC_DLL_API CEvent : public CBasicSyncObject
 
 // Constructor
 public:
-	CEvent(BOOL bInitiallyOwn = FALSE, BOOL bManualReset = FALSE,
+	CEvent(bool bInitiallyOwn = false, bool bManualReset = false,
 		LPCTSTR lpszNAme = NULL);
 
 // Operations
 public:
-	BOOL SetEvent();
-	BOOL PulseEvent();
-	BOOL ResetEvent();
-	BOOL Unlock();
+	bool SetEvent();
+	bool PulseEvent();
+	bool ResetEvent();
+	bool Unlock();
 
 // Implementation
 public:
@@ -163,20 +163,20 @@ public:
 
 // Operations
 public:
-	BOOL Unlock();
+	bool Unlock();
 
 	//! 加锁
 	/*! 
-	*\return TRUE加锁成功 FALSE加锁失败
+	*\return true加锁成功 false加锁失败
 	*/
-	BOOL Lock();
+	bool Lock();
 
 	//! 加锁
 	/*! 
 	*\param dwTimeOut 超时时间
-	*\return TRUE加锁成功 FALSE加锁失败
+	*\return true加锁成功 false加锁失败
 	*/
-	BOOL Lock(DWORD dwTimeout);
+	bool Lock(DWORD dwTimeout);
 
 // Implementation
 public:
@@ -193,22 +193,22 @@ class _BASIC_DLL_API CSingleLock
 {
 // Constructors
 public:
-	CSingleLock(CBasicSyncObject* pObject, BOOL bInitialLock = FALSE);
+	CSingleLock(CBasicSyncObject* pObject, bool bInitialLock = false);
 
 // Operations
 public:
 	//! 加锁
 	/*! 
 	*\param dwTimeOut 超时时间,单位毫秒。INFINITE表示不设超时时间
-	*\return TRUE加锁成功 FALSE加锁失败
+	*\return true加锁成功 false加锁失败
 	*/
-	BOOL Lock(DWORD dwTimeOut = INFINITE);
+	bool Lock(DWORD dwTimeOut = INFINITE);
 
 	//! 解锁
 	/*! 
-	*\return TRUE解锁成功 FALSE解锁失败
+	*\return true解锁成功 false解锁失败
 	*/
-	BOOL Unlock();
+	bool Unlock();
 
 // Implementation
 public:
@@ -216,7 +216,7 @@ public:
 
 protected:
 	CBasicSyncObject*	m_pObject;		//!< 同步对象
-	BOOL			m_bAcquired;	//!< 是否被占用标记
+	bool                m_bAcquired;	//!< 是否被占用标记
 };
 
 
@@ -354,43 +354,43 @@ _BASIC_DLL_API bool BasicInterlockedCompareExchange(LONG volatile *Destination, 
 *  <ul>
 *  <li> 复位方式
 *     <ol>
-*     <li> TRUE		必须用BasicResetEvent手工恢复到无信号状态
-*     <li> FALSE	事件被等待线程释放后，自动恢复到无信号状态
+*     <li> true		必须用BasicResetEvent手工恢复到无信号状态
+*     <li> false	事件被等待线程释放后，自动恢复到无信号状态
 *     </ol>
 *  </ul>
-*\param bInitialState	初始状态，如TRUE初始为有信号状态，否则为无信号状态
+*\param bInitialState	初始状态，如true初始为有信号状态，否则为无信号状态
 *\param lpName			事件对象命名，可以是无名
 *\return 事件对象句柄，如失败返回NULL
 */
-_BASIC_DLL_API HANDLE BasicCreateEvent(BOOL bManualReset, BOOL bInitialState, LPCTSTR lpName);
+_BASIC_DLL_API HANDLE BasicCreateEvent(bool bManualReset, bool bInitialState, LPCTSTR lpName);
 
 //! 设置事件信号
 /*! 
 *\param hEvent	事件对象句柄
 *\return 如操作成功返回非零值，否则返回0
 */
-_BASIC_DLL_API BOOL BasicSetEvent(HANDLE hEvent);
+_BASIC_DLL_API bool BasicSetEvent(HANDLE hEvent);
 
 //! 重置事件到无信号状态
 /*! 
 *\param hEvent	事件对象句柄
 *\return 如操作成功返回非零值，否则返回0
 */
-_BASIC_DLL_API BOOL BasicResetEvent(HANDLE hEvent);
+_BASIC_DLL_API bool BasicResetEvent(HANDLE hEvent);
 
 //! 销毁事件信号
 /*! 
 *\param hEvent	事件对象句柄
 *\return 如操作成功返回非零值，否则返回0
 */
-_BASIC_DLL_API BOOL BasicDestoryEvent(HANDLE hEvent);
+_BASIC_DLL_API bool BasicDestoryEvent(HANDLE hEvent);
 
 //! 销毁对象句柄
 /*! 
 *\param hObject	对象句柄
 *\return 如操作成功返回非零值，否则返回0
 */
-_BASIC_DLL_API BOOL BasicCloseHandle(HANDLE hObject);
+_BASIC_DLL_API bool BasicCloseHandle(HANDLE hObject);
 
 
 //! 等待事件信号

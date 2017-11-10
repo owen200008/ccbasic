@@ -74,9 +74,9 @@ protected:
 	//
 	static long WriteDumpFile( struct _EXCEPTION_POINTERS *pExceptionInfo );
 
-	static BOOL m_bRestart;
-	static BOOL m_bLog;
-    static BOOL m_bToClose;
+	static bool m_bRestart;
+	static bool m_bLog;
+    static bool m_bToClose;
 
 	friend void BasicSetExceptionMode(int nMode, int nInstance);
 	friend void BasicClearException();

@@ -85,8 +85,8 @@ typedef DWORD   *LPOVERLAPPED;
 #define WIN32_FIND_DATAA WIN32_FIND_DATA
 #endif
 ////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL	CloseHandle(HANDLE hObject);
-BOOL	CloseFile(HANDLE hObject);
+bool	CloseHandle(HANDLE hObject);
+bool	CloseFile(HANDLE hObject);
 
 void	SetLastError(DWORD dwError);
 DWORD	GetLastError();
@@ -98,34 +98,34 @@ int _basic_system(LPCTSTR lpCmd);
 HANDLE	CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, 
 				   DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
 #define CreateFileA CreateFile
-BOOL	WriteFile(HANDLE hFile,LPCVOID lpBuffer,DWORD nNumberOfBytesToWrite,LPDWORD lpNumberOfBytesWritten,LPOVERLAPPED lpOverlapped);
-BOOL	ReadFile(HANDLE hFile,LPVOID lpBuffer,DWORD nNumberOfBytesToRead,LPDWORD lpNumberOfBytesRead,LPOVERLAPPED lpOverlapped);
-BOOL	FlushFileBuffers(HANDLE hFile);
+bool	WriteFile(HANDLE hFile,LPCVOID lpBuffer,DWORD nNumberOfBytesToWrite,LPDWORD lpNumberOfBytesWritten,LPOVERLAPPED lpOverlapped);
+bool	ReadFile(HANDLE hFile,LPVOID lpBuffer,DWORD nNumberOfBytesToRead,LPDWORD lpNumberOfBytesRead,LPOVERLAPPED lpOverlapped);
+bool	FlushFileBuffers(HANDLE hFile);
 DWORD	SetFilePointer(HANDLE hFile,LONG lDistanceToMove,LONG* lpDistanceToMoveHigh,DWORD dwMoveMethod);
-BOOL	SetEndOfFile(HANDLE hFile);
+bool	SetEndOfFile(HANDLE hFile);
 
-BOOL	MoveFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName);
+bool	MoveFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName);
 #define MoveFileA MoveFile
-BOOL	CopyFile(LPCTSTR lpExistingFileName,LPCTSTR lpNewFileName,BOOL bFailIfExists);
+bool	CopyFile(LPCTSTR lpExistingFileName,LPCTSTR lpNewFileName,bool bFailIfExists);
 #define CopyFileA CopyFile
-BOOL	DeleteFile(LPCTSTR lpFileName);
+bool	DeleteFile(LPCTSTR lpFileName);
 #define DeleteFileA DeleteFile
 DWORD	GetFullPathName(LPCTSTR lpFileName,DWORD nBufferLength,LPTSTR lpBuffer,LPTSTR *lpFilePart);
 #define GetFullPathNameA GetFullPathName
 
-BOOL	SetFileTime(LPCTSTR lpFileName,const FILETIME *lpCreationTime,const FILETIME *lpLastAccessTime, const FILETIME *lpLastWriteTime);
-BOOL	GetFileTime(HANDLE hFile,FILETIME* lpCreationTime,FILETIME* lpLastAccessTime,FILETIME* lpLastWriteTime);
+bool	SetFileTime(LPCTSTR lpFileName,const FILETIME *lpCreationTime,const FILETIME *lpLastAccessTime, const FILETIME *lpLastWriteTime);
+bool	GetFileTime(HANDLE hFile,FILETIME* lpCreationTime,FILETIME* lpLastAccessTime,FILETIME* lpLastWriteTime);
 DWORD	GetFileSize(HANDLE hFile,LPDWORD lpFileSizeHigh);
 
-BOOL	SetFileAttributes(LPCTSTR lpFileName,DWORD dwFileAttributes);
+bool	SetFileAttributes(LPCTSTR lpFileName,DWORD dwFileAttributes);
 #define SetFileAttributesA SetFileAttributes
 DWORD	GetFileAttributes(LPCTSTR lpFileName);
 #define GetFileAttributesA GetFileAttributes
 
 //文件查找
 HANDLE	FindFirstFile(LPCTSTR lpFileName,LPWIN32_FIND_DATA lpFindFileData);
-BOOL	FindNextFile(HANDLE hFindFile,LPWIN32_FIND_DATA lpFindFileData);
-BOOL	FindClose(HANDLE hFindFile);
+bool	FindNextFile(HANDLE hFindFile,LPWIN32_FIND_DATA lpFindFileData);
+bool	FindClose(HANDLE hFindFile);
 
 #ifndef FindFirstFileA
 #define FindFirstFileA FindFirstFile
@@ -135,7 +135,7 @@ BOOL	FindClose(HANDLE hFindFile);
 #define FindNextFileA FindNextFile
 #endif
 
-BOOL	PathMatchSpec(LPCTSTR pszFileParam,LPCTSTR pszSpec);
+bool	PathMatchSpec(LPCTSTR pszFileParam,LPCTSTR pszSpec);
 #define PathMatchSpecA PathMatchSpec
 
 

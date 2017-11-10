@@ -28,7 +28,7 @@ struct _BASIC_DLL_API SpinLock
 class _BASIC_DLL_API CSpinLockFuncNoSameThreadSafe
 {
 public:
-	CSpinLockFuncNoSameThreadSafe(SpinLock* pLock, BOOL bInitialLock = FALSE);
+	CSpinLockFuncNoSameThreadSafe(SpinLock* pLock, bool bInitialLock = false);
 	virtual ~CSpinLockFuncNoSameThreadSafe();
 
 	//! 不能用虚函数 因为用在构造函数里面
@@ -45,7 +45,7 @@ protected:
 class _BASIC_DLL_API CSpinLockFunc
 {
 public:
-	CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock = FALSE);
+	CSpinLockFunc(SpinLock* pLock, bool bInitialLock = false);
 	virtual ~CSpinLockFunc();
 
 	//! 不能用虚函数 因为用在构造函数里面
@@ -235,29 +235,29 @@ public:
 
 	}
 	virtual void MQPush(StructData* message){
-		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
 		CMessageQueue<StructData>::MQPush(message);
 	}
 	virtual int MQPop(StructData* message){
-		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
 		return CMessageQueue<StructData>::MQPop(message);
 	}
 	virtual int GetMQLength(){
-		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
 		return CMessageQueue<StructData>::GetMQLength();
 	}
     //必须保证nLength足够,并且是可以使用memcpy的
     virtual void CopyAll(StructData* pQueue){
-        basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+        basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
         CMessageQueue<StructData>::CopyAll(pQueue);
     }
     //遍历
     virtual void ForeachData(const std::function<void(StructData *)>& func){
-        basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+        basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
         CMessageQueue<StructData>::ForeachData(func);
     }
     void SafeFuncCallback(const std::function<void()>& func){
-        basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+        basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
         func();
     }
     //必须在lock情况下调用
@@ -327,17 +327,17 @@ public:
 
 	}
 	void Add(KeyType& value){
-		basiclib::CSpinLockFunc lock(&m_spinlock, TRUE);
+		basiclib::CSpinLockFunc lock(&m_spinlock, true);
 		stacktrace::call_stack stack(0);
 		m_map[value].SwapStack(stack);
 	}
 	void Del(KeyType& value){
-		basiclib::CSpinLockFunc lock(&m_spinlock, TRUE);
+		basiclib::CSpinLockFunc lock(&m_spinlock, true);
 		m_map.erase(value);
 		lock.UnLock();
 	}
 	void Dump(const std::function<void(KeyType, stacktrace::call_stack&)>& func){
-		basiclib::CSpinLockFunc lock(&m_spinlock, TRUE);
+		basiclib::CSpinLockFunc lock(&m_spinlock, true);
 		for (auto& checkData : m_map){
 			func(checkData.first, checkData.second);
 		}

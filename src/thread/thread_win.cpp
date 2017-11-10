@@ -66,13 +66,13 @@ HANDLE BasicCreateThread(
 }
 
 //等待线程退出
-BOOL BasicWaitThread(
+bool BasicWaitThread(
 				   HANDLE hThread,
 				   DWORD  dwWaitTime/* = INFINITE*/
 				   )
 {
 	if(hThread == NULL)
-		return TRUE;
+		return true;
 	return ::WaitForSingleObject(hThread, dwWaitTime) == WAIT_OBJECT_0;
 }
 
@@ -145,7 +145,7 @@ void* CBasicThreadTLS::GetValue()
 {
 	return TlsGetValue(m_key);
 }
-BOOL CBasicThreadTLS::SetValue(void* pValue)
+bool CBasicThreadTLS::SetValue(void* pValue)
 {
 	return TlsSetValue(m_key, pValue);
 }

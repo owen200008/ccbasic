@@ -153,13 +153,13 @@ void BASIC_FreePidCmdline(char **pszRet, int nNum)
 }
 
 //设置可执行属性
-BOOL SetExecuteAttrib(LPCTSTR szModule)
+bool SetExecuteAttrib(LPCTSTR szModule)
 {
 	struct stat buf;
 	memset(&buf, 0, sizeof(buf));
 	if (stat(szModule, &buf) != 0)
 	{
-		return FALSE;
+		return false;
 	}
 	//每三位表示一个属性
 	int nMode = buf.st_mode;
@@ -176,7 +176,7 @@ BOOL SetExecuteAttrib(LPCTSTR szModule)
 		nMode |= 01;
 	}
 	chmod(szModule, nMode);
-	return TRUE;
+	return true;
 }
 
 //检查pid是否存在
@@ -344,7 +344,7 @@ void BackTraceDetail()
 void DumpStack(int nSig)
 {
 	static basiclib::CMutex g_dumpMutex;
-	basiclib::CSingleLock lock(&g_dumpMutex, TRUE);
+	basiclib::CSingleLock lock(&g_dumpMutex, true);
 	if(g_nStartMode == BIT_POS_DUMP)
 	{
 		return;

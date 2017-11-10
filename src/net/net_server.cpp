@@ -462,7 +462,7 @@ int32_t CBasicSessionNetServer::Listen(const char* lpszAddress, bool bWaitSucces
 
 //��ȡ�û�������
 long CBasicSessionNetServer::GetOnlineSessionCount() {
-	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
+	basiclib::CSingleLock lock(&m_mtxCSession, true);
 	return m_mapClientSession.size();
 }
 
@@ -495,7 +495,7 @@ void CBasicSessionNetServer::CloseAllSession(const std::function<void(CBasicSess
 	}
 }
 void CBasicSessionNetServer::CloseAll(){
-	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
+	basiclib::CSingleLock lock(&m_mtxCSession, true);
 	for(auto& client : m_mapClientSession){
 		client.second->Close();
 	}
@@ -514,7 +514,7 @@ void CBasicSessionNetServer::GetNetStatus(CBasicString& strStatus){
 }
 
 CRefBasicSessionNetServerSession CBasicSessionNetServer::GetClientBySessionID(uint32_t nSessionID){
-	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
+	basiclib::CSingleLock lock(&m_mtxCSession, true);
 	MapClientSession::iterator iter = m_mapClientSession.find(nSessionID);
 	if (iter != m_mapClientSession.end()){
 		return iter->second;
@@ -524,7 +524,7 @@ CRefBasicSessionNetServerSession CBasicSessionNetServer::GetClientBySessionID(ui
 
 
 void CBasicSessionNetServer::CopyClientSession(VTClientSession& vtClient){
-	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
+	basiclib::CSingleLock lock(&m_mtxCSession, true);
 	int nSize = m_mapClientSession.size();
 	if (nSize > 0){
 		vtClient.reserve(nSize);
@@ -551,7 +551,7 @@ CBasicSessionNetServerSession* CBasicSessionNetServer::ConstructSession(uint32_t
 
 //! ���ն���
 void CBasicSessionNetServer::AcceptClient(CBasicSessionNetServerSession* pClient) {
-	basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
+	basiclib::CSingleLock lock(&m_mtxCSession, true);
 	m_mapClientSession[pClient->GetSessionID()] = pClient;
 }
 
@@ -563,7 +563,7 @@ int32_t CBasicSessionNetServer::OnClientDisconnectCallback(CBasicSessionNetNotif
 	//delete
 	uint32_t nSessionID = pSession->GetSessionID();
 	{
-		basiclib::CSingleLock lock(&m_mtxCSession, TRUE);
+		basiclib::CSingleLock lock(&m_mtxCSession, true);
 		m_mapClientSession.erase(nSessionID);
 	}
 	pSession->SafeDelete();

@@ -40,9 +40,9 @@ TCHAR CBasicWinExceptionReport::m_szLogFileName[MAX_PATH];
 TCHAR CBasicWinExceptionReport::m_szDumpFileName[MAX_PATH];
 LPTOP_LEVEL_EXCEPTION_FILTER CBasicWinExceptionReport::m_previousFilter;
 HANDLE CBasicWinExceptionReport::m_hProcess;
-BOOL CBasicWinExceptionReport::m_bRestart = TRUE;
-BOOL CBasicWinExceptionReport::m_bToClose = FALSE;
-BOOL CBasicWinExceptionReport::m_bLog = TRUE;
+bool CBasicWinExceptionReport::m_bRestart = true;
+bool CBasicWinExceptionReport::m_bToClose = false;
+bool CBasicWinExceptionReport::m_bLog = true;
 
 // Declare global instance of class
 CBasicWinExceptionReport* g_WheatyExceptionReport = NULL;
@@ -55,7 +55,7 @@ GlobalExceptionFunc g_funcException = NULL;
 //
 int KillExistProcess()
 {
-	CWBasicString strMyModuleName = WBasicGetModuleTitle(NULL, TRUE);
+	CWBasicString strMyModuleName = WBasicGetModuleTitle(NULL, true);
 	CWBasicString strMyModulePath = WBasicGetModulePath(NULL);
 	int nKill = 0;
 	DWORD dwCurProcessID = Basic_GetCurrentProcessId();
@@ -70,7 +70,7 @@ int KillExistProcess()
 			HANDLE hToKill = OpenProcess(PROCESS_TERMINATE, FALSE, pOffset->m_dwProcessID);
 			if(hToKill != NULL)
 			{
-				BOOL bSucc = ::TerminateProcess(hToKill, -1);
+				::TerminateProcess(hToKill, -1);
 				::CloseHandle(hToKill);
 				nKill ++;
 			}
@@ -82,7 +82,7 @@ int KillExistProcess()
 	return nKill;
 }
 
-BOOL WINAPI ConsoleHandlerRoutine( DWORD dwCtrlType)
+bool WINAPI ConsoleHandlerRoutine( DWORD dwCtrlType)
 {
 	switch(dwCtrlType)
 	{
@@ -95,7 +95,7 @@ BOOL WINAPI ConsoleHandlerRoutine( DWORD dwCtrlType)
 		}
 		break;
 	}
-	return TRUE;
+	return true;
 }
 
 //
@@ -125,13 +125,13 @@ void BasicSetExceptionMode(int nMode, int nInstance)
 	if(nMode&BASIC_EXCEPTION_NORESTART)
 	{
 		//不重启
-		CBasicWinExceptionReport::m_bRestart = FALSE;
+		CBasicWinExceptionReport::m_bRestart = false;
 	}
 	//
 	if(nMode&BASIC_EXCEPTION_NOLOG)
 	{
 		//不记录日志
-		CBasicWinExceptionReport::m_bLog = FALSE;
+		CBasicWinExceptionReport::m_bLog = false;
 	}
 
 	//控制台模式, win没有服务模式
@@ -144,7 +144,7 @@ void BasicSetExceptionMode(int nMode, int nInstance)
 //
 void BasicClearException()
 {
-	CBasicWinExceptionReport::m_bToClose = TRUE;
+	CBasicWinExceptionReport::m_bToClose = true;
 	if(g_WheatyExceptionReport != NULL)
 	{
 		g_WheatyExceptionReport->BeforeQuit();

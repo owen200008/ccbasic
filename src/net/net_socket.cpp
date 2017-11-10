@@ -58,7 +58,7 @@ void CBasicNet_Socket::Close(bool bRemote, bool bMustClose){
 	SetLibEvent([](CBasicNet_Socket* pSession, intptr_t lRevert)->void{
 		uint32_t nSetRevert = lRevert;
 		if(nSetRevert != 0 || pSession->CanClose()){
-			BOOL bRemote = (nSetRevert & 0x00000001) != 0;
+			bool bRemote = (nSetRevert & 0x00000001) != 0;
 			pSession->CloseCallback(bRemote);
 		}
 	}, nSetRevert);
@@ -69,7 +69,7 @@ void CBasicNet_Socket::SafeDelete(){
 	SetToSafeDelete();
 	SetLibEvent([](CBasicNet_Socket* pSession, intptr_t lRevert)->void{
 		if(pSession->GetSocketID() != INVALID_SOCKET){
-			pSession->CloseCallback(FALSE);
+			pSession->CloseCallback(false);
 		}
 		//从ontimer删除
 		m_gNetMgrPoint->DelToTimer(pSession);
@@ -115,7 +115,7 @@ bool CBasicNet_Socket::OnTimer(unsigned int nTick){
 void CBasicNet_Socket::AddSocketCallFunc(CEventQueueItem* pItem){
 	long lLength = 0;
 	{
-		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lockMsg, TRUE);
+		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lockMsg, true);
 		lLength = m_smBuf.GetDataLength();
 		m_smBuf.AppendDataEx((char*)pItem, sizeof(CEventQueueItem));
 	}
@@ -126,7 +126,7 @@ void CBasicNet_Socket::AddSocketCallFunc(CEventQueueItem* pItem){
 
 void CBasicNet_Socket::RunSocketCallFunc(){
 	{
-		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lockMsg, TRUE);
+		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lockMsg, true);
 		swap(m_smIOCPBuf, m_smBuf);
 	}
 	int nCount = m_smIOCPBuf.GetDataLength() / sizeof(CEventQueueItem);
@@ -149,7 +149,7 @@ void CBasicNet_Socket::InitMember(){
 	m_unSessionStatus &= TIL_RESET_MASK;
 }
 
-void CBasicNet_Socket::CloseCallback(BOOL bRemote, DWORD dwNetCode){
+void CBasicNet_Socket::CloseCallback(bool bRemote, DWORD dwNetCode){
 	if(m_socketfd != INVALID_SOCKET){
 #ifdef BASICWINDOWS_USE_IOCP
 		LINGER lingerStruct;
@@ -243,7 +243,7 @@ void CBasicNet_SocketTransfer::InitMember(){
 }
 
 //! 线程内执行函数
-void CBasicNet_SocketTransfer::CloseCallback(BOOL bRemote, DWORD dwNetCode){
+void CBasicNet_SocketTransfer::CloseCallback(bool bRemote, DWORD dwNetCode){
 	if(m_socketfd != INVALID_SOCKET){
 		if(bRemote){
 			dwNetCode |= BASIC_NETCODE_CLOSE_REMOTE;
@@ -277,7 +277,7 @@ void CBasicNet_SocketTransfer::OnConnect(uint32_t dwNetCode){
 		m_stNet.OnReceiveData(0);
 	}
 	else{
-		CloseCallback(TRUE, BASIC_NETCODE_CONNET_FAIL);
+		CloseCallback(true, BASIC_NETCODE_CONNET_FAIL);
 		return;
 	}
 	ResetPreSend();
@@ -314,7 +314,7 @@ void CBasicNet_SocketTransfer::OnReadEvent(void){
 		OnReceiveData(szBuf, nReceived);
 	}
 	if(nReceived == 0){
-		Close(TRUE);
+		Close(true);
 		return;
 	}
 	else if(nReceived < 0){
@@ -323,7 +323,7 @@ void CBasicNet_SocketTransfer::OnReadEvent(void){
 			return;
 		}
 		else{
-			BOOL bError = FALSE;
+			bool bError = false;
 #ifdef __BASICWINDOWS
 			if(nReceived == SOCKET_ERROR){
 				DWORD dwLastError = WSAGetLastError();   //I know this
@@ -331,14 +331,14 @@ void CBasicNet_SocketTransfer::OnReadEvent(void){
 					return;
 				}
 				else if(dwLastError != WSA_IO_PENDING){
-					bError = TRUE;
+					bError = true;
 				}
 			}
 #else
-			bError = TRUE;
+			bError = true;
 #endif
 			if(bError){
-				Close(TRUE);
+				Close(true);
 				return;
 			}
 		}
@@ -433,7 +433,7 @@ void CBasicNet_SocketTransfer::SendDataSuccessAndCheckSend(DWORD dwIoSize){
 		if(nRetVal == SOCKET_ERROR){
 			DWORD dwLastError = WSAGetLastError();   //I know this
 			if(dwLastError != WSA_IO_PENDING){
-				Close(TRUE);
+				Close(true);
 			}
 		}
 	}
@@ -452,7 +452,7 @@ void CBasicNet_SocketTransfer::SendDataFromQueue(){
 		SendDataSuccessAndCheckSend(0);
 	}
 #else
-	BOOL bError = FALSE;
+	bool bError = false;
 	int nTotalSend = 0;
 	int32_t lSend = 0;
 	while(m_msgQueue.SendBuffer(lSend) > 0){
@@ -482,11 +482,11 @@ void CBasicNet_SocketTransfer::SendDataFromQueue(){
 						event_add(&m_wevent, NULL);
 					}
 					else if(dwLastError != WSA_IO_PENDING){
-						bError = TRUE;
+						bError = true;
 					}
 				}
 #else
-				bError = TRUE;
+				bError = true;
 #endif
 				break;
 			}
@@ -494,7 +494,7 @@ void CBasicNet_SocketTransfer::SendDataFromQueue(){
 	}
 	if(bError){
 		//有错误
-		Close(TRUE);
+		Close(true);
 	}
 	else{
 		OnSendData(nTotalSend);
@@ -511,7 +511,7 @@ void CBasicNet_SocketTransfer::AddSendQueue(SendBufferCache* pSendCache){
 
 /////////////////////////////////////////////////////////////////////////////////////
 bool CBasicNet_SocketTransfer::CanClose(){
-	BOOL bRet = CBasicNet_Socket::CanClose();
+	bool bRet = CBasicNet_Socket::CanClose();
 	if(bRet){
 		if(m_msgQueue.GetDataLength() == 0)
 			return true;
@@ -529,10 +529,10 @@ int32_t CBasicNet_SocketTransfer::SendData(SendBufferCacheMgr& sendData){
 	return pCache->m_cbData;
 }
 
-BOOL CBasicNet_SocketTransfer::IsRecTimeout(time_t tmNow, uint16_t nTimeoutSecond){
+bool CBasicNet_SocketTransfer::IsRecTimeout(time_t tmNow, uint16_t nTimeoutSecond){
 	if(tmNow - m_stNet.m_tmLastRecTime >= nTimeoutSecond && nTimeoutSecond != 0)
-		return TRUE;
-	return FALSE;
+		return true;
+	return false;
 }
 
 int32_t CBasicNet_SocketTransfer::Send(void *pData, int32_t cbData, uint32_t dwFlag){

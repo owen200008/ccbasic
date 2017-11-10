@@ -104,11 +104,11 @@ public:
 
 public:
 	void GetMemoryInfo(DWORD &dwTotal, DWORD &dwTotalUse, DWORD &dwAvailPhys);
-	BOOL GetCpuUsage(double& dUsage, DWORD& dwTimes);	//得到CPU使用率
+	bool GetCpuUsage(double& dUsage, DWORD& dwTimes);	//得到CPU使用率
 
 protected:
 	//取系统性能信息和系统时钟信息放到 m_SysPerfInfo和m_SysTimeInfo中
-	BOOL QuerySysAndPerfInfo();		
+	bool QuerySysAndPerfInfo();
 
 	//structs
 	typedef struct
@@ -161,13 +161,13 @@ protected:
 	//	CWBasicString			m_strProcName;
 	//	long			m_lProcID;
 	//option;
-	BOOL	m_bSupport;
+	bool	m_bSupport;
 
 };
 
 CSystemInfo::CSystemInfo()
 {
-	m_bSupport = FALSE;
+	m_bSupport = false;
 	NtQuerySystemInformation = (PROCNTQSI)GetProcAddress(
 		GetModuleHandleA("ntdll"),
 		"NtQuerySystemInformation"
@@ -191,7 +191,7 @@ CSystemInfo::CSystemInfo()
 	}
 	m_liOldIdleTime = m_SysPerfInfo.liIdleTime;
 	m_liOldSystemTime = m_SysTimeInfo.liKeSystemTime; //第一次时间;
-	m_bSupport = TRUE;
+	m_bSupport = true;
 	m_dwUseTimes = 0;
 }
 
@@ -200,31 +200,31 @@ CSystemInfo::~CSystemInfo()
 
 }
 
-BOOL CSystemInfo::QuerySysAndPerfInfo()
+bool CSystemInfo::QuerySysAndPerfInfo()
 {
 	m_lStatus = NtQuerySystemInformation(SystemTimeInformation, &m_SysTimeInfo, sizeof(m_SysTimeInfo), NULL);
 	if (m_lStatus!=NO_ERROR)
-		return FALSE;
+		return false;
 
 	m_lStatus = NtQuerySystemInformation(SystemPerformanceInformation,&m_SysPerfInfo,sizeof(m_SysPerfInfo),NULL);
 	if (m_lStatus != NO_ERROR)
-		return FALSE;
+		return false;
 
 	DWORD dwCurTime = GetTickCount();
 	m_dwUseTimes = dwCurTime- m_dwOldTime;
 	m_dwOldTime = dwCurTime;
-	return TRUE;
+	return true;
 }
 
 
 //
 //得到CPU使用率		dUsage,（使用率，百分比），多长时间；
 //
-BOOL CSystemInfo::GetCpuUsage(double &dUsage, DWORD& dwTimes)
+bool CSystemInfo::GetCpuUsage(double &dUsage, DWORD& dwTimes)
 {
 	if( !m_bSupport )
 	{
-		return FALSE;
+		return false;
 	}
 
 	static double	s_dPrevUsage = 0;
@@ -232,11 +232,11 @@ BOOL CSystemInfo::GetCpuUsage(double &dUsage, DWORD& dwTimes)
 	{//两次取的时间间隔小于1s时，用前一时刻取的值
 		dUsage = s_dPrevUsage;
 		dwTimes = m_dwUseTimes;
-		return TRUE;
+		return true;
 	}
 	if (!QuerySysAndPerfInfo())
 	{
-		return FALSE;
+		return false;
 	}
 	double dIdleTime	= 0;
 	double dSystemTime	= 0;
@@ -257,7 +257,7 @@ BOOL CSystemInfo::GetCpuUsage(double &dUsage, DWORD& dwTimes)
 	m_liOldIdleTime = m_SysPerfInfo.liIdleTime;
 	m_liOldSystemTime = m_SysTimeInfo.liKeSystemTime;
 	dwTimes = m_dwUseTimes;
-	return TRUE;
+	return true;
 }
 
 typedef BOOL (WINAPI* GMS_EX)(LPMEMORYSTATUSEX lpBuffer);

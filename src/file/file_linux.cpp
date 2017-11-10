@@ -14,24 +14,24 @@
 using namespace basiclib;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //__NS_BASIC_START
-BOOL CloseHandle(HANDLE hObject)
+bool CloseHandle(HANDLE hObject)
 {
 	return CloseFile(hObject);
 }
-BOOL CloseFile(HANDLE hObject)
+bool CloseFile(HANDLE hObject)
 {
 	if(hObject == NULL || hObject == INVALID_HANDLE_VALUE)
 	{
 		SetLastError(ENOENT);
-		return FALSE;
+		return false;
 	}
 
 	int nRet = fclose((FILE*)hObject);
 	if(nRet != 0)
 	{
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 
 void SetLastError(DWORD dwError)
@@ -163,7 +163,7 @@ int _basic_system(LPCTSTR lpCmd)
 	memset(szCmd, 0, sizeof(szCmd));
 	LPCTSTR  pS = lpCmd;
 	TCHAR*   pD = szCmd;
-	BOOL bIn = FALSE;
+	bool bIn = false;
 	while(*pS)
 	{
 		if(*pS == '\'')
@@ -246,7 +246,7 @@ HANDLE	CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, 
 	return fp;
 }
 
-BOOL WriteFile(HANDLE hFile,LPCVOID lpBuffer,DWORD nNumberOfBytesToWrite,LPDWORD lpNumberOfBytesWritten,LPOVERLAPPED lpOverlapped)
+bool WriteFile(HANDLE hFile,LPCVOID lpBuffer,DWORD nNumberOfBytesToWrite,LPDWORD lpNumberOfBytesWritten,LPOVERLAPPED lpOverlapped)
 {
 	size_t nWrite = fwrite(lpBuffer, 1, nNumberOfBytesToWrite, (FILE*)hFile);
 	if(lpNumberOfBytesWritten != NULL)
@@ -257,11 +257,11 @@ BOOL WriteFile(HANDLE hFile,LPCVOID lpBuffer,DWORD nNumberOfBytesToWrite,LPDWORD
 	{
 		return ferror((FILE*)hFile) == 0;
 	}
-	return TRUE;
+	return true;
 
 }
 
-BOOL ReadFile(HANDLE hFile,LPVOID lpBuffer,DWORD nNumberOfBytesToRead,LPDWORD lpNumberOfBytesRead,LPOVERLAPPED lpOverlapped)
+bool ReadFile(HANDLE hFile,LPVOID lpBuffer,DWORD nNumberOfBytesToRead,LPDWORD lpNumberOfBytesRead,LPOVERLAPPED lpOverlapped)
 {
 	size_t nRead = fread(lpBuffer, 1, nNumberOfBytesToRead, (FILE*)hFile);
 	if(lpNumberOfBytesRead != NULL)
@@ -272,15 +272,15 @@ BOOL ReadFile(HANDLE hFile,LPVOID lpBuffer,DWORD nNumberOfBytesToRead,LPDWORD lp
 	{
 		return ferror((FILE*)hFile) == 0;
 	}
-	return TRUE;
+	return true;
 }
 
-BOOL FlushFileBuffers(HANDLE hFile)
+bool FlushFileBuffers(HANDLE hFile)
 {
 	if(hFile == NULL || hFile == INVALID_HANDLE_VALUE)
 	{
 		SetLastError(ENOENT);
-		return FALSE;
+		return false;
 	}
 	int nRet = fflush((FILE*)hFile);
 	return nRet == 0;
@@ -295,7 +295,7 @@ DWORD SetFilePointer(HANDLE hFile,LONG lDistanceToMove,LONG* lpDistanceToMoveHig
 	return ftell((FILE*)hFile);	
 }
 
-BOOL SetEndOfFile(HANDLE hFile)
+bool SetEndOfFile(HANDLE hFile)
 {
 	do 
 	{
@@ -314,16 +314,16 @@ BOOL SetEndOfFile(HANDLE hFile)
 		{
 			break;
 		}
-		return TRUE;
+		return true;
 	} while (0);
-	return FALSE;
+	return false;
 }
 
-BOOL MoveFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName)
+bool MoveFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName)
 {
 	return _trename(lpExistingFileName, lpNewFileName) == 0;
 }
-BOOL CopyFile(LPCTSTR lpExistingFileName,LPCTSTR lpNewFileName,BOOL bFailIfExists)
+bool CopyFile(LPCTSTR lpExistingFileName,LPCTSTR lpNewFileName,bool bFailIfExists)
 {
 	char szCmd[1024];
 	_stprintf(szCmd, "\\cp '%s' '%s' ", lpExistingFileName, lpNewFileName);
@@ -338,7 +338,7 @@ BOOL CopyFile(LPCTSTR lpExistingFileName,LPCTSTR lpNewFileName,BOOL bFailIfExist
 	return _basic_system(szCmd) == 0;
 }
 
-BOOL DeleteFile(LPCTSTR lpFileName)
+bool DeleteFile(LPCTSTR lpFileName)
 {
 	return _tremove(lpFileName) == 0;
 }
@@ -442,7 +442,7 @@ DWORD GetFullPathName(LPCTSTR lpFileName,DWORD nBufferLength,LPTSTR lpBuffer,LPT
 	}
 	return (DWORD)lAbsLen;
 }
-BOOL SetFileTime(LPCTSTR lpFileName,const FILETIME *lpCreationTime,const FILETIME *lpLastAccessTime, const FILETIME *lpLastWriteTime)
+bool SetFileTime(LPCTSTR lpFileName,const FILETIME *lpCreationTime,const FILETIME *lpLastAccessTime, const FILETIME *lpLastWriteTime)
 {
 	struct utimbuf ub;
 	ub.actime = ub.modtime = 0;
@@ -475,17 +475,17 @@ BOOL SetFileTime(LPCTSTR lpFileName,const FILETIME *lpCreationTime,const FILETIM
 	return _tutime(lpFileName, pub);
 }
 
-BOOL GetFileTime(HANDLE hFile,FILETIME* lpCreationTime,FILETIME* lpLastAccessTime,FILETIME* lpLastWriteTime)
+bool GetFileTime(HANDLE hFile,FILETIME* lpCreationTime,FILETIME* lpLastAccessTime,FILETIME* lpLastWriteTime)
 {
 	int nFile = fileno((FILE*)hFile);
 	if(nFile == -1)
 	{
-		return FALSE;
+		return false;
 	}
 	struct stat st;
 	if(_fstat(nFile, &st) != 0)
 	{
-		return FALSE;
+		return false;
 	}
 	if(lpCreationTime != NULL)
 	{
@@ -499,7 +499,7 @@ BOOL GetFileTime(HANDLE hFile,FILETIME* lpCreationTime,FILETIME* lpLastAccessTim
 	{
 		*lpLastWriteTime = st.st_mtime;
 	}
-	return TRUE;
+	return true;
 }
 
 DWORD GetFileSize(HANDLE hFile, LPDWORD lpFileSizeHigh)
@@ -540,7 +540,7 @@ DWORD GetFileSize(HANDLE hFile, LPDWORD lpFileSizeHigh)
 	return (DWORD)-1;
 }
 
-BOOL SetFileAttributes(LPCTSTR lpFileName,DWORD dwFileAttributes)
+bool SetFileAttributes(LPCTSTR lpFileName,DWORD dwFileAttributes)
 {
 	struct stat st;
 	if(_tstat(lpFileName, &st) != 0)
@@ -556,7 +556,7 @@ BOOL SetFileAttributes(LPCTSTR lpFileName,DWORD dwFileAttributes)
 	dwFileAttributes &= FILE_ATTRIBUTE_READONLY;
 	if(dwFileAttributes == dwThisAttr)
 	{
-		return TRUE;
+		return true;
 	}
 	if(dwFileAttributes & FILE_ATTRIBUTE_READONLY)
 	{
@@ -591,7 +591,7 @@ public:
 	~CFileFindHandle();
 public:
 	void SetSearchFileSpec(LPCTSTR lpFileName);
-	BOOL IsOpen() { return m_dirp != NULL; }
+	bool IsOpen() { return m_dirp != NULL; }
 public:
 	LPCTSTR	m_pszPath;
 	LPCTSTR	m_pszSpec;
@@ -649,7 +649,7 @@ HANDLE FindFirstFile(LPCTSTR lpFileName,LPWIN32_FIND_DATA lpFindFileData)
 	return INVALID_HANDLE_VALUE;
 }
 
-BOOL FindNextFile(HANDLE hFindFile,LPWIN32_FIND_DATA lpFindFileData)
+bool FindNextFile(HANDLE hFindFile,LPWIN32_FIND_DATA lpFindFileData)
 {
 	CFileFindHandle* pHandle = (CFileFindHandle*)hFindFile;
 
@@ -694,7 +694,7 @@ BOOL FindNextFile(HANDLE hFindFile,LPWIN32_FIND_DATA lpFindFileData)
 	return pHandle->dp != NULL;
 }
 
-BOOL FindClose(HANDLE hFindFile)
+bool FindClose(HANDLE hFindFile)
 {
 	CFileFindHandle* pHandle = (CFileFindHandle*)hFindFile;
 	if (pHandle != INVALID_HANDLE_VALUE)
@@ -702,7 +702,7 @@ BOOL FindClose(HANDLE hFindFile)
 		delete pHandle;
 	}
 
-	return TRUE;
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -733,26 +733,26 @@ static LPCTSTR StepSpec(LPCTSTR pszFileParam, LPCTSTR pszSpec)
 	return NULL;
 }
 
-static BOOL MatchLast(LPCTSTR pszFileParam, LPCTSTR pszSpec)
+static bool MatchLast(LPCTSTR pszFileParam, LPCTSTR pszSpec)
 {
 	if ( '\0' == *pszSpec)
-		return TRUE;
+		return true;
 
 	int nSpecLen = _tcslen(pszSpec); 
 	int nFileParamLen = _tcslen(pszFileParam);
 
 	if (nSpecLen > nFileParamLen)
-		return FALSE;
+		return false;
 
 	return 	_tcsicmp(pszFileParam + nFileParamLen - nSpecLen, pszSpec) == 0;
 }
 
-BOOL PathMatchSpec(LPCTSTR pszFileParam, LPCTSTR pszSpec)
+bool PathMatchSpec(LPCTSTR pszFileParam, LPCTSTR pszSpec)
 {
 	assert(NULL != pszFileParam);
 	assert(NULL != pszSpec);
 
-	BOOL bMatch = TRUE;
+	bool bMatch = true;
 	TCHAR szTemp[_MAX_PATH];
 	_tcscpy(szTemp, pszSpec);
 
@@ -773,7 +773,7 @@ BOOL PathMatchSpec(LPCTSTR pszFileParam, LPCTSTR pszSpec)
 		pszFileParam = StepSpec(pszFileParam, p);
 		if (NULL == pszFileParam)
 		{
-			bMatch = FALSE;
+			bMatch = false;
 			break;
 		}
 		p = e;

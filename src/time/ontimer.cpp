@@ -109,7 +109,7 @@ void CBasicOnTimer::TimerUpdate()
 		m_current += diff;
 		for (uint32_t i = 0; i<diff; i++)
 		{
-			basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+			basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
 
 			// try to dispatch timeout 0 (rare condition)
 			timer_execute(lock);
@@ -192,7 +192,7 @@ void CBasicOnTimer::dispatch_list(struct timer_node *current)
 			//spin unlock, so add is valid
 			temp->expire += temp->m_nRepeatTime;
 
-			basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+			basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
 			add_node(temp);
 		}
 		else
@@ -209,7 +209,7 @@ void CBasicOnTimer::timer_add(timer_event& event, int time, int bRepeat)
 	memcpy(node + 1, &event, sz);
 	node->m_bIsValid = 1;
 	node->m_nRepeatTime = bRepeat > 0 ? time : 0;
-	basiclib::CSpinLockFunc lock(&m_lock, TRUE);
+	basiclib::CSpinLockFunc lock(&m_lock, true);
 	node->expire = time + m_time;
 	if (bRepeat > 0)
 	{
@@ -220,7 +220,7 @@ void CBasicOnTimer::timer_add(timer_event& event, int time, int bRepeat)
 
 void CBasicOnTimer::timer_del(intptr_t nKey)
 {
-	basiclib::CSpinLockFunc lock(&m_lock, TRUE);
+	basiclib::CSpinLockFunc lock(&m_lock, true);
 	MapTimerNode::iterator iter = (*m_pMapNode).find(nKey);
 	if (iter != (*m_pMapNode).end())
 	{

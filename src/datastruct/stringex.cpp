@@ -10,13 +10,13 @@ class CBasicStringSource
 {
 	friend class CParseSource;
 	friend class CBasicString;
-	friend BOOL BasicLoadStringSource(const char* lpszFile, const char* lpszModuleName);
+	friend bool BasicLoadStringSource(const char* lpszFile, const char* lpszModuleName);
 	friend const char* BasicLoadString(const char* lpszFormatID, const char* lpszModuleName);
 public:
 	CBasicStringSource(void);
 	~CBasicStringSource(void);
 protected:
-	BOOL LoadProfile(const char* lpszFile, const char* lpszModuleName = "");
+	bool LoadProfile(const char* lpszFile, const char* lpszModuleName = "");
 
 	// 通过模块名从配置文件中找到该资源并返回
 	const char* SetIDToSource(const char* lpszFormatID, const char* lpszID, const char* lpszModuleName);
@@ -49,11 +49,11 @@ CBasicStringSource::~CBasicStringSource(void)
 }
 
 
-BOOL CBasicStringSource::LoadProfile(const char* lpszFile, const char* lpszModuleName)
+bool CBasicStringSource::LoadProfile(const char* lpszFile, const char* lpszModuleName)
 {
 	if (IsStringEmpty(lpszModuleName))
 	{
-		return FALSE;
+		return false;
 	}
 
 	if (lpszFile && lpszModuleName)
@@ -61,14 +61,14 @@ BOOL CBasicStringSource::LoadProfile(const char* lpszFile, const char* lpszModul
 		ModuleToIniFileContainer::iterator iter = m_conModuleToIniFile.find(lpszModuleName);
 		if (m_conModuleToIniFile.end() != iter)
 		{
-			return FALSE;
+			return false;
 		}
 
 		CBasicIniOp* pIniFile = new CBasicIniOp();
 		if (pIniFile->InitFromFile(lpszFile) > 0)
 		{
 			m_conModuleToIniFile[lpszModuleName] = pIniFile;
-			return TRUE;
+			return true;
 		}
 		else
 		{
@@ -76,18 +76,18 @@ BOOL CBasicStringSource::LoadProfile(const char* lpszFile, const char* lpszModul
 			pIniFile = NULL;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 void CBasicStringSource::SetToMapCache(const char* lpszID, const char* lpszSource)
 {
-	CSingleLock lock(&m_csIDToSource, TRUE);
+	CSingleLock lock(&m_csIDToSource, true);
 	m_conIDToSource[lpszID] = lpszSource;
 }
 
 const char* CBasicStringSource::FindStringSource(const char* lpszID)
 {
-	CSingleLock lock(&m_csIDToSource, TRUE);
+	CSingleLock lock(&m_csIDToSource, true);
 	IDToSourceContainer::iterator iter = m_conIDToSource.find(lpszID);
 	if (m_conIDToSource.end() != iter)
 	{
@@ -119,7 +119,7 @@ const char* CBasicStringSource::SetIDToSource(const char* lpszFormatID, const ch
 	{
 		if (*p == '\\')
 		{
-			BOOL bMatch = TRUE;
+			bool bMatch = true;
 			switch (*(p + 1))
 			{
 			case 'n':
@@ -132,7 +132,7 @@ const char* CBasicStringSource::SetIDToSource(const char* lpszFormatID, const ch
 				*p = '\t';
 				break;
 			default:
-				bMatch = FALSE;
+				bMatch = false;
 				break;
 			}
 			if (bMatch)
@@ -165,7 +165,7 @@ const char* CBasicStringSource::LoadString(const char* lpszFormatID, const char*
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 typedef basiclib::CBasicSingleton<CBasicStringSource> SingletonString_sSource;
 
-BOOL BasicLoadStringSource(const char* lpszFile, const char* lpszModuleName/* = _T("")*/)
+bool BasicLoadStringSource(const char* lpszFile, const char* lpszModuleName/* = _T("")*/)
 {
 	return (&SingletonString_sSource::Instance())->LoadProfile(lpszFile, lpszModuleName);
 }
@@ -198,7 +198,7 @@ void CBasicString::FormatS(const char* lpszModuleName, const char* lpszFormatID,
 	}
 	else
 	{
-		ASSERT(FALSE);
+		ASSERT(false);
 	}
 }
 void CBasicString::FormatS(const char* lpszModuleName, DWORD dwFormatID, ...)
@@ -215,21 +215,21 @@ void CBasicString::FormatS(const char* lpszModuleName, DWORD dwFormatID, ...)
 	}
 	else
 	{
-		ASSERT(FALSE);
+		ASSERT(false);
 	}
 }
 
-BOOL CBasicString::LoadString(const char* lpszFormatID, const char* lpszModuleName/* = _T("")*/)
+bool CBasicString::LoadString(const char* lpszFormatID, const char* lpszModuleName/* = _T("")*/)
 {
 	const char* lpszForamt = BasicLoadString(lpszFormatID, lpszModuleName);
 	if (lpszForamt)
 	{
 		assign(lpszForamt);
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
-BOOL CBasicString::LoadString(DWORD dwFormatID, const char* lpszModuleName)
+bool CBasicString::LoadString(DWORD dwFormatID, const char* lpszModuleName)
 {
 	char szBuf[16] = { 0 };
 	sprintf(szBuf, "%X", dwFormatID);

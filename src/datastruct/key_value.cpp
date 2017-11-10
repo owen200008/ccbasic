@@ -8,9 +8,9 @@ CBasicKey2Value::CBasicKey2Value(int nHashSize)
 {
 	m_map.InitHashTable(nHashSize);
 }
-BOOL CBasicKey2Value::HasValue(const char* lpszKey, CBasicString& strValue)
+bool CBasicKey2Value::HasValue(const char* lpszKey, CBasicString& strValue)
 {
-	BOOL bHasValue = FALSE;
+	bool bHasValue = false;
 	if (lpszKey != NULL && lpszKey[0] != '\0')
 	{
 		CBasicString strKey = lpszKey;
@@ -64,7 +64,7 @@ void CBasicKey2Value::SetValue(const char* lpszKey, long lValue)
 	SetValue(lpszKey, cTemp);
 }
 
-BOOL CBasicKey2Value::RemoveKey(const char* lpszKey)
+bool CBasicKey2Value::RemoveKey(const char* lpszKey)
 {
 	if (lpszKey != NULL && lpszKey[0] != '\0')
 	{
@@ -72,7 +72,7 @@ BOOL CBasicKey2Value::RemoveKey(const char* lpszKey)
 		strKey.MakeLower();
 		return m_map.RemoveKey(strKey.c_str());
 	}
-	return FALSE;
+	return false;
 }
 
 void CBasicKey2Value::ParseTextURL(const char* pszBuffer, int nLen)

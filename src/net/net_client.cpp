@@ -314,7 +314,7 @@ int32_t CBasicNet_SocketClient::RealOnConnect(sockaddr_storage* pAddr, int addrl
 				CreateIoCompletionPort((HANDLE)socketfd, m_pThread->m_hCompletionPort, (DWORD)this, g_nEventThreadCount);
 
 				IOCPExt_Func& func = CNetThread::GetExtFunc();
-				BOOL bRet = func.ConnectEx(socketfd, (::sockaddr*)pAddr, addrlen, NULL, 0, NULL, &m_olConnectEx.m_ol);
+				bool bRet = func.ConnectEx(socketfd, (::sockaddr*)pAddr, addrlen, NULL, 0, NULL, &m_olConnectEx.m_ol);
 				int nError = WSAGetLastError();
 				if(bRet || nError == ERROR_IO_PENDING){
 					SetSessionStatus(TIL_SS_CONNECTING, TIL_SS_LINK);

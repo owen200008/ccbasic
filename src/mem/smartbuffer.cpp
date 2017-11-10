@@ -194,9 +194,9 @@ char* CBasicSmartBuffer::AllocBuffer(long lLength, long lGrowLength)
 }
 
 
-BOOL CBasicSmartBuffer::InitFormFile(const char* lpszFile)
+bool CBasicSmartBuffer::InitFormFile(const char* lpszFile)
 {
-	BOOL bRet = FALSE;
+	bool bRet = false;
 	FILE* fp = fopen(lpszFile, "rb");
 	if (fp)
 	{
@@ -207,7 +207,7 @@ BOOL CBasicSmartBuffer::InitFormFile(const char* lpszFile)
 		long lRet = fread(GetDataBuffer(), sizeof(char), lSize, fp);
 		if (lRet == lSize)
 		{
-			bRet = TRUE;
+			bRet = true;
 		}
 		else
 		{
@@ -253,7 +253,7 @@ void CBasicSmartBuffer::ThrowDataLength(int nLength){
 void CBasicSmartBuffer::ReadData(void* pBuffer, int nLength)
 {
 	if (m_cbBuffer < nLength || nLength <= 0){
-		ASSERT(FALSE);
+		ASSERT(false);
 		m_bReadError = true;
 		return;
 	}

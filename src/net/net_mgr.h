@@ -102,7 +102,7 @@ public:
 	//! ontimer线程
 	void OnTimer();
 public:
-	BOOL					m_bTimeToKill;
+	bool					m_bTimeToKill;
 	bool					m_bTimerStop;
 
 	VTOnTimerSessionList	m_vtOnTimerList;

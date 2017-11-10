@@ -29,8 +29,8 @@ public:
 
 	//! get data length
 	int GetLength() const;
-	//! TRUE if zero length
-	BOOL IsEmpty() const;
+	//! true if zero length
+	bool IsEmpty() const;
 	//! clear contents to empty
 	void Empty();
 
@@ -114,8 +114,8 @@ public:
 	/*
 	全局使用时（多个资源文件）使用lpszModuleName进行区分, 模块名和Basic_LoadStringSource时相同
 	*/
-	BOOL LoadString(const char* lpszFormatID, const char* lpszModuleName = "");
-	BOOL LoadString(DWORD dwFormatID, const char* lpszModuleName = "");
+	bool LoadString(const char* lpszFormatID, const char* lpszModuleName = "");
+	bool LoadString(DWORD dwFormatID, const char* lpszModuleName = "");
 };
 
 
@@ -186,8 +186,8 @@ public:
 
 	//! get data length
 	int GetLength() const;
-	//! TRUE if zero length
-	BOOL IsEmpty() const;
+	//! true if zero length
+	bool IsEmpty() const;
 	//! clear contents to empty
 	void Empty();
 

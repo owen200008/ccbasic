@@ -70,11 +70,6 @@ typedef double MIDL_uhyper;
 #endif // _HYPER_DEFINED
 
 //
-#ifndef FALSE
-#define FALSE 0
-#define TRUE 1
-#endif // !FALSE
-//
 //
 #ifndef INFINITE
 #define INFINITE            0xFFFFFFFF  // Infinite timeout
@@ -89,12 +84,6 @@ typedef unsigned char BYTE;
 #define _WORD_DEFINED
 typedef unsigned short WORD;
 #endif // !_WORD_DEFINED
-//
-
-#ifndef _BOOL_DEFINED
-#define _BOOL_DEFINED
-typedef long BOOL;
-#endif
 //
 #ifndef _LONG_DEFINED
 #define _LONG_DEFINED

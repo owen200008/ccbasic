@@ -702,7 +702,7 @@ long WBasic_DeleteFile(LPCTSTR lpszFileName)
 	return BASIC_FILE_OK;
 }
 
-long WBasic_CopyFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists)
+long WBasic_CopyFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, bool bFailIfExists)
 {
 	if(!CopyFile(lpExistingFileName, lpNewFileName, bFailIfExists))		//I know this
 	{
@@ -710,7 +710,7 @@ long WBasic_CopyFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFa
 	}
 	return BASIC_FILE_OK;
 }
-long Basic_CopyFile(const char* lpExistingFileName, const char* lpNewFileName, BOOL bFailIfExists)
+long Basic_CopyFile(const char* lpExistingFileName, const char* lpNewFileName, bool bFailIfExists)
 {
 	if (!CopyFileA(lpExistingFileName, lpNewFileName, bFailIfExists))		//I know this
 	{
@@ -719,11 +719,11 @@ long Basic_CopyFile(const char* lpExistingFileName, const char* lpNewFileName, B
 	return BASIC_FILE_OK;
 }
 
-BOOL WBasic_PathMatchSpec(LPCTSTR pszFile, LPCTSTR pszSpec)
+bool WBasic_PathMatchSpec(LPCTSTR pszFile, LPCTSTR pszSpec)
 {
 	return ::PathMatchSpec(pszFile, pszSpec);		//I know this
 }
-BOOL Basic_PathMatchSpec(const char* pszFile, const char* pszSpec)
+bool Basic_PathMatchSpec(const char* pszFile, const char* pszSpec)
 {
 	return ::PathMatchSpecA(pszFile, pszSpec);		//I know this
 }
@@ -1005,7 +1005,7 @@ long Basic_FileOperation(uint32_t wFunc, const char* pFrom, const char* pTo)
 template<typename F>
 static long _FindAllFileInPath(const char* lpszFilePath, const char* lpszFileName, const char* lpszFilterFileName, F f, DWORD dwFindMode)
 {
-	BOOL bFilter = STR_INVALID(lpszFilterFileName) ? FALSE : TRUE;
+	bool bFilter = STR_INVALID(lpszFilterFileName) ? false : true;
 	
 	CBasicFileFind tlFinder;
 	long lRet = tlFinder.FindFile(lpszFilePath, lpszFileName);

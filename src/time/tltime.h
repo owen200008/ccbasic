@@ -40,12 +40,12 @@ public:
 	CTimeSpan operator+(CTimeSpan timeSpan) const;
 	const CTimeSpan& operator+=(CTimeSpan timeSpan);
 	const CTimeSpan& operator-=(CTimeSpan timeSpan);
-	BOOL operator==(CTimeSpan timeSpan) const;
-	BOOL operator!=(CTimeSpan timeSpan) const;
-	BOOL operator<(CTimeSpan timeSpan) const;
-	BOOL operator>(CTimeSpan timeSpan) const;
-	BOOL operator<=(CTimeSpan timeSpan) const;
-	BOOL operator>=(CTimeSpan timeSpan) const;
+	bool operator==(CTimeSpan timeSpan) const;
+	bool operator!=(CTimeSpan timeSpan) const;
+	bool operator<(CTimeSpan timeSpan) const;
+	bool operator>(CTimeSpan timeSpan) const;
+	bool operator<=(CTimeSpan timeSpan) const;
+	bool operator>=(CTimeSpan timeSpan) const;
 
 	// for compatibility with MFC 3.x
 	CBasicString FormatMultiByte(const char* pFormat) const;
@@ -78,7 +78,7 @@ public:
 // Attributes
 	struct tm* GetLocalTm(struct tm* ptm) const;
 #ifdef __BASICWINDOWS
-	BOOL GetAsSystemTime(SYSTEMTIME& timeDest) const;
+	bool GetAsSystemTime(SYSTEMTIME& timeDest) const;
 #endif
 
 	//time_t GetTime() const;
@@ -94,7 +94,7 @@ public:
 	int GetDayOfWeek() const;   // 1=Sun, 2=Mon, ..., 7=Sat
 
 	//解析格式MMMMMMMMMMMMMM 例如 20140402174213,必须14位
-	BOOL ParseString(const char* lpszTimeFormat);
+	bool ParseString(const char* lpszTimeFormat);
 	
 // Operations
 	// time math
@@ -103,12 +103,12 @@ public:
 	CTime operator+(CTimeSpan timeSpan) const;
 	const CTime& operator+=(CTimeSpan timeSpan);
 	const CTime& operator-=(CTimeSpan timeSpan);
-	BOOL operator==(CTime time) const;
-	BOOL operator!=(CTime time) const;
-	BOOL operator<(CTime time) const;
-	BOOL operator>(CTime time) const;
-	BOOL operator<=(CTime time) const;
-	BOOL operator>=(CTime time) const;
+	bool operator==(CTime time) const;
+	bool operator!=(CTime time) const;
+	bool operator<(CTime time) const;
+	bool operator>(CTime time) const;
+	bool operator<=(CTime time) const;
+	bool operator>=(CTime time) const;
 
 	// formatting using "C" strftime
 	CBasicString Format_S(const char* pFormat) const;
@@ -191,7 +191,7 @@ public:
 	int  GetCycle(){return m_nCycle;}
 
 	//! 判断是否到颁奖的时间，如果到就设置下一个颁奖时间	
-	BOOL IsPrizeTime(time_t tmNow);		
+	bool IsPrizeTime(time_t tmNow);
 
 	//! dump出目前的成员变量信息
 	void DumpTimeInfo(basiclib::CBasicString& strInfo);
@@ -241,17 +241,17 @@ inline const CTimeSpan& CTimeSpan::operator+=(CTimeSpan timeSpan)
 { m_timeSpan += timeSpan.m_timeSpan; return *this; }
 inline const CTimeSpan& CTimeSpan::operator-=(CTimeSpan timeSpan)
 { m_timeSpan -= timeSpan.m_timeSpan; return *this; }
-inline BOOL CTimeSpan::operator==(CTimeSpan timeSpan) const
+inline bool CTimeSpan::operator==(CTimeSpan timeSpan) const
 { return m_timeSpan == timeSpan.m_timeSpan; }
-inline BOOL CTimeSpan::operator!=(CTimeSpan timeSpan) const
+inline bool CTimeSpan::operator!=(CTimeSpan timeSpan) const
 { return m_timeSpan != timeSpan.m_timeSpan; }
-inline BOOL CTimeSpan::operator<(CTimeSpan timeSpan) const
+inline bool CTimeSpan::operator<(CTimeSpan timeSpan) const
 { return m_timeSpan < timeSpan.m_timeSpan; }
-inline BOOL CTimeSpan::operator>(CTimeSpan timeSpan) const
+inline bool CTimeSpan::operator>(CTimeSpan timeSpan) const
 { return m_timeSpan > timeSpan.m_timeSpan; }
-inline BOOL CTimeSpan::operator<=(CTimeSpan timeSpan) const
+inline bool CTimeSpan::operator<=(CTimeSpan timeSpan) const
 { return m_timeSpan <= timeSpan.m_timeSpan; }
-inline BOOL CTimeSpan::operator>=(CTimeSpan timeSpan) const
+inline bool CTimeSpan::operator>=(CTimeSpan timeSpan) const
 { return m_timeSpan >= timeSpan.m_timeSpan; }
 
 inline CTime::CTime()
@@ -316,17 +316,17 @@ inline const CTime& CTime::operator+=(CTimeSpan timeSpan)
 { m_time += timeSpan.m_timeSpan; return *this; }
 inline const CTime& CTime::operator-=(CTimeSpan timeSpan)
 { m_time -= timeSpan.m_timeSpan; return *this; }
-inline BOOL CTime::operator==(CTime time) const
+inline bool CTime::operator==(CTime time) const
 { return m_time == time.m_time; }
-inline BOOL CTime::operator!=(CTime time) const
+inline bool CTime::operator!=(CTime time) const
 { return m_time != time.m_time; }
-inline BOOL CTime::operator<(CTime time) const
+inline bool CTime::operator<(CTime time) const
 { return m_time < time.m_time; }
-inline BOOL CTime::operator>(CTime time) const
+inline bool CTime::operator>(CTime time) const
 { return m_time > time.m_time; }
-inline BOOL CTime::operator<=(CTime time) const
+inline bool CTime::operator<=(CTime time) const
 { return m_time <= time.m_time; }
-inline BOOL CTime::operator>=(CTime time) const
+inline bool CTime::operator>=(CTime time) const
 { return m_time >= time.m_time; }
 
 //get the current time

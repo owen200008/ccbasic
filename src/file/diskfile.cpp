@@ -96,7 +96,7 @@ long CDiskFile::Close()
 	return lRet;
 }
 
-BOOL  CDiskFile::IsOpen() const
+bool CDiskFile::IsOpen() const
 {
 	return m_hFile != INVALID_HANDLE_VALUE;
 }
@@ -340,7 +340,7 @@ long CDiskFile::CopyTo(const char* lpszThisFileName, const char* lpszFileName)
 	{
 		return BASIC_FILE_BAD_PATH;
 	}
-	return Basic_CopyFile(lpszThisFileName, lpszFileName, FALSE);
+	return Basic_CopyFile(lpszThisFileName, lpszFileName, false);
 }
 
 long CDiskFile::CopyFrom(const char* lpszThisFileName, const char* lpszFileName)
@@ -349,7 +349,7 @@ long CDiskFile::CopyFrom(const char* lpszThisFileName, const char* lpszFileName)
 	{
 		return BASIC_FILE_BAD_PATH;
 	}
-	long lRet = Basic_CopyFile(lpszFileName, lpszThisFileName, FALSE);
+	long lRet = Basic_CopyFile(lpszFileName, lpszThisFileName, false);
 	Seek(0, BASIC_FILE_BEGIN);
 	return lRet;
 }

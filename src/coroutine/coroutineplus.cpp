@@ -468,7 +468,7 @@ void CCorutinePlusPoolMgr::CheckAllCorutine(){
     if (nLength > 0){
 		CCorutinePlusBase** pCheckCorutine = new CCorutinePlusBase*[nLength];
         {
-            basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, TRUE);
+            basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
             CopyAll(pCheckCorutine);
         }
         time_t tmNow = time(NULL);

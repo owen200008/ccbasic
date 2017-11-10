@@ -95,24 +95,23 @@ DWORD CBasicFileNotify::AddWatch(const char* lpszPath, DWORD dwNotifyFilter, DWO
 
 /////////////////////////////////////////////////
 
-BOOL CBasicFileNotify::RemoveWatch(DWORD dwWatchID)
+bool CBasicFileNotify::RemoveWatch(DWORD dwWatchID)
 {
 	_DIRECTORY_INFO* pFind = (_DIRECTORY_INFO*)dwWatchID;
 	if (pFind == NULL)
 	{
-		return FALSE;
+		return false;
 	}
 
 	CSingleLock lock(&m_mtxAddRemove);
 	lock.Lock();
 	_di_array::iterator iFind = std::find(m_ayDirInfo.begin(), m_ayDirInfo.end(), pFind);
-	BOOL bFound = FALSE;
+	bool bFound = false;
 	if(iFind != m_ayDirInfo.end())
 	{
 		m_ayDirInfo.erase(iFind);
 		BASIC_DeleteObject(pFind);
-
-		bFound = TRUE;
+		bFound = true;
 	}
 	if(bFound && m_ayDirInfo.empty())
 	{
@@ -279,7 +278,7 @@ int CBasicFileNotify::ScanDir(_DIRECTORY_INFO* lpdi, const char* lpszDir, const 
 	return lResult;
 }
 
-BOOL CBasicFileNotify::IsValidDirectoryInfo(_DIRECTORY_INFO* lpdi)
+bool CBasicFileNotify::IsValidDirectoryInfo(_DIRECTORY_INFO* lpdi)
 {
 	return std::find(m_ayDirInfo.begin(), m_ayDirInfo.end(), lpdi) != m_ayDirInfo.end();
 }

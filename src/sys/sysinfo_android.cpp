@@ -36,7 +36,7 @@
  *DWORD BasicGetDiskInfo(char* pszDiskBuffer, int nBufferLen)��
  *struct mount_entry* ReadFilesystemlist()
  *long BasicGetDiskFreeinfo(LPCTSTR lpszPath)
- *BOOL BasicSetSysTime(time_t tTime)
+ *bool BasicSetSysTime(time_t tTime)
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_START
@@ -246,7 +246,7 @@ struct proc_t
 
 //
 //
-DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
+DWORD BasicGetProcessMem(HANDLE hProcess, bool bKeepHandle)
 {
 	FILE* fstatm = NULL;
 	static FILE* g_fstatm = NULL;
@@ -474,13 +474,13 @@ static CBasicString ShowAllEntries()
 
 //
 
-BOOL exec_command(char *pBuf,int nLen,char *format,...)
+bool exec_command(char *pBuf,int nLen,char *format,...)
 {
 	if(nLen < 1024 || pBuf == NULL)
 	{
-		return FALSE;
+		return false;
 	}
-	BOOL bRet = FALSE;
+	bool bRet = false;
 	char szBuf[1024];
 
 	va_list args;
@@ -499,7 +499,7 @@ BOOL exec_command(char *pBuf,int nLen,char *format,...)
 			{
 				memcpy(pBuf,szBuf,nReadLen);
 				pBuf[nReadLen] = '\0';
-				bRet = TRUE;
+				bRet = true;
 			}
 		}
 	}
@@ -553,7 +553,7 @@ long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBufLen)
 }
 
 //
-CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
+CBasicString BasicGetModuleTitle(HANDLE hModule, bool bExt)
 {
 	CBasicString strModule = BasicGetModuleName(hModule);
 	int nPos = strModule.ReverseFind(PATHSPLIT);
@@ -573,10 +573,10 @@ CBasicString BasicGetModulePath(HANDLE hModule)
 //************************************************************************
 // Author:    Mini.J @2009/3/13
 // Method:    Basic_ProcessIsTerminated => 
-// Returns:   BOOL =>
+// Returns:   bool =>
 // Parameter: DWORD dwProcessID => ���ID
 //************************************************************************
-BOOL BasicProcessIsTerminated(DWORD dwProcessID)
+bool BasicProcessIsTerminated(DWORD dwProcessID)
 {
 	CBasicString strFile;
 	CBasicString strCmd;
@@ -594,16 +594,16 @@ BOOL BasicProcessIsTerminated(DWORD dwProcessID)
 	}
 	if (strFile.GetLength() <= 0)
 	{
-		return TRUE;
+		return true;
 	}
 	CBasicStringArray ayItem;
 	BasicSpliteString(strFile.c_str(), '\n', IntoContainer_s<CBasicStringArray>(ayItem));
 	int nLineCnt = ayItem.GetSize();
 	if (nLineCnt == 2)
 	{
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -322,7 +322,7 @@ void CBasicLogChannel::WriteLogBuffer()
     {
         CSingleLock lock(m_pSynLogFile);
         lock.Lock();
-        basiclib::CSpinLockFuncNoSameThreadSafe spinLock(&m_lock, TRUE);
+        basiclib::CSpinLockFuncNoSameThreadSafe spinLock(&m_lock, true);
         swap(tmpVt, m_vLogData);
     }
     int nCount = tmpVt.size();
@@ -354,7 +354,7 @@ long CBasicLogChannel::WriteLogData(const char* lpszText)
     }
     else{
         //来自不同线程才会进入这里
-        basiclib::CSpinLockFuncNoSameThreadSafe spinLock(&m_lock, TRUE);
+        basiclib::CSpinLockFuncNoSameThreadSafe spinLock(&m_lock, true);
         _AddLogDataBuffer(logData);
     }
 	return 0;
@@ -377,7 +377,7 @@ void CBasicLogChannel::WriteLogDataWithBuffer(WriteLogDataBuffer& logData, bool 
         }
         else{
             //来自不同线程才会进入这里
-            basiclib::CSpinLockFuncNoSameThreadSafe spinLock(&m_lock, TRUE);
+            basiclib::CSpinLockFuncNoSameThreadSafe spinLock(&m_lock, true);
             _AddLogDataBuffer(logData);
         }
     }

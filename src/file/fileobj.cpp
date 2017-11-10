@@ -29,16 +29,16 @@ CBasicFileObj::~CBasicFileObj()
 	Close();
 }
 
-BOOL CBasicFileObj::IsOpen() const
+bool CBasicFileObj::IsOpen() const
 {
 	if (m_pFileObj == NULL)
 	{
-		return FALSE;
+		return false;
 	}
 	return m_pFileObj->IsOpen();
 }
 
-BOOL CBasicFileObj::IsMemoryFile() const
+bool CBasicFileObj::IsMemoryFile() const
 {
 	return GetFileOpenType() == PF_MEM_FILE;
 }

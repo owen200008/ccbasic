@@ -131,7 +131,7 @@ inline void* Fill_prefix(char* ptr, size_t size)
 	if (g_nCheckMemMode & MemRunMemCheck_RunCheckMem)
 	{
 		if (m_nCheckMin <= size && size <= m_nCheckMax){
-			basiclib::CSingleLock lock(&g_lockCheck, TRUE);
+			basiclib::CSingleLock lock(&g_lockCheck, true);
 			stacktrace::call_stack dtStack(0);
 			g_mapCheck[ptr].SwapStack(dtStack);
 		}
@@ -145,7 +145,7 @@ inline void* Clean_prefix(char* ptr)
 	if (g_nCheckMemMode & MemRunMemCheck_RunCheckMem)
 	{
 		if (pFix->m_size >= m_nCheckMin && pFix->m_size <= m_nCheckMax){
-			basiclib::CSingleLock lock(&g_lockCheck, TRUE);
+			basiclib::CSingleLock lock(&g_lockCheck, true);
 			g_mapCheck.erase(ptr + MallocFixSize);
 			lock.Unlock();
 		}
@@ -301,7 +301,7 @@ void BasicSetMemRunMemCheck(uint32_t nMode, int nMin, int nMax)
 void DumpRunMemCheck()
 {
 	g_nCheckMemMode = 0;
-	basiclib::CSingleLock lock(&g_lockCheck, TRUE);
+	basiclib::CSingleLock lock(&g_lockCheck, true);
 	for (auto& checkData : g_mapCheck){
         basiclib::BasicLogEvent(DebugLevel_Info, checkData.second.to_string().c_str());
 	}

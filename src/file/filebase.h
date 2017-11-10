@@ -31,8 +31,8 @@ public:
 	virtual long Close() = 0;
 	//status
 public:
-	virtual BOOL  IsOpen() const = 0;
-	virtual BOOL  IsValidFile() { return true; }
+	virtual bool  IsOpen() const = 0;
+	virtual bool  IsValidFile() { return true; }
 	//position
 public:
 	virtual long GetStatus(TLFileStatus& rStatus) const = 0;
@@ -70,7 +70,7 @@ public:
 	virtual long Close();
 	//status
 public:
-	virtual BOOL  IsOpen() const;
+	virtual bool  IsOpen() const;
 	//position
 public:
 	virtual long GetStatus(TLFileStatus& rStatus) const;
@@ -112,7 +112,7 @@ public:
 	virtual long Close();
 	//status
 public:
-	virtual BOOL  IsOpen() const;
+	virtual bool  IsOpen() const;
 	//position
 public:
 	virtual long GetStatus(TLFileStatus& rStatus) const;

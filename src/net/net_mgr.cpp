@@ -45,7 +45,7 @@ THREAD_RETURN WorkerThread(void *arg){
 /////////////////////////////////////////////////////////////////////////////
 CBasicNetMgv::CBasicNetMgv() {
 	m_gNetMgrPoint = this;
-	m_bTimeToKill = TRUE;
+	m_bTimeToKill = true;
 	m_bTimerStop = false;
 	//create net
 	Initialize(g_GetParamFunc);
@@ -71,7 +71,7 @@ THREAD_RETURN CBasicNetMgv::ThreadCheckFunc(void* lpWorkContext) {
 }
 #ifdef BASICWINDOWS_USE_IOCP
 void CBasicNetMgv::Initialize(pGetConfFunc func){
-	m_bTimeToKill = FALSE;
+	m_bTimeToKill = false;
 
 	WORD wVersionRequested;
 	WSADATA wsaData;
@@ -94,7 +94,7 @@ void CBasicNetMgv::Initialize(pGetConfFunc func){
 }
 #else
 void CBasicNetMgv::Initialize(pGetConfFunc func) {
-	m_bTimeToKill = FALSE;
+	m_bTimeToKill = false;
 
 	//使用自己的内存分配
 	event_set_mem_functions(BasicAllocate, BasicReallocate, BasicDeallocate);
@@ -185,7 +185,7 @@ void CBasicNetMgv::Initialize(pGetConfFunc func) {
 
 void CBasicNetMgv::CloseNetSocket(){
 	TRACE("Start CloseSocket!");
-	m_bTimeToKill = TRUE;
+	m_bTimeToKill = true;
 	if(g_nEventThreadCount > 0 && g_pEventThreads != nullptr){
 		int nTimes = 0;
 		while(!m_gNetMgrPoint->m_bTimerStop){
@@ -220,12 +220,12 @@ void CBasicNetMgv::CloseNetSocket(){
 
 //! 加入timer
 void CBasicNetMgv::AddToTimer(CBasicNet_Socket* pSocket) {
-	CSpinLockFuncNoSameThreadSafe lock(&m_spinLockAdd, TRUE);
+	CSpinLockFuncNoSameThreadSafe lock(&m_spinLockAdd, true);
 	m_vtAddList.push_back(pSocket);
 }
 //! 删除timer
 void CBasicNetMgv::DelToTimer(CBasicNet_Socket* pSocket){
-	CSpinLockFuncNoSameThreadSafe lock(&m_spinLockAdd, TRUE);
+	CSpinLockFuncNoSameThreadSafe lock(&m_spinLockAdd, true);
 	m_vtDelList.push_back(pSocket);
 	m_vtDeathSession.push_back(pSocket->GetRealSessionNet());
 }
@@ -235,7 +235,7 @@ void CBasicNetMgv::OnTimer() {
 	while (!m_bTimeToKill) {
 		//! 加入ontimer
 		{
-			CSpinLockFuncNoSameThreadSafe lock(&m_spinLockAdd, TRUE);
+			CSpinLockFuncNoSameThreadSafe lock(&m_spinLockAdd, true);
 			swap(m_vtAddListDeal, m_vtAddList);
 			swap(m_vtDelListDeal, m_vtDelList);
 			swap(m_vtDeathSessionDeal, m_vtDeathSession);
@@ -374,7 +374,7 @@ void CNetThread::AddMessageQueue(CBasicNet_Socket* pSocket){
 	{
 		//增加引用
 		pSocket->GetRealSessionNet()->AddRef();
-		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lockMsg, TRUE);
+		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lockMsg, true);
 		lLength = m_smBuf.GetDataLength();
 		m_smBuf.AppendDataEx((const char*)&pSocket, sizeof(CBasicNet_Socket*));
 	}
@@ -390,7 +390,7 @@ void CNetThread::AddMessageQueue(CBasicNet_Socket* pSocket){
 void CNetThread::RunMessageQueue(){
 	static int g_nRunMessageQueueSize = sizeof(CBasicNet_Socket*);
 	{
-		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lockMsg, TRUE);
+		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lockMsg, true);
 		swap(m_smRunBuf, m_smBuf);
 	}
 	int nCount = m_smRunBuf.GetDataLength() / g_nRunMessageQueueSize;
@@ -423,7 +423,7 @@ unsigned CNetThread::ThreadIOCPFunc(void* lpWorkContext){
 		dwIoSize = 0;
 		lpTcpLink = nullptr;
 		pOverlapPlus = nullptr;
-		BOOL bIORet = GetQueuedCompletionStatus(hCompletionPort, &dwIoSize, (LPDWORD)&lpTcpLink, &overlapped, INFINITE);
+		bool bIORet = GetQueuedCompletionStatus(hCompletionPort, &dwIoSize, (LPDWORD)&lpTcpLink, &overlapped, INFINITE);
 		if(overlapped){
 			if(bIORet){
 				pOverlapPlus = CONTAINING_RECORD(overlapped, OVERLAPPEDPLUS, m_ol);
@@ -475,7 +475,7 @@ unsigned CNetThread::ThreadIOCPFunc(void* lpWorkContext){
 			else{
 				DWORD dwIOError = GetLastError();  //I know this
 				if(dwIOError != WAIT_TIMEOUT){
-					lpTcpLink->Close(TRUE);
+					lpTcpLink->Close(true);
 				}
 			}
 		}

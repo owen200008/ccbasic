@@ -46,12 +46,12 @@ CBasicSyncObject::~CBasicSyncObject()
     }
 }
 
-BOOL CBasicSyncObject::Lock(DWORD dwTimeout)
+bool CBasicSyncObject::Lock(DWORD dwTimeout)
 {
     if (BasicWaitForSingleObject(m_hObject, dwTimeout) == WAIT_OBJECT_0)
-        return TRUE;
+        return true;
     else
-        return FALSE;
+        return false;
 }
 
 #ifdef _DEBUG
@@ -81,7 +81,7 @@ CSemaphore::~CSemaphore()
 {
 }
 
-BOOL CSemaphore::Unlock(LONG lCount, LPLONG lpPrevCount /* =NULL */)
+bool CSemaphore::Unlock(LONG lCount, LPLONG lpPrevCount /* =NULL */)
 {
 	return ::ReleaseSemaphore(m_hObject, lCount, lpPrevCount);
 }
@@ -89,7 +89,7 @@ BOOL CSemaphore::Unlock(LONG lCount, LPLONG lpPrevCount /* =NULL */)
 /////////////////////////////////////////////////////////////////////////////
 // CMutex
 
-CMutex::CMutex(BOOL bInitiallyOwn, LPCTSTR pstrName)
+CMutex::CMutex(bool bInitiallyOwn, LPCTSTR pstrName)
 	: CBasicSyncObject(pstrName)
 {
 	m_hObject = ::CreateMutex(NULL, bInitiallyOwn, pstrName);
@@ -106,13 +106,13 @@ CMutex::~CMutex()
 #endif
 }
 
-BOOL CMutex::Unlock()
+bool CMutex::Unlock()
 {
 	return ::ReleaseMutex(m_hObject);
 }
 
 #if defined(__LINUX) || defined(__MAC) || defined(__ANDROID)
-BOOL CMutex::Lock(DWORD dwTimeout)
+bool CMutex::Lock(DWORD dwTimeout)
 {
 	return ::LockMutex(m_hObject, dwTimeout);
 }
@@ -121,7 +121,7 @@ BOOL CMutex::Lock(DWORD dwTimeout)
 /////////////////////////////////////////////////////////////////////////////
 // CEvent
 
-CEvent::CEvent(BOOL bInitiallyOwn, BOOL bManualReset, LPCTSTR pstrName)
+CEvent::CEvent(bool bInitiallyOwn, bool bManualReset, LPCTSTR pstrName)
 	: CBasicSyncObject(pstrName)
 {
 	m_hObject = BasicCreateEvent(bManualReset,
@@ -137,23 +137,23 @@ CEvent::~CEvent()
 	}
 }
 
-BOOL CEvent::Unlock()
+bool CEvent::Unlock()
 {
-	return TRUE;
+	return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // CSingleLock
 
-CSingleLock::CSingleLock(CBasicSyncObject* pObject, BOOL bInitialLock)
+CSingleLock::CSingleLock(CBasicSyncObject* pObject, bool bInitialLock)
 {
 	m_pObject = pObject;
-	m_bAcquired = FALSE;
+	m_bAcquired = false;
 	if (bInitialLock)
 		Lock();
 }
 
-BOOL CSingleLock::Lock(DWORD dwTimeOut /* = INFINITE */)
+bool CSingleLock::Lock(DWORD dwTimeOut /* = INFINITE */)
 {
 	ASSERT(!m_bAcquired);
 	if (m_pObject)
@@ -161,7 +161,7 @@ BOOL CSingleLock::Lock(DWORD dwTimeOut /* = INFINITE */)
 	return m_bAcquired;
 }
 
-BOOL CSingleLock::Unlock()
+bool CSingleLock::Unlock()
 {
 	if (m_bAcquired && m_pObject)
 		m_bAcquired = !m_pObject->Unlock();
@@ -177,14 +177,14 @@ BOOL CSingleLock::Unlock()
 CBasicSyncObject::operator HANDLE() const
     { return m_hObject;}
 
-BOOL CSemaphore::Unlock()
+bool CSemaphore::Unlock()
     { return Unlock(1, NULL); }
 
-BOOL CEvent::SetEvent()
+bool CEvent::SetEvent()
     { ASSERT(m_hObject != NULL); return BasicSetEvent(m_hObject); }
-BOOL CEvent::PulseEvent()
+bool CEvent::PulseEvent()
     { ASSERT(m_hObject != NULL); return ::PulseEvent(m_hObject); }
-BOOL CEvent::ResetEvent()
+bool CEvent::ResetEvent()
     { ASSERT(m_hObject != NULL); return BasicResetEvent(m_hObject); }
 
 CSingleLock::~CSingleLock()
@@ -206,10 +206,10 @@ CCriticalSection::~CCriticalSection()
 	::DeleteCriticalSection(&m_sect);
 }
 
-BOOL CCriticalSection::Lock()
+bool CCriticalSection::Lock()
 {
 	::EnterCriticalSection(&m_sect);
-	return TRUE;
+	return true;
 }
 
 /** 
@@ -218,7 +218,7 @@ BOOL CCriticalSection::Lock()
 *\param dwTimeout 超时时间，单位毫秒，-1不超时
 *\return  
 */
-BOOL CCriticalSection::Lock(DWORD dwTimeout)
+bool CCriticalSection::Lock(DWORD dwTimeout)
 {
 	if(dwTimeout == (DWORD)-1)
 		return Lock();
@@ -233,16 +233,16 @@ BOOL CCriticalSection::Lock(DWORD dwTimeout)
 		else
 		{
 			//超时
-			return FALSE;
+			return false;
 		}
 	}
-	return TRUE;
+	return true;
 }
 
-BOOL CCriticalSection::Unlock()
+bool CCriticalSection::Unlock()
 {
 	::LeaveCriticalSection(&m_sect);
-	return TRUE;
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -283,27 +283,27 @@ bool BasicInterlockedCompareExchange (
 	return ::InterlockedCompareExchange(Destination, Exchange, Comperand) == Comperand;
 }
 
-HANDLE BasicCreateEvent(BOOL bManualReset, BOOL bInitialState, LPCTSTR lpName)
+HANDLE BasicCreateEvent(bool bManualReset, bool bInitialState, LPCTSTR lpName)
 {
 	return ::CreateEvent(NULL, bManualReset, bInitialState, lpName);
 }
 
-BOOL BasicSetEvent(HANDLE hEvent)
+bool BasicSetEvent(HANDLE hEvent)
 {
 	return ::SetEvent(hEvent);
 }
 
-BOOL BasicResetEvent(HANDLE hEvent)
+bool BasicResetEvent(HANDLE hEvent)
 {
 	return ::ResetEvent(hEvent);
 }
 
-BOOL BasicCloseHandle(HANDLE hObject)
+bool BasicCloseHandle(HANDLE hObject)
 {
 	return ::CloseHandle(hObject);
 }
 
-BOOL BasicDestoryEvent(HANDLE hEvent)
+bool BasicDestoryEvent(HANDLE hEvent)
 {
 	return BasicCloseHandle(hEvent);
 }

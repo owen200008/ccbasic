@@ -19,7 +19,7 @@ __NS_BASIC_START
 *\param lpszModuleName 模块名称，当定义不同资源文件时可用，模块内必须保持ID唯一
 *\return  
 */
-BOOL BasicLoadStringSource(const char* lpszFile, const char* lpszModuleName);
+bool BasicLoadStringSource(const char* lpszFile, const char* lpszModuleName);
 
 /** 
 *\brief BASIC_LoadString 加载字符串资源

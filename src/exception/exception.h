@@ -67,10 +67,10 @@ _BASIC_DLL_API void BasicSetExceptionMode(int nMode = 0, int nInstance = 0);
 */
 _BASIC_DLL_API void BasicClearException();
 
-/*! \fn BOOL BasicIsDaemonMode();
+/*! \fn bool BasicIsDaemonMode();
 * \brief 判断是否后台运行模式
 */
-_BASIC_DLL_API BOOL BasicIsDaemonMode();
+_BASIC_DLL_API bool BasicIsDaemonMode();
 
 /*! \fn void BasicRestart();
 * \brief  重启进程

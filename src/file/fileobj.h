@@ -73,37 +73,37 @@ public:
 	// Attributes
 	//! \brief 判断指定的文件是否处于打开状态 
 	/*!
-	*\return TRUE:表示文件是打开的;FALSE:文件没有打开
+	*\return true:表示文件是打开的;false:文件没有打开
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
-	BOOL IsOpen() const;
+	bool IsOpen() const;
 
 	//! \brief 判断指定的文件是否处于禁止写状态
 	/*!
-	*\return TRUE:表示文件是只读;FALSE:文件非只读,也可能文件没有打开
+	*\return true:表示文件是只读;false:文件非只读,也可能文件没有打开
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
-	BOOL IsReadOnly() const { return  (m_dwOpenFlags & PF_READ_ONLY); }
+	bool IsReadOnly() const { return  (m_dwOpenFlags & PF_READ_ONLY); }
 
 	//! \brief 判断指定的文件是否处只打开状态
 	/*!
-	*\return TRUE:表示文件是OpenOnly;FALSE:文件非OpenOnly,也可能文件没有打开
+	*\return true:表示文件是OpenOnly;false:文件非OpenOnly,也可能文件没有打开
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
-	BOOL IsOpenOnly() const { return  (m_dwOpenFlags & PF_OPEN_ONLY); }
+	bool IsOpenOnly() const { return  (m_dwOpenFlags & PF_OPEN_ONLY); }
 
 	//! \brief 判断指定的文件是否是内存文件
 	/*!
-	*\return TRUE:表示当前操作的是内存文件;FALSE:非内存文件,也可能文件没有打开
+	*\return true:表示当前操作的是内存文件;false:非内存文件,也可能文件没有打开
 	*\sa <a href = "sample\file_test\CWBasicFileObj_TEST.cpp">CWBasicFileObj_TEST.cpp</a>
 	*/
-	BOOL IsMemoryFile() const;
+	bool IsMemoryFile() const;
 
 	//! \brief 判断指定的文件是否是只读的内存文件
 	/*!
-	*\return TRUE:表示当前操作的是只读的内存文件;FALSE:非只读，或者非内存文件，或者没有打开
+	*\return true:表示当前操作的是只读的内存文件;false:非只读，或者非内存文件，或者没有打开
 	*/
-	BOOL IsMemoryOnly() const { return  (m_dwOpenFlags & PF_MEM_ONLY); }
+	bool IsMemoryOnly() const { return  (m_dwOpenFlags & PF_MEM_ONLY); }
 
 	//! \brief 获得文件操作，当前的位置
 	/*!
@@ -156,10 +156,10 @@ public:
 
 	//! \brief 判断文件是否合法
 	/*!
-	*\return 如果函数调用成功返回TRUE，否则返回FALSE。
+	*\return 如果函数调用成功返回true，否则返回false。
 	*\remarks 派生类可能需要重载这个函数，用于判断有结构的文件是否合法。
 	*/
-	virtual BOOL IsValidFile() { return TRUE; }
+	virtual bool IsValidFile() { return true; }
 	// Operations
 	//! \brief 打开文件
 	/*!

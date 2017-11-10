@@ -265,7 +265,7 @@ struct proc_t
 #define PAGE_SIZE 4096
 //
 //取得进程使用内存 单位K
-DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
+DWORD BasicGetProcessMem(HANDLE hProcess, bool bKeepHandle)
 {
 	FILE* fstatm = NULL;
 	static FILE* g_fstatm = NULL;
@@ -595,13 +595,13 @@ DWORD BasicGetDiskInfo(char* pszDiskBuffer, int nBufferLen)
 #endif//__ANDROID
 //
 
-BOOL exec_command(char *pBuf,int nLen,char *format,...)
+bool exec_command(char *pBuf,int nLen,char *format,...)
 {
 	if(nLen < 1024 || pBuf == NULL)
 	{
-		return FALSE;
+		return false;
 	}
-	BOOL bRet = FALSE;
+	bool bRet = false;
 	char szBuf[1024];
 
 	va_list args;
@@ -620,7 +620,7 @@ BOOL exec_command(char *pBuf,int nLen,char *format,...)
 			{
 				memcpy(pBuf,szBuf,nReadLen);
 				pBuf[nReadLen] = '\0';
-				bRet = TRUE;
+				bRet = true;
 			}
 		}
 	}	
@@ -691,7 +691,7 @@ long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBufLen)
 }
 
 //取得模块名，不包括全路径
-CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
+CBasicString BasicGetModuleTitle(HANDLE hModule, bool bExt)
 {
 	CBasicString strModule = BasicGetModuleName(hModule);
 	int nPos = strModule.ReverseFind(PATHSPLIT);
@@ -718,10 +718,10 @@ CBasicString BasicGetModulePath(HANDLE hModule)
 // Author:    Mini.J @2009/3/13
 // Method:    Basic_ProcessIsTerminated => 进程是否退出
 //			查看进程列表中是否有传入的进程ID。如果存在说明未退出
-// Returns:   BOOL => 
+// Returns:   bool =>
 // Parameter: DWORD dwProcessID => 进程ID
 //************************************************************************
-BOOL BasicProcessIsTerminated(DWORD dwProcessID)
+bool BasicProcessIsTerminated(DWORD dwProcessID)
 {
 	CBasicString strFile;
 	CBasicString strCmd;
@@ -739,16 +739,16 @@ BOOL BasicProcessIsTerminated(DWORD dwProcessID)
 	}
 	if (strFile.GetLength() <= 0)
 	{
-		return TRUE;
+		return true;
 	}
 	CBasicStringArray ayItem;
 	BasicSpliteString(strFile.c_str(), '\n', IntoContainer_s<CBasicStringArray>(ayItem));
 	int nLineCnt = ayItem.GetSize();
 	if (nLineCnt == 2)
 	{
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -814,10 +814,10 @@ void* BasicGetProcAddress(void* hModule, LPCSTR lpszProcName)
 }
 
 #ifndef __ANDROID
-BOOL BasicSetSysTime(time_t tTime)
+bool BasicSetSysTime(time_t tTime)
 {
 	time_t timeSet = tTime;
-	return stime(&timeSet)==0 ? TRUE:FALSE;
+	return stime(&timeSet)==0 ? true:false;
 }
 #endif
 

@@ -2,7 +2,7 @@
 
 __NS_BASIC_START
 ////////////////////////////////////////////////////////////////////////////////////////////////
-CSpinLockFuncNoSameThreadSafe::CSpinLockFuncNoSameThreadSafe(SpinLock* pLock, BOOL bInitialLock)
+CSpinLockFuncNoSameThreadSafe::CSpinLockFuncNoSameThreadSafe(SpinLock* pLock, bool bInitialLock)
 {
 	m_pLock = pLock;
 	m_bAcquired = false;
@@ -51,7 +51,7 @@ bool CSpinLockFuncNoSameThreadSafe::IsLock()
 	return m_pLock->m_nLock.load() != 0;
 }
 
-CSpinLockFunc::CSpinLockFunc(SpinLock* pLock, BOOL bInitialLock){
+CSpinLockFunc::CSpinLockFunc(SpinLock* pLock, bool bInitialLock){
 	m_pLock = pLock;
 	m_bAcquired = false;
 	if(bInitialLock)

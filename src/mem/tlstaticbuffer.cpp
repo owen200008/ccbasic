@@ -2,7 +2,7 @@
 
 __NS_BASIC_START
 
-BOOL BasicStaticBuffer::IsEmpty() const
+bool BasicStaticBuffer::IsEmpty() const
 {
 	return m_pBuffer == NULL || m_nLength == 0;
 }
@@ -42,7 +42,7 @@ void* BasicStaticBuffer::AllocBuffer(unsigned short len)
 
 }
 
-BOOL BasicStaticBuffer::Assign(unsigned short len, unsigned char c)
+bool BasicStaticBuffer::Assign(unsigned short len, unsigned char c)
 {
 	Release();
 	void* pBuffer = Alloc(len);
@@ -50,9 +50,9 @@ BOOL BasicStaticBuffer::Assign(unsigned short len, unsigned char c)
 	{
 		memset(pBuffer, c, len);
 		m_nLength = len;
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void BasicStaticBuffer::Release()
@@ -152,7 +152,7 @@ void CBasicStaticBuffer::Release()
 	}
 	m_lLength = 0;
 }
-BOOL CBasicStaticBuffer::IsEmpty() const
+bool CBasicStaticBuffer::IsEmpty() const
 {
 	return (NULL == m_pBuffer) || (0 == m_lLength);
 }
@@ -223,14 +223,14 @@ void* CBasicStaticBuffer::AppendString(const char* str, size_t len)
 	return m_pBuffer;
 }
 
-BOOL CBasicStaticBuffer::Assign(size_t len, unsigned char c)
+bool CBasicStaticBuffer::Assign(size_t len, unsigned char c)
 {
 	if (Alloc(len))
 	{
 		memset(m_pBuffer, c, len);
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void* CBasicStaticBuffer::GetBuffer() const
@@ -248,7 +248,7 @@ const char* CBasicStaticBuffer::GetString() const
 	return (const char*)m_pBuffer;
 }
 
-BOOL CBasicStaticBuffer::FromFile(const char* lpszFile)
+bool CBasicStaticBuffer::FromFile(const char* lpszFile)
 {
 	FILE* fp = fopen(lpszFile, "rb");
 	if (fp)
@@ -265,11 +265,11 @@ BOOL CBasicStaticBuffer::FromFile(const char* lpszFile)
 			{
 				pReadBuffer[nFileLen] = 0;
 				SetLength(nFileLen);
-				return TRUE;
+				return true;
 			}
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 void CBasicStaticBuffer::Attach(void* buffer, size_t length)

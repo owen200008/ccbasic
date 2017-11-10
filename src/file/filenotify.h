@@ -111,7 +111,7 @@ struct _DIRECTORY_INFO		//internal struct
 	//! 判断是否要监控子目录
 	/*!  
 	*/
-	BOOL IsWatchSubTree() { return (m_dwWathOptions & DIW_SUBTREE); }
+	bool IsWatchSubTree() { return (m_dwWathOptions & DIW_SUBTREE); }
 };
 
 typedef  std::vector<_DIRECTORY_INFO*>  _di_array;
@@ -191,9 +191,9 @@ public:
 	//! 删除一个监控项目 
 	/*! 
 	*\param dwWatchID 	监控ID ，AddWatch的返回值.
-	*\return 返回TRUE表示输出成功，FALSE失败，可能是ID不存在
+	*\return 返回true表示输出成功，false失败，可能是ID不存在
 	*/
-	BOOL	RemoveWatch(DWORD dwWatchID);
+	bool	RemoveWatch(DWORD dwWatchID);
 	
 	//! 停止整个监控任务 
 	/*!  
@@ -254,13 +254,13 @@ protected:
 	
 	void	StartWatch();		/*!< 开始监控 */
 	void	EndWatch();			/*!< 停止监控 */
-	BOOL	IsThreadRunning() const {return m_eRunFlag == ThreadRun && m_hThread != NULL;}  /*!< 线程是否运行 */
-	BOOL	IsValidDirectoryInfo(_DIRECTORY_INFO* lpdi);  /*!< 监控信息是否合法 */
+	bool	IsThreadRunning() const {return m_eRunFlag == ThreadRun && m_hThread != NULL;}  /*!< 线程是否运行 */
+	bool	IsValidDirectoryInfo(_DIRECTORY_INFO* lpdi);  /*!< 监控信息是否合法 */
 
 	DWORD	PopNotifyItem(DWORD dwWatchID, char* lpszFileName, int nMaxLength, int nPos);	/*!< 弹出一个通知 */
 	
-	BOOL	IsCompPort() { return (m_dwNotifyOps & TFN_OPS_MODE) == TFN_OPS_COMPORT; }		/*!< 是否是完成端口的 */
-	BOOL	IsScanFile() { return (m_dwNotifyOps & TFN_OPS_MODE) == TFN_OPS_SCANFILE; }		/*!< 是否是扫描目录的 */
+	bool	IsCompPort() { return (m_dwNotifyOps & TFN_OPS_MODE) == TFN_OPS_COMPORT; }		/*!< 是否是完成端口的 */
+	bool	IsScanFile() { return (m_dwNotifyOps & TFN_OPS_MODE) == TFN_OPS_SCANFILE; }		/*!< 是否是扫描目录的 */
 protected:
 #ifdef __BASICWINDOWS
 	void	HandleDirectoryChange_CompPort();		/*!< 完成端口的监控函数 */

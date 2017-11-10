@@ -126,26 +126,26 @@ long _BASIC_DLL_API Basic_DeleteFile(const char* lpszFileName);
 /*! 
 *\param lpExistingFileName 已经存在的文件
 *\param lpNewFileName 新文件
-*\param bFailIfExists FALSE: 如果文件存在，覆盖；TRUE: 如果文件存在，不覆盖
+*\param bFailIfExists false: 如果文件存在，覆盖；true: 如果文件存在，不覆盖
 *\return 成功: BASIC_FILE_OK；失败: 通过GetFileErrorID()获得错误信息；
 *\remarks 实际调用WinAPI的CopyFile
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-long _BASIC_DLL_API WBasic_CopyFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists);
-long _BASIC_DLL_API Basic_CopyFile(const char* lpExistingFileName, const char* lpNewFileName, BOOL bFailIfExists);
+long _BASIC_DLL_API WBasic_CopyFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, bool bFailIfExists);
+long _BASIC_DLL_API Basic_CopyFile(const char* lpExistingFileName, const char* lpNewFileName, bool bFailIfExists);
 
 //! 判断是否通配符
 /*! 
 *\param pszFile 被用来搜索匹配的路径字符串，最长MAX_PATH
 *\param pszSpec 通配符'*','?'比如要找WORD文件，写成"*.doc"最长MAX_PATH
-*\return 成功:TRUE；失败:FALSE
+*\return 成功:true；失败:false
 *\remarks 实际调用WinAPI的PathMatchSpec
 *\warning 
 *\sa <a href = "sample\file_test\fileman_TEST.cpp">fileman_TEST.cpp</a>
 */
-BOOL _BASIC_DLL_API WBasic_PathMatchSpec(LPCTSTR pszFile, LPCTSTR pszSpec);
-BOOL _BASIC_DLL_API Basic_PathMatchSpec(const char* pszFile, const char* pszSpec);
+bool _BASIC_DLL_API WBasic_PathMatchSpec(LPCTSTR pszFile, LPCTSTR pszSpec);
+bool _BASIC_DLL_API Basic_PathMatchSpec(const char* pszFile, const char* pszSpec);
 //! 取得文件名指针
 /*! 
 *\param lpszPathName 文件路径
@@ -318,73 +318,73 @@ public:
 
 	//! 匹配文件属性
 	/*!
-	*  返回TURE: 具有此属性；返回FALSE: 不具有此属性；
+	*  返回TURE: 具有此属性；返回false: 不具有此属性；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
-	BOOL MatchesMask(DWORD dwMask) const;
+	bool MatchesMask(DWORD dwMask) const;
 
 	//! 文件是否是目录
 	/*!
-	*  返回TURE: 是目录；返回FALSE: 不是目录；
+	*  返回TURE: 是目录；返回false: 不是目录；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
-	BOOL IsDots() const;
+	bool IsDots() const;
 
 	//! 文件是否只读
 	/*!
-	*  返回TURE: 只读；返回FALSE: 非只读；
+	*  返回TURE: 只读；返回false: 非只读；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
-	BOOL IsReadOnly() const;
+	bool IsReadOnly() const;
 
 	//! 文件是否是目录
 	/*!
-	*  返回TURE: 是目录；返回FALSE: 不是目录；
+	*  返回TURE: 是目录；返回false: 不是目录；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
-	BOOL IsDirectory() const;
+	bool IsDirectory() const;
 
 	//! 文件是否压缩
 	/*!
-	*  返回TURE: 是；返回FALSE: 否；
+	*  返回TURE: 是；返回false: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
-	BOOL IsCompressed() const;
+	bool IsCompressed() const;
 
 	//! 文件是否是系统文件
 	/*!
-	*  返回TURE: 是；返回FALSE: 否；
+	*  返回TURE: 是；返回false: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
-	BOOL IsSystem() const;
+	bool IsSystem() const;
 
 	//! 文件是否隐藏
 	/*!
-	*  返回TURE: 是；返回FALSE: 否；
+	*  返回TURE: 是；返回false: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
-	BOOL IsHidden() const;
+	bool IsHidden() const;
 
 	//! 文件是否是临时文件
 	/*!
-	*  返回TURE: 是；返回FALSE: 否；
+	*  返回TURE: 是；返回false: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
-	BOOL IsTemporary() const;
+	bool IsTemporary() const;
 
 	//! 文件是否有一般属性，即不具备其他任何属性
 	/*!
-	*  返回TURE: 是；返回FALSE: 否；
+	*  返回TURE: 是；返回false: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
-	BOOL IsNormal() const;
+	bool IsNormal() const;
 
 	//! 文件是否归档属性
 	/*!
-	*  返回TURE: 是；返回FALSE: 否；
+	*  返回TURE: 是；返回false: 否；
 	*\sa <a href = "sample\file_test\CBasicFileFindW_TEST.cpp">CBasicFileFindW_TEST.cpp</a>
 	*/
-	BOOL IsArchived() const;
+	bool IsArchived() const;
 
 	///////group0812
 	//@}

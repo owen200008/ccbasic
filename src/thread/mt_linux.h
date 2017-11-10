@@ -35,30 +35,30 @@
 
 
 DWORD WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds);
-DWORD WaitForMultipleObjects(DWORD nCount, const HANDLE *lpHandles, BOOL bWaitAll, DWORD dwMilliseconds);
-DWORD MsgWaitForMultipleObjects(DWORD nCount, LPHANDLE pHandles, BOOL fWaitAll, DWORD dwMilliseconds, DWORD dwWakeMask);
+DWORD WaitForMultipleObjects(DWORD nCount, const HANDLE *lpHandles, bool bWaitAll, DWORD dwMilliseconds);
+DWORD MsgWaitForMultipleObjects(DWORD nCount, LPHANDLE pHandles, bool fWaitAll, DWORD dwMilliseconds, DWORD dwWakeMask);
 
 HANDLE CreateSemaphore(LPSECURITY_ATTRIBUTES lpSemaphoreAttributes,
     LONG lInitialCount, LONG lMaximumCount, LPCSTR lpName);
-BOOL ReleaseSemaphore(HANDLE hSemaphore, LONG lReleaseCount, LPLONG lpPreviousCount);
+bool ReleaseSemaphore(HANDLE hSemaphore, LONG lReleaseCount, LPLONG lpPreviousCount);
 
 HANDLE CreateMutex(LPSECURITY_ATTRIBUTES lpMutexAttributes,
-    BOOL bInitialOwner, LPCSTR lpName);
-BOOL ReleaseMutex(HANDLE hMutex);
-BOOL LockMutex(HANDLE hMutex, DWORD dwTimeout);
-BOOL DestoryMutex(HANDLE hMutex);
+    bool bInitialOwner, LPCSTR lpName);
+bool ReleaseMutex(HANDLE hMutex);
+bool LockMutex(HANDLE hMutex, DWORD dwTimeout);
+bool DestoryMutex(HANDLE hMutex);
 
-HANDLE CreateEvent(BOOL bManualReset, BOOL bInitialState, LPCSTR lpName);
-BOOL DestoryEvent(HANDLE hEvent);
-BOOL SetEvent(HANDLE hEvent);
-BOOL ResetEvent(HANDLE hEvent);
-BOOL PulseEvent(HANDLE hEvent);
+HANDLE CreateEvent(bool bManualReset, bool bInitialState, LPCSTR lpName);
+bool DestoryEvent(HANDLE hEvent);
+bool SetEvent(HANDLE hEvent);
+bool ResetEvent(HANDLE hEvent);
+bool PulseEvent(HANDLE hEvent);
 
-BOOL CloseHandle(HANDLE hObject);
+bool CloseHandle(HANDLE hObject);
 
 VOID InitializeCriticalSection(basiclib::LPCRITICAL_SECTION lpCriticalSection );
 VOID EnterCriticalSection(basiclib::LPCRITICAL_SECTION lpCriticalSection);
-BOOL TryEnterCriticalSection(basiclib::LPCRITICAL_SECTION lpCriticalSection);
+bool TryEnterCriticalSection(basiclib::LPCRITICAL_SECTION lpCriticalSection);
 VOID LeaveCriticalSection(basiclib::LPCRITICAL_SECTION lpCriticalSection);
 VOID DeleteCriticalSection(basiclib::LPCRITICAL_SECTION lpCriticalSection);
 
