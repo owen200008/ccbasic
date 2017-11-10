@@ -19,7 +19,7 @@ __NS_BASIC_START
 class _BASIC_DLL_API CBasicKey2Value : public basiclib::CBasicObject
 {
 public:
-	CBasicKey2Value(int nHashSize = 7);
+	CBasicKey2Value();
 
 	bool HasValue(const char* lpszKey, CBasicString& strValue);
 	CBasicString GetValue(const char* lpszKey) const;
@@ -30,9 +30,8 @@ public:
 
 	bool RemoveKey(const char* lpszKey);
 
-	void RemoveAll()
-	{
-		m_map.RemoveAll();
+	void RemoveAll(){
+		m_map.clear();
 	}
 
 	CBasicString& operator [](CBasicString& strKey)
@@ -43,7 +42,7 @@ public:
 
 	bool IsEmpty()
 	{
-		return m_map.IsEmpty();
+        return m_map.empty();
 	}
 public:
 	//默认分隔符 =&
@@ -60,11 +59,9 @@ public:
 	template<class Function>
 	void ForEach(Function  func)
 	{
-		CMapStringToString_S::iterator i = m_map.begin();
-		for (; i != m_map.end(); i++)
-		{
-			func(i->first.c_str(), i->second.c_str());
-		}
+        for(auto& iter : m_map){
+            func(iter.first.c_str(), iter.second.c_str());
+        }
 	}
 protected:
 	void _ParseText(const char* pszBuffer, const char* lpszTok, int nLen = -1);
@@ -72,7 +69,7 @@ protected:
 	void SetRawValue(const char* lpszKey, const char* lpszValue);
 	virtual void SetValueAt(CBasicString& strKey, const char* lpszValue);
 protected:
-	CMapStringToString_S	m_map;
+    basiclib::basic_map<basiclib::CBasicString, basiclib::CBasicString>	m_map;
 };
 
 #pragma warning (pop)

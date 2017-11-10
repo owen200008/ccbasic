@@ -15,8 +15,6 @@
 
 #include "../inc/basic_def.h"
 #include "array.h"
-#include "list.h"
-#include "map.h"
 #include "basic_string.h"
 
 __NS_BASIC_START
@@ -27,18 +25,6 @@ typedef CArray<unsigned long, unsigned long>	CDWordArray;
 typedef CArray<unsigned int, unsigned int>		CUintArray;
 typedef CArray<void*, void*>					CPtrArray;
 typedef CArray<CBasicString, const char*>		CBasicStringArray;
-/*!class CPtrList</br>
-用于替换MFC中的CPtrList
-*/
-typedef CList<void*, void*>						CPtrList;
- 
-typedef CMap<unsigned short, unsigned short, void*, void*>	CMapWordToPtr;
-typedef CMap<void*, void*, unsigned short, unsigned short>	CMapPtrToWord;
-typedef CMap<void*, void*, void*, void*>					CMapPtrToPtr;
-typedef CMap<CBasicString, const char*, CBasicString, const char*>			CMapStringToString_S;
-
-
-
 
 __NS_BASIC_END
 

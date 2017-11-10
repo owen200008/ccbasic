@@ -38,17 +38,16 @@ public:
 	
 public:
 	virtual int SetIPRuler(const char* lpszRuler);
-	virtual BOOL IsIpTrust(const char* lpszIP);
+	virtual bool IsIpTrust(const char* lpszIP);
 	
 protected:
-	BOOL AddIPRuler(const char* lpszIP, const char* lpszMask);
-	BOOL IsIPAddr(const char* lpszIP, BYTE* szIP, int cbIP);
+	bool AddIPRuler(const char* lpszIP, const char* lpszMask);
+	bool IsIPAddr(const char* lpszIP, BYTE* szIP, int cbIP);
 	void EmptyRuler();
 
 protected:
-	basiclib::CPtrList				m_lsIpRuler;			// IP规则列表
-	BOOL							m_bSupportAll;			// 允许全部 (*)
-	basiclib::CCriticalSection		m_synObj;				// 同步对象
+    basiclib::basic_vector<_IPRuler*>               m_lsIpRuler;			// IP规则列表
+	bool                                            m_bSupportAll;			// 允许全部 (*)
 };
 
 /************************************************************************************************
@@ -67,7 +66,7 @@ public:
 	virtual long InitRuleInfo(const char* lpszRule, const char* lpszSplit = ";");
 
 	//加入规则
-	BOOL AddRuleInfo(basiclib::CBasicString& strRuleInfo);
+	bool AddRuleInfo(basiclib::CBasicString& strRuleInfo);
 
 	//判断是否在范围内
 	long IsInRule(const char* lpszData, long lIndex = 0);
@@ -96,7 +95,7 @@ public:
 	virtual void GetStatus(basiclib::CBasicString& strInfo);
 
 	//是否是信任IP和端口
-	BOOL IsTrust(const char* lpszData, WORD wPort);
+	bool IsTrust(const char* lpszData, WORD wPort);
 
 	//
 	basiclib::CBasicString GetPortInfo(int nIndex);
@@ -106,7 +105,7 @@ protected:
 	typedef ContainNumber::iterator               ContainNumberIterator;
 
 	ContainNumber                                m_ayRuleExtre;
-	BOOL                                         m_bTrustAll;  //信任所有
+	bool                                         m_bTrustAll;  //信任所有
 };
 #pragma warning (pop)
 #endif

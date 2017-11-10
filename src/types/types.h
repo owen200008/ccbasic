@@ -30,11 +30,6 @@ extern "C"{
 #define	OK 0
 #endif
 
-#ifndef _AFX 
-struct __POSITION { };
-typedef __POSITION*	POSITION;
-#endif
-
 #ifdef __BASICWINDOWS
 
 #include <Windows.h>
