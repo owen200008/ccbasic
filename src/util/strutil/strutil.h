@@ -97,17 +97,18 @@ namespace std{
 	template<>
 	struct hash<basiclib::char_string> : public std::unary_function<basiclib::char_string, std::size_t>{
 		std::size_t operator()(const basiclib::char_string &key) const{
-#ifdef __BASICWINDOWS
-			return _Hash_seq((const unsigned char*)key.c_str(), key.length());
+#if defined(__BASICWINDOWS)
+            return _Hash_seq((const unsigned char*)key.c_str(), key.length());
+#elif defined(__MAC)
+            return __murmur2_or_cityhash<size_t>()(key.c_str(), key.length());
+#elif defined(__ANDROID)
+            return _Hash_impl::hash(key.c_str(), key.length());
+#elif defined(__LINUX)
+            return _Hash_impl::hash(key.c_str(), key.length());
 #else
-#ifdef __GNUC__
-			hash<const char*> hash_fn;
-			return hash_fn(key.c_str());
-#else
-			hash<const char*> hash_fn;
-			return hash_fn(key.c_str(), key.length());
+            hash<const char*> hash_fn;
+            return hash_fn(key.c_str(), key.length());
 #endif
-#endif			
 		}
 	};
 }

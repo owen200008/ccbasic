@@ -5,6 +5,7 @@
 /* Liux/gcc implementation of the call_stack class. */
 #ifdef __GNUC__
 
+#include "../inc/basic_def.h"
 #include <stdio.h>
 #ifdef __ANDROID
 #include <unwind.h>

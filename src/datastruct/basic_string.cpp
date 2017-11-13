@@ -2,23 +2,16 @@
 #include <assert.h>
 #include <algorithm>
 #include <stdarg.h>
-#ifdef _WIN32
-#include <malloc.h>
-#endif
 #include "../util/strutil/strutil.h"
 #include "../util/strutil/charset.h"
-
-#if defined(__BASICWINDOWS) && !defined(__SGI_SBASIC_PORT)
-#include <xhash>
-#endif
 
 #if defined(__LINUX)  || defined(__ANDROID)
 #include <stdarg.h>
 #endif
+
 #ifdef __BASICWINDOWS
+#include <malloc.h>
 #include <mbstring.h>
-#endif
-#ifdef _WIN32
 #pragma warning(disable: 4996)
 #pragma warning(disable: 4267)
 #endif
@@ -186,7 +179,7 @@ void CBasicString::Format(const char* lpszFormat, ...)
 	va_end(argList);
 }
 
-#ifdef _WIN32
+#ifdef __BASICWINDOWS
 #define TCHAR_ARG   TCHAR
 #define WCHAR_ARG   WCHAR
 #define CHAR_ARG    char
@@ -414,7 +407,7 @@ void CBasicString::FormatV(const char* lpszFormat, va_list argList)
 			case 'X':
 			case 'o':
 				if (nModifier & FORCE_INT64)
-#ifdef _WIN32
+#ifdef __BASICWINDOWS
 					va_arg(argList, int64_t);
 #else
 					va_arg(argList, long long);
@@ -442,7 +435,7 @@ void CBasicString::FormatV(const char* lpszFormat, va_list argList)
 						// 309 zeroes == max precision of a double
 						// 6 == adjustment in case precision is not specified,
 						//   which means that the precision defaults to 6
-#ifdef _WIN32
+#ifdef __BASICWINDOWS
 						pszTemp = (char*)_alloca(max(nWidth, 312 + nPrecision + 6));
 #else
 						pszTemp = (char*)BasicAllocate(max(nWidth, 312 + nPrecision + 6));
@@ -451,7 +444,7 @@ void CBasicString::FormatV(const char* lpszFormat, va_list argList)
 						f = va_arg(argList, double);
 						sprintf(pszTemp, "%*.*f", nWidth, nPrecision + 6, f);
 						nItemLen = __tcslen(pszTemp);
-#ifndef _WIN32
+#ifndef __BASICWINDOWS
 						BasicDeallocate(pszTemp);
 #endif
 			}
@@ -1116,7 +1109,7 @@ void CWBasicString::FormatV(LPCTSTR lpszFormat, va_list argList)
 			case 'X':
 			case 'o':
 				if (nModifier & FORCE_INT64)
-#ifdef _WIN32
+#ifdef __BASICWINDOWS
 					va_arg(argList, int64_t);
 #else
 					va_arg(argList, long long);
@@ -1144,7 +1137,7 @@ void CWBasicString::FormatV(LPCTSTR lpszFormat, va_list argList)
 				// 309 zeroes == max precision of a double
 				// 6 == adjustment in case precision is not specified,
 				//   which means that the precision defaults to 6
-#ifdef _WIN32
+#ifdef __BASICWINDOWS
 				pszTemp = (LPTSTR)_alloca(max(nWidth, 312 + nPrecision + 6));
 #else
 				pszTemp = (LPTSTR)malloc(max(nWidth, 312 + nPrecision + 6));
@@ -1153,7 +1146,7 @@ void CWBasicString::FormatV(LPCTSTR lpszFormat, va_list argList)
 				f = va_arg(argList, double);
 				_stprintf(pszTemp, _T("%*.*f"), nWidth, nPrecision + 6, f);
 				nItemLen = _tcslen(pszTemp);
-#ifndef _WIN32
+#ifndef __BASICWINDOWS
 				free(pszTemp);
 #endif
 			}

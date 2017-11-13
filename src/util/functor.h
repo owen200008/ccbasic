@@ -16,7 +16,7 @@
 #include "auto_cast.h"
 #include "strutil/strutil.h"
 
-#if defined(__GNUC__) || defined (__SGI_SBASIC_PORT)
+#if defined(__GNUC__)
 #include <memory>
 #include <utility>
 #else

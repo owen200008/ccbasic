@@ -109,7 +109,7 @@ long ParseIniChar(const char* pszData, long cbData, F f, long cbBeginPos = 0)
 
 
 
-#ifdef _WIN32
+#ifdef __BASICWINDOWS
 #define		NEW_LINE			"\r\n"
 #define		NEW_LINE_LEN		2 * sizeof(char)
 #else	

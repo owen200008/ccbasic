@@ -12,12 +12,10 @@
 //系统环境定义
 #include "basic_def.h"
 
-#ifdef __BASICWINDOWS
-#ifndef _WIN32_WINNT
-//为了支持IPv6,尽量兼容xp的处理
+#ifdef __MSVC
+//win support min version windows xp
 #define _WIN32_WINNT	0x0600
 #define NTDDI_VERSION	NTDDI_VISTA
-#endif
 #include <winsock2.h>		  // 必须在 windows.h 前面
 #include <WS2tcpip.h>
 #endif

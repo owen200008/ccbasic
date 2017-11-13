@@ -9,8 +9,15 @@
 #ifndef BASIC_BASIC_DEF_H
 #define BASIC_BASIC_DEF_H
 
-#ifdef __BASICWINDOWS
-#define __WINDOWS		// windows平台
+#ifdef __GNUC__
+#define __GCC		// gcc编译器
+#elif defined(_MSC_VER)
+#define __MSVC		// MSVC编译器
+#define __BASICWINDOWS
+#endif
+
+#ifdef __MSVC
+#define __WINDOWS           // windows平台
 #ifndef _WIN64
 #ifndef _WIN32
 #define _WIN32
@@ -19,23 +26,21 @@
 #define WIN32
 #endif
 #endif
-#elif defined (__MAC)
-//#define _DARWIN_C_SOURCE			// macos平台
-#elif defined(__ANDROID)
+#elif defined (__APPLE__)   //apple
+#ifndef __MAC
+#define __MAC
+#endif
+#elif defined(__ANDROID__)  //android
+#ifndef __ANDROID
+#define __ANDROID
+#endif
 #else
-#ifndef __LINUX
-#define __LINUX			// linux平台
+#ifndef __LINUX             //linux
+#define __LINUX
 #endif
 #endif
 
-#ifdef __GNUC__
-#define __GCC		// gcc编译器
-#elif defined(_MSC_VER)
-#define __MSVC		// MSVC编译器
-#if _MSC_VER >= 1600
-#define USING_MORE_10
-#endif
-#endif
+
 
 #ifdef BASIC_DLL_EXPORTS	//动态库版本
 #ifdef __BASICWINDOWS

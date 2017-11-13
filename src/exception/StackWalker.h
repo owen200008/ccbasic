@@ -161,18 +161,6 @@ public:
   friend StackWalkerInternal;
 };  // class StackWalker
 
-
-// The "ugly" assembler-implementation is needed for systems before XP
-// If you have a new PSDK and you only compile for XP and later, then you can use 
-// the "RtlCaptureContext"
-// Currently there is no define which determines the PSDK-Version... 
-// So we just use the compiler-version (and assumes that the PSDK is 
-// the one which was installed by the VS-IDE)
-
-// INFO: If you want, you can use the RtlCaptureContext if you only target XP and later...
-//       But I currently use it in x64/IA64 environments...
-//#if defined(_M_IX86) && (_WIN32_WINNT <= 0x0500) && (_MSC_VER < 1400)
-
 #if defined(_M_IX86)
 #ifdef CURRENT_THREAD_VIA_EXCEPTION
 // TODO: The following is not a "good" implementation, 

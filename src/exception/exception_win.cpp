@@ -1,18 +1,5 @@
 ﻿#ifdef __BASICWINDOWS
 
-// #ifndef _WIN32_WINNT
-// #ifdef WINVER
-// #define _WIN32_WINNT WINVER
-// #else
-// #pragma message("_WIN32_WINNT not defined. Defaulting to 0x0502 (Windows Server 2003)")
-// #define _WIN32_WINNT 0x0502
-// #endif
-// #else
-// #if _WIN32_WINNT < 0x0400
-// #error requires _WIN32_WINNT to be #defined to 0x0400 or greater
-// #endif
-// #endif
-
 #include "../inc/basic.h"
 
 #include <windows.h>
