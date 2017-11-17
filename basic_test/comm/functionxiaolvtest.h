@@ -116,7 +116,7 @@ void DoTestFunc()
 }
 
 static HANDLE	m_hCompletionPort = NULL;		//完成端口
-static BOOL		bTimeToKill = FALSE;
+static bool		bTimeToKill = false;
 
 unsigned __stdcall ThreadPoolFunc(void* lpWorkContext){
 	DWORD dwThreadID = basiclib::BasicGetCurrentThreadId();

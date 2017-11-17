@@ -1,7 +1,6 @@
-﻿#ifdef __BASICWINDOWS
+﻿#include "../inc/basic.h"
 
-#include "../inc/basic.h"
-
+#ifdef __BASICWINDOWS
 #include <windows.h>
 #include <stdio.h>
 #include <tchar.h>
@@ -69,7 +68,7 @@ int KillExistProcess()
 	return nKill;
 }
 
-bool WINAPI ConsoleHandlerRoutine( DWORD dwCtrlType)
+BOOL WINAPI ConsoleHandlerRoutine( DWORD dwCtrlType)
 {
 	switch(dwCtrlType)
 	{
@@ -82,7 +81,7 @@ bool WINAPI ConsoleHandlerRoutine( DWORD dwCtrlType)
 		}
 		break;
 	}
-	return true;
+	return TRUE;
 }
 
 //

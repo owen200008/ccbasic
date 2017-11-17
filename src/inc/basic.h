@@ -13,9 +13,6 @@
 #include "basic_def.h"
 
 #ifdef __MSVC
-//win support min version windows xp
-#define _WIN32_WINNT	0x0600
-#define NTDDI_VERSION	NTDDI_VISTA
 #include <winsock2.h>		  // 必须在 windows.h 前面
 #include <WS2tcpip.h>
 #endif

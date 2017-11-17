@@ -523,7 +523,7 @@ CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
 }
 
 //取得模块名，不包括全路径
-CWBasicString WBasicGetModuleTitle(HANDLE hModule, BOOL bExt)
+CWBasicString WBasicGetModuleTitle(HANDLE hModule, bool bExt)
 {
 	CWBasicString strModule = WBasicGetModuleName(hModule);
 	int nPos = strModule.ReverseFind(WIDEPATHSPLIT);
@@ -650,10 +650,9 @@ long BasicCheckProcess(DWORD dwProcessID)
 // Returns:   BOOL => 
 // Parameter: DWORD dwProcessID => 进程ID
 //************************************************************************
-BOOL BasicProcessIsTerminated(DWORD dwProcessID)
-{
+bool BasicProcessIsTerminated(DWORD dwProcessID){
 	long lCheck = BasicCheckProcess(dwProcessID);
-	return lCheck == BASIC_PSL_RET_NOT_EXIST ? TRUE : FALSE;
+	return lCheck == BASIC_PSL_RET_NOT_EXIST ? true : false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -675,8 +674,7 @@ void*	BasicGetProcAddress(void* hModule, const char* lpszProcName)
 	return GetProcAddress((HMODULE)hModule, lpszProcName);
 }
 
-BOOL BasicSetSysTime(time_t tTime)
-{
+bool BasicSetSysTime(time_t tTime){
 	CTime tm(tTime);
 	SYSTEMTIME st;
 	GetLocalTime(&st);

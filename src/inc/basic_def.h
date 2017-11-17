@@ -13,7 +13,9 @@
 #define __GCC		// gcc编译器
 #elif defined(_MSC_VER)
 #define __MSVC		// MSVC编译器
+#ifndef __BASICWINDOWS
 #define __BASICWINDOWS
+#endif
 #endif
 
 #ifdef __MSVC

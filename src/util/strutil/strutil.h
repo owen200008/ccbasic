@@ -98,7 +98,11 @@ namespace std{
 	struct hash<basiclib::char_string> : public std::unary_function<basiclib::char_string, std::size_t>{
 		std::size_t operator()(const basiclib::char_string &key) const{
 #if defined(__BASICWINDOWS)
-            return _Hash_seq((const unsigned char*)key.c_str(), key.length());
+#ifdef _HASH_SEQ_DEFINED
+			return _Hash_seq((const unsigned char*)key.c_str(), key.length());
+#else
+			return _Hash_bytes((const unsigned char*)key.c_str(), key.length());
+#endif
 #elif defined(__MAC)
             return __murmur2_or_cityhash<size_t>()(key.c_str(), key.length());
 #elif defined(__ANDROID)

@@ -13,11 +13,10 @@
 
 #include <stdio.h>
 #include <stdint.h>
+
 #ifdef _UNICODE
-#define Basicsscanf			swscanf;
 #define _tcsinc_s			_mbsinc
 #else
-#define Basicsscanf			sscanf;
 #define _tcsinc_s			_tcsinc
 #endif
 
@@ -188,10 +187,6 @@ typedef const void	        *LPCVOID;
 
 #ifndef MIN
 #define MIN __min
-#endif
-
-#ifndef MAKELONG
-#define MAKELONG(a, b)      ((LONG)(((WORD)(a)) | ((DWORD)((WORD)(b))) << 16))
 #endif
 
 #ifndef MAKEWORD
