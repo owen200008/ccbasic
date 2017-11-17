@@ -3,8 +3,8 @@
 //取得系统信息系列函数
 //
 //
-#ifdef __MAC
 #include "../inc/basic.h"
+#ifdef __MAC
 #include <sys/sysctl.h>
 //#include <sys/disk.h>
 #include <sys/mount.h>
@@ -260,14 +260,14 @@ _BASIC_DLL_API long BasicGetDiskFreeinfo(const char* lpszPath)
  *\return 返回时间值，单位：毫秒
  *\remark 用于测量耗时
  */
-_BASIC_DLL_API DWORD BasicGetTickTime()
+DWORD BasicGetTickTime()
 {
 	struct timeval tp;
 	gettimeofday(&tp, NULL);
 	return tp.tv_sec*1000 + tp.tv_usec/1000;
 }
 
-_BASIC_DLL_API double  BasicGetTickTimeCount()
+double  BasicGetTickTimeCount()
 {
 	struct timeval tp;
 	gettimeofday(&tp, NULL);
