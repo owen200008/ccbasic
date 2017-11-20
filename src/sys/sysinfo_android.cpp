@@ -1,10 +1,10 @@
-﻿#ifdef __ANDROID
-//
+﻿//
 //
 //
 //
 #include "../inc/basic.h"
 
+#ifdef __ANDROID
 #include <sys/sysinfo.h>
 #include <sys/times.h>
 #include <sys/time.h>
