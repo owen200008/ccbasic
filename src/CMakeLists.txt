@@ -54,12 +54,30 @@ set(BasicLibDefinitions -DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOU
 #link
 set(BasicLibLinks)
 
+#build event
+set(EVENT__DISABLE_SAMPLES ON CACHE BOOL "flags")
+set(EVENT__DISABLE_REGRESS ON CACHE BOOL "flags")
+set(EVENT__DISABLE_TESTS ON CACHE BOOL "flags")
+set(EVENT__DISABLE_THREAD_SUPPORT ON CACHE BOOL "flags")
+set(EVENT__DISABLE_OPENSSL ON CACHE BOOL "flags")
+set(EVENT__DISABLE_BENCHMARK ON CACHE BOOL "flags")
+add_subdirectory(${BasicLibSrcPath}/../3rd/libevent libevent)
+include_directories(${PROJECT_BINARY_DIR}/libevent/include)
+
+#build cryptopp
+set(BUILD_TESTING OFF CACHE BOOL "flags")
+set(BUILD_SHARED OFF CACHE BOOL "flags")
+add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/cryptopp cryptopp)
+
+#build sproto
+add_subdirectory(${PROJECT_SOURCE_DIR}/scbasic/sproto sproto)
+
 if(MSVC)
-	include_directories(${BasicLibSrcPath}/../3rd/libevent/build/include)
+	enable_language(ASM_MASM)
 	if(BASICLIB_BUILD_JEMALLOC)
 		message(WARNING "windows not support jemalloc")
 	endif()
-	enable_language(ASM_MASM)
+	
 	set(BasicLibExtra_Src ${BasicLibExtra_Src} 
 		${BasicLibSrcPath}/coroutine/coctx_swap_win.asm
    		${BasicLibSrcPath}/exception/call_stack_msvc.cpp
@@ -67,39 +85,23 @@ if(MSVC)
 	set(BasicLibCMakeCXX_FLAGS "${BasicLibCMakeCXX_FLAGS} /MP")
 	set(BasicLibCMakeC_FLAGS "${BasicLibCMakeC_FLAGS} /MP")
 	set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC -DUNICODE -D_UNICODE)
-	set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../libs/FLzlib13.lib ${BasicLibSrcPath}/../3rd/libevent/build/lib/Debug/event.lib ws2_32.lib)
+	set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../libs/FLzlib13.lib event_shared ws2_32.lib)
 else()
 	set(BasicLibCMakeCXX_FLAGS "${BasicLibCMakeCXX_FLAGS} --std=c++11 -frtti -fexceptions")
 	if(ANDROID)
 		include_directories(${BasicLibSrcPath}/../libs/iconv/include)
-       		set(EVENT__DISABLE_SAMPLES ON CACHE BOOL "flags")
-        	set(EVENT__DISABLE_REGRESS ON CACHE BOOL "flags")
-        	set(EVENT__DISABLE_TESTS ON CACHE BOOL "flags")
-		set(EVENT__DISABLE_THREAD_SUPPORT ON CACHE BOOL "flags")
-		set(EVENT__DISABLE_OPENSSL ON CACHE BOOL "flags")
-		set(EVENT__DISABLE_BENCHMARK ON CACHE BOOL "flags")
-		add_subdirectory(${BasicLibSrcPath}/../3rd/libevent libevent)
-		include_directories(${PROJECT_BINARY_DIR}/libevent/include)
 		set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC -D_FILE_OFFSET_BITS=32)
 		set(BasicLibLinks ${BasicLibLinks} event_static dl ${BasicLibSrcPath}/../libs/iconv/obj/local/${ANDROID_ABI}/libiconv.a)
 	elseif(APPLE)
-	    	set(EVENT__DISABLE_SAMPLES ON CACHE BOOL "flags")
-    		set(EVENT__DISABLE_REGRESS ON CACHE BOOL "flags")
-    		set(EVENT__DISABLE_TESTS ON CACHE BOOL "flags")
-   		set(EVENT__DISABLE_THREAD_SUPPORT ON CACHE BOOL "flags")
-   		set(EVENT__DISABLE_OPENSSL ON CACHE BOOL "flags")
-   		set(EVENT__DISABLE_BENCHMARK ON CACHE BOOL "flags")
-   	    	add_subdirectory(${BasicLibSrcPath}/../3rd/libevent libevent)
-    		include_directories(${PROJECT_BINARY_DIR}/libevent/include)
-    		set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC)
-    		set(BasicLibLinks ${BasicLibLinks} event_static dl)
+		set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC)
+		set(BasicLibLinks ${BasicLibLinks} event_static dl)
 	else()
-        	enable_language(ASM)
+		enable_language(ASM)
 		set(BasicLibExtra_Src ${BasicLibExtra_Src} ${BasicLibSrcPath}/coroutine/coctx_swap.S)
 		execute_process(COMMAND make -f makefile_jemalloc -j4
 			WORKING_DIRECTORY ${BasicLibSrcPath}/script/)
 		set(BasicLibDefinitions ${BasicLibDefinitions})
-		set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/libevent/.libs/libevent.a ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl)
+		set(BasicLibLinks ${BasicLibLinks} event_static ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl)
 	endif()
 endif()
 

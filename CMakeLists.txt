@@ -13,26 +13,10 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/libs)
 
 #build basiclib
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
-#build libevent
-set(BUILD_TESTING OFF CACHE BOOL "flags")
-set(EVENT__DISABLE_BENCHMARK ON CACHE BOOL "flags")
-set(EVENT__DISABLE_OPENSSL ON CACHE BOOL "flags")
-set(EVENT__DISABLE_REGRESS ON CACHE BOOL "flags")
-set(EVENT__DISABLE_SAMPLES ON CACHE BOOL "flags")
-set(EVENT__DISABLE_TESTS ON CACHE BOOL "flags")
-set(EVENT__DISABLE_THREAD_SUPPORT ON CACHE BOOL "flags")
-#add_subdirectory(${PROJECT_SOURCE_DIR}/3rd/libevent)
-#build cryptopp
-set(BUILD_TESTING OFF CACHE BOOL "flags")
-set(BUILD_SHARED OFF CACHE BOOL "flags")
-add_subdirectory(${PROJECT_SOURCE_DIR}/3rd/cryptopp)
-#build sproto
-add_subdirectory(${PROJECT_SOURCE_DIR}/src/scbasic/sproto)
 
 #include
 include_directories(${PROJECT_SOURCE_DIR}/src/inc)
-include_directories(${PROJECT_SOURCE_DIR}/3rd/libevent/include)
-include_directories(${PROJECT_SOURCE_DIR}/3rd/cryptopp)
+
 #define
 set(BasicLibTestDefinitions)
 set(RunProjectCXX_FLAGS ${CMAKE_CXX_FLAGS})
@@ -41,16 +25,14 @@ set(RunProjectC_FLAGS ${CMAKE_C_FLAGS})
 set(RunProjectLinks)
 
 if(MSVC)
-	include_directories(${PROJECT_SOURCE_DIR}/3rd/libevent/build/include)
 	set(RunProjectCXX_FLAGS "${RunProjectCXX_FLAGS} /MP")
 	set(RunProjectC_FLAGS "${RunProjectC_FLAGS} /MP")
 	set(BasicLibTestDefinitions ${BasicLibTestDefinitions} -DUNICODE -D_UNICODE -D__BASICWINDOWS)
-	set(RunProjectLinks ${RunProjectLinks} ${PROJECT_SOURCE_DIR}/libs/FLzlib13.lib 
-		${PROJECT_SOURCE_DIR}/3rd/libevent/build/lib/Debug/event.lib)
+	set(RunProjectLinks ${RunProjectLinks} ${PROJECT_SOURCE_DIR}/libs/FLzlib13.lib event_shared)
 else()
-	set(RunProjectCXX_FLAGS "${RunProjectCXX_FLAGS} --std=c++11")
+	set(RunProjectCXX_FLAGS "${RunProjectCXX_FLAGS} --std=c++11 -frtti -fexceptions")
 	set(BasicLibTestDefinitions ${BasicLibTestDefinitions} -DLINUX -D__LINUX)
-	set(RunProjectLinks ${RunProjectLinks} ${PROJECT_SOURCE_DIR}/3rd/libevent/.libs/libevent.a)
+	set(RunProjectLinks ${RunProjectLinks} event_static)
 endif()
 
 #define
@@ -93,7 +75,7 @@ if(BASICLIBTEST_BUILD_TEST)
 		if(MSVC)
 			set_target_properties(basicTest PROPERTIES LINK_FLAGS "/SAFESEH:NO")
 			add_custom_command(TARGET basicTest POST_BUILD COMMAND xcopy /Y /Q "\"${PROJECT_SOURCE_DIR}\\libs\\FLzlib13.dll\"" "\"$(OutDir)\"")
-			add_custom_command(TARGET basicTest POST_BUILD COMMAND xcopy /Y /Q "\"${PROJECT_SOURCE_DIR}\\3rd\\libevent\\build\\bin\\Debug\\event.dll\"" "\"$(OutDir)\"" )
+			add_custom_command(TARGET basicTest POST_BUILD COMMAND xcopy /Y /Q "\"${PROJECT_SOURCE_DIR}\\build\\src\\libevent\\bin\\Debug\\event.dll\"" "\"$(OutDir)\"" )
 		endif()
 	endif()
 endif()
