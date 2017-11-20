@@ -21,3 +21,6 @@
 [submodule "3rd/kaguya"]
 	path = 3rd/kaguya
 	url = https://github.com/satoren/kaguya.git
+[submodule "3rd/cryptopp"]
+	path = 3rd/cryptopp
+	url = http://github.com/weidai11/cryptopp.git
