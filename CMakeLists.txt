@@ -8,9 +8,6 @@ project(basiclibTest)
 
 option(BASICLIBTEST_BUILD_TEST "Build BasicLibTest Exe" ON)
 
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/libs)
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/libs)
-
 #build basiclib
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 
