@@ -1,9 +1,9 @@
-﻿#ifdef __LINUX
-//
+﻿//
 //取得系统信息系列函数
 //
 //
 #include "../inc/basic.h"
+#ifdef __LINUX
 
 #include <sys/sysinfo.h>
 #include <sys/times.h>

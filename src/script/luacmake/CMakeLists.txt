@@ -13,11 +13,12 @@ set(BasicLibExtra_Src)
 set(BasicLibCMakeCXX_FLAGS ${CMAKE_CXX_FLAGS})
 set(BasicLibCMakeC_FLAGS ${CMAKE_C_FLAGS})
 #define
-set(BasicLibDefinitions -DLUA_BUILD_AS_DLL)
+set(BasicLibDefinitions)
 #link
 set(BasicLibLinks)
 
 if(MSVC)
+	set(BasicLibDefinitions "${BasicLibDefinitions} -DLUA_BUILD_AS_DLL")
 	set(BasicLibCMakeCXX_FLAGS "${BasicLibCMakeCXX_FLAGS} /MP")
 	set(BasicLibCMakeC_FLAGS "${BasicLibCMakeC_FLAGS} /MP")
 else()

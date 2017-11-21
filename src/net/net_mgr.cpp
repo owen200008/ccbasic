@@ -93,6 +93,9 @@ void CBasicNetMgv::Initialize(pGetConfFunc func){
 	BasicCreateThread(ThreadCheckFunc, NULL, &nCheckThreadID);
 }
 #else
+#ifdef __LINUX
+#include <signal.h>
+#endif
 void CBasicNetMgv::Initialize(pGetConfFunc func) {
 	m_bTimeToKill = false;
 
