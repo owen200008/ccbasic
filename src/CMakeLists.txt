@@ -39,6 +39,7 @@ endmacro(source_group_by_dir)
 
 option(BASICLIB_BUILD_STATIC "Build static library" ON)
 option(BASICLIB_BUILD_SHARED "Build shared library" ON)
+option(BASICLIB_BUILD_LUA "Build lua library" ON)
 option(BASICLIB_BUILD_JEMALLOC "Build Use JEMALLOC" OFF)
 
 #include 
@@ -69,8 +70,13 @@ set(BUILD_TESTING OFF CACHE BOOL "flags")
 set(BUILD_SHARED OFF CACHE BOOL "flags")
 add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/cryptopp cryptopp)
 
-#build sproto
-add_subdirectory(${PROJECT_SOURCE_DIR}/scbasic/sproto sproto)
+if(BASICLIB_BUILD_LUA)
+	#build lua
+	add_subdirectory(${PROJECT_SOURCE_DIR}/script/luacmake lualib)
+	
+	#build sproto
+	add_subdirectory(${PROJECT_SOURCE_DIR}/scbasic/sproto sproto)
+endif()
 
 if(MSVC)
 	enable_language(ASM_MASM)
