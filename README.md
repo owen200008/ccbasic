@@ -38,11 +38,10 @@ cmake ..
 ```
 ## extra modules
 ```
-1.net frame
-2.http frame
-3.support RSA
-4.support JSON
-5.support lua, lpeg, basicsproto 
+1.http frame
+2.support RSA
+3.support JSON
+4.support lua, lpeg, basicsproto 
 ```
 
 
