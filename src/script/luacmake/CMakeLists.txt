@@ -38,11 +38,7 @@ list(REMOVE_ITEM basiclib_SOURCES ${BasicLibSrcPath}/../3rd/lua/src/luac.c)
 
 set(TotalSourceData ${basiclib_SOURCES} ${BasicLibExtra_Src})
 source_group_by_dir(TotalSourceData)
-if(MSVC)
-	add_library(lualib SHARED ${basiclib_SOURCES} ${BasicLibExtra_Src})
-else()
-	add_library(lualib STATIC ${basiclib_SOURCES} ${BasicLibExtra_Src})
-endif()
+add_library(lualib SHARED ${basiclib_SOURCES} ${BasicLibExtra_Src})
 
 
 

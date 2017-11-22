@@ -77,9 +77,9 @@ execute_process(COMMAND cp ${PROJECT_SOURCE_DIR}/script/zlibcmake/CMakeLists.txt
 add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/zlib zlib)
 
 if(BASICLIB_BUILD_LUA)
-	#build lua
-	add_subdirectory(${PROJECT_SOURCE_DIR}/script/luacmake lualib)
 	if(BASICLIB_BUILD_SHARED)
+	    #build lua
+	    add_subdirectory(${PROJECT_SOURCE_DIR}/script/luacmake lualib)
 	    #build sproto
 	    add_subdirectory(${PROJECT_SOURCE_DIR}/scbasic/sproto sproto)
 	endif()
