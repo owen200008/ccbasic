@@ -66,9 +66,8 @@ add_subdirectory(${BasicLibSrcPath}/../3rd/libevent libevent)
 include_directories(${PROJECT_BINARY_DIR}/libevent/include)
 
 #build cryptopp
-if(APPLE)
 execute_process(COMMAND cp ${PROJECT_SOURCE_DIR}/script/cryptoppcmake/CMakeLists.txt ${PROJECT_SOURCE_DIR}/../3rd/cryptopp/)
-endif()
+
 set(BUILD_TESTING OFF CACHE BOOL "flags")
 set(BUILD_SHARED OFF CACHE BOOL "flags")
 add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/cryptopp cryptopp)
