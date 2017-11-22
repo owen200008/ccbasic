@@ -30,11 +30,11 @@ cmake ..
 8.net frame
 9.support sqlite
 10.supoort thread
-11.支持时间处理,定时器模块（时间轮实现）
-12.支持正则
-13.支持协程（linux，windows正常，其他还没测试）
-14.通用日志和错误模块
-15.文件处理，压缩
+11.support time，time sprit，ontimer module（time wheel）
+12.support regular
+13.support corutine（linux，windows use）
+14.support log， error module
+15.support file，ini，zip
 ```
 ## extra modules
 ```
