@@ -70,6 +70,9 @@ set(BUILD_TESTING OFF CACHE BOOL "flags")
 set(BUILD_SHARED OFF CACHE BOOL "flags")
 add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/cryptopp cryptopp)
 
+#build zlib
+add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/zlib zlib)
+
 if(BASICLIB_BUILD_LUA)
 	#build lua
 	add_subdirectory(${PROJECT_SOURCE_DIR}/script/luacmake lualib)
@@ -91,7 +94,7 @@ if(MSVC)
 	set(BasicLibCMakeCXX_FLAGS "${BasicLibCMakeCXX_FLAGS} /MP")
 	set(BasicLibCMakeC_FLAGS "${BasicLibCMakeC_FLAGS} /MP")
 	set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC -DUNICODE -D_UNICODE)
-	set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../libs/FLzlib13.lib ws2_32.lib)
+	set(BasicLibLinks ${BasicLibLinks} zlib ws2_32.lib)
 else()
 	set(BasicLibCMakeCXX_FLAGS "${BasicLibCMakeCXX_FLAGS} --std=c++11 -frtti -fexceptions")
 	if(ANDROID)
