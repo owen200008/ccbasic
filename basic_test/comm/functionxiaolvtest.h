@@ -24,7 +24,7 @@ void ExportFontZiFu(){
 		uint32_t nCheckEnd = data.m_nEnd;
 		for(int j = 0; j < data.m_nTimes; j++){
 			for(uint32_t nBegin = nCheckBegin; nBegin <= nCheckEnd; nBegin++){
-				char szBuf[] = { nBegin >> 8, nBegin % 256, 0 };
+				char szBuf[] = { (char)(nBegin >> 8), (char)(nBegin % 256), 0 };
 				strInfo += szBuf;
 			}
 			nCheckBegin += data.m_nStep;
