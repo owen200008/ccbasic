@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.5)
+cmake_minimum_required(VERSION 2.8.12)
 
 project(basiclib)
 
@@ -72,12 +72,12 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/script/cryptoppcmake cryptopp)
 
 #build zlib
 add_subdirectory(${PROJECT_SOURCE_DIR}/script/zlibcmake zlib)
-include_directories(${PROJECT_BINARY_DIR}/zlib)
 
 if(BASICLIB_BUILD_LUA)
 	if(BASICLIB_BUILD_SHARED)
 	    #build lua
-	    add_subdirectory(${PROJECT_SOURCE_DIR}/script/luacmake lualib)
+    	add_subdirectory(${PROJECT_SOURCE_DIR}/script/luacmake lualib)
+
 	    #build sproto
 	    add_subdirectory(${PROJECT_SOURCE_DIR}/scbasic/sproto sproto)
 	endif()
@@ -315,6 +315,11 @@ if (BASICLIB_BUILD_STATIC)
 	else()
 		target_link_libraries(basiclib ${BasicLibLinks} event_static)
 	endif()
+	target_include_directories(basiclib PUBLIC
+	    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/zlib>
+	    $<BUILD_INTERFACE:${BasicLibSrcPath}/inc>
+	    $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/lua/src>
+	    $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>)
 endif()
 
 if(BASICLIB_BUILD_SHARED)
@@ -322,7 +327,12 @@ if(BASICLIB_BUILD_SHARED)
 	if(MSVC)
 		set_target_properties(basicdll PROPERTIES LINK_FLAGS "/SAFESEH:NO")
 	endif()
-	target_link_libraries(basicdll ${BasicLibLinks} event_shared) 
+	target_link_libraries(basicdll ${BasicLibLinks} event_shared)
+	target_include_directories(basiclib PUBLIC
+	    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/zlib>
+	    $<BUILD_INTERFACE:${BasicLibSrcPath}/inc>
+	    $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/lua/src>
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>)
 endif()
 
 
