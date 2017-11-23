@@ -178,47 +178,63 @@ endif()
 file(GLOB cryptopp_HEADERS *.h)
 
 # Test sources. You can use the GNUmakefile to generate the list: `make sources`.
-file(GLOB cryptopp_SOURCES_TEST test.cpp bench1.cpp bench2.cpp validat1.cpp validat2.cpp validat3.cpp adhoc.cpp datatest.cpp regtest.cpp fipsalgt.cpp dlltest.cpp fipstest.cpp)
+file(GLOB cryptopp_SOURCES_TEST 
+../../../3rd/cryptopp/test.cpp 
+../../../3rd/cryptopp/bench1.cpp 
+../../../3rd/cryptopp/bench2.cpp 
+../../../3rd/cryptopp/validat1.cpp 
+../../../3rd/cryptopp/validat2.cpp 
+../../../3rd/cryptopp/validat3.cpp 
+../../../3rd/cryptopp/adhoc.cpp 
+../../../3rd/cryptopp/datatest.cpp 
+../../../3rd/cryptopp/regtest.cpp 
+../../../3rd/cryptopp/fipsalgt.cpp 
+../../../3rd/cryptopp/dlltest.cpp 
+../../../3rd/cryptopp/fipstest.cpp)
 
 # Library sources. You can use the GNUmakefile to generate the list: `make sources`.
-file(GLOB cryptopp_SOURCES *.cpp)
+file(GLOB cryptopp_SOURCES ../../../3rd/cryptopp/*.cpp)
 list(REMOVE_ITEM cryptopp_SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/cryptlib.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/cpu.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/integer.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/pch.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/simple.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/winpipes.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/cryptlib_bds.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/cryptlib.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/cpu.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/integer.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/pch.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/simple.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/winpipes.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/cryptlib_bds.cpp
 		${cryptopp_SOURCES_TEST}
 		)
 set(cryptopp_SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/cryptlib.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/cpu.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/integer.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/cryptlib.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/cpu.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/integer.cpp
 		${cryptopp_SOURCES}
 		)
 
 if(MINGW OR WIN32)
-	list(APPEND cryptopp_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/winpipes.cpp)
+	list(APPEND cryptopp_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/winpipes.cpp)
 endif()
 
 if(MSVC AND NOT DISABLE_ASM)
 	if(${CMAKE_GENERATOR} MATCHES ".*ARM")
 		message(STATUS "Disabling ASM because ARM is specified as target platform.")
 	else()
+		FIND_FILE(x64dllASMFILE x64dll.asm ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp)
+		FIND_FILE(x64masmASMFILE x64masm.asm ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp)
+		FIND_FILE(rdrandasmfile rdrand.asm ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp)
+		MESSAGE(STATUS "ls result: " ${rdrandasmfile}) # 缩进仅为美观,语法无要求
 		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-			list(APPEND cryptopp_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm)
-			list(APPEND cryptopp_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm)
-			set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm PROPERTIES COMPILE_FLAGS "/D_M_X64")
-			set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm PROPERTIES COMPILE_FLAGS "/D_M_X64")
-			set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/rdrand.asm PROPERTIES COMPILE_FLAGS "/D_M_X64")
+			list(APPEND cryptopp_SOURCES ${x64dllASMFILE})
+			list(APPEND cryptopp_SOURCES ${x64masmASMFILE})
+			set_source_files_properties(${x64dllASMFILE} PROPERTIES COMPILE_FLAGS "/D_M_X64")
+			set_source_files_properties(${x64masmASMFILE} PROPERTIES COMPILE_FLAGS "/D_M_X64")
+			set_source_files_properties(${rdrandasmfile} PROPERTIES COMPILE_FLAGS "/D_M_X64")
 		else()
-			set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm PROPERTIES COMPILE_FLAGS "/D_M_X86 /safeseh")
-			set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm PROPERTIES COMPILE_FLAGS "/D_M_X86 /safeseh")
-			set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/rdrand.asm PROPERTIES COMPILE_FLAGS "/D_M_X86 /safeseh")
+			set_source_files_properties(${x64dllASMFILE} PROPERTIES COMPILE_FLAGS "/D_M_X86 /safeseh")
+			set_source_files_properties(${x64masmASMFILE} PROPERTIES COMPILE_FLAGS "/D_M_X86 /safeseh")
+			set_source_files_properties(${rdrandasmfile} PROPERTIES COMPILE_FLAGS "/D_M_X86 /safeseh")
 		endif()
-		list(APPEND cryptopp_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/rdrand.asm)
+		list(APPEND cryptopp_SOURCES ${rdrandasmfile})
 		enable_language(ASM_MASM)
 	endif()
 endif()
@@ -229,20 +245,20 @@ endif()
 
 # Set global includes BEFORE adding any targets for legacy CMake versions
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
-	include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
+	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp/")
 endif()
 
 if (BUILD_STATIC)
 	add_library(cryptopp-static STATIC ${cryptopp_SOURCES})
 	if (NOT CMAKE_VERSION VERSION_LESS 2.8.12)
-		target_include_directories(cryptopp-static PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:include/cryptopp>)
+		target_include_directories(cryptopp-static PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}../../../3rd/cryptopp> $<INSTALL_INTERFACE:include/cryptopp>)
 	endif()
 endif()
 
 if (BUILD_SHARED)
 	add_library(cryptopp-shared SHARED ${cryptopp_SOURCES})
 	if (NOT CMAKE_VERSION VERSION_LESS 2.8.12)
-		target_include_directories(cryptopp-shared PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:include/cryptopp>)
+		target_include_directories(cryptopp-shared PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}../../../3rd/cryptopp> $<INSTALL_INTERFACE:include/cryptopp>)
 	endif()
 endif()
 

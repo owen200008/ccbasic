@@ -66,15 +66,12 @@ add_subdirectory(${BasicLibSrcPath}/../3rd/libevent libevent)
 include_directories(${PROJECT_BINARY_DIR}/libevent/include)
 
 #build cryptopp
-execute_process(COMMAND cp ${PROJECT_SOURCE_DIR}/script/cryptoppcmake/CMakeLists.txt ${PROJECT_SOURCE_DIR}/../3rd/cryptopp/)
-
 set(BUILD_TESTING OFF CACHE BOOL "flags")
 set(BUILD_SHARED OFF CACHE BOOL "flags")
-add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/cryptopp cryptopp)
+add_subdirectory(${PROJECT_SOURCE_DIR}/script/cryptoppcmake cryptopp)
 
 #build zlib
-execute_process(COMMAND cp ${PROJECT_SOURCE_DIR}/script/zlibcmake/CMakeLists.txt ${PROJECT_SOURCE_DIR}/../3rd/zlib/)
-add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/zlib zlib)
+add_subdirectory(${PROJECT_SOURCE_DIR}/script/zlibcmake zlib)
 include_directories(${PROJECT_BINARY_DIR}/zlib)
 
 if(BASICLIB_BUILD_LUA)
