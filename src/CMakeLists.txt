@@ -73,11 +73,9 @@ set(BUILD_SHARED OFF CACHE BOOL "flags")
 add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/cryptopp cryptopp)
 
 #build zlib
-if(MSVC)
-    execute_process(COMMAND cp ${PROJECT_SOURCE_DIR}/script/zlibcmake/CMakeLists.txt ${PROJECT_SOURCE_DIR}/../3rd/zlib/)
-    add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/zlib zlib)
-	include_directories(${PROJECT_BINARY_DIR}/zlib)
-endif()
+execute_process(COMMAND cp ${PROJECT_SOURCE_DIR}/script/zlibcmake/CMakeLists.txt ${PROJECT_SOURCE_DIR}/../3rd/zlib/)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/zlib zlib)
+include_directories(${PROJECT_BINARY_DIR}/zlib)
 
 if(BASICLIB_BUILD_LUA)
 	if(BASICLIB_BUILD_SHARED)
@@ -117,7 +115,7 @@ else()
 		execute_process(COMMAND make -f makefile_jemalloc -j4
 			WORKING_DIRECTORY ${BasicLibSrcPath}/script/)
 		set(BasicLibDefinitions ${BasicLibDefinitions})
-		set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl)
+		set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl zlib)
 	endif()
 endif()
 
