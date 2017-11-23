@@ -76,6 +76,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/cryptopp cryptopp)
 if(MSVC)
     execute_process(COMMAND cp ${PROJECT_SOURCE_DIR}/script/zlibcmake/CMakeLists.txt ${PROJECT_SOURCE_DIR}/../3rd/zlib/)
     add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/zlib zlib)
+	include_directories(${PROJECT_BINARY_DIR}/zlib)
 endif()
 
 if(BASICLIB_BUILD_LUA)
@@ -136,8 +137,6 @@ set(basiclib_SOURCES
     ${BasicLibSrcPath}/algorithm/xtra.h
     ${BasicLibSrcPath}/algorithm/zip/tlgzip.h
     ${BasicLibSrcPath}/algorithm/zip/tlzipfile.h
-    ${BasicLibSrcPath}/algorithm/zip/zconf.h
-    ${BasicLibSrcPath}/algorithm/zip/zlib.h
 	${BasicLibSrcPath}/algorithm/base64.h
     ${BasicLibSrcPath}/algorithm/base64.cpp
 	${BasicLibSrcPath}/algorithm/crc32.h

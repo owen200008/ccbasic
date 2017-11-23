@@ -132,7 +132,7 @@
 // 压缩
 #include "../algorithm/zip/tlgzip.h"
 #include "../algorithm/zip/tlzipfile.h"
-#include "../algorithm/zip/zlib.h"
+#include "../../3rd/zlib/zlib.h"
 
 // XML
 //#include "../util/xml/xmldom.h"

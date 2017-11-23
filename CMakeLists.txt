@@ -9,7 +9,12 @@ project(basiclibTest)
 option(BASICLIBTEST_BUILD_TEST "Build BasicLibTest Exe" ON)
 
 #build basiclib
-add_subdirectory(${PROJECT_SOURCE_DIR}/src)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src src)
+
+#build zlib
+if(MSVC)
+	include_directories(${PROJECT_BINARY_DIR}/src/zlib)
+endif()
 
 #include
 include_directories(${PROJECT_SOURCE_DIR}/src/inc)
