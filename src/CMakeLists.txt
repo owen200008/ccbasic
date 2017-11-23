@@ -73,8 +73,10 @@ set(BUILD_SHARED OFF CACHE BOOL "flags")
 add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/cryptopp cryptopp)
 
 #build zlib
-execute_process(COMMAND cp ${PROJECT_SOURCE_DIR}/script/zlibcmake/CMakeLists.txt ${PROJECT_SOURCE_DIR}/../3rd/zlib/)
-add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/zlib zlib)
+if(MSVC)
+    execute_process(COMMAND cp ${PROJECT_SOURCE_DIR}/script/zlibcmake/CMakeLists.txt ${PROJECT_SOURCE_DIR}/../3rd/zlib/)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/zlib zlib)
+endif()
 
 if(BASICLIB_BUILD_LUA)
 	if(BASICLIB_BUILD_SHARED)
