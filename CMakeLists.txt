@@ -11,12 +11,6 @@ option(BASICLIBTEST_BUILD_TEST "Build BasicLibTest Exe" ON)
 #build basiclib
 add_subdirectory(${PROJECT_SOURCE_DIR}/src src)
 
-#include zlib path
-include_directories(${PROJECT_BINARY_DIR}/src/zlib)
-
-#include
-include_directories(${PROJECT_SOURCE_DIR}/src/inc)
-
 #define
 set(BasicLibTestDefinitions)
 set(RunProjectCXX_FLAGS ${CMAKE_CXX_FLAGS})
