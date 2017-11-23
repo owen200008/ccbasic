@@ -72,6 +72,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/script/cryptoppcmake cryptopp)
 
 #build zlib
 add_subdirectory(${PROJECT_SOURCE_DIR}/script/zlibcmake zlib)
+include_directories(${PROJECT_BINARY_DIR}/zlib)
 
 if(BASICLIB_BUILD_LUA)
 	if(BASICLIB_BUILD_SHARED)
