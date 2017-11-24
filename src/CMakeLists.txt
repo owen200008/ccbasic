@@ -37,14 +37,20 @@ macro(source_group_by_dir source_files)
     endif(MSVC)
 endmacro(source_group_by_dir)
 
-option(BASICLIB_BUILD_STATIC "Build static library" ON)
-option(BASICLIB_BUILD_SHARED "Build shared library" ON)
+option(BASICLIB_BUILD_SHARED "Build shared library" OFF)
 option(BASICLIB_BUILD_LUA "Build lua library" ON)
 option(BASICLIB_BUILD_JEMALLOC "Build Use JEMALLOC" OFF)
+
+if(BASICLIB_BUILD_SHARED)
+	set(BASICLIB_BUILD_TYPE SHARED)
+else()
+	set(BASICLIB_BUILD_TYPE STATIC)
+endif()
 
 #include 
 include_directories(${BasicLibJemallocSrcPath}/include/jemalloc)
 include_directories(${BasicLibSrcPath}/../3rd/libevent/include)
+
 #extra src
 set(BasicLibExtra_Src)
 #flags
@@ -52,8 +58,8 @@ set(BasicLibCMakeCXX_FLAGS ${CMAKE_CXX_FLAGS})
 set(BasicLibCMakeC_FLAGS ${CMAKE_C_FLAGS})
 #define
 set(BasicLibDefinitions -DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA)
-#link
-set(BasicLibLinks)
+#link add event
+set(BasicLibLinks event zlib)
 
 #build event
 set(EVENT__DISABLE_SAMPLES ON CACHE BOOL "flags")
@@ -62,6 +68,7 @@ set(EVENT__DISABLE_TESTS ON CACHE BOOL "flags")
 set(EVENT__DISABLE_THREAD_SUPPORT ON CACHE BOOL "flags")
 set(EVENT__DISABLE_OPENSSL ON CACHE BOOL "flags")
 set(EVENT__DISABLE_BENCHMARK ON CACHE BOOL "flags")
+set(EVENT__BUILD_SHARED_LIBRARIES ${BASICLIB_BUILD_SHARED})
 add_subdirectory(${BasicLibSrcPath}/../3rd/libevent libevent)
 include_directories(${PROJECT_BINARY_DIR}/libevent/include)
 
@@ -74,22 +81,18 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/script/cryptoppcmake cryptopp)
 add_subdirectory(${PROJECT_SOURCE_DIR}/script/zlibcmake zlib)
 include_directories(${PROJECT_BINARY_DIR}/zlib)
 
+#build lua
 if(BASICLIB_BUILD_LUA)
+	#build lua
+	add_subdirectory(${PROJECT_SOURCE_DIR}/script/luacmake lualib)
 	if(BASICLIB_BUILD_SHARED)
-	    #build lua
-    	add_subdirectory(${PROJECT_SOURCE_DIR}/script/luacmake lualib)
-
-	    #build sproto
-	    add_subdirectory(${PROJECT_SOURCE_DIR}/scbasic/sproto sproto)
+		#build sproto
+		add_subdirectory(${PROJECT_SOURCE_DIR}/scbasic/sproto sproto)
 	endif()
 endif()
 
 if(MSVC)
 	enable_language(ASM_MASM)
-	if(BASICLIB_BUILD_JEMALLOC)
-		message(WARNING "windows not support jemalloc")
-	endif()
-	
 	set(BasicLibExtra_Src ${BasicLibExtra_Src} 
 		${BasicLibSrcPath}/coroutine/coctx_swap_win.asm
    		${BasicLibSrcPath}/exception/call_stack_msvc.cpp
@@ -106,14 +109,14 @@ else()
 		set(BasicLibLinks ${BasicLibLinks} dl ${BasicLibSrcPath}/../libs/iconv/obj/local/${ANDROID_ABI}/libiconv.a)
 	elseif(APPLE)
 		set(BasicLibDefinitions ${BasicLibDefinitions} -D_USE_SYS_MALLOC)
-		set(BasicLibLinks ${BasicLibLinks} zlib dl iconv)
+		set(BasicLibLinks ${BasicLibLinks} dl iconv)
 	else()
 		enable_language(ASM)
 		set(BasicLibExtra_Src ${BasicLibExtra_Src} ${BasicLibSrcPath}/coroutine/coctx_swap.S)
 		execute_process(COMMAND make -f makefile_jemalloc -j4
 			WORKING_DIRECTORY ${BasicLibSrcPath}/script/)
 		set(BasicLibDefinitions ${BasicLibDefinitions})
-		set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl zlib)
+		set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl)
 	endif()
 endif()
 
@@ -309,31 +312,15 @@ set(basiclib_SOURCES
 set(TotalSourceData ${basiclib_SOURCES} ${BasicLibExtra_Src})
 source_group_by_dir(TotalSourceData)
 
-if (BASICLIB_BUILD_STATIC)
-	add_library(basiclib STATIC ${basiclib_SOURCES} ${BasicLibExtra_Src})
-	if(MSVC)
-		target_link_libraries(basiclib ${BasicLibLinks} event_shared)
-	else()
-		target_link_libraries(basiclib ${BasicLibLinks} event_static)
-	endif()
-	target_include_directories(basiclib PUBLIC
-	    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/zlib>
-	    $<BUILD_INTERFACE:${BasicLibSrcPath}/inc>
-	    $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/lua/src>
-	    $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>)
-endif()
-
-if(BASICLIB_BUILD_SHARED)
-	add_library(basicdll SHARED ${basiclib_SOURCES} ${BasicLibExtra_Src})
-	if(MSVC)
-		set_target_properties(basicdll PROPERTIES LINK_FLAGS "/SAFESEH:NO")
-	endif()
-	target_link_libraries(basicdll ${BasicLibLinks} event_shared)
-	target_include_directories(basiclib PUBLIC
+add_library(basiclib ${BASICLIB_BUILD_TYPE} ${basiclib_SOURCES} ${BasicLibExtra_Src})
+target_link_libraries(basiclib ${BasicLibLinks} event)
+target_include_directories(basiclib PUBLIC
 	    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/zlib>
 	    $<BUILD_INTERFACE:${BasicLibSrcPath}/inc>
 	    $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/lua/src>
         $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>)
+if(MSVC)
+	set_target_properties(basiclib PROPERTIES LINK_FLAGS "/SAFESEH:NO")
 endif()
 
 

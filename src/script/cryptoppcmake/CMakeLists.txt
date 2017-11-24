@@ -222,7 +222,6 @@ if(MSVC AND NOT DISABLE_ASM)
 		FIND_FILE(x64dllASMFILE x64dll.asm ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp)
 		FIND_FILE(x64masmASMFILE x64masm.asm ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp)
 		FIND_FILE(rdrandasmfile rdrand.asm ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/cryptopp)
-		MESSAGE(STATUS "ls result: " ${rdrandasmfile}) # 缩进仅为美观,语法无要求
 		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 			list(APPEND cryptopp_SOURCES ${x64dllASMFILE})
 			list(APPEND cryptopp_SOURCES ${x64masmASMFILE})

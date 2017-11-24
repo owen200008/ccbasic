@@ -16,17 +16,17 @@ set(BasicLibTestDefinitions)
 set(RunProjectCXX_FLAGS ${CMAKE_CXX_FLAGS})
 set(RunProjectC_FLAGS ${CMAKE_C_FLAGS})
 #link
-set(RunProjectLinks)
+set(RunProjectLinks event zlib)
 
 if(MSVC)
 	set(RunProjectCXX_FLAGS "${RunProjectCXX_FLAGS} /MP")
 	set(RunProjectC_FLAGS "${RunProjectC_FLAGS} /MP")
 	set(BasicLibTestDefinitions ${BasicLibTestDefinitions} -DUNICODE -D_UNICODE)
-	set(RunProjectLinks ${RunProjectLinks} zlib event_shared)
+	set(RunProjectLinks ${RunProjectLinks})
 else()
 	set(RunProjectCXX_FLAGS "${RunProjectCXX_FLAGS} --std=c++11 -frtti -fexceptions")
 	set(BasicLibTestDefinitions ${BasicLibTestDefinitions})
-	set(RunProjectLinks ${RunProjectLinks} event_static)
+	set(RunProjectLinks ${RunProjectLinks})
 endif()
 
 #define
@@ -36,7 +36,7 @@ set(CMAKE_CXX_FLAGS ${RunProjectCXX_FLAGS} CACHE  string "..." FORCE)
 set(CMAKE_C_FLAGS ${RunProjectC_FLAGS} CACHE string "..." FORCE)
 #build test
 if(BASICLIBTEST_BUILD_TEST)
-	if (BASICLIB_BUILD_STATIC)
+	if (NOT BASICLIB_BUILD_SHARED)
 		set(RunProject_SOURCES
 		${PROJECT_SOURCE_DIR}/src/scbasic/commu/basicclient.h
 		${PROJECT_SOURCE_DIR}/src/scbasic/commu/ipverify.h
