@@ -61,7 +61,7 @@
 #endif	//BASIC_DLL_IMPORTS
 
 #ifndef _BASIC_DLL_API
-#ifdef basicdll_EXPORTS
+#ifdef basiclib_EXPORTS
 #ifdef __BASICWINDOWS
 #define _BASIC_DLL_API 	__declspec(dllexport)
 #else
