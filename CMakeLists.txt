@@ -16,7 +16,7 @@ set(BasicLibTestDefinitions)
 set(RunProjectCXX_FLAGS ${CMAKE_CXX_FLAGS})
 set(RunProjectC_FLAGS ${CMAKE_C_FLAGS})
 #link
-set(RunProjectLinks event zlib)
+set(RunProjectLinks event_static)
 
 if(MSVC)
 	set(RunProjectCXX_FLAGS "${RunProjectCXX_FLAGS} /MP")
