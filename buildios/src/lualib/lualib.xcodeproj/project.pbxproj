@@ -1,0 +1,735 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		327EF49D6DFC402FB5081404 /* install */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = AA0DA785615741908D23D17D /* Build configuration list for PBXAggregateTarget "install" */;
+			buildPhases = (
+				21CB920D8EEF41F7A89D3465 /* CMake PostBuild Rules */,
+			);
+			dependencies = (
+				1028412AF3824FA8ACA739B9 /* PBXTargetDependency */,
+			);
+			name = install;
+			productName = install;
+		};
+		3802988540DD43D1A263A6A0 /* ZERO_CHECK */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D601B3DC13824CFE976060D8 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildPhases = (
+				C2E8B704E67E459F9C9DDF2D /* CMake Rules */,
+			);
+			dependencies = (
+			);
+			name = ZERO_CHECK;
+			productName = ZERO_CHECK;
+		};
+		47AEB350F2E445C0A6C028D0 /* ALL_BUILD */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 8B3ED53FB5CC44358770835E /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildPhases = (
+				275D4D56CDA7445A8267391F /* CMake Rules */,
+			);
+			dependencies = (
+				221AFD9555E64749B2E3B670 /* PBXTargetDependency */,
+				2CFCC296D2AA45C9AED14E08 /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		02F6EED29C1A49E08D8537BD /* /Volumes/data/github/ccbasic/3rd/lua/src/lgc.c */ = {isa = PBXBuildFile; fileRef = 8AE38189315A4D1EA31DDC56 /* /Volumes/data/github/ccbasic/3rd/lua/src/lgc.c */; };
+		087F076388BD4933B1CF30D1 /* /Volumes/data/github/ccbasic/3rd/lua/src/lctype.c */ = {isa = PBXBuildFile; fileRef = 8FA42A89D2D7404C8DA988AA /* /Volumes/data/github/ccbasic/3rd/lua/src/lctype.c */; };
+		1803BE3227A64C8AA1D20FC7 /* /Volumes/data/github/ccbasic/3rd/lua/src/lutf8lib.c */ = {isa = PBXBuildFile; fileRef = 38AF76C0B5AF407EAB8D49E3 /* /Volumes/data/github/ccbasic/3rd/lua/src/lutf8lib.c */; };
+		19F70D6BB34F4253AFB82B18 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldo.c */ = {isa = PBXBuildFile; fileRef = A6840DFB951D423C921B83F9 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldo.c */; };
+		219D04B000854D808116466D /* /Volumes/data/github/ccbasic/3rd/lua/src/lmem.c */ = {isa = PBXBuildFile; fileRef = FA3ACC78F1AB41E4819E25BD /* /Volumes/data/github/ccbasic/3rd/lua/src/lmem.c */; };
+		2441AA2B183A4C8D96ECFDF7 /* /Volumes/data/github/ccbasic/3rd/lua/src/lstrlib.c */ = {isa = PBXBuildFile; fileRef = 5F0B1C9D203A492692585648 /* /Volumes/data/github/ccbasic/3rd/lua/src/lstrlib.c */; };
+		2C0E95C80D9B4E1DB4E8F15C /* /Volumes/data/github/ccbasic/src/script/luacmake/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = 8DE438AAB58D400DB42071A7 /* /Volumes/data/github/ccbasic/src/script/luacmake/CMakeLists.txt */; };
+		2C620D63F1414F92ACA311E3 /* /Volumes/data/github/ccbasic/3rd/lua/src/ltablib.c */ = {isa = PBXBuildFile; fileRef = 17CACAEBD4634783922AB001 /* /Volumes/data/github/ccbasic/3rd/lua/src/ltablib.c */; };
+		35DE3D5A07C64D28B5395771 /* /Volumes/data/github/ccbasic/3rd/lua/src/lundump.c */ = {isa = PBXBuildFile; fileRef = B245166313B14FBABCB047E7 /* /Volumes/data/github/ccbasic/3rd/lua/src/lundump.c */; };
+		3B40E0072D7443E698B294F7 /* /Volumes/data/github/ccbasic/3rd/lua/src/lcorolib.c */ = {isa = PBXBuildFile; fileRef = C636F39B5E62451599BED186 /* /Volumes/data/github/ccbasic/3rd/lua/src/lcorolib.c */; };
+		4D2E3B49C2AA4FD9B99FF1FA /* /Volumes/data/github/ccbasic/3rd/lua/src/lvm.c */ = {isa = PBXBuildFile; fileRef = D1E9E3D1CD8945759FD4B06B /* /Volumes/data/github/ccbasic/3rd/lua/src/lvm.c */; };
+		523A9AD7BB834BA291238700 /* /Volumes/data/github/ccbasic/3rd/lua/src/lfunc.c */ = {isa = PBXBuildFile; fileRef = 783801889C604AB0AC01D6E4 /* /Volumes/data/github/ccbasic/3rd/lua/src/lfunc.c */; };
+		55BC17B6E344496480CF9665 /* /Volumes/data/github/ccbasic/3rd/lua/src/lstate.c */ = {isa = PBXBuildFile; fileRef = 8B134B274D734B09985AFA1A /* /Volumes/data/github/ccbasic/3rd/lua/src/lstate.c */; };
+		6D3D707795ED4145AF75601B /* /Volumes/data/github/ccbasic/3rd/lua/src/ldump.c */ = {isa = PBXBuildFile; fileRef = F9F3460588B64901908C65B3 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldump.c */; };
+		6F37DC96C19B4D118A7F345A /* /Volumes/data/github/ccbasic/3rd/lua/src/loadlib.c */ = {isa = PBXBuildFile; fileRef = AE4C18357C6D4FFA8036F800 /* /Volumes/data/github/ccbasic/3rd/lua/src/loadlib.c */; };
+		804EBD0A4E484CFA91BA7E2C /* /Volumes/data/github/ccbasic/3rd/lua/src/liolib.c */ = {isa = PBXBuildFile; fileRef = E9D3639599C04F068297EE59 /* /Volumes/data/github/ccbasic/3rd/lua/src/liolib.c */; };
+		9B1B3795AEBA41E59B65277A /* /Volumes/data/github/ccbasic/3rd/lua/src/lzio.c */ = {isa = PBXBuildFile; fileRef = BD0431C1BADB4197866087C6 /* /Volumes/data/github/ccbasic/3rd/lua/src/lzio.c */; };
+		9D046E8703234BEDB1E35A99 /* /Volumes/data/github/ccbasic/3rd/lua/src/linit.c */ = {isa = PBXBuildFile; fileRef = 407AD3E6A66D427D9AB9C561 /* /Volumes/data/github/ccbasic/3rd/lua/src/linit.c */; };
+		A1D279818AD6456C99ABE805 /* /Volumes/data/github/ccbasic/3rd/lua/src/lparser.c */ = {isa = PBXBuildFile; fileRef = 732D8C58813649FCAED5AB2F /* /Volumes/data/github/ccbasic/3rd/lua/src/lparser.c */; };
+		AB169FCB9E784858A5044334 /* /Volumes/data/github/ccbasic/3rd/lua/src/lbitlib.c */ = {isa = PBXBuildFile; fileRef = 3DBC235C17164CF590858DF8 /* /Volumes/data/github/ccbasic/3rd/lua/src/lbitlib.c */; };
+		AF1DCDD2B64E4DECAFB4033C /* /Volumes/data/github/ccbasic/3rd/lua/src/ldebug.c */ = {isa = PBXBuildFile; fileRef = C237E87511E84DA19449E581 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldebug.c */; };
+		BD17A4CB48654E35832E29E3 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldblib.c */ = {isa = PBXBuildFile; fileRef = 8B3A9C19182E4B17A7FD405A /* /Volumes/data/github/ccbasic/3rd/lua/src/ldblib.c */; };
+		C31B901797C34D03A08B61BF /* /Volumes/data/github/ccbasic/3rd/lua/src/lcode.c */ = {isa = PBXBuildFile; fileRef = 2117B92D96204220B4F0B0B6 /* /Volumes/data/github/ccbasic/3rd/lua/src/lcode.c */; };
+		C5C20282FB104873A40B52EE /* /Volumes/data/github/ccbasic/3rd/lua/src/lopcodes.c */ = {isa = PBXBuildFile; fileRef = B31A94C1E08241C99084AE06 /* /Volumes/data/github/ccbasic/3rd/lua/src/lopcodes.c */; };
+		CCBE197CC91740C7BD000CDE /* /Volumes/data/github/ccbasic/3rd/lua/src/lmathlib.c */ = {isa = PBXBuildFile; fileRef = 86A1EBD9714E460B9EC4B800 /* /Volumes/data/github/ccbasic/3rd/lua/src/lmathlib.c */; };
+		D58D99B8A679433E934631A9 /* /Volumes/data/github/ccbasic/3rd/lua/src/ltable.c */ = {isa = PBXBuildFile; fileRef = AC93C7FEC39D437FBA2A042E /* /Volumes/data/github/ccbasic/3rd/lua/src/ltable.c */; };
+		E011D2DAE5FD4169950C1A02 /* /Volumes/data/github/ccbasic/3rd/lua/src/lobject.c */ = {isa = PBXBuildFile; fileRef = 728EB502C1804CFDB759C702 /* /Volumes/data/github/ccbasic/3rd/lua/src/lobject.c */; };
+		E13B5417FBEE4280BF93B9A1 /* /Volumes/data/github/ccbasic/3rd/lua/src/lauxlib.c */ = {isa = PBXBuildFile; fileRef = 44D77C1D9CF5406D802B92AE /* /Volumes/data/github/ccbasic/3rd/lua/src/lauxlib.c */; };
+		E22149182C4A4A1690A55DB4 /* /Volumes/data/github/ccbasic/3rd/lua/src/llex.c */ = {isa = PBXBuildFile; fileRef = A28D1773E39E42CC9F7D060D /* /Volumes/data/github/ccbasic/3rd/lua/src/llex.c */; };
+		E51CB96094B84F2FB8A9289E /* /Volumes/data/github/ccbasic/3rd/lua/src/lapi.c */ = {isa = PBXBuildFile; fileRef = 7C9718A4191844ECB9C49F86 /* /Volumes/data/github/ccbasic/3rd/lua/src/lapi.c */; };
+		F1F55A9D74B945AE84476757 /* /Volumes/data/github/ccbasic/3rd/lua/src/lbaselib.c */ = {isa = PBXBuildFile; fileRef = C1B5CE996B914C72A5A69A80 /* /Volumes/data/github/ccbasic/3rd/lua/src/lbaselib.c */; };
+		F615D53DD033408DA2F902FB /* /Volumes/data/github/ccbasic/3rd/lua/src/lstring.c */ = {isa = PBXBuildFile; fileRef = B147C8AF379D4827A4FBA6D4 /* /Volumes/data/github/ccbasic/3rd/lua/src/lstring.c */; };
+		F6D2B23D35E944C28EF3B9E4 /* /Volumes/data/github/ccbasic/3rd/lua/src/ltm.c */ = {isa = PBXBuildFile; fileRef = 9AB325AC0804407B92279B9D /* /Volumes/data/github/ccbasic/3rd/lua/src/ltm.c */; };
+		FD76CC444D5445D7B4592928 /* /Volumes/data/github/ccbasic/3rd/lua/src/loslib.c */ = {isa = PBXBuildFile; fileRef = B932D4F5E75E40348A925EE2 /* /Volumes/data/github/ccbasic/3rd/lua/src/loslib.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		13E67D0B0FC44B6482548B8C /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Release;
+		};
+		9AD846CF97004F30AB83AB11 /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		0BF5D6ACBE3A465CA459CBE8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C822D3E5BBA428E8E8FFAA5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3802988540DD43D1A263A6A0;
+			remoteInfo = ZERO_CHECK;
+		};
+		369438E18D0046AABA6E5F70 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C822D3E5BBA428E8E8FFAA5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3802988540DD43D1A263A6A0;
+			remoteInfo = ZERO_CHECK;
+		};
+		89EAEF3CFCC74D698F0863D0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C822D3E5BBA428E8E8FFAA5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47AEB350F2E445C0A6C028D0;
+			remoteInfo = ALL_BUILD;
+		};
+		97E96DA5A17945AD93362364 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C822D3E5BBA428E8E8FFAA5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E6F5B4B713574998AA75907E;
+			remoteInfo = lualib;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		07D610989AE04B0E9A2CC156 /* /Volumes/data/github/ccbasic/src/script/luacmake/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		17CACAEBD4634783922AB001 /* /Volumes/data/github/ccbasic/3rd/lua/src/ltablib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = ltablib.c; path = ../../../3rd/lua/src/ltablib.c; sourceTree = SOURCE_ROOT; };
+		2117B92D96204220B4F0B0B6 /* /Volumes/data/github/ccbasic/3rd/lua/src/lcode.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lcode.c; path = ../../../3rd/lua/src/lcode.c; sourceTree = SOURCE_ROOT; };
+		38AF76C0B5AF407EAB8D49E3 /* /Volumes/data/github/ccbasic/3rd/lua/src/lutf8lib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lutf8lib.c; path = ../../../3rd/lua/src/lutf8lib.c; sourceTree = SOURCE_ROOT; };
+		3DBC235C17164CF590858DF8 /* /Volumes/data/github/ccbasic/3rd/lua/src/lbitlib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lbitlib.c; path = ../../../3rd/lua/src/lbitlib.c; sourceTree = SOURCE_ROOT; };
+		407AD3E6A66D427D9AB9C561 /* /Volumes/data/github/ccbasic/3rd/lua/src/linit.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = linit.c; path = ../../../3rd/lua/src/linit.c; sourceTree = SOURCE_ROOT; };
+		44D77C1D9CF5406D802B92AE /* /Volumes/data/github/ccbasic/3rd/lua/src/lauxlib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lauxlib.c; path = ../../../3rd/lua/src/lauxlib.c; sourceTree = SOURCE_ROOT; };
+		5F0B1C9D203A492692585648 /* /Volumes/data/github/ccbasic/3rd/lua/src/lstrlib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lstrlib.c; path = ../../../3rd/lua/src/lstrlib.c; sourceTree = SOURCE_ROOT; };
+		6A26AEA470614CC499B15206 /* lualib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = liblualib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		728EB502C1804CFDB759C702 /* /Volumes/data/github/ccbasic/3rd/lua/src/lobject.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lobject.c; path = ../../../3rd/lua/src/lobject.c; sourceTree = SOURCE_ROOT; };
+		732D8C58813649FCAED5AB2F /* /Volumes/data/github/ccbasic/3rd/lua/src/lparser.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lparser.c; path = ../../../3rd/lua/src/lparser.c; sourceTree = SOURCE_ROOT; };
+		783801889C604AB0AC01D6E4 /* /Volumes/data/github/ccbasic/3rd/lua/src/lfunc.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lfunc.c; path = ../../../3rd/lua/src/lfunc.c; sourceTree = SOURCE_ROOT; };
+		7C9718A4191844ECB9C49F86 /* /Volumes/data/github/ccbasic/3rd/lua/src/lapi.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lapi.c; path = ../../../3rd/lua/src/lapi.c; sourceTree = SOURCE_ROOT; };
+		86A1EBD9714E460B9EC4B800 /* /Volumes/data/github/ccbasic/3rd/lua/src/lmathlib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lmathlib.c; path = ../../../3rd/lua/src/lmathlib.c; sourceTree = SOURCE_ROOT; };
+		8AE38189315A4D1EA31DDC56 /* /Volumes/data/github/ccbasic/3rd/lua/src/lgc.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lgc.c; path = ../../../3rd/lua/src/lgc.c; sourceTree = SOURCE_ROOT; };
+		8B134B274D734B09985AFA1A /* /Volumes/data/github/ccbasic/3rd/lua/src/lstate.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lstate.c; path = ../../../3rd/lua/src/lstate.c; sourceTree = SOURCE_ROOT; };
+		8B3A9C19182E4B17A7FD405A /* /Volumes/data/github/ccbasic/3rd/lua/src/ldblib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = ldblib.c; path = ../../../3rd/lua/src/ldblib.c; sourceTree = SOURCE_ROOT; };
+		8DE438AAB58D400DB42071A7 /* /Volumes/data/github/ccbasic/src/script/luacmake/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		8FA42A89D2D7404C8DA988AA /* /Volumes/data/github/ccbasic/3rd/lua/src/lctype.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lctype.c; path = ../../../3rd/lua/src/lctype.c; sourceTree = SOURCE_ROOT; };
+		9AB325AC0804407B92279B9D /* /Volumes/data/github/ccbasic/3rd/lua/src/ltm.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = ltm.c; path = ../../../3rd/lua/src/ltm.c; sourceTree = SOURCE_ROOT; };
+		A28D1773E39E42CC9F7D060D /* /Volumes/data/github/ccbasic/3rd/lua/src/llex.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = llex.c; path = ../../../3rd/lua/src/llex.c; sourceTree = SOURCE_ROOT; };
+		A6840DFB951D423C921B83F9 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldo.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = ldo.c; path = ../../../3rd/lua/src/ldo.c; sourceTree = SOURCE_ROOT; };
+		AC93C7FEC39D437FBA2A042E /* /Volumes/data/github/ccbasic/3rd/lua/src/ltable.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = ltable.c; path = ../../../3rd/lua/src/ltable.c; sourceTree = SOURCE_ROOT; };
+		AE4C18357C6D4FFA8036F800 /* /Volumes/data/github/ccbasic/3rd/lua/src/loadlib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = loadlib.c; path = ../../../3rd/lua/src/loadlib.c; sourceTree = SOURCE_ROOT; };
+		B147C8AF379D4827A4FBA6D4 /* /Volumes/data/github/ccbasic/3rd/lua/src/lstring.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lstring.c; path = ../../../3rd/lua/src/lstring.c; sourceTree = SOURCE_ROOT; };
+		B245166313B14FBABCB047E7 /* /Volumes/data/github/ccbasic/3rd/lua/src/lundump.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lundump.c; path = ../../../3rd/lua/src/lundump.c; sourceTree = SOURCE_ROOT; };
+		B31A94C1E08241C99084AE06 /* /Volumes/data/github/ccbasic/3rd/lua/src/lopcodes.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lopcodes.c; path = ../../../3rd/lua/src/lopcodes.c; sourceTree = SOURCE_ROOT; };
+		B89C11F3198840CC81279FF2 /* /Volumes/data/github/ccbasic/src/script/luacmake/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		B932D4F5E75E40348A925EE2 /* /Volumes/data/github/ccbasic/3rd/lua/src/loslib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = loslib.c; path = ../../../3rd/lua/src/loslib.c; sourceTree = SOURCE_ROOT; };
+		BD0431C1BADB4197866087C6 /* /Volumes/data/github/ccbasic/3rd/lua/src/lzio.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lzio.c; path = ../../../3rd/lua/src/lzio.c; sourceTree = SOURCE_ROOT; };
+		C1B5CE996B914C72A5A69A80 /* /Volumes/data/github/ccbasic/3rd/lua/src/lbaselib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lbaselib.c; path = ../../../3rd/lua/src/lbaselib.c; sourceTree = SOURCE_ROOT; };
+		C237E87511E84DA19449E581 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldebug.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = ldebug.c; path = ../../../3rd/lua/src/ldebug.c; sourceTree = SOURCE_ROOT; };
+		C636F39B5E62451599BED186 /* /Volumes/data/github/ccbasic/3rd/lua/src/lcorolib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lcorolib.c; path = ../../../3rd/lua/src/lcorolib.c; sourceTree = SOURCE_ROOT; };
+		D1E9E3D1CD8945759FD4B06B /* /Volumes/data/github/ccbasic/3rd/lua/src/lvm.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lvm.c; path = ../../../3rd/lua/src/lvm.c; sourceTree = SOURCE_ROOT; };
+		E9D3639599C04F068297EE59 /* /Volumes/data/github/ccbasic/3rd/lua/src/liolib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = liolib.c; path = ../../../3rd/lua/src/liolib.c; sourceTree = SOURCE_ROOT; };
+		F9F3460588B64901908C65B3 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldump.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = ldump.c; path = ../../../3rd/lua/src/ldump.c; sourceTree = SOURCE_ROOT; };
+		FA3ACC78F1AB41E4819E25BD /* /Volumes/data/github/ccbasic/3rd/lua/src/lmem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = lmem.c; path = ../../../3rd/lua/src/lmem.c; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		055A78A0ADDB461FBF3248BE /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		13FE6683447042A3A9D5AF48 = {
+			isa = PBXGroup;
+			children = (
+				901FF2A518074365900C3599 /* lualib */,
+				596F7EC4F31441AA80DB018A /* ALL_BUILD */,
+				5B429922ECB94A789A5B69F5 /* ZERO_CHECK */,
+				C0D49A1460724F12931806A9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		596F7EC4F31441AA80DB018A /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				9F25DDB186924FED8BEE3135 /* CMake Rules */,
+				B89C11F3198840CC81279FF2 /* /Volumes/data/github/ccbasic/src/script/luacmake/CMakeLists.txt */,
+			);
+			name = ALL_BUILD;
+			sourceTree = "<group>";
+		};
+		5B429922ECB94A789A5B69F5 /* ZERO_CHECK */ = {
+			isa = PBXGroup;
+			children = (
+				055A78A0ADDB461FBF3248BE /* CMake Rules */,
+				07D610989AE04B0E9A2CC156 /* /Volumes/data/github/ccbasic/src/script/luacmake/CMakeLists.txt */,
+			);
+			name = ZERO_CHECK;
+			sourceTree = "<group>";
+		};
+		901FF2A518074365900C3599 /* lualib */ = {
+			isa = PBXGroup;
+			children = (
+				DF10715727B849A7AB55A527 /* Source Files */,
+				8DE438AAB58D400DB42071A7 /* /Volumes/data/github/ccbasic/src/script/luacmake/CMakeLists.txt */,
+			);
+			name = lualib;
+			sourceTree = "<group>";
+		};
+		9F25DDB186924FED8BEE3135 /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		C0D49A1460724F12931806A9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6A26AEA470614CC499B15206 /* lualib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DF10715727B849A7AB55A527 /* Source Files */ = {
+			isa = PBXGroup;
+			children = (
+				7C9718A4191844ECB9C49F86 /* /Volumes/data/github/ccbasic/3rd/lua/src/lapi.c */,
+				44D77C1D9CF5406D802B92AE /* /Volumes/data/github/ccbasic/3rd/lua/src/lauxlib.c */,
+				C1B5CE996B914C72A5A69A80 /* /Volumes/data/github/ccbasic/3rd/lua/src/lbaselib.c */,
+				3DBC235C17164CF590858DF8 /* /Volumes/data/github/ccbasic/3rd/lua/src/lbitlib.c */,
+				2117B92D96204220B4F0B0B6 /* /Volumes/data/github/ccbasic/3rd/lua/src/lcode.c */,
+				C636F39B5E62451599BED186 /* /Volumes/data/github/ccbasic/3rd/lua/src/lcorolib.c */,
+				8FA42A89D2D7404C8DA988AA /* /Volumes/data/github/ccbasic/3rd/lua/src/lctype.c */,
+				8B3A9C19182E4B17A7FD405A /* /Volumes/data/github/ccbasic/3rd/lua/src/ldblib.c */,
+				C237E87511E84DA19449E581 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldebug.c */,
+				A6840DFB951D423C921B83F9 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldo.c */,
+				F9F3460588B64901908C65B3 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldump.c */,
+				783801889C604AB0AC01D6E4 /* /Volumes/data/github/ccbasic/3rd/lua/src/lfunc.c */,
+				8AE38189315A4D1EA31DDC56 /* /Volumes/data/github/ccbasic/3rd/lua/src/lgc.c */,
+				407AD3E6A66D427D9AB9C561 /* /Volumes/data/github/ccbasic/3rd/lua/src/linit.c */,
+				E9D3639599C04F068297EE59 /* /Volumes/data/github/ccbasic/3rd/lua/src/liolib.c */,
+				A28D1773E39E42CC9F7D060D /* /Volumes/data/github/ccbasic/3rd/lua/src/llex.c */,
+				86A1EBD9714E460B9EC4B800 /* /Volumes/data/github/ccbasic/3rd/lua/src/lmathlib.c */,
+				FA3ACC78F1AB41E4819E25BD /* /Volumes/data/github/ccbasic/3rd/lua/src/lmem.c */,
+				AE4C18357C6D4FFA8036F800 /* /Volumes/data/github/ccbasic/3rd/lua/src/loadlib.c */,
+				728EB502C1804CFDB759C702 /* /Volumes/data/github/ccbasic/3rd/lua/src/lobject.c */,
+				B31A94C1E08241C99084AE06 /* /Volumes/data/github/ccbasic/3rd/lua/src/lopcodes.c */,
+				B932D4F5E75E40348A925EE2 /* /Volumes/data/github/ccbasic/3rd/lua/src/loslib.c */,
+				732D8C58813649FCAED5AB2F /* /Volumes/data/github/ccbasic/3rd/lua/src/lparser.c */,
+				8B134B274D734B09985AFA1A /* /Volumes/data/github/ccbasic/3rd/lua/src/lstate.c */,
+				B147C8AF379D4827A4FBA6D4 /* /Volumes/data/github/ccbasic/3rd/lua/src/lstring.c */,
+				5F0B1C9D203A492692585648 /* /Volumes/data/github/ccbasic/3rd/lua/src/lstrlib.c */,
+				AC93C7FEC39D437FBA2A042E /* /Volumes/data/github/ccbasic/3rd/lua/src/ltable.c */,
+				17CACAEBD4634783922AB001 /* /Volumes/data/github/ccbasic/3rd/lua/src/ltablib.c */,
+				9AB325AC0804407B92279B9D /* /Volumes/data/github/ccbasic/3rd/lua/src/ltm.c */,
+				B245166313B14FBABCB047E7 /* /Volumes/data/github/ccbasic/3rd/lua/src/lundump.c */,
+				38AF76C0B5AF407EAB8D49E3 /* /Volumes/data/github/ccbasic/3rd/lua/src/lutf8lib.c */,
+				D1E9E3D1CD8945759FD4B06B /* /Volumes/data/github/ccbasic/3rd/lua/src/lvm.c */,
+				BD0431C1BADB4197866087C6 /* /Volumes/data/github/ccbasic/3rd/lua/src/lzio.c */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E6F5B4B713574998AA75907E /* lualib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 36BAE0F881424E02950B3566 /* Build configuration list for PBXNativeTarget "lualib" */;
+			buildPhases = (
+				012DF130250E46FA9CFBBE67 /* Sources */,
+				F541DE2AF27F4A99A57A718B /* CMake PostBuild Rules */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CE19171319514E8090CEE824 /* PBXTargetDependency */,
+			);
+			name = lualib;
+			productName = lualib;
+			productReference = 6A26AEA470614CC499B15206 /* lualib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2C822D3E5BBA428E8E8FFAA5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 0820;
+			};
+			buildConfigurationList = CFFF4C7D7FF7495EB52577B7 /* Build configuration list for PBXProject "lualib" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				9AD846CF97004F30AB83AB11 /* Debug */,
+				13E67D0B0FC44B6482548B8C /* Release */,
+			);
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 0;
+			mainGroup = 13FE6683447042A3A9D5AF48;
+			projectDirPath = ../../../src/script/luacmake;
+			projectRoot = "";
+			targets = (
+				47AEB350F2E445C0A6C028D0 /* ALL_BUILD */,
+				3802988540DD43D1A263A6A0 /* ZERO_CHECK */,
+				327EF49D6DFC402FB5081404 /* install */,
+				E6F5B4B713574998AA75907E /* lualib */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		21CB920D8EEF41F7A89D3465 /* CMake PostBuild Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake PostBuild Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Volumes/data/github/ccbasic/buildios/src/lualib -f /Volumes/data/github/ccbasic/buildios/src/lualib/CMakeScripts/install_postBuildPhase.make$CONFIGURATION all";
+			showEnvVarsInLog = 0;
+		};
+		275D4D56CDA7445A8267391F /* CMake Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Volumes/data/github/ccbasic/buildios/src/lualib -f /Volumes/data/github/ccbasic/buildios/src/lualib/CMakeScripts/ALL_BUILD_cmakeRulesBuildPhase.make$CONFIGURATION all";
+			showEnvVarsInLog = 0;
+		};
+		36D1E73998744B83B5A614C9 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		518FB404391E4CD9B6EA99F0 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		C2E8B704E67E459F9C9DDF2D /* CMake Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Volumes/data/github/ccbasic/buildios/src/lualib -f /Volumes/data/github/ccbasic/buildios/src/lualib/CMakeScripts/ZERO_CHECK_cmakeRulesBuildPhase.make$CONFIGURATION all";
+			showEnvVarsInLog = 0;
+		};
+		E9233BF6D78C44C3BD2E70DF = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		F541DE2AF27F4A99A57A718B /* CMake PostBuild Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake PostBuild Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Volumes/data/github/ccbasic/buildios/src/lualib -f /Volumes/data/github/ccbasic/buildios/src/lualib/CMakeScripts/lualib_postBuildPhase.make$CONFIGURATION all";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		012DF130250E46FA9CFBBE67 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E51CB96094B84F2FB8A9289E /* /Volumes/data/github/ccbasic/3rd/lua/src/lapi.c */,
+				E13B5417FBEE4280BF93B9A1 /* /Volumes/data/github/ccbasic/3rd/lua/src/lauxlib.c */,
+				F1F55A9D74B945AE84476757 /* /Volumes/data/github/ccbasic/3rd/lua/src/lbaselib.c */,
+				AB169FCB9E784858A5044334 /* /Volumes/data/github/ccbasic/3rd/lua/src/lbitlib.c */,
+				C31B901797C34D03A08B61BF /* /Volumes/data/github/ccbasic/3rd/lua/src/lcode.c */,
+				3B40E0072D7443E698B294F7 /* /Volumes/data/github/ccbasic/3rd/lua/src/lcorolib.c */,
+				087F076388BD4933B1CF30D1 /* /Volumes/data/github/ccbasic/3rd/lua/src/lctype.c */,
+				BD17A4CB48654E35832E29E3 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldblib.c */,
+				AF1DCDD2B64E4DECAFB4033C /* /Volumes/data/github/ccbasic/3rd/lua/src/ldebug.c */,
+				19F70D6BB34F4253AFB82B18 /* /Volumes/data/github/ccbasic/3rd/lua/src/ldo.c */,
+				6D3D707795ED4145AF75601B /* /Volumes/data/github/ccbasic/3rd/lua/src/ldump.c */,
+				523A9AD7BB834BA291238700 /* /Volumes/data/github/ccbasic/3rd/lua/src/lfunc.c */,
+				02F6EED29C1A49E08D8537BD /* /Volumes/data/github/ccbasic/3rd/lua/src/lgc.c */,
+				9D046E8703234BEDB1E35A99 /* /Volumes/data/github/ccbasic/3rd/lua/src/linit.c */,
+				804EBD0A4E484CFA91BA7E2C /* /Volumes/data/github/ccbasic/3rd/lua/src/liolib.c */,
+				E22149182C4A4A1690A55DB4 /* /Volumes/data/github/ccbasic/3rd/lua/src/llex.c */,
+				CCBE197CC91740C7BD000CDE /* /Volumes/data/github/ccbasic/3rd/lua/src/lmathlib.c */,
+				219D04B000854D808116466D /* /Volumes/data/github/ccbasic/3rd/lua/src/lmem.c */,
+				6F37DC96C19B4D118A7F345A /* /Volumes/data/github/ccbasic/3rd/lua/src/loadlib.c */,
+				E011D2DAE5FD4169950C1A02 /* /Volumes/data/github/ccbasic/3rd/lua/src/lobject.c */,
+				C5C20282FB104873A40B52EE /* /Volumes/data/github/ccbasic/3rd/lua/src/lopcodes.c */,
+				FD76CC444D5445D7B4592928 /* /Volumes/data/github/ccbasic/3rd/lua/src/loslib.c */,
+				A1D279818AD6456C99ABE805 /* /Volumes/data/github/ccbasic/3rd/lua/src/lparser.c */,
+				55BC17B6E344496480CF9665 /* /Volumes/data/github/ccbasic/3rd/lua/src/lstate.c */,
+				F615D53DD033408DA2F902FB /* /Volumes/data/github/ccbasic/3rd/lua/src/lstring.c */,
+				2441AA2B183A4C8D96ECFDF7 /* /Volumes/data/github/ccbasic/3rd/lua/src/lstrlib.c */,
+				D58D99B8A679433E934631A9 /* /Volumes/data/github/ccbasic/3rd/lua/src/ltable.c */,
+				2C620D63F1414F92ACA311E3 /* /Volumes/data/github/ccbasic/3rd/lua/src/ltablib.c */,
+				F6D2B23D35E944C28EF3B9E4 /* /Volumes/data/github/ccbasic/3rd/lua/src/ltm.c */,
+				35DE3D5A07C64D28B5395771 /* /Volumes/data/github/ccbasic/3rd/lua/src/lundump.c */,
+				1803BE3227A64C8AA1D20FC7 /* /Volumes/data/github/ccbasic/3rd/lua/src/lutf8lib.c */,
+				4D2E3B49C2AA4FD9B99FF1FA /* /Volumes/data/github/ccbasic/3rd/lua/src/lvm.c */,
+				9B1B3795AEBA41E59B65277A /* /Volumes/data/github/ccbasic/3rd/lua/src/lzio.c */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1028412AF3824FA8ACA739B9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47AEB350F2E445C0A6C028D0 /* ALL_BUILD */;
+			targetProxy = 89EAEF3CFCC74D698F0863D0 /* PBXContainerItemProxy */;
+		};
+		221AFD9555E64749B2E3B670 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3802988540DD43D1A263A6A0 /* ZERO_CHECK */;
+			targetProxy = 369438E18D0046AABA6E5F70 /* PBXContainerItemProxy */;
+		};
+		2CFCC296D2AA45C9AED14E08 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E6F5B4B713574998AA75907E /* lualib */;
+			targetProxy = 97E96DA5A17945AD93362364 /* PBXContainerItemProxy */;
+		};
+		CE19171319514E8090CEE824 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3802988540DD43D1A263A6A0 /* ZERO_CHECK */;
+			targetProxy = 0BF5D6ACBE3A465CA459CBE8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0918CD65BB384EE782166B74 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .dylib;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",lualib_EXPORTS);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Volumes/data/github/ccbasic/src/../3rd/jemalloc/include/jemalloc,/Volumes/data/github/ccbasic/src/../3rd/libevent/include,/Volumes/data/github/ccbasic/buildios/src/libevent/include,/Volumes/data/github/ccbasic/buildios/src/zlib,/Volumes/data/github/ccbasic/src/script/luacmake/../../../3rd/lua/src);
+				INSTALL_PATH = /Volumes/data/github/ccbasic/buildios/src/lualib/Debug;
+				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_STYLE = DYNAMIC;
+				OTHER_CFLAGS = "-I /opt/local/include -L /opt/local/lib    -fPIC -I/Volumes/data/github/ccbasic/src/../3rd/jemalloc/include/jemalloc -I/Volumes/data/github/ccbasic/src/../3rd/libevent/include -I/Volumes/data/github/ccbasic/buildios/src/libevent/include -I/Volumes/data/github/ccbasic/buildios/src/zlib -I/Volumes/data/github/ccbasic/src/script/luacmake/../../../3rd/lua/src   ";
+				OTHER_LDFLAGS = " -dynamiclib -Wl,-headerpad_max_install_names  ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = lualib;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Volumes/data/github/ccbasic/buildios/src/lualib;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		0B4DAC63F4DE4771BA0C2214 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Volumes/data/github/ccbasic/src/../3rd/jemalloc/include/jemalloc,/Volumes/data/github/ccbasic/src/../3rd/libevent/include,/Volumes/data/github/ccbasic/buildios/src/libevent/include,/Volumes/data/github/ccbasic/buildios/src/zlib,/Volumes/data/github/ccbasic/src/script/luacmake/../../../3rd/lua/src);
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Volumes/data/github/ccbasic/buildios/src/lualib;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		2462EDAFCF8840DD82D70458 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Volumes/data/github/ccbasic/src/../3rd/jemalloc/include/jemalloc,/Volumes/data/github/ccbasic/src/../3rd/libevent/include,/Volumes/data/github/ccbasic/buildios/src/libevent/include,/Volumes/data/github/ccbasic/buildios/src/zlib,/Volumes/data/github/ccbasic/src/script/luacmake/../../../3rd/lua/src);
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Volumes/data/github/ccbasic/buildios/src/lualib;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		52CAF0C624C74C70906E37CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Volumes/data/github/ccbasic/src/../3rd/jemalloc/include/jemalloc,/Volumes/data/github/ccbasic/src/../3rd/libevent/include,/Volumes/data/github/ccbasic/buildios/src/libevent/include,/Volumes/data/github/ccbasic/buildios/src/zlib,/Volumes/data/github/ccbasic/src/script/luacmake/../../../3rd/lua/src);
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Volumes/data/github/ccbasic/buildios/src/lualib;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		5732E0B286BF42D7875922BE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .dylib;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",lualib_EXPORTS);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Volumes/data/github/ccbasic/src/../3rd/jemalloc/include/jemalloc,/Volumes/data/github/ccbasic/src/../3rd/libevent/include,/Volumes/data/github/ccbasic/buildios/src/libevent/include,/Volumes/data/github/ccbasic/buildios/src/zlib,/Volumes/data/github/ccbasic/src/script/luacmake/../../../3rd/lua/src);
+				INSTALL_PATH = /Volumes/data/github/ccbasic/buildios/src/lualib/Release;
+				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_STYLE = DYNAMIC;
+				OTHER_CFLAGS = "-I /opt/local/include -L /opt/local/lib     -DNDEBUG -fPIC -I/Volumes/data/github/ccbasic/src/../3rd/jemalloc/include/jemalloc -I/Volumes/data/github/ccbasic/src/../3rd/libevent/include -I/Volumes/data/github/ccbasic/buildios/src/libevent/include -I/Volumes/data/github/ccbasic/buildios/src/zlib -I/Volumes/data/github/ccbasic/src/script/luacmake/../../../3rd/lua/src   ";
+				OTHER_LDFLAGS = " -dynamiclib -Wl,-headerpad_max_install_names  ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = lualib;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Volumes/data/github/ccbasic/buildios/src/lualib;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		6CA320C70986457E93C2D8DF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk;
+				SYMROOT = /Volumes/data/github/ccbasic/buildios/src/lualib/build;
+			};
+			name = Release;
+		};
+		8D086A8EC47541D3B30C26C6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Volumes/data/github/ccbasic/src/../3rd/jemalloc/include/jemalloc,/Volumes/data/github/ccbasic/src/../3rd/libevent/include,/Volumes/data/github/ccbasic/buildios/src/libevent/include,/Volumes/data/github/ccbasic/buildios/src/zlib,/Volumes/data/github/ccbasic/src/script/luacmake/../../../3rd/lua/src);
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Volumes/data/github/ccbasic/buildios/src/lualib;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		AC27F5FCBCC74B7FB1863714 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk;
+				SYMROOT = /Volumes/data/github/ccbasic/buildios/src/lualib/build;
+			};
+			name = Debug;
+		};
+		B09829DC297C4A28977F5E0C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Volumes/data/github/ccbasic/src/../3rd/jemalloc/include/jemalloc,/Volumes/data/github/ccbasic/src/../3rd/libevent/include,/Volumes/data/github/ccbasic/buildios/src/libevent/include,/Volumes/data/github/ccbasic/buildios/src/zlib,/Volumes/data/github/ccbasic/src/script/luacmake/../../../3rd/lua/src);
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Volumes/data/github/ccbasic/buildios/src/lualib;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		BBA4121DF0084A0C9BDCD2A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Volumes/data/github/ccbasic/src/../3rd/jemalloc/include/jemalloc,/Volumes/data/github/ccbasic/src/../3rd/libevent/include,/Volumes/data/github/ccbasic/buildios/src/libevent/include,/Volumes/data/github/ccbasic/buildios/src/zlib,/Volumes/data/github/ccbasic/src/script/luacmake/../../../3rd/lua/src);
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Volumes/data/github/ccbasic/buildios/src/lualib;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		36BAE0F881424E02950B3566 /* Build configuration list for PBXNativeTarget "lualib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0918CD65BB384EE782166B74 /* Debug */,
+				5732E0B286BF42D7875922BE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8B3ED53FB5CC44358770835E /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2462EDAFCF8840DD82D70458 /* Debug */,
+				52CAF0C624C74C70906E37CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AA0DA785615741908D23D17D /* Build configuration list for PBXAggregateTarget "install" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0B4DAC63F4DE4771BA0C2214 /* Debug */,
+				BBA4121DF0084A0C9BDCD2A2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CFFF4C7D7FF7495EB52577B7 /* Build configuration list for PBXProject "lualib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC27F5FCBCC74B7FB1863714 /* Debug */,
+				6CA320C70986457E93C2D8DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D601B3DC13824CFE976060D8 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8D086A8EC47541D3B30C26C6 /* Debug */,
+				B09829DC297C4A28977F5E0C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2C822D3E5BBA428E8E8FFAA5 /* Project object */;
+}
