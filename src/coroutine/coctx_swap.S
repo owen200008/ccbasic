@@ -15,8 +15,10 @@
 * See the License for the specific language governing permissions and 
 * limitations under the License.
 */
-.globl coctx_swap 
+.globl coctx_swap
+#if !defined(__APPLE__) && !defined(__FreeBSD__)
 .type  coctx_swap, @function
+#endif
 coctx_swap:
 
 #if defined(__i386__)

@@ -19,9 +19,9 @@ int main(int argc, char* argv[])
 	}
 	srand(time(NULL) + basiclib::BasicGetTickTime());
 	Net_LONGLONG valueA = 1;
-	for(int i = 0; i < 1000000; i++){
+	for(int i = 0; i < 1000; i++){
 		printf("%lld\r\n", valueA);
-		valueA += 1000000;
+		valueA += 10000000;
 	}
 	
 
@@ -43,8 +43,8 @@ int main(int argc, char* argv[])
 	}*/
 
 
-	//TestCoroutine(1);
-	//TestCoroutine();
+	TestCoroutine(1);
+	TestCoroutine();
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();

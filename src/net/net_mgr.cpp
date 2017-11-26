@@ -172,7 +172,7 @@ void CBasicNetMgv::Initialize(pGetConfFunc func) {
             evdns_base_nameserver_ip_add(pThread->m_dnsbase, "223.5.5.5");
         }
 #else
-#ifdef TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
         if ((_res.options & RES_INIT) == 0)
             res_init();
 

@@ -9,6 +9,7 @@ project(basiclibTest)
 option(BASICLIBTEST_BUILD_TEST "Build BasicLibTest Exe" ON)
 
 #build basiclib
+set(BASICLIB_BUILD_LUA OFF CACHE BOOL "flags")
 add_subdirectory(${PROJECT_SOURCE_DIR}/src src)
 
 #define
