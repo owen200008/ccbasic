@@ -1,7 +1,7 @@
 ﻿#include "rsaencode.h"
 
-#include "hex.h"
-#include "files.h"
+#include "../../../3rd/cryptopp/hex.h"
+#include "../../../3rd/cryptopp/files.h"
 
 CSCBasicRSA::CSCBasicRSA(const char* pSeed)
 {

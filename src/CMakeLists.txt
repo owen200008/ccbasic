@@ -37,6 +37,7 @@ macro(source_group_by_dir source_files)
     endif(MSVC)
 endmacro(source_group_by_dir)
 
+#first option
 option(BASICLIB_BUILD_SHARED "Build shared library" OFF)
 option(BASICLIB_BUILD_LUA "Build lua library" ON)
 option(BASICLIB_BUILD_JEMALLOC "Build Use JEMALLOC" OFF)
@@ -47,20 +48,11 @@ else()
 	set(BASICLIB_BUILD_TYPE STATIC)
 endif()
 
-#include 
+#second include
 include_directories(${BasicLibJemallocSrcPath}/include/jemalloc)
 include_directories(${BasicLibSrcPath}/../3rd/libevent/include)
 
-#extra src
-set(BasicLibExtra_Src)
-#flags
-set(BasicLibCMakeCXX_FLAGS ${CMAKE_CXX_FLAGS})
-set(BasicLibCMakeC_FLAGS ${CMAKE_C_FLAGS})
-#define
-set(BasicLibDefinitions -DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA)
-#link add event
-set(BasicLibLinks event zlib)
-
+#third subdirectory
 #build event
 set(EVENT__DISABLE_SAMPLES ON CACHE BOOL "flags")
 set(EVENT__DISABLE_REGRESS ON CACHE BOOL "flags")
@@ -68,18 +60,23 @@ set(EVENT__DISABLE_TESTS ON CACHE BOOL "flags")
 set(EVENT__DISABLE_THREAD_SUPPORT ON CACHE BOOL "flags")
 set(EVENT__DISABLE_OPENSSL ON CACHE BOOL "flags")
 set(EVENT__DISABLE_BENCHMARK ON CACHE BOOL "flags")
+set(EVENT__DISABLE_CLOCK_GETTIME ON CACHE BOOL "flags")
+set(EVENT__DISABLE_DEBUG_MODE ON CACHE BOOL "flags")
 set(EVENT__BUILD_SHARED_LIBRARIES ${BASICLIB_BUILD_SHARED})
 add_subdirectory(${BasicLibSrcPath}/../3rd/libevent libevent)
 include_directories(${PROJECT_BINARY_DIR}/libevent/include)
+link_directories(${PROJECT_BINARY_DIR}/libevent/lib/${CMAKE_BUILD_TYPE})
 
 #build cryptopp
 set(BUILD_TESTING OFF CACHE BOOL "flags")
 set(BUILD_SHARED OFF CACHE BOOL "flags")
 add_subdirectory(${PROJECT_SOURCE_DIR}/script/cryptoppcmake cryptopp)
 
-#build zlib
-add_subdirectory(${PROJECT_SOURCE_DIR}/script/zlibcmake zlib)
-include_directories(${PROJECT_BINARY_DIR}/zlib)
+if(MSVC)
+    #build zlib
+    add_subdirectory(${PROJECT_SOURCE_DIR}/script/zlibcmake zlib)
+    include_directories(${PROJECT_BINARY_DIR}/zlib)
+endif()
 
 #build lua
 if(BASICLIB_BUILD_LUA)
@@ -90,6 +87,17 @@ if(BASICLIB_BUILD_LUA)
 		add_subdirectory(${PROJECT_SOURCE_DIR}/scbasic/sproto sproto)
 	endif()
 endif()
+
+#fourth self build
+#extra src
+set(BasicLibExtra_Src)
+#flags
+set(BasicLibCMakeCXX_FLAGS ${CMAKE_CXX_FLAGS})
+set(BasicLibCMakeC_FLAGS ${CMAKE_C_FLAGS})
+#define
+set(BasicLibDefinitions -DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA)
+#link add event
+set(BasicLibLinks event)
 
 if(MSVC)
 	enable_language(ASM_MASM)
@@ -313,14 +321,19 @@ set(TotalSourceData ${basiclib_SOURCES} ${BasicLibExtra_Src})
 source_group_by_dir(TotalSourceData)
 
 add_library(basiclib ${BASICLIB_BUILD_TYPE} ${basiclib_SOURCES} ${BasicLibExtra_Src})
-target_link_libraries(basiclib ${BasicLibLinks} event)
-target_include_directories(basiclib PUBLIC
-	    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/zlib>
-	    $<BUILD_INTERFACE:${BasicLibSrcPath}/inc>
-	    $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/lua/src>
-        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>)
+target_link_libraries(basiclib ${BasicLibLinks})
 if(MSVC)
+    target_include_directories(basiclib PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/zlib>
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/inc>
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/lua/src>
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>)
 	set_target_properties(basiclib PROPERTIES LINK_FLAGS "/SAFESEH:NO")
+else()
+    target_include_directories(basiclib PUBLIC
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/inc>
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/lua/src>
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>)
 endif()
 
 

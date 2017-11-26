@@ -1,6 +1,10 @@
 ﻿#include "../inc/basic.h"
 #include "net_mgr.h"
 
+#if TARGET_OS_IPHONE
+#include <resolv.h>
+#endif
+
 __NS_BASIC_START
 
 CBasicString DefaultParamFuc(const char* pParam) {
@@ -64,6 +68,7 @@ CBasicNetMgv::~CBasicNetMgv() {
 #ifdef __ANDROID
 #include <sys/system_properties.h>
 #endif
+
 THREAD_RETURN CBasicNetMgv::ThreadCheckFunc(void* lpWorkContext) {
 	srand((unsigned int)(time(NULL) + BasicGetTickTime() + BasicGetCurrentThreadId()));
 	m_gNetMgrPoint->OnTimer();
@@ -167,8 +172,25 @@ void CBasicNetMgv::Initialize(pGetConfFunc func) {
             evdns_base_nameserver_ip_add(pThread->m_dnsbase, "223.5.5.5");
         }
 #else
-		pThread->m_dnsbase = evdns_base_new(pThread->m_base, 1);
+#ifdef TARGET_OS_IPHONE
+        if ((_res.options & RES_INIT) == 0)
+            res_init();
+
+        pThread->m_dnsbase = evdns_base_new(pThread->m_base, 0);
+        for (int i = 0; i < _res.nscount; i++){
+            char szBuf[128] = { 0 };
+            int nFamily = _res.nsaddr_list[i].sin_family;
+            if (nFamily == AF_INET) {
+                evdns_base_nameserver_ip_add(pThread->m_dnsbase, evutil_inet_ntop(AF_INET, &_res.nsaddr_list[i].sin_addr, szBuf, sizeof(szBuf)));
+            }
+            else {
+                ASSERT(0);
+            }
+        }
+#else
+        pThread->m_dnsbase = evdns_base_new(pThread->m_base, 1);
 #endif
+		#endif
 		if (!pThread->m_dnsbase) {
 			BasicLogEventError("libevent eventdns add error");
 			exit(1);

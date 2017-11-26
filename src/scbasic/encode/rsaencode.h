@@ -2,8 +2,8 @@
 #define SCBASIC_RSA_H
 
 #include <basic.h>
-#include "randpool.h"
-#include "rsa.h"
+#include "../../../3rd/cryptopp/randpool.h"
+#include "../../../3rd/cryptopp/rsa.h"
 
 #define DEFAULT_SCBASICRSA_SEED	"seed_scbasic"
 class CSCBasicRSA : public basiclib::CBasicObject
