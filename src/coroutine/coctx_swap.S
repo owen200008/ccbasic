@@ -16,7 +16,7 @@
 * limitations under the License.
 */
 .globl coctx_swap
-#if !defined(__APPLE__) && !defined(__FreeBSD__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__ANDROID__)
 .type  coctx_swap, @function
 #endif
 coctx_swap:
