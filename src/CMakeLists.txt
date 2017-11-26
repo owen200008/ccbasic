@@ -65,7 +65,6 @@ set(EVENT__DISABLE_DEBUG_MODE ON CACHE BOOL "flags")
 set(EVENT__BUILD_SHARED_LIBRARIES ${BASICLIB_BUILD_SHARED})
 add_subdirectory(${BasicLibSrcPath}/../3rd/libevent libevent)
 include_directories(${PROJECT_BINARY_DIR}/libevent/include)
-link_directories(${PROJECT_BINARY_DIR}/libevent/lib/${CMAKE_BUILD_TYPE})
 
 #build cryptopp
 set(BUILD_TESTING OFF CACHE BOOL "flags")
@@ -97,7 +96,7 @@ set(BasicLibCMakeC_FLAGS ${CMAKE_C_FLAGS})
 #define
 set(BasicLibDefinitions -DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA)
 #link add event
-set(BasicLibLinks event)
+set(BasicLibLinks event_static)
 
 if(MSVC)
 	enable_language(ASM_MASM)
