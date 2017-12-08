@@ -71,10 +71,9 @@ set(BUILD_TESTING OFF CACHE BOOL "flags")
 set(BUILD_SHARED OFF CACHE BOOL "flags")
 add_subdirectory(${PROJECT_SOURCE_DIR}/script/cryptoppcmake cryptopp)
 
-if(MSVC)
+if(NOT ANDROID AND NOT APPLE)
     #build zlib
     add_subdirectory(${PROJECT_SOURCE_DIR}/script/zlibcmake zlib)
-    include_directories(${PROJECT_BINARY_DIR}/zlib)
 endif()
 
 #build lua
@@ -321,18 +320,22 @@ source_group_by_dir(TotalSourceData)
 
 add_library(basiclib ${BASICLIB_BUILD_TYPE} ${basiclib_SOURCES} ${BasicLibExtra_Src})
 target_link_libraries(basiclib ${BasicLibLinks})
-if(MSVC)
+if(NOT ANDROID AND NOT APPLE)
     target_include_directories(basiclib PUBLIC
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/zlib>
         $<BUILD_INTERFACE:${BasicLibSrcPath}/inc>
         $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/lua/src>
-        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>)
-	set_target_properties(basiclib PROPERTIES LINK_FLAGS "/SAFESEH:NO")
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/rapidjson/include>)
+    if(MSVC)
+	    set_target_properties(basiclib PROPERTIES LINK_FLAGS "/SAFESEH:NO")
+    endif()
 else()
     target_include_directories(basiclib PUBLIC
         $<BUILD_INTERFACE:${BasicLibSrcPath}/inc>
         $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/lua/src>
-        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>)
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/rapidjson/include>)
 endif()
 
 
