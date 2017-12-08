@@ -122,7 +122,7 @@ else()
 		execute_process(COMMAND make -f makefile_jemalloc -j4
 			WORKING_DIRECTORY ${BasicLibSrcPath}/script/)
 		set(BasicLibDefinitions ${BasicLibDefinitions})
-		set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl)
+		set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl zlib)
 	endif()
 endif()
 
