@@ -95,7 +95,7 @@ set(BasicLibCMakeC_FLAGS ${CMAKE_C_FLAGS})
 #define
 set(BasicLibDefinitions -DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA)
 #link add event
-set(BasicLibLinks event_static)
+set(BasicLibLinks)
 
 if(MSVC)
 	enable_language(ASM_MASM)
@@ -124,6 +124,12 @@ else()
 		set(BasicLibDefinitions ${BasicLibDefinitions})
 		set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl)
 	endif()
+endif()
+
+if (BASICLIB_BUILD_SHARED)
+    set(BasicLibLinks ${BasicLibLinks} event_shared)
+else()
+    set(BasicLibLinks ${BasicLibLinks} event_static)
 endif()
 
 #define
@@ -320,6 +326,7 @@ source_group_by_dir(TotalSourceData)
 
 add_library(basiclib ${BASICLIB_BUILD_TYPE} ${basiclib_SOURCES} ${BasicLibExtra_Src})
 target_link_libraries(basiclib ${BasicLibLinks})
+
 if(NOT ANDROID AND NOT APPLE)
     target_include_directories(basiclib PUBLIC
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/zlib>
