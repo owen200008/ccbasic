@@ -19,7 +19,7 @@ set(BasicLibTestDefinitions)
 set(RunProjectCXX_FLAGS ${CMAKE_CXX_FLAGS})
 set(RunProjectC_FLAGS ${CMAKE_C_FLAGS})
 #link
-set(RunProjectLinks event_static)
+set(RunProjectLinks)
 
 if(MSVC)
 	set(RunProjectCXX_FLAGS "${RunProjectCXX_FLAGS} /MP")
@@ -35,6 +35,11 @@ endif()
 #define
 add_definitions(${BasicLibTestDefinitions})
 set(RunProjectLinks ${RunProjectLinks} basiclib cryptopp-static)
+if (BASICLIB_BUILD_SHARED)
+    set(RunProjectLinks ${RunProjectLinks} event_shared)
+else()
+    set(RunProjectLinks ${RunProjectLinks} event_static)
+endif()
 set(CMAKE_CXX_FLAGS ${RunProjectCXX_FLAGS} CACHE  string "..." FORCE)
 set(CMAKE_C_FLAGS ${RunProjectC_FLAGS} CACHE string "..." FORCE)
 #build test
