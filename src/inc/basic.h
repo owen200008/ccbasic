@@ -132,7 +132,7 @@
 // 压缩
 #include "../algorithm/zip/tlgzip.h"
 #include "../algorithm/zip/tlzipfile.h"
-#ifdef __BASICWINDOWS
+#if defined(__BASICWINDOWS) || defined(__LINUX)
 #include "../../3rd/zlib/zlib.h"
 #else
 #include <zlib.h>
