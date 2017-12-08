@@ -3,19 +3,20 @@ ccbasic is c++ basic lib. make it support ios, android, linux, windows.
 
 ## compile
 ```
-It support cmake compile. 
-It contain cryptopp so please make sure your cpu support SSSE3 or AES-NI and so on. 
-If not support please add param to disable. 
-
-For windows, please open the Native Tools Command and run
-src/script/winmakefile.bat   (create the lua lib)
+It support cmake compile. default use release
+1.make static
 mkdir build && cd build
-cmake ..
+cmake .. -DCMAKE_BUILD_TYPE=Debug
 
-For others
-(first to make the lua lib)
-mkdir build && cd build
-cmake ..
+2. make shared
+mkdir builddll &&  cd builddll
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DBASICLIB_BUILD_SHARED=ON
+
+Note:
+the best way to use mingw
+
+=>For windows
+libevent always create static and shared, so if you use static unload the event_shared, otherwise the static lib will overwrite by the dll lib。if you use shared same way to unload event_static
 
 ```
 ## modules

@@ -5,11 +5,13 @@ else()
 endif()
 
 project(basiclibTest)
-
-option(BASICLIBTEST_BUILD_TEST "Build BasicLibTest Exe" ON)
-
 #build basiclib
-set(BASICLIB_BUILD_LUA OFF CACHE BOOL "flags")
+if (BASICLIB_BUILD_SHARED)
+    SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR})
+	set(BASICLIB_BUILD_LUA ON CACHE BOOL "flags")
+else()
+	set(BASICLIB_BUILD_LUA OFF CACHE BOOL "flags")
+endif()
 add_subdirectory(${PROJECT_SOURCE_DIR}/src src)
 
 #define
@@ -36,9 +38,8 @@ set(RunProjectLinks ${RunProjectLinks} basiclib cryptopp-static)
 set(CMAKE_CXX_FLAGS ${RunProjectCXX_FLAGS} CACHE  string "..." FORCE)
 set(CMAKE_C_FLAGS ${RunProjectC_FLAGS} CACHE string "..." FORCE)
 #build test
-if(BASICLIBTEST_BUILD_TEST)
-	if (NOT BASICLIB_BUILD_SHARED)
-		set(RunProject_SOURCES
+
+set(RunProject_SOURCES
 		${PROJECT_SOURCE_DIR}/src/scbasic/commu/basicclient.h
 		${PROJECT_SOURCE_DIR}/src/scbasic/commu/ipverify.h
 		${PROJECT_SOURCE_DIR}/src/scbasic/commu/servertemplate.h
@@ -63,14 +64,20 @@ if(BASICLIBTEST_BUILD_TEST)
 		${PROJECT_SOURCE_DIR}/basic_test/dll/basictesthead.cpp
 		${PROJECT_SOURCE_DIR}/basic_test/net/nettest.cpp
 			)
-		set(TotalSourceData ${RunProject_SOURCES})
-		source_group_by_dir(TotalSourceData)
-		add_executable(basicTest ${RunProject_SOURCES}) 
-		target_link_libraries(basicTest ${RunProjectLinks})
-		if(MSVC)
-			set_target_properties(basicTest PROPERTIES LINK_FLAGS "/SAFESEH:NO")
-		endif()
-	endif()
+set(TotalSourceData ${RunProject_SOURCES})
+source_group_by_dir(TotalSourceData)
+add_executable(basicTest ${RunProject_SOURCES}) 
+target_link_libraries(basicTest ${RunProjectLinks})
+if (BASICLIB_BUILD_SHARED)
+    if(MSVC)
+        add_custom_command(TARGET basicTest POST_BUILD COMMAND xcopy /Y /Q "\"${PROJECT_BINARY_DIR}\\src\\libevent\\bin\\${CMAKE_BUILD_TYPE}\\event.dll\"" "\"$(OutDir)\"")
+    endif()
 endif()
+
+if(MSVC)
+    set_target_properties(basicTest PROPERTIES LINK_FLAGS "/SAFESEH:NO")
+endif()
+
+
 
 
