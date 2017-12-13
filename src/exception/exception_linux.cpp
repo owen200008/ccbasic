@@ -39,32 +39,25 @@ GlobalShutdownFunc g_funcShutdown = NULL;
 //
 // 设置异常保护模式
 //
-void BASIC_SetExceptionMode(int nMode, int nInstance)
-{
+void BasicSetExceptionMode(int nMode, int nInstance){
 	g_nStartMode = nMode;
-
-	if(nMode&BASIC_EXCEPTION_DISABLE)
-	{
+	if(nMode&BASIC_EXCEPTION_DISABLE){
 		//禁用异常保护
 		return;
 	}
-	if(g_pExceptionHandler == NULL)
-	{
+	if(g_pExceptionHandler == NULL){
 		g_pExceptionHandler = new CBasicExceptionLinux;
 	}
 	//
-	if(nMode&BASIC_EXCEPTION_NORESTART)
-	{
+	if(nMode&BASIC_EXCEPTION_NORESTART){
 		//不重启
 	}
 	//
-	if(nMode&BASIC_EXCEPTION_NOLOG)
-	{
+	if(nMode&BASIC_EXCEPTION_NOLOG){
 		//不记录日志
 	}
 	//
-	if(nMode&BASIC_DAEMONMODE)
-	{
+	if(nMode&BASIC_DAEMONMODE){
 		g_pExceptionHandler->SetDaemonMode(nInstance);
 	}
 }
