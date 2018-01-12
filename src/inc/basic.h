@@ -132,11 +132,6 @@
 // 压缩
 #include "../algorithm/zip/tlgzip.h"
 #include "../algorithm/zip/tlzipfile.h"
-#ifdef __BASICWINDOWS
-#include "../../3rd/zlib/zlib.h"
-#else
-#include <zlib.h>
-#endif
 
 // XML
 //#include "../util/xml/xmldom.h"

@@ -1,5 +1,12 @@
 ﻿#include "../../inc/basic.h"
 #include <iostream>
+
+#if defined(__BASICWINDOWS) || defined(__LINUX)
+#include "../../3rd/zlib/zlib.h"
+#else
+#include <zlib.h>
+#endif
+
 using namespace std;
 using namespace basiclib;
 // functor to print dir tree

@@ -71,10 +71,9 @@ set(BUILD_TESTING OFF CACHE BOOL "flags")
 set(BUILD_SHARED OFF CACHE BOOL "flags")
 add_subdirectory(${PROJECT_SOURCE_DIR}/script/cryptoppcmake cryptopp)
 
-if(MSVC)
+if(NOT ANDROID AND NOT APPLE)
     #build zlib
     add_subdirectory(${PROJECT_SOURCE_DIR}/script/zlibcmake zlib)
-    include_directories(${PROJECT_BINARY_DIR}/zlib)
 endif()
 
 #build lua
@@ -96,7 +95,7 @@ set(BasicLibCMakeC_FLAGS ${CMAKE_C_FLAGS})
 #define
 set(BasicLibDefinitions -DSQLITE_HAS_CODEC=1 -DSQLITE_SECURE_DELETE -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA)
 #link add event
-set(BasicLibLinks event_static)
+set(BasicLibLinks)
 
 if(MSVC)
 	enable_language(ASM_MASM)
@@ -123,8 +122,14 @@ else()
 		execute_process(COMMAND make -f makefile_jemalloc -j4
 			WORKING_DIRECTORY ${BasicLibSrcPath}/script/)
 		set(BasicLibDefinitions ${BasicLibDefinitions})
-		set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl)
+		set(BasicLibLinks ${BasicLibLinks} ${BasicLibSrcPath}/../3rd/jemalloc/lib/libjemalloc_pic.a dl zlib pthread)
 	endif()
+endif()
+
+if (BASICLIB_BUILD_SHARED)
+    set(BasicLibLinks ${BasicLibLinks} event_shared)
+else()
+    set(BasicLibLinks ${BasicLibLinks} event_static)
 endif()
 
 #define
@@ -229,110 +234,115 @@ set(basiclib_SOURCES
     ${BasicLibSrcPath}/util/strutil/cppstring.h
     ${BasicLibSrcPath}/util/strutil/maa.h
     ${BasicLibSrcPath}/util/strutil/strutil.h
-   ${BasicLibSrcPath}/inc/basic_func.cpp
-   ${BasicLibSrcPath}/algorithm/md5.cpp
-   ${BasicLibSrcPath}/algorithm/sha1/sha1.cpp
-   ${BasicLibSrcPath}/algorithm/xtra.cpp
-   ${BasicLibSrcPath}/algorithm/zip/tlgzip.cpp
-   ${BasicLibSrcPath}/algorithm/zip/tlzipfile.cpp
-   ${BasicLibSrcPath}/coroutine/coroutineplus.cpp
-   ${BasicLibSrcPath}/datastruct/basic_string.cpp
-   ${BasicLibSrcPath}/datastruct/key_value.cpp
-   ${BasicLibSrcPath}/datastruct/pbzk.cpp
-   ${BasicLibSrcPath}/datastruct/stringex.cpp
-   ${BasicLibSrcPath}/debug/debug.cpp
-   ${BasicLibSrcPath}/debug/debug_android.cpp
-   ${BasicLibSrcPath}/debug/debug_linux.cpp
-   ${BasicLibSrcPath}/debug/debug_mac.cpp
-   ${BasicLibSrcPath}/debug/debug_win.cpp
-   ${BasicLibSrcPath}/dll/loaddll.cpp
-   ${BasicLibSrcPath}/exception/call_stack_gcc.cpp
-   ${BasicLibSrcPath}/exception/exception.cpp
-   ${BasicLibSrcPath}/exception/exception_linux.cpp
-   ${BasicLibSrcPath}/exception/exception_win.cpp
-   ${BasicLibSrcPath}/file/diskfile.cpp
-   ${BasicLibSrcPath}/file/filefind.cpp
-   ${BasicLibSrcPath}/file/fileman.cpp
-   ${BasicLibSrcPath}/file/filenotify.cpp
-   ${BasicLibSrcPath}/file/fileobj.cpp
-   ${BasicLibSrcPath}/file/file_linux.cpp
-   ${BasicLibSrcPath}/file/inifile.cpp
-   ${BasicLibSrcPath}/file/memfile.cpp
-   ${BasicLibSrcPath}/log/log.cpp
-   ${BasicLibSrcPath}/mem/bitstream.cpp
-   ${BasicLibSrcPath}/mem/mem.cpp
-   ${BasicLibSrcPath}/mem/smartbuffer.cpp
-   ${BasicLibSrcPath}/mem/tlstaticbuffer.cpp
-   ${BasicLibSrcPath}/sqlite/shell.c
-   ${BasicLibSrcPath}/sqlite/sqlite3db.cpp
-   ${BasicLibSrcPath}/sqlite/sqlite3dbquery.cpp
-   ${BasicLibSrcPath}/sqlite/sqlite3dbtable.cpp
-   ${BasicLibSrcPath}/sqlite/sqlite3secure.c
-   ${BasicLibSrcPath}/sys/sysinfo.cpp
-   ${BasicLibSrcPath}/sys/sysinfo_android.cpp
-   ${BasicLibSrcPath}/sys/sysinfo_linux.cpp
-   ${BasicLibSrcPath}/sys/sysinfo_mac.cpp
-   ${BasicLibSrcPath}/sys/sysinfo_win.cpp
-   ${BasicLibSrcPath}/thread/basicpoll.cpp
-   ${BasicLibSrcPath}/thread/mt.cpp
-   ${BasicLibSrcPath}/thread/mt_linux.cpp
-   ${BasicLibSrcPath}/thread/mt_spinlock.cpp
-   ${BasicLibSrcPath}/thread/thread.cpp
-   ${BasicLibSrcPath}/thread/thread_linux.cpp
-   ${BasicLibSrcPath}/thread/thread_win.cpp
-   ${BasicLibSrcPath}/time/ontimer.cpp
-   ${BasicLibSrcPath}/time/timelib/astro.c
-   ${BasicLibSrcPath}/time/timelib/dow.c
-   ${BasicLibSrcPath}/time/timelib/parse_date.c
-   ${BasicLibSrcPath}/time/timelib/parse_tz.c
-   ${BasicLibSrcPath}/time/timelib/timelib.c
-   ${BasicLibSrcPath}/time/timelib/tm2unixtime.c
-   ${BasicLibSrcPath}/time/timelib/unixtime2tm.c
-   ${BasicLibSrcPath}/time/timeutil.cpp
-   ${BasicLibSrcPath}/time/tltime.cpp
-   ${BasicLibSrcPath}/types/basicobj.cpp
-   ${BasicLibSrcPath}/util/containerext.cpp
-   ${BasicLibSrcPath}/util/regex/regcomp.c
-   ${BasicLibSrcPath}/util/regex/regerror.c
-   ${BasicLibSrcPath}/util/regex/regexec.c
-   ${BasicLibSrcPath}/util/regex/regfree.c
-   ${BasicLibSrcPath}/util/strutil/charset.cpp
-   ${BasicLibSrcPath}/util/strutil/charset/charset_iconv.cpp
-   ${BasicLibSrcPath}/util/strutil/charset/charset_win.cpp
-   ${BasicLibSrcPath}/util/strutil/cppstring.cpp
-   ${BasicLibSrcPath}/util/strutil/maa.cpp
-   ${BasicLibSrcPath}/util/strutil/strmisc.cpp
-   ${BasicLibSrcPath}/util/strutil/strutil.cpp
-   ${BasicLibSrcPath}/net/net.cpp
-   ${BasicLibSrcPath}/net/net.h
-   ${BasicLibSrcPath}/net/net_client.cpp
-   ${BasicLibSrcPath}/net/net_client.h
-   ${BasicLibSrcPath}/net/net_server.cpp
-   ${BasicLibSrcPath}/net/net_server.h
-   ${BasicLibSrcPath}/net/sendbuffer.cpp
-   ${BasicLibSrcPath}/net/sendbuffer.h
-   ${BasicLibSrcPath}/net/net_socket.cpp
-   ${BasicLibSrcPath}/net/net_socket.h
-   ${BasicLibSrcPath}/net/net_mgr.cpp
-   ${BasicLibSrcPath}/net/net_mgr.h
+    ${BasicLibSrcPath}/inc/basic_func.cpp
+    ${BasicLibSrcPath}/algorithm/md5.cpp
+    ${BasicLibSrcPath}/algorithm/sha1/sha1.cpp
+    ${BasicLibSrcPath}/algorithm/xtra.cpp
+    ${BasicLibSrcPath}/algorithm/zip/tlgzip.cpp
+    ${BasicLibSrcPath}/algorithm/zip/tlzipfile.cpp
+    ${BasicLibSrcPath}/coroutine/coroutineplus.cpp
+    ${BasicLibSrcPath}/datastruct/basic_string.cpp
+    ${BasicLibSrcPath}/datastruct/key_value.cpp
+    ${BasicLibSrcPath}/datastruct/pbzk.cpp
+    ${BasicLibSrcPath}/datastruct/stringex.cpp
+    ${BasicLibSrcPath}/debug/debug.cpp
+    ${BasicLibSrcPath}/debug/debug_android.cpp
+    ${BasicLibSrcPath}/debug/debug_linux.cpp
+    ${BasicLibSrcPath}/debug/debug_mac.cpp
+    ${BasicLibSrcPath}/debug/debug_win.cpp
+    ${BasicLibSrcPath}/dll/loaddll.cpp
+    ${BasicLibSrcPath}/exception/call_stack_gcc.cpp
+    ${BasicLibSrcPath}/exception/exception.cpp
+    ${BasicLibSrcPath}/exception/exception_linux.cpp
+    ${BasicLibSrcPath}/exception/exception_win.cpp
+    ${BasicLibSrcPath}/file/diskfile.cpp
+    ${BasicLibSrcPath}/file/filefind.cpp
+    ${BasicLibSrcPath}/file/fileman.cpp
+    ${BasicLibSrcPath}/file/filenotify.cpp
+    ${BasicLibSrcPath}/file/fileobj.cpp
+    ${BasicLibSrcPath}/file/file_linux.cpp
+    ${BasicLibSrcPath}/file/inifile.cpp
+    ${BasicLibSrcPath}/file/memfile.cpp
+    ${BasicLibSrcPath}/log/log.cpp
+    ${BasicLibSrcPath}/mem/bitstream.cpp
+    ${BasicLibSrcPath}/mem/mem.cpp
+    ${BasicLibSrcPath}/mem/smartbuffer.cpp
+    ${BasicLibSrcPath}/mem/tlstaticbuffer.cpp
+    ${BasicLibSrcPath}/sqlite/shell.c
+    ${BasicLibSrcPath}/sqlite/sqlite3db.cpp
+    ${BasicLibSrcPath}/sqlite/sqlite3dbquery.cpp
+    ${BasicLibSrcPath}/sqlite/sqlite3dbtable.cpp
+    ${BasicLibSrcPath}/sqlite/sqlite3secure.c
+    ${BasicLibSrcPath}/sys/sysinfo.cpp
+    ${BasicLibSrcPath}/sys/sysinfo_android.cpp
+    ${BasicLibSrcPath}/sys/sysinfo_linux.cpp
+    ${BasicLibSrcPath}/sys/sysinfo_mac.cpp
+    ${BasicLibSrcPath}/sys/sysinfo_win.cpp
+    ${BasicLibSrcPath}/thread/basicpoll.cpp
+    ${BasicLibSrcPath}/thread/mt.cpp
+    ${BasicLibSrcPath}/thread/mt_linux.cpp
+    ${BasicLibSrcPath}/thread/mt_spinlock.cpp
+    ${BasicLibSrcPath}/thread/thread.cpp
+    ${BasicLibSrcPath}/thread/thread_linux.cpp
+    ${BasicLibSrcPath}/thread/thread_win.cpp
+    ${BasicLibSrcPath}/time/ontimer.cpp
+    ${BasicLibSrcPath}/time/timelib/astro.c
+    ${BasicLibSrcPath}/time/timelib/dow.c
+    ${BasicLibSrcPath}/time/timelib/parse_date.c
+    ${BasicLibSrcPath}/time/timelib/parse_tz.c
+    ${BasicLibSrcPath}/time/timelib/timelib.c
+    ${BasicLibSrcPath}/time/timelib/tm2unixtime.c
+    ${BasicLibSrcPath}/time/timelib/unixtime2tm.c
+    ${BasicLibSrcPath}/time/timeutil.cpp
+    ${BasicLibSrcPath}/time/tltime.cpp
+    ${BasicLibSrcPath}/types/basicobj.cpp
+    ${BasicLibSrcPath}/util/containerext.cpp
+    ${BasicLibSrcPath}/util/regex/regcomp.c
+    ${BasicLibSrcPath}/util/regex/regerror.c
+    ${BasicLibSrcPath}/util/regex/regexec.c
+    ${BasicLibSrcPath}/util/regex/regfree.c
+    ${BasicLibSrcPath}/util/strutil/charset.cpp
+    ${BasicLibSrcPath}/util/strutil/charset/charset_iconv.cpp
+    ${BasicLibSrcPath}/util/strutil/charset/charset_win.cpp
+    ${BasicLibSrcPath}/util/strutil/cppstring.cpp
+    ${BasicLibSrcPath}/util/strutil/maa.cpp
+    ${BasicLibSrcPath}/util/strutil/strmisc.cpp
+    ${BasicLibSrcPath}/util/strutil/strutil.cpp
+    ${BasicLibSrcPath}/net/net.cpp
+    ${BasicLibSrcPath}/net/net.h
+    ${BasicLibSrcPath}/net/net_client.cpp
+    ${BasicLibSrcPath}/net/net_client.h
+    ${BasicLibSrcPath}/net/net_server.cpp
+    ${BasicLibSrcPath}/net/net_server.h
+    ${BasicLibSrcPath}/net/sendbuffer.cpp
+    ${BasicLibSrcPath}/net/sendbuffer.h
+    ${BasicLibSrcPath}/net/net_socket.cpp
+    ${BasicLibSrcPath}/net/net_socket.h
+    ${BasicLibSrcPath}/net/net_mgr.cpp
+    ${BasicLibSrcPath}/net/net_mgr.h
 	)
 set(TotalSourceData ${basiclib_SOURCES} ${BasicLibExtra_Src})
 source_group_by_dir(TotalSourceData)
 
 add_library(basiclib ${BASICLIB_BUILD_TYPE} ${basiclib_SOURCES} ${BasicLibExtra_Src})
 target_link_libraries(basiclib ${BasicLibLinks})
-if(MSVC)
+
+if(NOT ANDROID AND NOT APPLE)
     target_include_directories(basiclib PUBLIC
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/zlib>
         $<BUILD_INTERFACE:${BasicLibSrcPath}/inc>
         $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/lua/src>
-        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>)
-	set_target_properties(basiclib PROPERTIES LINK_FLAGS "/SAFESEH:NO")
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/rapidjson/include>)
+    if(MSVC)
+	    set_target_properties(basiclib PROPERTIES LINK_FLAGS "/SAFESEH:NO")
+    endif()
 else()
     target_include_directories(basiclib PUBLIC
         $<BUILD_INTERFACE:${BasicLibSrcPath}/inc>
         $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/lua/src>
-        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>)
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/kaguya/include>
+        $<BUILD_INTERFACE:${BasicLibSrcPath}/../3rd/rapidjson/include>)
 endif()
 
 

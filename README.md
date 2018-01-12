@@ -3,28 +3,20 @@ ccbasic is c++ basic lib. make it support ios, android, linux, windows.
 
 ## compile
 ```
-It support cmake compile. 
-
-For windows
+It support cmake compile. default use release
+1.make static
 mkdir build && cd build
-cmake ..
-(cryptopp compile error when asm code compile，because vs not support create dir for asm，so you can delete rdrand.asm compile again to create dir first and goto build cmake .. again and compile)
+cmake .. -DCMAKE_BUILD_TYPE=Debug
 
-For centos
-mkdir build && cd build
-cmake ..
+2. make shared
+mkdir builddll &&  cd builddll
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DBASICLIB_BUILD_SHARED=ON
 
-For Android
-use android studio
+Note:
+the best way to use mingw
 
-For Mac
-mkdir build && cd build
-cmake -G Xcode ..
-
-For IOS
-mkdir build && cd build
-cmake -G Xcode ..
-change the sdk to ios
+=>For windows
+libevent always create static and shared, so if you use static unload the event_shared, otherwise the static lib will overwrite by the dll lib。if you use shared same way to unload event_static
 
 ```
 ## modules

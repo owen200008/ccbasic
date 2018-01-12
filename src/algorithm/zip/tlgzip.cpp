@@ -1,5 +1,11 @@
 ﻿#include "../../inc/basic.h"
 
+#if defined(__BASICWINDOWS) || defined(__LINUX)
+#include "../../3rd/zlib/zlib.h"
+#else
+#include <zlib.h>
+#endif
+
 __NS_BASIC_START
 
 static voidpf g_alloc(voidpf opaque, uInt items, uInt size)

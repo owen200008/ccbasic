@@ -14,7 +14,7 @@ extern "C" {
 #ifdef sproto_EXPORTS
 #define __EXPORTSSPROTO
 #endif
-#ifdef __BASICWINDOWS
+#ifdef _MSC_VER
 #ifdef __EXPORTSSPROTO
 #define _SCBASIC_SPROTO_DLL_API 	__declspec(dllexport)
 #endif
