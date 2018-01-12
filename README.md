@@ -4,18 +4,27 @@ ccbasic is c++ basic lib. make it support ios, android, linux, windows.
 ## compile
 ```
 It support cmake compile. 
-It contain cryptopp so please make sure your cpu support SSSE3 or AES-NI and so on. 
-If not support please add param to disable. 
 
-For windows, please open the Native Tools Command and run
-src/script/winmakefile.bat   (create the lua lib)
+For windows
+mkdir build && cd build
+cmake ..
+(cryptopp compile error when asm code compile，because vs not support create dir for asm，so you can delete rdrand.asm compile again to create dir first and goto build cmake .. again and compile)
+
+For centos
 mkdir build && cd build
 cmake ..
 
-For others
-(first to make the lua lib)
+For Android
+use android studio
+
+For Mac
 mkdir build && cd build
-cmake ..
+cmake -G Xcode ..
+
+For IOS
+mkdir build && cd build
+cmake -G Xcode ..
+change the sdk to ios
 
 ```
 ## modules
