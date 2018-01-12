@@ -67,6 +67,10 @@ uint32_t BasiclibLua_Basic_crc32(const string& strEncode) {
 	return basiclib::Basic_crc32((unsigned char*)strEncode.c_str(), strEncode.length());
 }
 
+bool BasiclibLua_Basic_IsUTF8Str(const char* pStr, int nLength){
+    return basiclib::Basic_IsUTF8Str(pStr, nLength);
+}
+
 void ExportBasiclibClassToLua(lua_State* L) {
 	kaguya::State luaState(L);
 	int(basiclib::CBasicString::*pReplaceFunc)(const char*, const char*) = &basiclib::CBasicString::Replace;
@@ -254,4 +258,5 @@ void ExportBasiclibClassToLua(lua_State* L) {
 	luaState["BasicLogEventError"] = &BasiclibLua_BasicLogEventError;
 	luaState["Basic_MD5"] = &BasiclibLua_Basic_MD5;
 	luaState["Basic_crc32"] = &BasiclibLua_Basic_crc32;
+    luaState["Basic_IsUTF8Str"] = &BasiclibLua_Basic_IsUTF8Str;
 }
