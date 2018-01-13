@@ -212,7 +212,7 @@ class _BASIC_DLL_API CNetBasicValue : public basiclib::CBasicObject
 {
 public:
 	CNetBasicValue();
-	~CNetBasicValue();
+	virtual ~CNetBasicValue();
 	CNetBasicValue(const double& value);
 	CNetBasicValue(const int64_t& value);
 	CNetBasicValue(const int32_t value);

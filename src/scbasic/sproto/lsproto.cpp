@@ -10,6 +10,11 @@ extern "C" {
 #include "sproto.h"
 #include "lsproto.h"
 #include "../scbasic/lua/ccbasiclib_lua.h"
+#if defined(__BASICWINDOWS) || defined(__LINUX)
+#include "../../3rd/zlib/zlib.h"
+#else
+#include <zlib.h>
+#endif
 
 #define MAX_GLOBALSPROTO 16
 #define ENCODE_BUFFERSIZE 2050

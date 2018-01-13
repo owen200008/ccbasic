@@ -348,7 +348,7 @@ GetProcessMemoryInfo(
 typedef BOOL (WINAPI * GETPROCESSMEMORYINFO_FUNC) (HANDLE process, PPROCESS_MEMORY_COUNTERS counters, DWORD cb);
 //
 //取得进程使用内存 单位K
-DWORD BasicGetProcessMem(HANDLE hProcess, BOOL bKeepHandle)
+DWORD BasicGetProcessMem(HANDLE hProcess, bool bKeepHandle)
 {
 	static GETPROCESSMEMORYINFO_FUNC sGetMemInfo = NULL;
 	static HANDLE sProcess = hProcess;
@@ -506,14 +506,12 @@ long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBufLen)
 	return GetModuleFileNameA((HMODULE)hModule, pszBuffer, nBufLen);
 }
 
-CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
-{
+CBasicString BasicGetModuleTitle(HANDLE hModule, bool bExt){
 	CBasicString strModule = BasicGetModuleName(hModule);
 	int nPos = strModule.ReverseFind(PATHSPLIT_S);
 	if (nPos >= 0)
 		strModule = strModule.Mid(nPos + 1);
-	if (!bExt)
-	{
+	if (!bExt){
 		//去掉后缀名
 		nPos = strModule.ReverseFind('.');
 		if (nPos >= 0)
@@ -523,14 +521,12 @@ CBasicString BasicGetModuleTitle(HANDLE hModule, BOOL bExt)
 }
 
 //取得模块名，不包括全路径
-CWBasicString WBasicGetModuleTitle(HANDLE hModule, bool bExt)
-{
+CWBasicString WBasicGetModuleTitle(HANDLE hModule, bool bExt){
 	CWBasicString strModule = WBasicGetModuleName(hModule);
 	int nPos = strModule.ReverseFind(WIDEPATHSPLIT);
 	if (nPos >= 0)
 		strModule = strModule.Mid(nPos + 1);
-	if (!bExt)
-	{
+	if (!bExt){
 		//去掉后缀名
 		nPos = strModule.ReverseFind('.');
 		if (nPos >= 0)
@@ -647,7 +643,7 @@ long BasicCheckProcess(DWORD dwProcessID)
 // Author:    Mini.J @2009/3/13
 // Method:    BasicProcessIsTerminated => 进程是否退出
 //			查看进程列表中是否有传入的进程ID。如果存在说明未退出
-// Returns:   BOOL => 
+// Returns:   bool => 
 // Parameter: DWORD dwProcessID => 进程ID
 //************************************************************************
 bool BasicProcessIsTerminated(DWORD dwProcessID){

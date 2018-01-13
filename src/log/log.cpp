@@ -663,7 +663,7 @@ void BasicLogEvent(DebugLevel level, long lLogChannel, const char* pszLog)
 		return;
 	}
 
-	TRACE("LOG%d:%s\r\n", lLogChannel, pszLog);
+	//TRACE("LOG%d:%s\r\n", lLogChannel, pszLog);
 
     if (level > g_DebugLevel)
         return;

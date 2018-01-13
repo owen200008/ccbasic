@@ -69,7 +69,7 @@ int CIpVerify::SetIPRuler(const char* lpszRuler){
 
 //************************************************************************
 // Method:    IsIpTrust => 认证某一IP地址 1、比较IP  2、计算子码比较
-// Returns:   BOOL => 
+// Returns:   bool => 
 // Parameter: LPCTSTR lpszIP => IP地址值
 //************************************************************************
 bool CIpVerify::IsIpTrust(const char* lpszIP){
@@ -110,7 +110,7 @@ bool CIpVerify::IsIpTrust(const char* lpszIP){
 
 //************************************************************************
 // Method:    AddIPRuler => 添加IP信息至规则列表
-// Returns:   BOOL => 
+// Returns:   bool => 
 // Parameter: LPCTSTR lpszIP => IP
 // Parameter: LPCTSTR lpszMask => 子网掩码
 //************************************************************************
@@ -146,7 +146,7 @@ bool CIpVerify::AddIPRuler(const char* lpszIP, const char* lpszMask){
 
 //************************************************************************
 // Method:    IsIPAddr => 检查IP地址是否合法，合法则将4部分值返回
-// Returns:   BOOL => 
+// Returns:   bool => 
 // Parameter: LPCTSTR lpszIP => IP地址
 // Parameter: BYTE * szIP => 返回IP4部分的内存
 // Parameter: int cbIP => 内存大小

@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
 		getchar();
 		return 0;
 	}
+    BasicGetModuleTitle();
 	srand(time(NULL) + basiclib::BasicGetTickTime());
 	Net_LONGLONG valueA = 1;
 	for(int i = 0; i < 1000; i++){
