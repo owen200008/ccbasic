@@ -71,6 +71,10 @@ bool BasiclibLua_Basic_IsUTF8Str(const char* pStr, int nLength){
     return basiclib::Basic_IsUTF8Str(pStr, nLength);
 }
 
+double BasiclibLua_Basic_GetTickTime(){
+    return basiclib::BasicGetTickTimeCount();
+}
+
 void ExportBasiclibClassToLua(lua_State* L) {
 	kaguya::State luaState(L);
 	int(basiclib::CBasicString::*pReplaceFunc)(const char*, const char*) = &basiclib::CBasicString::Replace;
@@ -259,4 +263,5 @@ void ExportBasiclibClassToLua(lua_State* L) {
 	luaState["Basic_MD5"] = &BasiclibLua_Basic_MD5;
 	luaState["Basic_crc32"] = &BasiclibLua_Basic_crc32;
     luaState["Basic_IsUTF8Str"] = &BasiclibLua_Basic_IsUTF8Str;
+    luaState["Basic_GetTickCount"] = &BasiclibLua_Basic_GetTickTime;
 }
