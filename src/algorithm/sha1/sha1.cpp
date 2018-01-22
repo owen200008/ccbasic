@@ -177,6 +177,391 @@ void SHA1_Perform2(BYTE *indata, DWORD inlen, BYTE *indata2, DWORD inlen2, BYTE 
     SHA1Result(&sha, outdata);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+* Number of 32-bit words comprising the Cipher Key. For this
+* standard, Nk = 4, 6, or 8.
+*/
+int Nk;
+
+/*
+* Number of rounds, which is a function of  Nk  and  Nb (which is
+* fixed). For this standard, Nr = 10, 12, or 14.
+*/
+int Nr;
+
+/*
+* S-box transformation table
+*/
+static char *s_box[100] = {
+    // 0     1     2     3     4     5     6     7     8     9
+    "23", "34", "39", "20", "26", "92", "11", "54", "64", "52", //0
+    "13", "63", "17", "60", "94", "32", "33", "89", "93", "00", //1
+    "68", "37", "98", "87", "81", "79", "31", "99", "14", "90", //2
+    "83", "69", "49", "96", "56", "21", "58", "71", "01", "95", //3
+    "85", "38", "70", "74", "61", "12", "55", "30", "07", "19", //4
+    "91", "45", "27", "50", "06", "02", "24", "75", "62", "66", //5
+    "08", "51", "41", "35", "86", "88", "15", "80", "40", "18", //6
+    "77", "53", "46", "22", "47", "05", "67", "76", "59", "48", //7
+    "09", "78", "36", "43", "57", "03", "04", "42", "97", "29", //8
+    "73", "44", "84", "72", "82", "25", "65", "10", "16", "28" };//9
+
+                                                                 /*
+                                                                 * Inverse S-box transformation table
+                                                                 */
+static char *inv_s_box[100] = {
+    // 0     1     2     3     4     5     6     7     8     9
+    "19", "38", "55", "85", "86", "75", "54", "48", "60", "80", //0
+    "97", "06", "45", "10", "28", "66", "98", "12", "69", "49", //1
+    "03", "35", "73", "00", "56", "95", "04", "52", "99", "89", //2
+    "47", "26", "15", "16", "01", "63", "82", "21", "41", "02", //3
+    "68", "62", "87", "83", "91", "51", "72", "74", "79", "32", //4
+    "53", "61", "09", "71", "07", "46", "34", "84", "36", "78", //5
+    "13", "44", "58", "11", "08", "96", "59", "76", "20", "31", //6
+    "42", "37", "93", "90", "43", "57", "77", "70", "81", "25", //7
+    "67", "24", "94", "30", "92", "40", "64", "23", "65", "17", //8
+    "29", "50", "05", "18", "14", "39", "33", "88", "22", "27" };//9
+
+
+
+void add_round_key(char *state, char *w, uint8_t r){
+
+    uint8_t c;
+
+    for(c = 0; c < 4; c++){
+        state[4 * 0 + c] = (state[4 * 0 + c] - '0' + w[4 * 4 * r + 4 * c + 0] - '0') % 10 + '0';
+        state[4 * 1 + c] = (state[4 * 1 + c] - '0' + w[4 * 4 * r + 4 * c + 1] - '0') % 10 + '0';
+        state[4 * 2 + c] = (state[4 * 2 + c] - '0' + w[4 * 4 * r + 4 * c + 2] - '0') % 10 + '0';
+        state[4 * 3 + c] = (state[4 * 3 + c] - '0' + w[4 * 4 * r + 4 * c + 3] - '0') % 10 + '0';
+
+    }
+}
+
+void inv_add_round_key(char *state, char *w, uint8_t r){
+    uint8_t c, i;
+
+    for(c = 0; c < 4; c++){
+        for(i = 0; i < 4; i++){
+            if(state[4 * i + c] >= w[4 * 4 * r + 4 * c + i]){
+                state[4 * i + c] = state[4 * i + c] - w[4 * 4 * r + 4 * c + i] + '0';
+            }
+            else{
+                state[4 * i + c] = state[4 * i + c] - w[4 * 4 * r + 4 * c + i] + 10 + '0';
+            }
+        }
+    }
+
+}
+
+/*
+* S盒替换
+*/
+void sub_bytes(char *state){
+    for(uint8_t i = 0; i < 8; i++){
+        uint8_t row = state[i * 2] - '0';
+        uint8_t col = state[i * 2 + 1] - '0';
+        char *box = s_box[row * 10 + col];
+        state[i * 2] = box[0];
+        state[i * 2 + 1] = box[1];
+    }
+}
+
+void inv_sub_bytes(char *state){
+    for(uint8_t i = 0; i < 8; i++){
+        uint8_t row = state[i * 2] - '0';
+        uint8_t col = state[i * 2 + 1] - '0';
+        char *box = inv_s_box[row * 10 + col];
+        state[i * 2] = box[0];
+        state[i * 2 + 1] = box[1];
+    }
+}
+
+void shift_rows(char *state){
+
+    uint8_t i, k, s, tmp;
+
+    for(i = 1; i < 4; i++){
+        // shift(1,4)=1; shift(2,4)=2; shift(3,4)=3
+        // shift(r, 4) = r;
+        s = 0;
+        while(s < i){
+            tmp = state[4 * i + 0];
+
+            for(k = 1; k < 4; k++){
+                state[4 * i + k - 1] = state[4 * i + k];
+            }
+
+            state[4 * i + 4 - 1] = tmp;
+            s++;
+        }
+    }
+}
+
+void inv_shift_rows(char *state){
+
+    uint8_t i, k, s, tmp;
+
+    for(i = 1; i < 4; i++){
+        s = 0;
+        while(s < i){
+            tmp = state[4 * i + 4 - 1];
+
+            for(k = 4 - 1; k > 0; k--){
+                state[4 * i + k] = state[4 * i + k - 1];
+            }
+
+            state[4 * i + 0] = tmp;
+            s++;
+        }
+    }
+}
+
+void coef_mult(uint8_t *a, uint8_t *b, uint8_t *res){
+    res[0] = (a[0] * b[0] + a[3] * b[1] + a[2] * b[2] + a[1] * b[3]) % 10;
+    res[1] = (a[1] * b[0] + a[0] * b[1] + a[3] * b[2] + a[2] * b[3]) % 10;
+    res[2] = (a[2] * b[0] + a[1] * b[1] + a[0] * b[2] + a[3] * b[3]) % 10;
+    res[3] = (a[3] * b[0] + a[2] * b[1] + a[1] * b[2] + a[0] * b[3]) % 10;
+}
+
+void mix_columns(char *state){
+
+    uint8_t a[] = { 5, 1, 2, 3 };
+    uint8_t i, j, col[4], res[4];
+
+    for(j = 0; j < 4; j++){
+        for(i = 0; i < 4; i++){
+            col[i] = state[4 * i + j] - '0';
+        }
+
+        coef_mult(a, col, res);
+
+        for(i = 0; i < 4; i++){
+            state[4 * i + j] = res[i] + '0';
+        }
+    }
+}
+
+void inv_mix_columns(char *state){
+
+    uint8_t a[] = { 5, 3, 4, 9 }; // a(x) = {0e} + {09}x + {0d}x2 + {0b}x3
+    uint8_t i, j, col[4], res[4];
+
+    for(j = 0; j < 4; j++){
+        for(i = 0; i < 4; i++){
+            col[i] = state[4 * i + j] - '0';
+        }
+
+        coef_mult(a, col, res);
+
+        for(i = 0; i < 4; i++){
+            state[4 * i + j] = res[i] + '0';
+        }
+    }
+}
+
+uint8_t R[] = { 0, 0, 0, 0 };
+
+uint8_t *Rcon(uint8_t i){
+    R[0] = i + 1;
+    return R;
+}
+
+void coef_add(uint8_t *a, uint8_t *b, uint8_t *d){
+    d[0] = (a[0] + b[0]) % 10;
+    d[1] = (a[1] + b[1]) % 10;
+    d[2] = (a[2] + b[2]) % 10;
+    d[3] = (a[3] + b[3]) % 10;
+}
+
+void sub_word(uint8_t *w){
+
+    uint8_t i;
+
+    for(i = 0; i < 2; i++){
+        uint8_t row = w[i * 2];
+        uint8_t col = w[i * 2 + 1];
+        char *box = s_box[row * 10 + col];
+        w[i * 2] = box[0] - '0';
+        w[i * 2 + 1] = box[1] - '0';
+    }
+}
+
+void rot_word(uint8_t *w){
+
+    uint8_t tmp;
+    uint8_t i;
+
+    tmp = w[0];
+
+    for(i = 0; i < 3; i++){
+        w[i] = w[i + 1];
+    }
+
+    w[3] = tmp;
+}
+
+void key_expansion(const char *key, char *w){
+    uint8_t tmp[4];
+    uint8_t i;
+    uint8_t len = 4 * (Nr + 1);
+
+    for(i = 0; i < Nk; i++){
+        w[4 * i + 0] = key[4 * i + 0] - '0';
+        w[4 * i + 1] = key[4 * i + 1] - '0';
+        w[4 * i + 2] = key[4 * i + 2] - '0';
+        w[4 * i + 3] = key[4 * i + 3] - '0';
+    }
+
+    for(i = 4; i < len; i++){
+        tmp[0] = w[4 * (i - 1)];
+        tmp[1] = w[4 * (i - 1) + 1];
+        tmp[2] = w[4 * (i - 1) + 2];
+        tmp[3] = w[4 * (i - 1) + 3];
+
+        if(i % 4 == 0){
+            rot_word(tmp);
+            coef_add(tmp, Rcon(i / 4), tmp);
+            sub_word(tmp);
+        }
+
+        //W[i] = W[i-Nk] + tmp mod 10;
+        w[4 * i + 0] = (w[4 * (i - 4) + 0] + tmp[0]) % 10;
+        w[4 * i + 1] = (w[4 * (i - 4) + 1] + tmp[1]) % 10;
+        w[4 * i + 2] = (w[4 * (i - 4) + 2] + tmp[2]) % 10;
+        w[4 * i + 3] = (w[4 * (i - 4) + 3] + tmp[3]) % 10;
+    }
+
+    for(i = 0; i < len * 4; i++){
+        w[i] = w[i] + '0';
+    }
+}
+
+void encrypt(const char *in, const char *key, char *out){
+    char state[4 * 4];
+    uint8_t r, i, j;
+
+    char *w;
+
+    switch(strlen(key)){
+    case 16:
+        Nk = 4;
+        Nr = 10;
+        break;
+    case 24:
+        Nk = 6;
+        Nr = 12;
+        break;
+    case 32:
+        Nk = 8;
+        Nr = 14;
+        break;
+    default:
+        return;
+    }
+    w = (char *)malloc(4 * (Nr + 1) * 4 + 1);
+    w[4 * (Nr + 1) * 4 + 1] = '\0';
+    key_expansion(key, w);
+
+    for(i = 0; i < 4; i++){
+        for(j = 0; j < 4; j++){
+            state[4 * i + j] = in[4 * i + j];
+        }
+    }
+
+    add_round_key(state, w, 0);
+    for(r = 1; r < Nr; r++){
+        sub_bytes(state);
+        shift_rows(state);
+        mix_columns(state);
+        add_round_key(state, w, r);
+    }
+    sub_bytes(state);
+    shift_rows(state);
+    add_round_key(state, w, Nr);
+
+    for(i = 0; i < 4; i++){
+        for(j = 0; j < 4; j++){
+            out[4 * i + j] = state[4 * i + j];
+        }
+    }
+    out[16] = '\0';
+}
+
+void decrypt(const char *in, const char *key, char *out){
+    char state[4 * 4];
+    uint8_t r, i, j;
+
+    char *w;
+
+    switch(strlen(key)){
+    case 16:
+        Nk = 4;
+        Nr = 10;
+        break;
+    case 24:
+        Nk = 6;
+        Nr = 12;
+        break;
+    case 32:
+        Nk = 8;
+        Nr = 14;
+        break;
+    default:
+        return;
+    }
+    w = (char *)malloc(4 * (Nr + 1) * 4 + 1);
+    w[4 * (Nr + 1) * 4 + 1] = '\0';
+    key_expansion(key, w);
+
+    for(i = 0; i < 4; i++){
+        for(j = 0; j < 4; j++){
+            state[4 * i + j] = in[4 * i + j];
+        }
+    }
+
+    inv_add_round_key(state, w, Nr);
+
+    for(r = Nr - 1; r >= 1; r--){
+        inv_shift_rows(state);
+        inv_sub_bytes(state);
+        inv_add_round_key(state, w, r);
+        inv_mix_columns(state);
+    }
+
+    inv_shift_rows(state);
+    inv_sub_bytes(state);
+    inv_add_round_key(state, w, 0);
+
+    for(i = 0; i < 4; i++){
+        for(j = 0; j < 4; j++){
+            out[4 * i + j] = state[4 * i + j];
+        }
+    }
+    out[16] = '\0';
+}
+
+bool Basic_AES10_encrypt(const char* pIn, char* pOut, long lDatalen, const char* pKey){
+    if(!(pOut && pIn && pKey && lDatalen % 16 == 0)){
+        return false;
+    }
+    for(int i = 0; i < lDatalen; i += 16){
+        encrypt(pIn + i, pKey, pOut + i);
+    }
+    return true;
+}
+
+//TODO 发布时去掉解析的方法，提高安全性
+bool Basic_AES10_decrypt(const char* pIn, char* pOut, long lDatalen, const char* pKey){
+    if(!(pOut && pIn && pKey && lDatalen % 16 == 0)){
+        return false;
+    }
+    for(int i = 0; i < lDatalen; i += 16){
+        decrypt(pIn + i, pKey, pOut + i);
+    }
+    return true;
+}
+
+
 __NS_BASIC_END
 
 

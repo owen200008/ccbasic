@@ -264,4 +264,14 @@ void ExportBasiclibClassToLua(lua_State* L) {
 	luaState["Basic_crc32"] = &BasiclibLua_Basic_crc32;
     luaState["Basic_IsUTF8Str"] = &BasiclibLua_Basic_IsUTF8Str;
     luaState["Basic_GetTickCount"] = &BasiclibLua_Basic_GetTickTime;
+    luaState["Basic_AES10_encrypt"] = kaguya::function([](const std::string& strData, const char* pKey)->string{
+        string strRet = strData;
+        basiclib::Basic_AES10_encrypt(strData.c_str(), (char*)strRet.c_str(), strData.length(), pKey);
+        return strRet;
+    });
+    luaState["Basic_AES10_decrypt"] = kaguya::function([](const std::string& strData, const char* pKey)->string{
+        string strRet = strData;
+        basiclib::Basic_AES10_decrypt(strData.c_str(), (char*)strRet.c_str(), strData.length(), pKey);
+        return strRet;
+    });
 }
