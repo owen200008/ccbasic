@@ -75,6 +75,12 @@ double BasiclibLua_Basic_GetTickTime(){
     return basiclib::BasicGetTickTimeCount();
 }
 
+string BasiclibLua_BasicGetMachineSerial(){
+    basiclib::CBasicString str;
+    basiclib::BasicGetMachineSerial(str);
+    return str.c_str();
+}
+
 void ExportBasiclibClassToLua(lua_State* L) {
 	kaguya::State luaState(L);
 	int(basiclib::CBasicString::*pReplaceFunc)(const char*, const char*) = &basiclib::CBasicString::Replace;
@@ -264,6 +270,7 @@ void ExportBasiclibClassToLua(lua_State* L) {
 	luaState["Basic_crc32"] = &BasiclibLua_Basic_crc32;
     luaState["Basic_IsUTF8Str"] = &BasiclibLua_Basic_IsUTF8Str;
     luaState["Basic_GetTickCount"] = &BasiclibLua_Basic_GetTickTime;
+    luaState["BasicGetMachineSerial"] = &BasiclibLua_BasicGetMachineSerial;
     luaState["Basic_AES10_encrypt"] = kaguya::function([](const std::string& strData, const char* pKey)->string{
         string strRet = strData;
         basiclib::Basic_AES10_encrypt(strData.c_str(), (char*)strRet.c_str(), strData.length(), pKey);

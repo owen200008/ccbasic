@@ -5,9 +5,9 @@ typedef void(*coctx_pfn_t)(const char* s);
 struct coctx_t
 {
 #if defined(__x86_64__)
-    void *regs[12];
+    void *regs[14];
 #else
-	void *regs[6];
+	void *regs[8];
 #endif
 
     char *ss_sp;

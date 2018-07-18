@@ -4,7 +4,7 @@
 #include "net/nettest.h"
 //#include "misc/fastdelegatetest.h"
 //#include "exception/stackwalkcheck.h"
-//#include "util/containerexttest.h"
+#include "util/containerexttest.h"
 #include "thread/threadtest.h"
 #include "coroutine/coroutinetest.h"
 #include "../scbasic/encode/rsaencode.h"
@@ -19,11 +19,6 @@ int main(int argc, char* argv[])
 	}
     BasicGetModuleTitle();
 	srand(time(NULL) + basiclib::BasicGetTickTime());
-	Net_LONGLONG valueA = 1;
-	for(int i = 0; i < 1000; i++){
-		printf("%lld\r\n", valueA);
-		valueA += 10000000;
-	}
 	
 
 	/*char szBuf[1024] = { 0 };
@@ -44,12 +39,12 @@ int main(int argc, char* argv[])
 	}*/
 
 
-	TestCoroutine(1);
-	TestCoroutine();
+	//TestCoroutine(1);
+	//TestCoroutine();
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
-	//TestContainExt();
+	TestContainExt();
 	//NetServerTest();
 	//TestFunctionXiaolvTest();
 	getchar();

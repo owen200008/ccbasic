@@ -776,6 +776,13 @@ double BasicGetHighPerformanceCounter()
         return ((double)tp.tv_sec * 1000000 + (double)tp.tv_nsec / 1000);
 }
 
+//! 获取取机器的特征码
+/*!
+*/
+bool BasicGetMachineSerial(CBasicString& str){
+    return true;
+}
+
 __NS_BASIC_END
 
 #endif

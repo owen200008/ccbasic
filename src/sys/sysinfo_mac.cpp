@@ -549,6 +549,37 @@ _BASIC_DLL_API  double BasicGetHighPerformanceCounter()
         return ((double)tp.tv_sec*1000000 + tp.tv_usec);
 }
 
+
+#define cpuid(in,a,b,c,d)  asm("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (in));
+bool getcpuid(char *id, size_t max){
+    int i;
+    unsigned long li, maxi, maxei, ebx, ecx, edx, unused;
+
+    cpuid(0, maxi, unused, unused, unused);
+    maxi &= 0xffff;
+
+    if(maxi < 3){
+        return false;
+    }
+
+    cpuid(3, eax, ebx, ecx, edx);
+
+    snprintf(id, max, "%08lx %08lx %08lx %08lx", eax, ebx, ecx, edx);
+    return true;
+}
+
+//! 获取取机器的特征码
+/*!
+*/
+bool BasicGetMachineSerial(CBasicString& str){
+    char szBuf[256] = { 0 };
+    if(!getcpuid(szBuf, 128)){
+        return false;
+    }
+    str = basiclib::Basic_MD5(szBuf, 256);
+    return true;
+}
+
 __NS_BASIC_END
 
 

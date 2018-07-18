@@ -46,17 +46,17 @@ public:
 
 			ArrayNode& node = m_pPool[GetDataIndex(nWriteIndex)];
 			node.m_data = value;
-			node.m_bReadAlready.store(true);
+			node.m_bReadAlready.store(true, std::memory_order_release);
 			return true;
 		}
-		bool Pop(T& value, uint32_t& nIndex){
+		bool Pop(T& value){
 			uint32_t nReadIndex = m_nRead.load(std::memory_order_relaxed);
 			ArrayNode* pNode = nullptr;  
 			do{
 				pNode = &(m_pPool[GetDataIndex(nReadIndex)]);
-				if (!pNode->m_bReadAlready.load(std::memory_order_relaxed)){
+				if (!pNode->m_bReadAlready.load(std::memory_order_acquire)){
 					//empty
-					if (m_nRead.compare_exchange_weak(nReadIndex, nReadIndex)){
+					if (m_nRead.compare_exchange_weak(nReadIndex, nReadIndex, std::memory_order_release, std::memory_order_relaxed)){
 						return false;
 					}
 					//这边continue后面必须是true，如果直接compare_exchange_weak会导致pNode出错
@@ -64,29 +64,26 @@ public:
 				}
 				if (m_nRead.compare_exchange_weak(nReadIndex, nReadIndex + 1, std::memory_order_release, std::memory_order_relaxed))
 					break;
-
 			} while (true);
-
 			value = pNode->m_data;
-
-			pNode->m_bReadAlready.store(false, std::memory_order_relaxed);
+			pNode->m_bReadAlready.store(false, std::memory_order_release);
 			return true;
 		}
-		bool IsEmpty(){
-			uint32_t nReadIndex = m_nRead.load(std::memory_order_relaxed);
-			do{
-				ArrayNode* pNode = &(m_pPool[GetDataIndex(nReadIndex)]);
-				if (!pNode->m_bReadAlready.load(std::memory_order_relaxed)){
-					//empty
-					if (m_nRead.compare_exchange_weak(nReadIndex, nReadIndex)){
-						return true;
-					}
-					continue;
-				}
-				break;
-			} while (true);
-			return false;
-		}
+        bool IsEmpty(){
+            uint32_t nReadIndex = m_nRead.load(std::memory_order_relaxed);
+            do{
+                ArrayNode * pNode = &(m_pPool[GetDataIndex(nReadIndex)]);
+                if(!pNode->m_bReadAlready.load(std::memory_order_acquire)){
+                    //empty
+                    if(m_nRead.compare_exchange_weak(nReadIndex, nReadIndex, std::memory_order_release, std::memory_order_relaxed)){
+                        return true;
+                    }
+                    continue;
+                }
+                break;
+            } while(true);
+            return false;
+        }
 		uint32_t GetAllocCount(){ return m_nMaxCount; }
 	public:
 		std::atomic<uint32_t>	m_nRead;
@@ -141,7 +138,7 @@ public:
 		TRACE("expand_queue:%d\n", m_nNextQueueSize / BASICQUEUE_ALLOCMULTYTIMES * sizeof(ArrayNode));
 		return Push(value, nDeep);
 	}
-	bool Pop(T& value, uint32_t& nIndex){
+	bool Pop(T& value){
 		uint32_t nGetReadIndex = m_cReadIndex.load(std::memory_order_relaxed);
 		uint32_t nReadIndex = GetQueueArrayIndex(nGetReadIndex);
 		AllocateIndexData* pAllocData = m_pMaxAllocTimes[nReadIndex];
@@ -149,7 +146,7 @@ public:
 			//非常特殊情况下才会进来，push当前的环写完切换到下一个环还没创建，这边进入pop才会进入这里
 			return false;
 		}
-		if (pAllocData->Pop(value, nIndex)){
+		if (pAllocData->Pop(value)){
 			return true;
 		}
 
@@ -190,7 +187,7 @@ public:
 				delete pAllocData;
 			}
 		}
-		return Pop(value, nIndex);
+		return Pop(value);
 	}
 	bool IsEmpty(){
 		uint32_t nReadIndex = GetQueueArrayIndex(m_cReadIndex.load(std::memory_order_relaxed));
@@ -220,13 +217,9 @@ protected:
 	AllocateIndexData*											m_pMaxAllocTimes[BASICQUEUE_MAX_ALLOCTIMES];
 };
 
-struct ctx_message
-{
+struct ctx_message{
 	uint32_t		m_nCtxID;
-	int32_t			m_session;
-	uint32_t		m_nType;
-	void*			m_data;
-	size_t			sz;
+	uint32_t		m_nIndex;
 	ctx_message(){
 		memset(this, 0, sizeof(ctx_message));
 	}
@@ -234,72 +227,212 @@ struct ctx_message
 		memset(this, 0, sizeof(ctx_message));
 		m_nCtxID = ctxid;
 	}
-	ctx_message(ctx_message&& msg){
-		*this = msg;
-		msg.sz = 0;
-	}
 	~ctx_message(){
-		if (sz > 0){
-			basiclib::BasicDeallocate(m_data);
-		}
-	}
-	ctx_message& operator = (ctx_message&& msg){
-		*this = msg;
-		msg.sz = 0;
-		return *this;
 	}
 };
 
-LONG g_pushtimes = 0;
-LONG g_poptimes = 0;
-LONG g_addC = 0;
-LONG g_delC = 0;
-ctx_message msg;
-ctx_message* GetPushCtx(){
-	LONG lRet = basiclib::BasicInterlockedIncrement(&g_pushtimes);
-	if (lRet > TIMES_FAST)
-		return nullptr;
-	return &msg;
-}
-/*
-ctx_message* GetPopCtx(){
-	LONG lRet = basiclib::BasicInterlockedIncrement(&g_poptimes);
-	if (lRet > TIMES_FAST)
-		return nullptr;
-	return &msg;
-}*/
+class CBasicQueryArrayTest{
+public:
+    LONG m_pushMaxTimes = 0;
+    LONG m_pushtimes = 0;
+    uint32_t m_nIndex = 0;
+
+    uint32_t m_nreceive = 0;
+
+    CBasicQueryArrayTest(){
+        
+    }
+    void setIndex(uint32_t nIndex){
+        m_nIndex = nIndex;
+    }
+    ctx_message* GetPushCtx(ctx_message& msg){
+        LONG lRet = basiclib::BasicInterlockedIncrement(&m_pushtimes);
+        if(lRet > m_pushMaxTimes)
+            return nullptr;
+        msg.m_nCtxID = lRet;
+        msg.m_nIndex = m_nIndex;
+        return &msg;
+    }
+    void receiveIndex(ctx_message& msg){
+        ASSERT(m_nreceive + 1 == msg.m_nCtxID);
+        m_nreceive = msg.m_nCtxID;
+    }
+    bool checkIsSuccess(){
+        return m_pushMaxTimes == m_nreceive;
+    }
+
+};
+class CBasicQueryArrayTestMgr{
+public:
+    CBasicQueryArrayTestMgr(){
+        
+    }
+    void Init(int nCount, LONG maxCount){
+        m_nCreateCount = nCount;
+        p = new CBasicQueryArrayTest[nCount];
+        for(int i = 0; i < nCount; i++){
+            p[i].setIndex(i);
+            p[i].m_pushMaxTimes = maxCount;
+        }
+    }
+    ~CBasicQueryArrayTestMgr(){
+        if(p){
+            delete[]p;
+        }
+    }
+    void receiveIndex(ctx_message& msg){
+        p[msg.m_nIndex].receiveIndex(msg);
+    }
+    bool checkIsSuccess(){
+        for(int i = 0; i < m_nCreateCount; i++){
+            if(!p[i].checkIsSuccess())
+                return false;
+        }
+        return true;
+    }
+    //获取总次数
+    uint32_t getPushTimes(){
+        uint32_t ret = 0;
+        for(int i = 0; i < m_nCreateCount; i++){
+            ret += p[i].m_nreceive;
+        }
+        return ret;
+    }
+    
+
+    int             m_nCreateCount = 0;
+    CBasicQueryArrayTest* p = nullptr;
+};
+
+class CBasicQueryArrayTestMgrMulti{
+public:
+    template<class F>
+    CBasicQueryArrayTestMgrMulti(int nRepeatTimes, int nThreadCount, LONG maxPushTimes, F func){
+        m_nRepeatTimes = nRepeatTimes;
+        m_pMgr = new CBasicQueryArrayTestMgr[nRepeatTimes];
+        for(int i = 0; i < nRepeatTimes; i++){
+            m_pMgr[i].Init(nThreadCount, maxPushTimes);
+        }
+        for(int i = 0; i < nRepeatTimes; i++){
+            func(this, &m_pMgr[i]);
+        }
+    }
+    ~CBasicQueryArrayTestMgrMulti(){
+        if(m_pMgr){
+            delete[]m_pMgr;
+        }
+    }
+    //打印效率信息
+    void printData(){
+        uint32_t nTotal = 0;
+        for(int i = 0; i < m_nRepeatTimes; i++){
+            nTotal += m_pMgr[i].getPushTimes();
+        }
+        printf("push用时%d pop用时%d push效率%.4f pop效率%.4f\n", m_use, m_receuse,
+                (double)nTotal / m_use,
+               (double)nTotal / m_receuse);
+    }
+    int m_nRepeatTimes = 0;
+    CBasicQueryArrayTestMgr* m_pMgr;
+    clock_t m_begin = 0;
+    clock_t m_use = 0;
+
+    clock_t m_recebegin = 0;
+    clock_t m_receuse = 0;
+
+    void StartClock(){
+        m_begin = clock();
+    }
+    void EndClock(){
+        m_use += clock() - m_begin;
+    }
+    void StartReceClock(){
+        m_recebegin = clock();
+    }
+    void EndReceClock(){
+        m_receuse += clock() - m_recebegin;
+    }
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+//自定义无所队列
 CBasicQueueArray<ctx_message> basicQueue;
-THREAD_RETURN CBasicQueueThreadPush(void* arg){
-	clock_t begin = clock();
-	int nIndex = 0;
+THREAD_RETURN CBasicQueueThreadPushSpeed(void* arg){
+    ctx_message msg;
+    CBasicQueryArrayTest* pTest = (CBasicQueryArrayTest*)arg;
 	while (true){
-		ctx_message* pRet = GetPushCtx();
+		ctx_message* pRet = pTest->GetPushCtx(msg);
 		if (pRet == nullptr)
 			break;
 		basicQueue.Push(msg);
-		nIndex++;
 	}
-	clock_t end = clock();
-	g_addC += end - begin;
-	printf("BasicQueuePush(%d) %d\n", nIndex, end - begin);
-	return 0;
-}
-THREAD_RETURN CBasicQueueThreadPop(void* arg){
-	clock_t begin = clock();
-	int nIndex = 0;
-	uint32_t nIndex2 = 0;
-	while (true){
-		if (!basicQueue.Pop(msg, nIndex2)){
-			break;
-		}
-		nIndex++;
-	}
-	clock_t end = clock();
-	g_delC += end - begin;
-	printf("BasicQueuePop(%d) %d\n", nIndex, end - begin);
 	return 0;
 }
 
+THREAD_RETURN CBasicQueueThreadPopSpeed(void* arg){
+    ctx_message msg;
+    CBasicQueryArrayTestMgr* pTestMgr = (CBasicQueryArrayTestMgr*)arg;
+	while (true){
+		if (!basicQueue.Pop(msg)){
+			break;
+		}
+        pTestMgr->receiveIndex(msg);
+	}
+	return 0;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+//第三方无锁队列
+
+basiclib::CLockFreeMessageQueue<ctx_message> conMsgQueue;
+THREAD_RETURN ConcurrentQueueThreadPushSpeed(void* arg){
+    ctx_message msg;
+    CBasicQueryArrayTest* pTest = (CBasicQueryArrayTest*)arg;
+    while(true){
+        ctx_message* pRet = pTest->GetPushCtx(msg);
+        if(pRet == nullptr)
+            break;
+        conMsgQueue.enqueue(std::move(*pRet));
+    }
+    return 0;
+}
+THREAD_RETURN ConcurrentQueueThreadPopSpeed(void* arg){
+    ctx_message msg;
+    CBasicQueryArrayTestMgr* pTestMgr = (CBasicQueryArrayTestMgr*)arg;
+    while(true){
+        if(!conMsgQueue.try_dequeue(msg)){
+            break;
+        }
+        pTestMgr->receiveIndex(msg);
+    }
+    return 0;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+//带锁队列
+basiclib::CMessageQueueLock<ctx_message> msgQueue;
+THREAD_RETURN CMessageQueueThreadPushSpeed(void* arg){
+    ctx_message msg;
+    CBasicQueryArrayTest* pTest = (CBasicQueryArrayTest*)arg;
+    while(true){
+        ctx_message* pRet = pTest->GetPushCtx(msg);
+        if(pRet == nullptr)
+            break;
+        msgQueue.MQPush(&msg);
+    }
+    return 0;
+}
+THREAD_RETURN CMessageQueueThreadPopSpeed(void* arg){
+    ctx_message msg;
+    CBasicQueryArrayTestMgr* pTestMgr = (CBasicQueryArrayTestMgr*)arg;
+    while(true){
+        if(msgQueue.MQPop(&msg)){
+            break;
+        }
+        pTestMgr->receiveIndex(msg);
+    }
+    return 0;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 LONG g_TotalPush = 0;
 LONG g_TotalPop = 0;
 
@@ -328,7 +461,7 @@ THREAD_RETURN CBasicQueueThreadPop2(void* arg){
 	uint32_t nIndex = 0;
 	uint32_t nGetIndex = 0;
 	while (true){
-		if (!basicQueueInt.Pop(nIndex, nGetIndex)){
+		if (!basicQueueInt.Pop(nIndex)){
 			basiclib::BasicSleep(1);
 			continue;
 		}
@@ -369,54 +502,7 @@ THREAD_RETURN CBasicQueueThreadCheck(void* arg){
 	return 0;
 }
 
-basiclib::CMessageQueueLock<ctx_message> msgQueue;
-THREAD_RETURN CMessageQueueThreadPush(void* arg){
-	clock_t begin = clock();
-	int nIndex = 0;
-	while (true){
-		ctx_message* pRet = GetPushCtx();
-		if (pRet == nullptr)
-			break;
-		msgQueue.MQPush(&msg);
-		nIndex++;
-	}
-	clock_t end = clock();
-	g_addC += end - begin;
-	printf("SpinLockMQPush(%d) %d\n", nIndex, end - begin);
-	return 0;
-}
-THREAD_RETURN CMessageQueueThreadPop(void* arg){
-	clock_t begin = clock();
-	int nIndex = 0;
-	while (true){
-		if (msgQueue.MQPop(&msg)){
-			break;
-		}
-		nIndex++;
-	}
-	clock_t end = clock();
-	g_delC += end - begin;
-	printf("SpinLockMQPop(%d) %d\n", nIndex, end - begin);
-	return 0;
-}
 
-basiclib::CLockFreeMessageQueue<ctx_message> conMsgQueue;
-THREAD_RETURN ConcurrentQueueThreadPush(void* arg){
-	clock_t begin = clock();
-	int nIndex = 0;
-	while (true){
-		ctx_message* pRet = GetPushCtx();
-		if (pRet == nullptr)
-			break;
-		//moodycamel::ProducerToken token(conMsgQueue);
-		conMsgQueue.enqueue(std::move(*pRet));
-		nIndex++;
-	}
-	clock_t end = clock();
-	g_addC += end - begin;
-	printf("LockFreeMQPush(%d) %d\n", nIndex, end - begin);
-	return 0;
-}
 THREAD_RETURN ConcurrentQueueThreadPushToken(void* arg){
 	moodycamel::ProducerToken token(conMsgQueue);
 	clock_t begin = clock();
@@ -501,9 +587,131 @@ THREAD_RETURN TestSeq2(void* arg){
 	}
 	return 0;
 }
+*/
 
 #define CREATE_THREAD 8
 HANDLE g_thread[CREATE_THREAD];
+
+//插入速度测试,完整性测试
+void SpeedTest(basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPush, basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPop, int nMaxThreadCount = 8){
+    DWORD dwThreadServerID = 0;
+    {
+        printf("单线程\n");
+        {
+            const int nThreadCount = 1;
+            CBasicQueryArrayTestMgrMulti* pDelete = new CBasicQueryArrayTestMgrMulti(5, nThreadCount, TIMES_FAST, [&](CBasicQueryArrayTestMgrMulti* pSelf, CBasicQueryArrayTestMgr* pMgr){
+                pSelf->StartClock();
+                for(int j = 0; j < nThreadCount; j++){
+                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPush, &pMgr->p[j], &dwThreadServerID);
+                }
+                for(int j = 0; j < nThreadCount; j++){
+                    basiclib::BasicWaitForSingleObject(g_thread[j], -1);
+                }
+                pSelf->EndClock();
+                pSelf->StartReceClock();
+                for(int j = 0; j < 1; j++){
+                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPop, pMgr, &dwThreadServerID);
+                }
+                for(int j = 0; j < 1; j++){
+                    basiclib::BasicWaitForSingleObject(g_thread[j], -1);
+                }
+                pSelf->EndReceClock();
+                if(!pMgr->checkIsSuccess()){
+                    printf("验证(失败)\n");
+                }
+            });
+            pDelete->printData();
+            delete pDelete;
+        }
+    }
+    
+    if(nMaxThreadCount >= 2){
+        printf("两线程\n");
+        {
+            const int nThreadCount = 2;
+            CBasicQueryArrayTestMgrMulti* pDelete = new CBasicQueryArrayTestMgrMulti(5, nThreadCount, TIMES_FAST / 2, [&](CBasicQueryArrayTestMgrMulti* pSelf, CBasicQueryArrayTestMgr* pMgr){
+                pSelf->StartClock();
+                for(int j = 0; j < nThreadCount; j++){
+                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPush, &pMgr->p[j], &dwThreadServerID);
+                }
+                for(int j = 0; j < nThreadCount; j++){
+                    basiclib::BasicWaitForSingleObject(g_thread[j], -1);
+                }
+                pSelf->EndClock();
+                pSelf->StartReceClock();
+                for(int j = 0; j < 1; j++){
+                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPop, pMgr, &dwThreadServerID);
+                }
+                for(int j = 0; j < 1; j++){
+                    basiclib::BasicWaitForSingleObject(g_thread[j], -1);
+                }
+                pSelf->EndReceClock();
+                if(!pMgr->checkIsSuccess()){
+                    printf("验证(失败)\n");
+                }
+            });
+            pDelete->printData();
+            delete pDelete;
+        }
+    }
+    if(nMaxThreadCount >= 4){
+        printf("四线程\n");
+        {
+            const int nThreadCount = 4;
+            CBasicQueryArrayTestMgrMulti* pDelete = new CBasicQueryArrayTestMgrMulti(5, nThreadCount, TIMES_FAST / 4, [&](CBasicQueryArrayTestMgrMulti* pSelf, CBasicQueryArrayTestMgr* pMgr){
+                pSelf->StartClock();
+                for(int j = 0; j < nThreadCount; j++){
+                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPush, &pMgr->p[j], &dwThreadServerID);
+                }
+                for(int j = 0; j < nThreadCount; j++){
+                    basiclib::BasicWaitForSingleObject(g_thread[j], -1);
+                }
+                pSelf->EndClock();
+                pSelf->StartReceClock();
+                for(int j = 0; j < 1; j++){
+                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPop, pMgr, &dwThreadServerID);
+                }
+                for(int j = 0; j < 1; j++){
+                    basiclib::BasicWaitForSingleObject(g_thread[j], -1);
+                }
+                pSelf->EndReceClock();
+                if(!pMgr->checkIsSuccess()){
+                    printf("验证(失败)\n");
+                }
+            });
+            pDelete->printData();
+            delete pDelete;
+        }
+    }
+    if(nMaxThreadCount >= 8){
+        printf("8线程\n");
+        const int nThreadCount = 8;
+        CBasicQueryArrayTestMgrMulti* pDelete = new CBasicQueryArrayTestMgrMulti(5, nThreadCount, TIMES_FAST / 8, [&](CBasicQueryArrayTestMgrMulti* pSelf, CBasicQueryArrayTestMgr* pMgr){
+            pSelf->StartClock();
+            for(int j = 0; j < nThreadCount; j++){
+                g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPush, &pMgr->p[j], &dwThreadServerID);
+            }
+            for(int j = 0; j < nThreadCount; j++){
+                basiclib::BasicWaitForSingleObject(g_thread[j], -1);
+            }
+            pSelf->EndClock();
+            pSelf->StartReceClock();
+            for(int j = 0; j < 1; j++){
+                g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPop, pMgr, &dwThreadServerID);
+            }
+            for(int j = 0; j < 1; j++){
+                basiclib::BasicWaitForSingleObject(g_thread[j], -1);
+            }
+            pSelf->EndReceClock();
+            if(!pMgr->checkIsSuccess()){
+                printf("验证(失败)\n");
+            }
+        });
+        pDelete->printData();
+        delete pDelete;
+    }
+}
+
 void TestContainExt()
 {
 	DWORD dwThreadServerID = 0;
@@ -537,7 +745,7 @@ void TestContainExt()
 			printf("dequeue Total Times %d\n", end - begin);
 		}
 	}*/
-	g_addC = 0;
+	/*g_addC = 0;
 	g_delC = 0;
 	if (true)
 	{
@@ -564,39 +772,15 @@ void TestContainExt()
 		printf("Total MQPush %d\n", g_addC);
 		printf("Total MQPop %d\n", g_delC);
 		printf("Total Times %d\n", end - begin);
-	}
-	/*
-	g_addC = 0;
-	g_delC = 0;
+	}*/
+    //插入，读取速度测试
 	if (true)
 	{
-		clock_t begin = clock();
-		for (int i = 0; i < 5; i++)
-		{
-			g_pushtimes = 0;
-			g_poptimes = 0;
-			for (int j = 0; j < CREATE_THREAD; j++)
-			{
-				g_thread[j] = basiclib::BasicCreateThread(CBasicQueueThreadPush, nullptr, &dwThreadServerID);
-			}
-			for (int j = 0; j < CREATE_THREAD; j++)
-			{
-				basiclib::BasicWaitForSingleObject(g_thread[j], -1);
-			}
-			for (int j = 0; j < CREATE_THREAD; j++)
-			{
-				g_thread[j] = basiclib::BasicCreateThread(CBasicQueueThreadPop, nullptr, &dwThreadServerID);
-			}
-			for (int j = 0; j < CREATE_THREAD; j++)
-			{
-				basiclib::BasicWaitForSingleObject(g_thread[j], -1);
-			}
-		}
-		clock_t end = clock();
-		printf("Total MQPush %d\n", g_addC);
-		printf("Total MQPop %d\n", g_delC);
-		printf("Total Times %d\n", end - begin);
+        SpeedTest(CBasicQueueThreadPushSpeed, CBasicQueueThreadPopSpeed);
+        SpeedTest(ConcurrentQueueThreadPushSpeed, ConcurrentQueueThreadPopSpeed);
+        SpeedTest(CMessageQueueThreadPushSpeed, CMessageQueueThreadPopSpeed, 4);
 	}
+    /*
 	g_addC = 0;
 	g_delC = 0;
 	if (true)

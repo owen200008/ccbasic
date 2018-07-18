@@ -252,6 +252,12 @@ protected:
 */
 _BASIC_DLL_API double BasicGetHighPerformanceCounter();
 
+//! 获取取机器的特征码
+/*!
+*/
+_BASIC_DLL_API bool BasicGetMachineSerial(CBasicString& str);
+
+
 __NS_BASIC_END
 
 #endif 
