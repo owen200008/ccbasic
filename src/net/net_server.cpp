@@ -460,7 +460,7 @@ int32_t CBasicSessionNetServer::Listen(const char* lpszAddress, bool bWaitSucces
 	return nRet;
 }
 
-//��ȡ�û�������
+//get online sessioncount
 long CBasicSessionNetServer::GetOnlineSessionCount() {
 	basiclib::CSingleLock lock(&m_mtxCSession, true);
 	return m_mapClientSession.size();
@@ -485,7 +485,7 @@ void CBasicSessionNetServer::SendToAll(void * pData, int nLength, DWORD dwFlag, 
 	}
 }
 
-//�Ͽ���������,�Ͽ�ǰ�Ļص�
+//close
 void CBasicSessionNetServer::CloseAllSession(const std::function<void(CBasicSessionNetServerSession* pSession)>& func){
 	VTClientSession vtUser;
 	CopyClientSession(vtUser);
@@ -506,7 +506,7 @@ void CBasicSessionNetServer::GetNetStatus(CBasicString& strStatus){
 	CopyClientSession(vtUser);
 
 	basiclib::CBasicString strVal;
-	strVal.Format("����: %s  ���Ӷ������£�\r\n", m_strListenAddr.c_str());
+	strVal.Format("ListenAddress: %s\r\n", m_strListenAddr.c_str());
 	for (auto& client : vtUser){
 		client->GetNetStatus(strVal);
 	}

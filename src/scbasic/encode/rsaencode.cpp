@@ -13,28 +13,26 @@ CSCBasicRSA::~CSCBasicRSA()
 
 }
 
-void CSCBasicRSA::GenerateRSAKey(unsigned int keyLength, const char *privFilename, const char *pubFilename)
-{
+void CSCBasicRSA::GenerateRSAKey(unsigned int keyLength, const char *privFilename, const char *pubFilename){
 	CryptoPP::RSAES_OAEP_SHA_Decryptor priv(m_rng, keyLength);
 	CryptoPP::HexEncoder privFile(new CryptoPP::FileSink(privFilename));
-	priv.DEREncode(privFile);
+    priv.AccessMaterial().Save(privFile);
 	privFile.MessageEnd();
 
 	CryptoPP::RSAES_OAEP_SHA_Encryptor pub(priv);
 	CryptoPP::HexEncoder pubFile(new CryptoPP::FileSink(pubFilename));
-	pub.DEREncode(pubFile);
+    pub.AccessMaterial().Save(pubFile);
 	pubFile.MessageEnd();
 }
-void CSCBasicRSA::GenerateRSAKey(unsigned int keyLength, string& strPub, string& strPri)
-{
+void CSCBasicRSA::GenerateRSAKey(unsigned int keyLength, string& strPri, string& strPub){
 	CryptoPP::RSAES_OAEP_SHA_Decryptor priv(m_rng, keyLength);
 	CryptoPP::HexEncoder privFile(new CryptoPP::StringSink(strPri));
-	priv.DEREncode(privFile);
+    priv.AccessMaterial().Save(privFile);
 	privFile.MessageEnd();
 
 	CryptoPP::RSAES_OAEP_SHA_Encryptor pub(priv);
 	CryptoPP::HexEncoder pubFile(new CryptoPP::StringSink(strPub));
-	pub.DEREncode(pubFile);
+    pub.AccessMaterial().Save(pubFile);
 	pubFile.MessageEnd();
 }
 
@@ -45,12 +43,12 @@ void CSCBasicRSA::SetPublicFileName(const char* pPubFileName)
 	{
 		CryptoPP::FileSource source(pPubFileName, true, new CryptoPP::HexDecoder);
 		CryptoPP::Filter& filter = source;
-		m_pubEncode.AccessKey().Load(filter);
+		m_pubEncode.AccessMaterial().Load(filter);
 	}
 	{
 		CryptoPP::FileSource source(pPubFileName, true, new CryptoPP::HexDecoder);
 		CryptoPP::Filter& filter = source;
-		m_pubDecode.AccessKey().Load(filter);
+		m_pubDecode.AccessMaterial().Load(filter);
 	}
 	
 }
@@ -60,38 +58,36 @@ void CSCBasicRSA::SetPublicKey(const char* pData)
 	{
 		CryptoPP::StringSource source(pData, true, new CryptoPP::HexDecoder);
 		CryptoPP::Filter& filter = source;
-		m_pubEncode.AccessKey().Load(filter);
+		m_pubEncode.AccessMaterial().Load(filter);
 	}
 	{
 		CryptoPP::StringSource source(pData, true, new CryptoPP::HexDecoder);
 		CryptoPP::Filter& filter = source;
-		m_pubDecode.AccessKey().Load(filter);
+		m_pubDecode.AccessMaterial().Load(filter);
 	}
 }
-void CSCBasicRSA::SetPrivateFileName(const char* pPrivateFileName)
-{
+void CSCBasicRSA::SetPrivateFileName(const char* pPrivateFileName){
 	{
 		CryptoPP::FileSource source(pPrivateFileName, true, new CryptoPP::HexDecoder);
 		CryptoPP::Filter& filter = source;
-		m_priDecode.AccessKey().Load(filter);
+		m_priDecode.AccessMaterial().Load(filter);
 	}
 	{
 		CryptoPP::FileSource source(pPrivateFileName, true, new CryptoPP::HexDecoder);
 		CryptoPP::Filter& filter = source;
-		m_priEncode.AccessKey().Load(filter);
+		m_priEncode.AccessMaterial().Load(filter);
 	}
 }
-void CSCBasicRSA::SetPrivateKey(const char* pData)
-{
+void CSCBasicRSA::SetPrivateKey(const char* pData){
 	{
 		CryptoPP::StringSource source(pData, true, new CryptoPP::HexDecoder);
 		CryptoPP::Filter& filter = source;
-		m_priDecode.AccessKey().Load(filter);
+		m_priDecode.AccessMaterial().Load(filter);
 	}
 	{
 		CryptoPP::StringSource source(pData, true, new CryptoPP::HexDecoder);
 		CryptoPP::Filter& filter = source;
-		m_priEncode.AccessKey().Load(filter);
+		m_priEncode.AccessMaterial().Load(filter);
 	}
 }
 
@@ -102,12 +98,14 @@ size_t CSCBasicRSA::CalcEncryptNeedLength(int nLength)
 	return (nLength / fixedLen + 1) * m_pubEncode.FixedCiphertextLength();
 }
 
-size_t CSCBasicRSA::Encrypt(const char* pEncode, int nLength, byte* pOutput, int nOutputLength)
-{
+size_t CSCBasicRSA::Encrypt(const byte* pEncode, int nLength, byte* pOutput, int nOutputLength){
 	size_t putLen = 0;
 	size_t fixedLen = m_pubEncode.FixedMaxPlaintextLength();
-	for (int i = 0; i < nLength; i += fixedLen)
-	{
+    if(fixedLen == 0){
+        ASSERT(0);
+        return 0;
+    }
+	for (int i = 0; i < nLength; i += fixedLen){
 		size_t len = fixedLen < (nLength - i) ? fixedLen : (nLength - i);
 		CryptoPP::ArraySink *dstArr = new CryptoPP::ArraySink(pOutput + putLen, nOutputLength - putLen);
 		CryptoPP::ArraySource source((byte*)(pEncode + i), len, true, new CryptoPP::PK_EncryptorFilter(m_rng, m_pubEncode, dstArr));
@@ -116,7 +114,7 @@ size_t CSCBasicRSA::Encrypt(const char* pEncode, int nLength, byte* pOutput, int
 	return putLen;
 }
 
-size_t CSCBasicRSA::Decrypt(const char* pDecode, int nLength, byte* pOutput, int nOutputLength)
+size_t CSCBasicRSA::Decrypt(const byte* pDecode, int nLength, byte* pOutput, int nOutputLength)
 {
 	size_t putLen = 0;
 	size_t fixedLen = m_priDecode.FixedCiphertextLength();

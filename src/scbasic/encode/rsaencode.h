@@ -13,7 +13,7 @@ public:
 	virtual ~CSCBasicRSA();
 
 	void GenerateRSAKey(unsigned int keyLength, const char *privFilename, const char *pubFilename);
-	void GenerateRSAKey(unsigned int keyLength, string& strPub, string& strPri);
+	void GenerateRSAKey(unsigned int keyLength, string& strPri, string& strPub);
 
 	//! 设置public&private
 	void SetPublicFileName(const char* pPubFileName);
@@ -24,8 +24,8 @@ public:
 	//! 计算加密所需的数据长度
 	size_t CalcEncryptNeedLength(int nLength);
 
-	size_t Encrypt(const char* pEncode, int nLength, byte* pOutput, int nOutputLength);
-	size_t Decrypt(const char* pDecode, int nLength, byte* pOutput, int nOutputLength);
+	size_t Encrypt(const byte* pEncode, int nLength, byte* pOutput, int nOutputLength);
+	size_t Decrypt(const byte* pDecode, int nLength, byte* pOutput, int nOutputLength);
 
 	//! 最大不能超过max signlength, 0代表失败
 	size_t Sign(const char* pEncode, int nLength, byte* pOutput, int nOutputLength);
