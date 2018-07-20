@@ -1,4 +1,5 @@
 #include "coroutinetest.h"
+#include "../headdefine.h"
 #define TIMES_FORTEST 1000000
 /*
 void Foo(CCorutinePlus* pCorutine)
@@ -12,22 +13,27 @@ void Foo(CCorutinePlus* pCorutine)
 	pCorutine->YieldCorutine();
 }
 */
-typedef CCorutinePlusBase CCorutinePlus;
-typedef CCorutinePlusPoolBase CCorutinePlusPool;
-void DieDaiTimes(CCorutinePlus* pCorutine){
-	int nTimes = pCorutine->GetParam<int>(0) + 1;
-	int nCreateTimes = pCorutine->GetParam<int>(1);
-	int nLimitTimes = pCorutine->GetParam<int>(2);
-    CCorutinePlusPool* pRunPool = pCorutine->GetRunPool();
-    if (nTimes > nLimitTimes){
+
+
+//统计迭代次数
+uint32_t g_nTotalCorutineCount = 0;
+uint32_t g_nTotalCorutineCreate = 0;
+void DieDaiTimes(CCorutinePlusBase* pCorutine){
+    g_nTotalCorutineCount++;
+    int nTimes = pCorutine->GetParam<int>(0) + 1;
+    int nCreateTimes = pCorutine->GetParam<int>(1);
+    int nLimitTimes = pCorutine->GetParam<int>(2);
+    CCorutinePlusPoolBase* pRunPool = pCorutine->GetRunPool();
+    if(nTimes > nLimitTimes){
         return;
     }
-    for (int i = 0; i < nCreateTimes; i++){
-        CCorutinePlus* pPlus = pRunPool->GetCorutine();
-		pPlus->Create(DieDaiTimes);
+    g_nTotalCorutineCreate++;
+    for(int i = 0; i < nCreateTimes; i++){
+        CCorutinePlusBase* pPlus = pRunPool->GetCorutine();
+        pPlus->Create(DieDaiTimes);
         pPlus->Resume(pRunPool, &nTimes, &nCreateTimes, &nLimitTimes);
-        if (nTimes == 1){
-            printf("Check %d tiems %d/%d StackSize:%d/%d\r\n", i, pRunPool->GetVTCorutineSize(), pRunPool->GetCreateCorutineTimes(), pRunPool->GetVTShareStackCount(), pRunPool->GetCreateTimesShareStackCount());
+        if(pPlus->GetCoroutineState() != CoroutineState_Death){
+            printf("DieDaiTimes check fail\n");
         }
     }
 }
@@ -38,151 +44,124 @@ int TestCreateFunc(void(*pCallbackFunc)(_Types...), _Types&&... _Args){
 	return 0;
 }
 
-void TestCoroutine(int nType){
-	CCorutinePlusPool* S = new CCorutinePlusPool();
-	S->InitCorutine();
-	
-    if (nType == 0){
-		{
-            CCorutinePlus* pCorutine = S->GetCorutine();
-#define CHECKCORUTINETIMES 10000
-            pCorutine->Create([](CCorutinePlus* pCorutine)->void{
-                for (int i = 0; i <= CHECKCORUTINETIMES; i++){
-                    if (i % (CHECKCORUTINETIMES / 10) == 0){
-                        printf("Check YieldCorutine: %d\r\n", i);
-                    }
-                    pCorutine->YieldCorutine();
-                }
-            });
-            printf("Start Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
-            pCorutine->Resume(S);
-            for (int i = 0; i <= CHECKCORUTINETIMES; i++){
-                if (i % (CHECKCORUTINETIMES / 10) == 0){
-                    printf("Check Resume: %d\r\n", i);
-                }
-                pCorutine->Resume(S);
-            }
-			ASSERT(pCorutine->GetCoroutineState() == CoroutineState_Death);
-            printf("end Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
-        }
-        {
-#define CHECKCORUTINETIMES 1000
-            CCorutinePlus* pCorutine = S->GetCorutine();
-            pCorutine->Create([](CCorutinePlus* pCorutine)->void{
-                CCorutinePlusPool* pRunPool = pCorutine->GetRunPool();
-                for (int i = 0; i <= CHECKCORUTINETIMES; i++){
-                    CCorutinePlus* pPlus = pRunPool->GetCorutine();
-                    if (i % (CHECKCORUTINETIMES / 10) == 0){
-                        printf("Check YieldCorutine: %d\r\n", i);
-                    }
-                    pPlus->Create([](CCorutinePlus* pCorutine)->void{
-                        for (int i = 0; i <= CHECKCORUTINETIMES; i++){
-                            pCorutine->YieldCorutine();
-                        }
-                    });
-                    pPlus->Resume(pRunPool);
-                    for (int j = 0; j <= CHECKCORUTINETIMES; j++){
-                        pPlus->Resume(pRunPool);
-                    }
-                    pCorutine->YieldCorutine();
-                }
-            });
-            printf("Start Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
-            pCorutine->Resume(S);
-            for (int i = 0; i <= CHECKCORUTINETIMES; i++){
-                if (i % (CHECKCORUTINETIMES / 10) == 0){
-                    printf("Check Resume: %d\r\n", i);
-                }
-                pCorutine->Resume(S);
-            }
-            printf("end Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
-        }
-        {
-#define CHECKCORUTINETIMES 1000
-			int nTime = 0;
-			int nCreateTimes = 5;
-			int nLimitTimes = 10;
-            CCorutinePlus* pCorutine = S->GetCorutine();
-			printf("Start Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
-			pCorutine->Create(DieDaiTimes);
-			pCorutine->Resume(S, &nTime, &nCreateTimes, &nLimitTimes);
-            printf("end Check %d tiems %d/%d StackSize:%d/%d\r\n", CHECKCORUTINETIMES, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
+class CCoroutineTestMgr{
+public:
+    void Init(LONG maxCount){
+        m_maxPushCount = maxCount;
+    }
+    uint32_t getPushTimes(){
+        return m_maxPushCount;
+    }
+    LONG m_maxPushCount;
+};
+
+class CCoroutineTestMgrMulti{
+public:
+    template<class F>
+    CCoroutineTestMgrMulti(int nRepeatTimes, LONG maxPushTimes, F func){
+        m_nRepeatTimes = nRepeatTimes;
+       
+        m_maxPushCount = maxPushTimes;
+        for(int i = 0; i < nRepeatTimes; i++){
+            func(this, i);
         }
     }
-    else if (nType == 1){
-        //测试速度
-        for (int i = 0; i < 10; i++)
-        {
-            CCorutinePlus* pCorutine = S->GetCorutine();
-            pCorutine->Create([](CCorutinePlus* pCorutine)->void{
-                CCorutinePlusPool* pRunPool = pCorutine->GetRunPool();
-                for (int i = 0; i <= TIMES_FORTEST; i++){
+    ~CCoroutineTestMgrMulti(){
+    }
+    //print info
+    void printData(){
+        uint32_t nTotal = m_maxPushCount * m_nRepeatTimes;
+        printf("push usetime(%d) push %.4f/ms\n", m_use,
+            (double)nTotal / m_use);
+    }
+    //print info
+    void printGlobalData(){
+        uint32_t nTotal = g_nTotalCorutineCount;
+        printf("push usetime(%d) push %.4f/ms create %d\n", m_use,
+            (double)nTotal / m_use, g_nTotalCorutineCreate);
+    }
+    int m_nRepeatTimes = 0;
+    clock_t m_begin = 0;
+    clock_t m_use = 0;
+    LONG m_maxPushCount;
+    void StartClock(){
+        m_begin = clock();
+    }
+    void EndClock(){
+        m_use += clock() - m_begin;
+    }
+};
+
+
+void StartCoroutineTest(){
+    CCorutinePlusPoolBase* S = new CCorutinePlusPoolBase();
+    S->InitCorutine();
+
+    //single corutine test
+    {
+        CCoroutineTestMgrMulti* pDelete = new CCoroutineTestMgrMulti(5, TIMES_FAST, [&](CCoroutineTestMgrMulti* pSelf, int nIndex){
+            pSelf->StartClock();
+            CCorutinePlusBase* pCorutine = S->GetCorutine();
+            pCorutine->Create([](CCorutinePlusBase* pCorutine)->void{
+                for(int i = 0; i <= TIMES_FAST; i++){
                     pCorutine->YieldCorutine();
                 }
             });
-            clock_t begin = clock();
             pCorutine->Resume(S);
-            for (int i = 0; i <= TIMES_FORTEST; i++){
+            for(int i = 0; i <= TIMES_FAST; i++){
                 pCorutine->Resume(S);
             }
-            clock_t end = clock();
-            printf("TestCoroutine RY %d:%d items %d/%d StackSize:%d/%d\n", TIMES_FORTEST, end - begin, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
-        }
-        for (int i = 0; i < 10; i++)
-        {
-            clock_t begin = clock();
-            for (int i = 0; i <= TIMES_FORTEST; i++){
-                CCorutinePlus* pCorutine = S->GetCorutine();
-                pCorutine->Create([](CCorutinePlus* pCorutine)->void{
-                    return;
-                });
-                pCorutine->Resume(S);
+            pSelf->EndClock();
+           
+            if(pCorutine->GetCoroutineState() != CoroutineState_Death){
+                printf("check fail\n");
             }
-            clock_t end = clock();
-            printf("TestCoroutine R %d:%d items %d/%d StackSize:%d/%d\n", TIMES_FORTEST, end - begin, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
-        }
-        /*int nThread = 1;
-        CCorutinePlus* pCorutine = S->GetCorutine();
-        for (int i = 0; i < 10;i++)
-        {
-            clock_t begin = clock();
-            for (int i = 0; i < TIMES_FORTEST; i++){
-                char szBuf[16384] = { 0 };
-                int nLength = 16384;
-
-                pCorutine->ReInit(Foo);
-                pCorutine->Resume(S, nThread, szBuf, nLength);
-                pCorutine->Resume(S, nThread);
-            }
-
-            clock_t end = clock();
-            printf("TestCoroutine %d:%d\n", TIMES_FORTEST, end - begin);
-        }
-        {
-            basiclib::CMutex spinlock;
-            basiclib::CSingleLock lock(&spinlock);
-            clock_t begin = clock();
-            for (int i = 0; i < TIMES_FORTEST; i++){
-                lock.Lock();
-                lock.Unlock();
-            }
-
-            clock_t end = clock();
-            printf("mutex %d:%d\n", TIMES_FORTEST, end - begin);
-        }
-        {
-            clock_t begin = clock();
-            for (int i = 0; i < TIMES_FORTEST; i++){
-                void* pBuffer = basiclib::BasicAllocate(16384);
-                basiclib::BasicDeallocate(pBuffer);
-            }
-
-            clock_t end = clock();
-            printf("malloc %d:%d\n", TIMES_FORTEST, end - begin);
-        }*/
+        });
+        pDelete->printData();
+        printf("Check %d tiems %d/%d StackSize:%d/%d\r\n", TIMES_FAST, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
+        delete pDelete;
     }
-	
-	getchar();
-	delete S;
+    //create release test
+    {
+        CCoroutineTestMgrMulti* pDelete = new CCoroutineTestMgrMulti(TIMES_FAST, 1, [&](CCoroutineTestMgrMulti* pSelf, int nIndex){
+            pSelf->StartClock();
+            CCorutinePlusBase* pCorutine = S->GetCorutine();
+            pCorutine->Create([](CCorutinePlusBase* pCorutine)->void{
+            
+            });
+            pCorutine->Resume(S);
+            pSelf->EndClock();
+            if(pCorutine->GetCoroutineState() != CoroutineState_Death){
+                printf("check fail\n");
+            }
+        });
+        pDelete->printData();
+        printf("Check %d tiems %d/%d StackSize:%d/%d\r\n", TIMES_FAST, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
+        delete pDelete;
+    }
+    {
+        g_nTotalCorutineCount = 0;
+        g_nTotalCorutineCreate = 0;
+        CCoroutineTestMgrMulti* pDelete = new CCoroutineTestMgrMulti(5, 1, [&](CCoroutineTestMgrMulti* pSelf, int nIndex){
+            int nTime = 0;
+            int nCreateTimes = 5;
+            int nLimitTimes = 10;
+            pSelf->StartClock();
+            CCorutinePlusBase* pCorutine = S->GetCorutine();
+            pCorutine->Create(DieDaiTimes);
+            pCorutine->Resume(S, &nTime, &nCreateTimes, &nLimitTimes);
+            pSelf->EndClock();
+
+            if(pCorutine->GetCoroutineState() != CoroutineState_Death){
+                printf("check fail\n");
+            }
+
+        });
+        pDelete->printGlobalData();
+        printf("Check %d tiems %d/%d StackSize:%d/%d\r\n", TIMES_FAST, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
+        delete pDelete;
+    }
+    delete S;
 }
+
 

@@ -236,7 +236,7 @@ public:
     LONG m_pushtimes = 0;
     uint32_t m_nIndex = 0;
     
-    uint32_t m_nreceive = 0;
+    LONG m_nreceive = 0;
     
     CBasicQueryArrayTest(){
         
@@ -256,17 +256,29 @@ public:
         ASSERT(m_nreceive + 1 == msg.m_nCtxID);
         m_nreceive = msg.m_nCtxID;
     }
+    void receiveCount(ctx_message& msg){
+        basiclib::BasicInterlockedIncrement(&m_nreceive);
+    }
     bool checkIsSuccess(){
         return m_pushMaxTimes == m_nreceive;
     }
     
 };
+
+enum TestType{
+    TestType_PushComplate = 0,
+    TestType_Count,
+    TestType_CountToken,
+    TestType_Speed
+};
+
 class CBasicQueryArrayTestMgr{
 public:
     CBasicQueryArrayTestMgr(){
         
     }
-    void Init(int nCount, LONG maxCount){
+    void Init(int nCount, LONG maxCount, TestType testType){
+        m_testType = testType;
         m_nCreateCount = nCount;
         p = new CBasicQueryArrayTest[nCount];
         for(int i = 0; i < nCount; i++){
@@ -281,6 +293,9 @@ public:
     }
     void receiveIndex(ctx_message& msg){
         p[msg.m_nIndex].receiveIndex(msg);
+    }
+    void receiveCount(ctx_message& msg){
+        p[msg.m_nIndex].receiveCount(msg);
     }
     bool checkIsSuccess(){
         for(int i = 0; i < m_nCreateCount; i++){
@@ -298,7 +313,7 @@ public:
         return ret;
     }
     
-    
+    TestType        m_testType = TestType_PushComplate;
     int             m_nCreateCount = 0;
     CBasicQueryArrayTest* p = nullptr;
 };
@@ -306,14 +321,18 @@ public:
 class CBasicQueryArrayTestMgrMulti{
 public:
     template<class F>
-    CBasicQueryArrayTestMgrMulti(int nRepeatTimes, int nThreadCount, LONG maxPushTimes, F func){
+    CBasicQueryArrayTestMgrMulti(int nRepeatTimes, int nThreadCount, TestType testType, LONG maxPushTimes, F func){
         m_nRepeatTimes = nRepeatTimes;
         m_pMgr = new CBasicQueryArrayTestMgr[nRepeatTimes];
         for(int i = 0; i < nRepeatTimes; i++){
-            m_pMgr[i].Init(nThreadCount, maxPushTimes);
+            m_pMgr[i].Init(nThreadCount, maxPushTimes, testType);
+        }
+        int nReceiveThreadCount = 1;
+        if(testType != TestType_PushComplate){
+            nReceiveThreadCount = nThreadCount;
         }
         for(int i = 0; i < nRepeatTimes; i++){
-            func(this, &m_pMgr[i]);
+            func(this, &m_pMgr[i], nReceiveThreadCount);
         }
     }
     ~CBasicQueryArrayTestMgrMulti(){
@@ -356,7 +375,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //self define queue
 CBasicQueueArray<ctx_message> basicQueue;
-THREAD_RETURN CBasicQueueThreadPushSpeed(void* arg){
+THREAD_RETURN CBasicQueueThreadPush(void* arg){
     ctx_message msg;
     CBasicQueryArrayTest* pTest = (CBasicQueryArrayTest*)arg;
     while (true){
@@ -368,21 +387,46 @@ THREAD_RETURN CBasicQueueThreadPushSpeed(void* arg){
     return 0;
 }
 
-THREAD_RETURN CBasicQueueThreadPopSpeed(void* arg){
+THREAD_RETURN CBasicQueueThreadPop(void* arg){
     ctx_message msg;
     CBasicQueryArrayTestMgr* pTestMgr = (CBasicQueryArrayTestMgr*)arg;
-    while (true){
-        if (!basicQueue.Pop(msg)){
-            break;
+    switch(pTestMgr->m_testType){
+    case TestType_PushComplate:
+    {
+        while(true){
+            if(!basicQueue.Pop(msg)){
+                break;
+            }
+            pTestMgr->receiveIndex(msg);
         }
-        pTestMgr->receiveIndex(msg);
+        break;
+    }
+    case TestType_Count:
+    {
+        while(true){
+            if(!basicQueue.Pop(msg)){
+                break;
+            }
+            pTestMgr->receiveCount(msg);
+        }
+        break;
+    }
+    case TestType_Speed:
+    {
+        while(true){
+            if(!basicQueue.Pop(msg)){
+                break;
+            }
+        }
+        break;
+    }
     }
     return 0;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //lockfree
 basiclib::CLockFreeMessageQueue<ctx_message> conMsgQueue;
-THREAD_RETURN ConcurrentQueueThreadPushSpeed(void* arg){
+THREAD_RETURN ConcurrentQueueThreadPush(void* arg){
     ctx_message msg;
     CBasicQueryArrayTest* pTest = (CBasicQueryArrayTest*)arg;
     while(true){
@@ -393,21 +437,57 @@ THREAD_RETURN ConcurrentQueueThreadPushSpeed(void* arg){
     }
     return 0;
 }
-THREAD_RETURN ConcurrentQueueThreadPopSpeed(void* arg){
+THREAD_RETURN ConcurrentQueueThreadPop(void* arg){
     ctx_message msg;
     CBasicQueryArrayTestMgr* pTestMgr = (CBasicQueryArrayTestMgr*)arg;
-    while(true){
-        if(!conMsgQueue.try_dequeue(msg)){
-            break;
+    switch(pTestMgr->m_testType){
+    case TestType_PushComplate:
+    {
+        while(true){
+            if(!conMsgQueue.try_dequeue(msg)){
+                break;
+            }
+            pTestMgr->receiveIndex(msg);
         }
-        pTestMgr->receiveIndex(msg);
+        break;
+    }
+    case TestType_Count:
+    {
+        while(true){
+            if(!conMsgQueue.try_dequeue(msg)){
+                break;
+            }
+            pTestMgr->receiveCount(msg);
+        }
+        break;
+    }
+    case TestType_CountToken:
+    {
+        moodycamel::ConsumerToken tokenpQ(conMsgQueue);
+        while(true){
+            if(!conMsgQueue.try_dequeue(msg)){
+                break;
+            }
+            pTestMgr->receiveCount(msg);
+        }
+        break;
+    }
+    case TestType_Speed:
+    {
+        while(true){
+            if(!conMsgQueue.try_dequeue(msg)){
+                break;
+            }
+        }
+        break;
+    }
     }
     return 0;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //lock queue
 basiclib::CMessageQueueLock<ctx_message> msgQueue;
-THREAD_RETURN CMessageQueueThreadPushSpeed(void* arg){
+THREAD_RETURN CMessageQueueThreadPush(void* arg){
     ctx_message msg;
     CBasicQueryArrayTest* pTest = (CBasicQueryArrayTest*)arg;
     while(true){
@@ -418,14 +498,39 @@ THREAD_RETURN CMessageQueueThreadPushSpeed(void* arg){
     }
     return 0;
 }
-THREAD_RETURN CMessageQueueThreadPopSpeed(void* arg){
+THREAD_RETURN CMessageQueueThreadPop(void* arg){
     ctx_message msg;
     CBasicQueryArrayTestMgr* pTestMgr = (CBasicQueryArrayTestMgr*)arg;
-    while(true){
-        if(msgQueue.MQPop(&msg)){
-            break;
+    switch(pTestMgr->m_testType){
+    case TestType_PushComplate:
+    {
+        while(true){
+            if(msgQueue.MQPop(&msg)){
+                break;
+            }
+            pTestMgr->receiveIndex(msg);
         }
-        pTestMgr->receiveIndex(msg);
+        break;
+    }
+    case TestType_Count:
+    {
+        while(true){
+            if(msgQueue.MQPop(&msg)){
+                break;
+            }
+            pTestMgr->receiveCount(msg);
+        }
+        break;
+    }
+    case TestType_Speed:
+    {
+        while(true){
+            if(msgQueue.MQPop(&msg)){
+                break;
+            }
+        }
+        break;
+    }
     }
     return 0;
 }
@@ -590,123 +695,49 @@ THREAD_RETURN CMessageQueueThreadPopSpeed(void* arg){
 #define CREATE_THREAD 8
 HANDLE g_thread[CREATE_THREAD];
 
-//≤Â»ÎÀŸ∂»≤‚ ‘,ÕÍ’˚–‘≤‚ ‘
-void SpeedTest(basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPush, basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPop, int nMaxThreadCount = 8){
+void createSingleCheck(const int nThreadCount, basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPush, basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPop, TestType testType){
     DWORD dwThreadServerID = 0;
-    {
-        printf("1 thread\n");
-        {
-            const int nThreadCount = 1;
-            CBasicQueryArrayTestMgrMulti* pDelete = new CBasicQueryArrayTestMgrMulti(5, nThreadCount, TIMES_FAST, [&](CBasicQueryArrayTestMgrMulti* pSelf, CBasicQueryArrayTestMgr* pMgr){
-                pSelf->StartClock();
-                for(int j = 0; j < nThreadCount; j++){
-                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPush, &pMgr->p[j], &dwThreadServerID);
-                }
-                for(int j = 0; j < nThreadCount; j++){
-                    basiclib::BasicWaitThread(g_thread[j], -1);
-                }
-                pSelf->EndClock();
-                pSelf->StartReceClock();
-                for(int j = 0; j < 1; j++){
-                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPop, pMgr, &dwThreadServerID);
-                }
-                for(int j = 0; j < 1; j++){
-                    basiclib::BasicWaitThread(g_thread[j], -1);
-                }
-                pSelf->EndReceClock();
-                if(!pMgr->checkIsSuccess()){
-                    printf("check fail\n");
-                }
-            });
-            pDelete->printData();
-            delete pDelete;
+    CBasicQueryArrayTestMgrMulti* pDelete = new CBasicQueryArrayTestMgrMulti(5, nThreadCount, testType, TIMES_FAST / nThreadCount, [&](CBasicQueryArrayTestMgrMulti* pSelf, CBasicQueryArrayTestMgr* pMgr, int nReceiveThreadCount){
+        pSelf->StartClock();
+        for(int j = 0; j < nThreadCount; j++){
+            g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPush, &pMgr->p[j], &dwThreadServerID);
         }
-    }
+        for(int j = 0; j < nThreadCount; j++){
+            basiclib::BasicWaitThread(g_thread[j], -1);
+        }
+        pSelf->EndClock();
+        pSelf->StartReceClock();
+        for(int j = 0; j < nReceiveThreadCount; j++){
+            g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPop, pMgr, &dwThreadServerID);
+        }
+        for(int j = 0; j < nReceiveThreadCount; j++){
+            basiclib::BasicWaitThread(g_thread[j], -1);
+        }
+        pSelf->EndReceClock();
+        if(!pMgr->checkIsSuccess()){
+            printf("check fail\n");
+        }
+    });
+    pDelete->printData();
+    delete pDelete;
+}
+
+//test func
+void SpeedTest(basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPush, basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPop, TestType testType, int nMaxThreadCount = 8){
+    printf("1 thread\n");
+    createSingleCheck(1, lpStartAddressPush, lpStartAddressPop, testType);
     
     if(nMaxThreadCount >= 2){
         printf("2 thread\n");
-        {
-            const int nThreadCount = 2;
-            CBasicQueryArrayTestMgrMulti* pDelete = new CBasicQueryArrayTestMgrMulti(5, nThreadCount, TIMES_FAST / 2, [&](CBasicQueryArrayTestMgrMulti* pSelf, CBasicQueryArrayTestMgr* pMgr){
-                pSelf->StartClock();
-                for(int j = 0; j < nThreadCount; j++){
-                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPush, &pMgr->p[j], &dwThreadServerID);
-                }
-                for(int j = 0; j < nThreadCount; j++){
-                    basiclib::BasicWaitThread(g_thread[j], -1);
-                }
-                pSelf->EndClock();
-                pSelf->StartReceClock();
-                for(int j = 0; j < 1; j++){
-                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPop, pMgr, &dwThreadServerID);
-                }
-                for(int j = 0; j < 1; j++){
-                    basiclib::BasicWaitThread(g_thread[j], -1);
-                }
-                pSelf->EndReceClock();
-                if(!pMgr->checkIsSuccess()){
-                    printf("check fail\n");
-                }
-            });
-            pDelete->printData();
-            delete pDelete;
-        }
+        createSingleCheck(2, lpStartAddressPush, lpStartAddressPop, testType);
     }
     if(nMaxThreadCount >= 4){
         printf("4 thread\n");
-        {
-            const int nThreadCount = 4;
-            CBasicQueryArrayTestMgrMulti* pDelete = new CBasicQueryArrayTestMgrMulti(5, nThreadCount, TIMES_FAST / 4, [&](CBasicQueryArrayTestMgrMulti* pSelf, CBasicQueryArrayTestMgr* pMgr){
-                pSelf->StartClock();
-                for(int j = 0; j < nThreadCount; j++){
-                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPush, &pMgr->p[j], &dwThreadServerID);
-                }
-                for(int j = 0; j < nThreadCount; j++){
-                    basiclib::BasicWaitThread(g_thread[j], -1);
-                }
-                pSelf->EndClock();
-                pSelf->StartReceClock();
-                for(int j = 0; j < 1; j++){
-                    g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPop, pMgr, &dwThreadServerID);
-                }
-                for(int j = 0; j < 1; j++){
-                    basiclib::BasicWaitThread(g_thread[j], -1);
-                }
-                pSelf->EndReceClock();
-                if(!pMgr->checkIsSuccess()){
-                    printf("check fail\n");
-                }
-            });
-            pDelete->printData();
-            delete pDelete;
-        }
+        createSingleCheck(4, lpStartAddressPush, lpStartAddressPop, testType);
     }
     if(nMaxThreadCount >= 8){
         printf("8 thread\n");
-        const int nThreadCount = 8;
-        CBasicQueryArrayTestMgrMulti* pDelete = new CBasicQueryArrayTestMgrMulti(5, nThreadCount, TIMES_FAST / 8, [&](CBasicQueryArrayTestMgrMulti* pSelf, CBasicQueryArrayTestMgr* pMgr){
-            pSelf->StartClock();
-            for(int j = 0; j < nThreadCount; j++){
-                g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPush, &pMgr->p[j], &dwThreadServerID);
-            }
-            for(int j = 0; j < nThreadCount; j++){
-                basiclib::BasicWaitThread(g_thread[j], -1);
-            }
-            pSelf->EndClock();
-            pSelf->StartReceClock();
-            for(int j = 0; j < 1; j++){
-                g_thread[j] = basiclib::BasicCreateThread(lpStartAddressPop, pMgr, &dwThreadServerID);
-            }
-            for(int j = 0; j < 1; j++){
-                basiclib::BasicWaitThread(g_thread[j], -1);
-            }
-            pSelf->EndReceClock();
-            if(!pMgr->checkIsSuccess()){
-                printf("check fail\n");
-            }
-        });
-        pDelete->printData();
-        delete pDelete;
+        createSingleCheck(8, lpStartAddressPush, lpStartAddressPop, testType);
     }
 }
 
@@ -774,9 +805,24 @@ void TestContainExt()
     //correct check，speed
     if (true)
     {
-        SpeedTest(CBasicQueueThreadPushSpeed, CBasicQueueThreadPopSpeed);
-        SpeedTest(ConcurrentQueueThreadPushSpeed, ConcurrentQueueThreadPopSpeed);
-        SpeedTest(CMessageQueueThreadPushSpeed, CMessageQueueThreadPopSpeed, 4);
+        printf("/*************************************************************************/\n");
+        printf("Test TestType_PushComplate BasicQueue\n");
+        SpeedTest(CBasicQueueThreadPush, CBasicQueueThreadPop, TestType_PushComplate);
+        printf("Test TestType_PushComplate ConcurrentQueue\n");
+        SpeedTest(ConcurrentQueueThreadPush, ConcurrentQueueThreadPop, TestType_PushComplate);
+        printf("Test TestType_PushComplate CMessageQueue\n");
+        SpeedTest(CMessageQueueThreadPush, CMessageQueueThreadPop, TestType_PushComplate, 4);
+        printf("/*************************************************************************/\n");
+        printf("Test TestType_Count BasicQueue\n");
+        SpeedTest(CBasicQueueThreadPush, CBasicQueueThreadPop, TestType_Count);
+        printf("Test TestType_Count ConcurrentQueue\n");
+        SpeedTest(ConcurrentQueueThreadPush, ConcurrentQueueThreadPop, TestType_Count);
+        printf("Test TestType_Count CMessageQueue\n");
+        SpeedTest(CMessageQueueThreadPush, CMessageQueueThreadPop, TestType_Count, 4);
+        printf("/*************************************************************************/\n");
+        printf("Test TestType_CountToken ConcurrentQueue\n");
+        SpeedTest(ConcurrentQueueThreadPush, ConcurrentQueueThreadPop, TestType_CountToken);
+        printf("/*************************************************************************/\n");
     }
     /*
      g_addC = 0;

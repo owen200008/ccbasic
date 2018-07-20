@@ -4,5 +4,6 @@
 #include <basic.h>
 
 void TestCoroutine(int nType = 0);
+void StartCoroutineTest();
 
 #endif

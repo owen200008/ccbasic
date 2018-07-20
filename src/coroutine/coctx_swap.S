@@ -27,25 +27,23 @@ leal 4(%esp), %eax //sp
 	leal 32(%esp), %esp //parm a : &regs[7] + sizeof(void*)
 
 	pushl %eax //esp ->parm a 
-
+	pushl -4(%eax)
 	pushl %ebp
 	pushl %esi
 	pushl %edi
 	pushl %edx
 	pushl %ecx
 	pushl %ebx
-	pushl -4(%eax)
-
 	
 	movl 4(%eax), %esp //parm b -> &regs[0]
 
-	popl %eax  //ret func addr
 	popl %ebx  
 	popl %ecx
 	popl %edx
 	popl %edi
 	popl %esi
 	popl %ebp
+	popl %eax  //ret func addr
 	popl %esp
 	pushl %eax //set ret func addr
 
@@ -53,17 +51,14 @@ leal 4(%esp), %eax //sp
 	ret
 
 #elif defined(__x86_64__)
-	leaq 8(%rsp),%rax
-	leaq 112(%rdi),%rsp
+	leaq 8(%rsp),%rax //default rsp 
+	leaq 104(%rdi),%rsp //rsp point to param a
 	pushq %rax
+	pushq -8(%rax) //ret func addr rip
+	pushq %rdi
 	pushq %rbx
 	pushq %rcx
 	pushq %rdx
-
-	pushq -8(%rax) //ret func addr
-
-	pushq %rsi
-	pushq %rdi
 	pushq %rbp
 	pushq %r8
 	pushq %r9
@@ -71,8 +66,8 @@ leal 4(%esp), %eax //sp
 	pushq %r13
 	pushq %r14
 	pushq %r15
-	
-	movq %rsi, %rsp
+
+	movq %rsi, %rsp // rsp point to param b
 	popq %r15
 	popq %r14
 	popq %r13
@@ -80,15 +75,13 @@ leal 4(%esp), %eax //sp
 	popq %r9
 	popq %r8
 	popq %rbp
-	popq %rdi
-	popq %rsi
-	popq %rax //ret func addr
 	popq %rdx
 	popq %rcx
 	popq %rbx
+	popq %rdi //read need
+	popq %rax
 	popq %rsp
 	pushq %rax
-	
-	xorl %eax, %eax
+
 	ret
 #endif

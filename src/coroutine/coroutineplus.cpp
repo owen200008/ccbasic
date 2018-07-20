@@ -9,8 +9,8 @@ extern "C"
 {
     extern void coctx_swap(coctx_t *, coctx_t*);
 }
-#define EIP 4
-#define ESP 5
+#define EIP 6
+#define ESP 7
 void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void* s1)
 {
 	memset(ctx->regs, 0, sizeof(ctx->regs));
@@ -35,8 +35,8 @@ void coctx_swap(coctx_t *, coctx_t*){
 #endif
 
 #if defined(__i386__)
-#define EIP 4
-#define ESP 5
+#define EIP 6
+#define ESP 7
 void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void* s1)
 {
 	memset(ctx->regs, 0, sizeof(ctx->regs));
@@ -48,9 +48,9 @@ void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void* s1)
     ctx->regs[EIP] = (char*)pfn;
 }
 #elif defined(__x86_64__)
-#define RDI 9
-#define RIP 10
-#define RSP 11
+#define RDI 10
+#define RIP 11
+#define RSP 12
 void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void *s1)
 {
 	memset(ctx->regs, 0, sizeof(ctx->regs));

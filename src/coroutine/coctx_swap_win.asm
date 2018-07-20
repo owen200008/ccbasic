@@ -7,23 +7,22 @@ coctx_swap PROC
 	mov		esp,		[esp + 4]
 	lea		esp,		[esp] + 32
 	push	eax
-	
+	push	[eax - 4]
 	push	ebp
 	push	esi
 	push	edi
-	push	edx
-	push	ecx
+    push    edx
+    push    ecx
 	push	ebx
-	push	[eax - 4]
 
 	mov		esp,		[eax + 4]
-	pop		eax
-	pop		ebx
-	pop		ecx
-	pop		edx  
+	pop		ebx 
+    pop     ecx
+    pop     edx
 	pop		edi
 	pop		esi
 	pop		ebp
+	pop		eax  
 	pop		esp
 	push	eax 
 
