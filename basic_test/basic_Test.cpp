@@ -61,10 +61,10 @@ int main(int argc, char* argv[])
     }
     {
         clock_t begin = clock();
-        for(int i = 0; i < TIMES_FAST; i++){
+        for(int i = 0; i < TIMES_FAST / 10; i++){
             TestMutexCallFunc(i);
         }
-        printf("this computer mutex %.4f/ms\n", (double)TIMES_FAST / (clock() - begin));
+        printf("this computer mutex %.4f/ms\n", (double)TIMES_FAST / 10 / (clock() - begin));
     }
     {
         clock_t begin = clock();

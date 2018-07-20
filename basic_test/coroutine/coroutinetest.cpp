@@ -46,19 +46,8 @@ int TestCreateFunc(void(*pCallbackFunc)(_Types...), _Types&&... _Args){
 
 class CCoroutineTestMgr{
 public:
-    void Init(LONG maxCount){
-        m_maxPushCount = maxCount;
-    }
-    uint32_t getPushTimes(){
-        return m_maxPushCount;
-    }
-    LONG m_maxPushCount;
-};
-
-class CCoroutineTestMgrMulti{
-public:
     template<class F>
-    CCoroutineTestMgrMulti(int nRepeatTimes, LONG maxPushTimes, F func){
+    CCoroutineTestMgr(int nRepeatTimes, LONG maxPushTimes, F func){
         m_nRepeatTimes = nRepeatTimes;
        
         m_maxPushCount = maxPushTimes;
@@ -66,7 +55,7 @@ public:
             func(this, i);
         }
     }
-    ~CCoroutineTestMgrMulti(){
+    ~CCoroutineTestMgr(){
     }
     //print info
     void printData(){
@@ -84,6 +73,7 @@ public:
     clock_t m_begin = 0;
     clock_t m_use = 0;
     LONG m_maxPushCount;
+    
     void StartClock(){
         m_begin = clock();
     }
@@ -93,13 +83,132 @@ public:
 };
 
 
+class CCoroutineThreadMgr{
+public:
+    CCoroutineThreadMgr(){
+
+    }
+    void Init(LONG maxPushTimes){
+        m_maxPushCount = maxPushTimes;
+    }
+    LONG m_maxPushCount;
+    CCoroutineThreadMgr* m_pNext = nullptr;
+    basiclib::SpinLock m_lock;
+    vector<CCorutinePlusBase*> m_vtWaitCo;
+    bool m_bFinish = false;
+    void AddCorutine(CCorutinePlusBase* pCorutine){
+        if(m_bFinish){
+            m_pNext->AddCorutine(pCorutine);
+            return;
+        }
+        basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
+        m_vtWaitCo.push_back(pCorutine);
+    }
+    void getVTWaitCo(vector<CCorutinePlusBase*>& vtWaitCo){
+        basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
+        swap(m_vtWaitCo, vtWaitCo);
+    }
+    void SetFinish(){
+        m_bFinish = true;
+    }
+};
+class CCoroutineThreadMgrMulti{
+public:
+    template<class F>
+    CCoroutineThreadMgrMulti(int nThreadCount, LONG maxPushTimes, F func){
+        m_p = new CCoroutineThreadMgr[nThreadCount];
+        m_nThreadCount = nThreadCount;
+        for(int i = 0; i < nThreadCount; i++){
+            m_p[i].Init(maxPushTimes);
+        }
+        for(int i = 0; i < nThreadCount; i++){
+            if(i + 1 == nThreadCount){
+                m_p[i].m_pNext = &m_p[0];
+            }
+            else{
+                m_p[i].m_pNext = &m_p[i + 1];
+            }
+        }
+        func(this, nThreadCount);
+    }
+    ~CCoroutineThreadMgrMulti(){
+        if(m_p){
+            delete[]m_p;
+        }
+    }
+    int m_nThreadCount = 0;
+    CCoroutineThreadMgr* m_p = nullptr;
+    clock_t m_begin = 0;
+    clock_t m_use = 0;
+
+    void StartClock(){
+        m_begin = clock();
+    }
+    void EndClock(){
+        m_use += clock() - m_begin;
+    }
+    //print info
+    void printData(){
+        uint32_t nTotal = 0;
+        for(int i = 0; i < m_nThreadCount; i++){
+            nTotal += m_p[i].m_maxPushCount * TIMES_FAST / 10;
+        }
+        printf("push usetime(%d) push %.4f/ms\n", m_use,
+            (double)nTotal / m_use);
+    }
+};
+
+
+//
+THREAD_RETURN CreateThreadCotoutine(void* arg){
+    CCorutinePlusPoolBase* S = new CCorutinePlusPoolBase();
+    S->InitCorutine();
+    CCoroutineThreadMgr* pTest = (CCoroutineThreadMgr*)arg;
+    for(int i = 0; i < pTest->m_maxPushCount; i++){
+        CCorutinePlusBase* pCorutine = S->GetCorutine();
+        pCorutine->Create([](CCorutinePlusBase* pCorutine)->void{
+            for(int i = 0; i <= TIMES_FAST / 10; i++){
+                pCorutine->YieldCorutine();
+            }
+        });
+        pCorutine->Resume(S);
+        //push到另外线程
+        pTest->m_pNext->AddCorutine(pCorutine);
+    }
+    uint32_t nDeathCount = 0;
+    while(true){
+        vector<CCorutinePlusBase*> vtWaitCo;
+        pTest->getVTWaitCo(vtWaitCo);
+        if(vtWaitCo.size() != 0){
+            for(CCorutinePlusBase* p : vtWaitCo){
+                p->Resume(S);
+                if(p->GetCoroutineState() == CoroutineState_Death){
+                    nDeathCount++;
+                }
+                else{
+                    //push到另外线程
+                    pTest->m_pNext->AddCorutine(p);
+                }
+            }
+            if(nDeathCount == pTest->m_maxPushCount){
+                break;
+            }
+        }
+        else{
+            //basiclib::BasicSleep(1);
+        }
+    }
+    return 0;
+}
+
 void StartCoroutineTest(){
     CCorutinePlusPoolBase* S = new CCorutinePlusPoolBase();
     S->InitCorutine();
 
     //single corutine test
+    printf("single corutine test\n");
     {
-        CCoroutineTestMgrMulti* pDelete = new CCoroutineTestMgrMulti(5, TIMES_FAST, [&](CCoroutineTestMgrMulti* pSelf, int nIndex){
+        CCoroutineTestMgr* pDelete = new CCoroutineTestMgr(5, TIMES_FAST, [&](CCoroutineTestMgr* pSelf, int nIndex){
             pSelf->StartClock();
             CCorutinePlusBase* pCorutine = S->GetCorutine();
             pCorutine->Create([](CCorutinePlusBase* pCorutine)->void{
@@ -122,8 +231,9 @@ void StartCoroutineTest(){
         delete pDelete;
     }
     //create release test
+    printf("create release test\n");
     {
-        CCoroutineTestMgrMulti* pDelete = new CCoroutineTestMgrMulti(TIMES_FAST, 1, [&](CCoroutineTestMgrMulti* pSelf, int nIndex){
+        CCoroutineTestMgr* pDelete = new CCoroutineTestMgr(TIMES_FAST, 1, [&](CCoroutineTestMgr* pSelf, int nIndex){
             pSelf->StartClock();
             CCorutinePlusBase* pCorutine = S->GetCorutine();
             pCorutine->Create([](CCorutinePlusBase* pCorutine)->void{
@@ -139,12 +249,13 @@ void StartCoroutineTest(){
         printf("Check %d tiems %d/%d StackSize:%d/%d\r\n", TIMES_FAST, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
         delete pDelete;
     }
+    printf("deep iter create test\n");
     {
         g_nTotalCorutineCount = 0;
         g_nTotalCorutineCreate = 0;
-        CCoroutineTestMgrMulti* pDelete = new CCoroutineTestMgrMulti(5, 1, [&](CCoroutineTestMgrMulti* pSelf, int nIndex){
+        CCoroutineTestMgr* pDelete = new CCoroutineTestMgr(5, 1, [&](CCoroutineTestMgr* pSelf, int nIndex){
             int nTime = 0;
-            int nCreateTimes = 5;
+            int nCreateTimes = 3;
             int nLimitTimes = 10;
             pSelf->StartClock();
             CCorutinePlusBase* pCorutine = S->GetCorutine();
@@ -160,6 +271,27 @@ void StartCoroutineTest(){
         pDelete->printGlobalData();
         printf("Check %d tiems %d/%d StackSize:%d/%d\r\n", TIMES_FAST, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
         delete pDelete;
+    }
+    //cross thread wake up
+    printf("cross thread wake up test\n");
+    {
+        DWORD dwThreadServerID = 0;
+#define CREATE_THREAD 8
+        HANDLE g_thread[CREATE_THREAD];
+
+        CCoroutineThreadMgrMulti* pDeleteTest = new CCoroutineThreadMgrMulti(3, 10, [&](CCoroutineThreadMgrMulti* pSelf, int nThreadCount){
+            pSelf->StartClock();
+            for(int j = 0; j < nThreadCount; j++){
+                g_thread[j] = basiclib::BasicCreateThread(CreateThreadCotoutine, &pSelf->m_p[j], &dwThreadServerID);
+            }
+            for(int j = 0; j < nThreadCount; j++){
+                basiclib::BasicWaitThread(g_thread[j], -1);
+            }
+            pSelf->EndClock();
+        });
+        pDeleteTest->printData();
+        printf("Check %d tiems %d/%d StackSize:%d/%d\r\n", TIMES_FAST, S->GetVTCorutineSize(), S->GetCreateCorutineTimes(), S->GetVTShareStackCount(), S->GetCreateTimesShareStackCount());
+        delete pDeleteTest;
     }
     delete S;
 }
