@@ -1,4 +1,4 @@
-﻿//
+//
 //取得系统信息系列函数
 //
 //
@@ -937,7 +937,7 @@ double BasicGetHighPerformanceCounter()
 #define cpuid(in,a,b,c,d)  asm("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (in));
 bool getcpuid(char *id, size_t max){
     int i;
-    unsigned long li, maxi, maxei, ebx, ecx, edx, unused;
+    unsigned long li, maxi, maxei, eax, ebx, ecx, edx, unused;
 
     cpuid(0, maxi, unused, unused, unused);
     maxi &= 0xffff;
