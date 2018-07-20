@@ -1,4 +1,4 @@
-﻿#include "../inc/basic.h"
+#include "../inc/basic.h"
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
@@ -22,7 +22,7 @@ void coctx_make(coctx_t *ctx, coctx_pfn_t pfn, const void* s1)
     ctx->regs[EIP] = (char*)pfn;
 }
 #else
-#ifdef __LINUX
+#if defined(__LINUX) || defined(__MAC)
 extern "C"
 {
     extern void coctx_swap(coctx_t *, coctx_t*) asm("coctx_swap");
