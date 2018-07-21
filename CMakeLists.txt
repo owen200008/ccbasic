@@ -68,6 +68,10 @@ set(RunProject_SOURCES
 		${PROJECT_SOURCE_DIR}/basic_test/coroutine/coroutinetest.cpp
 		${PROJECT_SOURCE_DIR}/basic_test/dll/basictesthead.cpp
 		${PROJECT_SOURCE_DIR}/basic_test/net/nettest.cpp
+        ${PROJECT_SOURCE_DIR}/basic_test/scbasic/encode/rsatest.cpp
+        ${PROJECT_SOURCE_DIR}/basic_test/scbasic/encode/rsatest.h
+        ${PROJECT_SOURCE_DIR}/basic_test/sys/systemperformance.cpp
+        ${PROJECT_SOURCE_DIR}/basic_test/sys/systemperformance.h
 			)
 set(TotalSourceData ${RunProject_SOURCES})
 source_group_by_dir(TotalSourceData)

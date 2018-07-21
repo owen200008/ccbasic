@@ -37,6 +37,51 @@ void BasicTrace(const char* lpszFormat, ...)
 	va_end(argList);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
+CBasicCalcUseTime::CBasicCalcUseTime(){
+}
+void CBasicCalcUseTime::Init(callbackCBasicCalcUseTime callback){
+    m_callback = callback;
+}
+
+CBasicCalcUseTime::~CBasicCalcUseTime(){
+    if(m_bStart){
+        EncCalc();
+    }
+}
+
+void CBasicCalcUseTime::StartCalc(){
+    m_dwBegin = basiclib::BasicGetTickTime();
+    m_bStart = true;
+}
+
+void CBasicCalcUseTime::EncCalc(){
+    EncCalc(m_callback);
+}
+
+void CBasicCalcUseTime::EncCalc(callbackCBasicCalcUseTime callback){
+    if(m_bStart){
+        m_dwUseTime = basiclib::BasicGetTickTime() - m_dwBegin;
+        m_dwTotalUseTime += m_dwUseTime;
+        m_bStart = false;
+
+        if(m_callback){
+            m_callback(m_dwUseTime, m_dwTotalUseTime);
+        }
+    }
+}
+
+//手动调用回调
+void CBasicCalcUseTime::CallbackLastData(){
+    if(m_callback){
+        m_callback(m_dwUseTime, m_dwTotalUseTime);
+    }
+}
+
+void CBasicCalcUseTime::ResetData(){
+    m_dwUseTime = 0;
+    m_dwTotalUseTime = 0;
+}
+
 
 __NS_BASIC_END
 

@@ -99,6 +99,45 @@ _BASIC_DLL_API void BasicTrace(const char* lpszFormat, ...);
 _BASIC_DLL_API void BasicTraceDebugView(const char* lpszString);
 
 ///////////////////////////////////////////////////////////////////////////////////////
+//时间计算函数
+typedef void(*callbackCBasicCalcUseTime)(DWORD thisUse, DWORD totalUse);
+class CBasicCalcUseTime{
+public:
+    CBasicCalcUseTime();
+    virtual ~CBasicCalcUseTime();
+
+    void Init(callbackCBasicCalcUseTime callback = nullptr);
+
+    void StartCalc();
+
+    void EncCalc();
+    void EncCalc(callbackCBasicCalcUseTime callback);
+
+    //手动调用回调
+    void CallbackLastData();
+
+    void ResetData();
+protected:
+    bool    m_bStart = false;
+    DWORD   m_dwBegin = 0;
+    DWORD   m_dwUseTime = 0;
+    DWORD   m_dwTotalUseTime = 0;
+    callbackCBasicCalcUseTime m_callback = nullptr;
+};
+//定义使用的宏
+#define StartCalcUseTime(calcName, callback)\
+basiclib::CBasicCalcUseTime calcName;\
+calcName.Init(callback);\
+calcName.StartCalc();
+
+#define EndCalcUseTime(calcName)\
+calcName.EncCalc();
+#define EndCalcUseTimeCallback(calcName, callback)\
+calcName.EncCalc(callback);
+
+#define CallbackUseTime(calcName)\
+calcName.CallbackLastData();
+
 __NS_BASIC_END
 
 #endif 
