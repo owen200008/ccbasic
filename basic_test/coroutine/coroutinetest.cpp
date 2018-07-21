@@ -201,7 +201,7 @@ THREAD_RETURN CreateThreadCotoutine(void* arg){
     return 0;
 }
 
-void StartCoroutineTest(){
+bool StartCoroutineTest(){
     CCorutinePlusPoolBase* S = new CCorutinePlusPoolBase();
     S->InitCorutine();
 
@@ -294,6 +294,7 @@ void StartCoroutineTest(){
         delete pDeleteTest;
     }
     delete S;
+    return true;
 }
 
 

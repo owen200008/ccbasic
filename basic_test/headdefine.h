@@ -10,15 +10,29 @@
 
 //func call is success
 #define PrintSuccessOrFail(Func)\
-if(Func())\
-    printf("Func: %s Success!\n", #Func);\
-else\
-    printf("Func: %s Fail???\n", #Func);
+{\
+    char szFormat[128] = {'/'};\
+    int nRetValue = sprintf(szFormat, "F:%s", #Func);\
+    if(nRetValue > 0)\
+        for(int i = nRetValue;i < 64;i++)\
+            szFormat[i] = '/';\
+    printf(szFormat);\
+    printf("\n");\
+    if(Func())\
+        nRetValue = sprintf(szFormat, "R:Success");\
+    else\
+        nRetValue = sprintf(szFormat, "R:Fail???");\
+    if(nRetValue > 0)\
+        for(int i = nRetValue;i < 64;i++)\
+            szFormat[i] = '/';\
+    printf(szFormat);\
+    printf("\n");\
+}
 
 //use time
 #define PrintUseTime(calcName, totalPerformance)\
 [](DWORD dwUseTime, DWORD dwTotalUseTime){\
-    printf("CalcTime:%s Perform:%.3f/ms TotalUseTime:%d LastUseTime:%d\n", calcName, (double)totalPerformance/dwTotalUseTime, dwTotalUseTime, dwUseTime);\
+    printf("P:%12.3f/ms Time:%5d/%5d F:%s\n", (double)totalPerformance/dwTotalUseTime, dwUseTime, dwTotalUseTime, calcName);\
 }
 
 

@@ -1,4 +1,4 @@
-﻿#include <stdlib.h>
+#include <stdlib.h>
 #include <map>
 #include <basic.h>
 #include "headdefine.h"
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]){
 	srand(time(NULL) + basiclib::BasicGetTickTime());
     
     SystemPerformace();
-    //StartCoroutineTest();
+    PrintSuccessOrFail(StartCoroutineTest);
 	//TestCoroutine();
 	//TestThread();
 	//TestStackWalk();
