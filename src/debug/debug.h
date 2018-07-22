@@ -9,6 +9,10 @@
 #ifndef BASIC_DEBUG_H
 #define BASIC_DEBUG_H
 
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <functional>
 /////////////////////////////////////////////////////////////////////////////////////////////
 //! 断言，DEBUG版有效，RELEASE版无效
 #ifndef ASSERT
@@ -100,18 +104,17 @@ _BASIC_DLL_API void BasicTraceDebugView(const char* lpszString);
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //时间计算函数
-typedef void(*callbackCBasicCalcUseTime)(DWORD thisUse, DWORD totalUse);
 class CBasicCalcUseTime{
 public:
     CBasicCalcUseTime();
     virtual ~CBasicCalcUseTime();
 
-    void Init(callbackCBasicCalcUseTime callback = nullptr);
+    void Init(const std::function<void(DWORD dwUse, DWORD dwTotalUse)>& callback = nullptr);
 
     void StartCalc();
 
     void EncCalc();
-    void EncCalc(callbackCBasicCalcUseTime callback);
+    void EncCalc(const std::function<void(DWORD dwUse, DWORD dwTotalUse)>& callback);
 
     //手动调用回调
     void CallbackLastData();
@@ -122,12 +125,16 @@ protected:
     DWORD   m_dwBegin = 0;
     DWORD   m_dwUseTime = 0;
     DWORD   m_dwTotalUseTime = 0;
-    callbackCBasicCalcUseTime m_callback = nullptr;
+    std::function<void(DWORD dwUse, DWORD dwTotalUse)>  m_callback = nullptr;
 };
 //定义使用的宏
-#define StartCalcUseTime(calcName, callback)\
+#define CreateCalcUseTime(calcName, callback, bStart)\
 basiclib::CBasicCalcUseTime calcName;\
 calcName.Init(callback);\
+if(bStart)\
+    calcName.StartCalc();
+
+#define StartCalcUseTime(calcName)\
 calcName.StartCalc();
 
 #define EndCalcUseTime(calcName)\

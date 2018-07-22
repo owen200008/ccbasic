@@ -21,13 +21,16 @@ int main(int argc, char* argv[]){
 	}
 	srand(time(NULL) + basiclib::BasicGetTickTime());
     
+    std::atomic<int> a = 0;
+    int aa = a.fetch_add(1);
+
     SystemPerformace();
-    PrintSuccessOrFail(StartCoroutineTest);
-	//TestCoroutine();
+    //PrintSuccessOrFail(StartCoroutineTest);
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
-	//TestContainExt();
+    for(int i = 0;i < 10;i++)
+        PrintSuccessOrFail(TestContainExt);
 	//NetServerTest();
 	//TestFunctionXiaolvTest();
     PrintSuccessOrFail(TestRSA);

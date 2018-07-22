@@ -1,7 +1,7 @@
-﻿#include "../inc/basic.h"
-#include <stdio.h>
-#include <stdarg.h>
+﻿
 #include <assert.h>
+#include "../inc/basic.h"
+
 
 __NS_BASIC_START
 
@@ -39,7 +39,7 @@ void BasicTrace(const char* lpszFormat, ...)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 CBasicCalcUseTime::CBasicCalcUseTime(){
 }
-void CBasicCalcUseTime::Init(callbackCBasicCalcUseTime callback){
+void CBasicCalcUseTime::Init(const std::function<void(DWORD dwUse, DWORD dwTotalUse)>& callback){
     m_callback = callback;
 }
 
@@ -58,21 +58,21 @@ void CBasicCalcUseTime::EncCalc(){
     EncCalc(m_callback);
 }
 
-void CBasicCalcUseTime::EncCalc(callbackCBasicCalcUseTime callback){
+void CBasicCalcUseTime::EncCalc(const std::function<void(DWORD dwUse, DWORD dwTotalUse)>& callback){
     if(m_bStart){
         m_dwUseTime = basiclib::BasicGetTickTime() - m_dwBegin;
         m_dwTotalUseTime += m_dwUseTime;
         m_bStart = false;
 
-        if(m_callback){
-            m_callback(m_dwUseTime, m_dwTotalUseTime);
+        if(callback != nullptr){
+            callback(m_dwUseTime, m_dwTotalUseTime);
         }
     }
 }
 
 //手动调用回调
 void CBasicCalcUseTime::CallbackLastData(){
-    if(m_callback){
+    if(m_callback != nullptr){
         m_callback(m_dwUseTime, m_dwTotalUseTime);
     }
 }

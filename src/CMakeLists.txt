@@ -69,7 +69,7 @@ include_directories(${PROJECT_BINARY_DIR}/libevent/include)
 #build cryptopp
 set(BUILD_TESTING OFF CACHE BOOL "flags")
 set(BUILD_SHARED OFF CACHE BOOL "flags")
-add_subdirectory(${PROJECT_SOURCE_DIR}/../3rd/cryptopp cryptopp)
+add_subdirectory(${PROJECT_SOURCE_DIR}/script/cryptoppcmake cryptopp)
 
 if(NOT ANDROID AND NOT APPLE)
     #build zlib

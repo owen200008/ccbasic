@@ -29,25 +29,25 @@ void TestMutexCallFunc(int i){
 
 void SystemPerformace(){
     {
-        StartCalcUseTime(begin, PrintUseTime("funccall+spinlocknosame", TIMES_FAST));
+        CreateCalcUseTime(begin, PrintUseTime("funccall+spinlocknosame", TIMES_FAST), true);
         for(int i = 0; i < TIMES_FAST; i++){
             TestCallFunc(i);
         }
     }
     {
-        StartCalcUseTime(begin, PrintUseTime("funccall+spinlock", TIMES_FAST));
+        CreateCalcUseTime(begin, PrintUseTime("funccall+spinlock", TIMES_FAST), true);
         for(int i = 0; i < TIMES_FAST; i++){
             TestCallSameFunc(i);
         }
     }
     {
-        StartCalcUseTime(begin, PrintUseTime("mutex", TIMES_FAST/10));
+        CreateCalcUseTime(begin, PrintUseTime("mutex", TIMES_FAST/10), true);
         for(int i = 0; i < TIMES_FAST / 10; i++){
             TestMutexCallFunc(i);
         }
     }
     {
-        StartCalcUseTime(begin, PrintUseTime("malloc", TIMES_FAST / 10));
+        CreateCalcUseTime(begin, PrintUseTime("malloc", TIMES_FAST / 10), true);
         for(int i = 0; i < TIMES_FAST / 10; i++){
             pFreeCreate(pCreate());
         }
