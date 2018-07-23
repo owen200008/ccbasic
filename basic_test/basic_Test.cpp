@@ -20,9 +20,6 @@ int main(int argc, char* argv[]){
 		return 0;
 	}
 	srand(time(NULL) + basiclib::BasicGetTickTime());
-    
-    std::atomic<int> a = 0;
-    int aa = a.fetch_add(1);
 
     SystemPerformace();
     //PrintSuccessOrFail(StartCoroutineTest);
