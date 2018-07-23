@@ -61,6 +61,7 @@ set(RunProject_SOURCES
 		${PROJECT_SOURCE_DIR}/basic_test/time/ontimertest.h
 		${PROJECT_SOURCE_DIR}/basic_test/util/containerexttest.h
         ${PROJECT_SOURCE_DIR}/basic_test/util/cclockfreequeue.h
+        ${PROJECT_SOURCE_DIR}/basic_test/util/cbasicqueuearray.h
 		${PROJECT_SOURCE_DIR}/src/scbasic/commu/basicclient.cpp
 		${PROJECT_SOURCE_DIR}/src/scbasic/commu/ipverify.cpp
 		${PROJECT_SOURCE_DIR}/src/scbasic/commu/servertemplate.cpp
