@@ -21,7 +21,6 @@ public:
         }
         AllocateIndexData(int nCount){
             m_nMaxCount = nCount;
-            m_nNoRead = 0;
             m_nRead = 0;
             m_nPreWrite = 0;
             m_pPool = (ArrayNode*)basiclib::BasicAllocate(sizeof(ArrayNode) * nCount);
@@ -49,21 +48,6 @@ public:
             return true;
         }
         bool Pop(T& value){
-            /*uint32_t nReadIndex = m_nRead.fetch_add(1, std::memory_order_relaxed);
-            nReadIndex -= m_nNoRead.load(std::memory_order_relaxed);
-            ArrayNode& node = m_pPool[GetDataIndex(nReadIndex)];
-            bool bTrue = true;
-            if(!node.m_bReadAlready.compare_exchange_weak(bTrue, false, std::memory_order_release, std::memory_order_relaxed)){
-                m_nNoRead.fetch_add(1, std::memory_order_relaxed);
-                return false;
-            }
-            value = pNode->m_data;
-            pNode->m_bReadAlready.store(false, std::memory_order_relaxed);
-            return true;
-            */
-
-
-
             uint32_t nReadIndex = m_nRead.load(std::memory_order_relaxed);
             ArrayNode* pNode = nullptr;
             do{
@@ -101,7 +85,6 @@ public:
         uint32_t GetAllocCount(){ return m_nMaxCount; }
     public:
         std::atomic<uint32_t>    m_nRead;
-        std::atomic<uint32_t>    m_nNoRead;
         std::atomic<uint32_t>    m_nPreWrite;
         uint32_t                m_nMaxCount;
         ArrayNode*                m_pPool;

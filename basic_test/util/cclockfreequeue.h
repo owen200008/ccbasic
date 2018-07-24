@@ -58,7 +58,7 @@ class CCLockfreeQueue : public BaseClass{
 public:
     struct LockfreeQueueNode{
         CCLockfreeQueueData                     m_data;
-        std::atomic<bool>                       m_bReadAlready = false;
+        std::atomic<bool>                       m_bReadAlready;
     };
     
     class AllocateIndex : public BaseClass{
@@ -146,6 +146,8 @@ public:
             printf("every time add times no more 8\n");
             exit(0);
         }
+        m_nI64Read = 0;
+        m_nI64Write = 0;
         m_nNextQueueSize = (uint32_t)pow(2, nDefaultQueuePowerSize);
         memset(m_pQueuePool, 0, CCLockfreeMaxIndexLevel * sizeof(AllocateIndex*));
         m_pQueuePoolRevert = nullptr;
@@ -294,8 +296,8 @@ protected:
         return nullptr;
     }
 protected:
-    std::atomic<uint64_t>   m_nI64Read = 0;
-    std::atomic<uint64_t>   m_nI64Write = 0;
+    std::atomic<uint64_t>   m_nI64Read;
+    std::atomic<uint64_t>   m_nI64Write;
     std::atomic<char>		m_lockPool;
     AllocateIndex*			m_pQueuePool[CCLockfreeMaxIndexLevel];        //
     AllocateIndex*          m_pQueuePoolRevert;
