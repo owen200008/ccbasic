@@ -4,17 +4,54 @@
 #include <atomic>
 #include <assert.h>
 
-//must be pow(2) BASICQUEUE_MAX_ALLOCTIMES=max allocate times BASICQUEUE_ALLOCMULTYTIMES=every time allocate more memory size BASICQUEUE_DELETEQUEUESIZE=if allocate > 4096*BASICQUEUE_ALLOCMULTYTIME*BASICQUEUE_ALLOCMULTYTIMES delete less memory allocate
-//default 1.allocate 16  2.allocate 64 3.allocate 256 4.allocate 1024 … 16 times
-template<class T, uint32_t BASICQUEUE_MAX_ALLOCTIMES = 16, uint32_t BASICQUEUE_ALLOCMULTYTIMES = 4, uint32_t BASICQUEUE_DELETEQUEUESIZE = 16384>
-class CBasicQueueArray : public basiclib::CBasicObject{
+struct BasicQueueArrayMgrFunc{
+    //! (2的指数幂)最大分配次数, 这个值越大对象占用内存越大 sizeof（指针） * BASICQUEUE_MAX_ALLOCTIMES
+    static const uint32_t BASICQUEUE_MAX_ALLOCTIMES = 16;
+    //! (2的指数幂)每次分配增大的倍数
+    static const uint32_t BASICQUEUE_ALLOCMULTYTIMES = 2;
+
+#if defined(malloc) || defined(free)
+    static inline void* malloc(size_t size){ return ::malloc(size); }
+    static inline void free(void* ptr){ return ::free(ptr); }
+#else
+    static inline void* malloc(size_t size){ return std::malloc(size); }
+    static inline void free(void* ptr){ return std::free(ptr); }
+#endif
+    template<class... _Types>
+    static inline void Trace(const char* pData, _Types&&... _Args){
+#ifdef _DEBUG
+        printf(pData, std::forward<_Types>(_Args)...);
+#endif
+    }
+};
+
+template<class Traits = BasicQueueArrayMgrFunc>
+class CBasicQueueObject{
+public:
+    CBasicQueueObject(){
+    }
+    virtual ~CBasicQueueObject(){
+    }
+
+    // Diagnostic allocations
+    void* operator new(size_t nSize){
+        return Traits::malloc(nSize);
+    }
+    void operator delete(void* p){
+        Traits::free(p);
+    }
+};
+
+
+template<class T, class Traits = BasicQueueArrayMgrFunc, class ObjectBaseClass = CBasicQueueObject<Traits>>
+class CBasicQueueArray : public ObjectBaseClass{
 public:
     struct ArrayNode{
         T                                        m_data;
         std::atomic<bool>                        m_bReadAlready;
     };
 
-    class AllocateIndexData : public basiclib::CBasicObject{
+    class AllocateIndexData : public ObjectBaseClass{
     public:
         inline uint32_t GetDataIndex(uint32_t uValue){
             return uValue % m_nMaxCount;
@@ -23,12 +60,12 @@ public:
             m_nMaxCount = nCount;
             m_nRead = 0;
             m_nPreWrite = 0;
-            m_pPool = (ArrayNode*)basiclib::BasicAllocate(sizeof(ArrayNode) * nCount);
+            m_pPool = (ArrayNode*)Traits::malloc(sizeof(ArrayNode) * nCount);
             memset(m_pPool, 0, sizeof(ArrayNode) * nCount);
         }
         virtual ~AllocateIndexData(){
             if(m_pPool){
-                basiclib::BasicDeallocate(m_pPool);
+                Traits::free(m_pPool);
             }
         }
         void Reset(){
@@ -91,27 +128,27 @@ public:
     };
 public:
     inline uint32_t GetQueueArrayIndex(uint32_t nIndex){
-        return nIndex % BASICQUEUE_MAX_ALLOCTIMES;
+        return nIndex % Traits::BASICQUEUE_MAX_ALLOCTIMES;
     }
     CBasicQueueArray(int nDefaultQueuePowerSize = 4){
         m_lock = 0;
         m_nNextQueueSize = (uint32_t)pow(2, nDefaultQueuePowerSize);
         m_cReadIndex = 0;
         m_cWriteIndex = 0;
-        memset(m_pMaxAllocTimes, 0, BASICQUEUE_MAX_ALLOCTIMES * sizeof(AllocateIndexData*));
+        memset(m_pMaxAllocTimes, 0, Traits::BASICQUEUE_MAX_ALLOCTIMES * sizeof(AllocateIndexData*));
 
         m_pMaxAllocTimes[0] = new AllocateIndexData(m_nNextQueueSize);
-        m_nNextQueueSize *= BASICQUEUE_ALLOCMULTYTIMES;
+        m_nNextQueueSize *= Traits::BASICQUEUE_ALLOCMULTYTIMES;
         m_pQueuePoolRevert = nullptr;
     }
     virtual ~CBasicQueueArray(){
-        for(int i = 0; i < BASICQUEUE_MAX_ALLOCTIMES; i++){
+        for(int i = 0; i < Traits::BASICQUEUE_MAX_ALLOCTIMES; i++){
             if(m_pMaxAllocTimes[i])
                 delete m_pMaxAllocTimes[i];
         }
     }
     bool Push(const T& value, int nDeep = 0){
-        if(nDeep >= BASICQUEUE_MAX_ALLOCTIMES){
+        if(nDeep >= Traits::BASICQUEUE_MAX_ALLOCTIMES){
             ASSERT(0);
             return false;
         }
@@ -139,8 +176,8 @@ public:
         }
         else{
             m_pMaxAllocTimes[nWriteIndex] = new AllocateIndexData(m_nNextQueueSize);
-            m_nNextQueueSize *= BASICQUEUE_ALLOCMULTYTIMES;
-            TRACE("expand_queue:%d\n", m_nNextQueueSize / BASICQUEUE_ALLOCMULTYTIMES * sizeof(ArrayNode));
+            m_nNextQueueSize *= Traits::BASICQUEUE_ALLOCMULTYTIMES;
+            Traits::Trace("expand_queue:%d\n", m_nNextQueueSize / Traits::BASICQUEUE_ALLOCMULTYTIMES * sizeof(ArrayNode));
         }
         m_lock.exchange(0, std::memory_order_relaxed);
         return Push(value, nDeep);
@@ -180,6 +217,7 @@ public:
             else{
                 m_pQueuePoolRevert = pAllocData;
             }
+            m_pMaxAllocTimes[nReadIndex] = nullptr;
             m_lock.exchange(0, std::memory_order_relaxed);
             if(pDelete){
                 delete pDelete;
@@ -212,6 +250,6 @@ protected:
     std::atomic<uint32_t>                                        m_cWriteIndex;
 
     std::atomic<char>                                            m_lock;
-    AllocateIndexData*                                           m_pMaxAllocTimes[BASICQUEUE_MAX_ALLOCTIMES];
+    AllocateIndexData*                                           m_pMaxAllocTimes[Traits::BASICQUEUE_MAX_ALLOCTIMES];
     AllocateIndexData*                                           m_pQueuePoolRevert;
 };

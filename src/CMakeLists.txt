@@ -308,6 +308,8 @@ set(basiclib_SOURCES
     ${BasicLibSrcPath}/util/strutil/maa.cpp
     ${BasicLibSrcPath}/util/strutil/strmisc.cpp
     ${BasicLibSrcPath}/util/strutil/strutil.cpp
+    ${BasicLibSrcPath}/util/cclockfreelist.h
+    ${BasicLibSrcPath}/util/cclockfreelist.cpp
     ${BasicLibSrcPath}/net/net.cpp
     ${BasicLibSrcPath}/net/net.h
     ${BasicLibSrcPath}/net/net_client.cpp

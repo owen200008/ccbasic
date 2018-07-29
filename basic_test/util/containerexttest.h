@@ -128,7 +128,7 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //self define queue
-CBasicQueueArray<ctx_message> basicQueue;
+CCLockfreeQueue<ctx_message> basicQueue;
 THREAD_RETURN CBasicQueueThreadPush(void* arg){
     ctx_message msg;
     CBasicQueryArrayTest* pTest = (CBasicQueryArrayTest*)arg;
@@ -377,10 +377,10 @@ bool TestContainExt(){
     //printf("/*************************************************************************/\n");
     printf("Test TestType_Count BasicQueue\n");
     bRet &= SpeedTest(CBasicQueueThreadPush, CBasicQueueThreadPop, TestType_Count);
-    printf("Test TestType_Count ConcurrentQueue\n");
-    bRet &= SpeedTest(ConcurrentQueueThreadPush, ConcurrentQueueThreadPop, TestType_Count);
-    printf("Test TestType_Count CMessageQueue\n");
-    bRet &= SpeedTest(CMessageQueueThreadPush, CMessageQueueThreadPop, TestType_Count, 4);
+    //printf("Test TestType_Count ConcurrentQueue\n");
+    //bRet &= SpeedTest(ConcurrentQueueThreadPush, ConcurrentQueueThreadPop, TestType_Count);
+    //printf("Test TestType_Count CMessageQueue\n");
+    //bRet &= SpeedTest(CMessageQueueThreadPush, CMessageQueueThreadPop, TestType_Count, 4);
     //printf("/*************************************************************************/\n");
     //printf("Test TestType_CountToken ConcurrentQueue\n");
     //bRet &= SpeedTest(ConcurrentQueueThreadPush, ConcurrentQueueThreadPop, TestType_CountToken);
