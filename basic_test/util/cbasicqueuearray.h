@@ -4,7 +4,7 @@
 #include <atomic>
 #include <assert.h>
 
-struct BasicQueueArrayMgrFunc{
+struct CCLockfreeQueueFunc{
     //! (2的指数幂)最大分配次数, 这个值越大对象占用内存越大 sizeof（指针） * BASICQUEUE_MAX_ALLOCTIMES
     static const uint32_t BASICQUEUE_MAX_ALLOCTIMES = 16;
     //! (2的指数幂)每次分配增大的倍数
@@ -25,12 +25,12 @@ struct BasicQueueArrayMgrFunc{
     }
 };
 
-template<class Traits = BasicQueueArrayMgrFunc>
-class CBasicQueueObject{
+template<class Traits = CCLockfreeQueueFunc>
+class CCLockfreeObject{
 public:
-    CBasicQueueObject(){
+    CCLockfreeObject(){
     }
-    virtual ~CBasicQueueObject(){
+    virtual ~CCLockfreeObject(){
     }
 
     // Diagnostic allocations
@@ -43,8 +43,8 @@ public:
 };
 
 
-template<class T, class Traits = BasicQueueArrayMgrFunc, class ObjectBaseClass = CBasicQueueObject<Traits>>
-class CBasicQueueArray : public ObjectBaseClass{
+template<class T, class Traits = CCLockfreeQueueFunc, class ObjectBaseClass = CCLockfreeObject<Traits>>
+class CCLockfreeQueue : public ObjectBaseClass{
 public:
     struct ArrayNode{
         T                                        m_data;
@@ -105,7 +105,7 @@ public:
             return true;
         }
         bool IsEmpty(){
-            uint32_t nReadIndex = m_nRead.load(std::memory_order_relaxed);
+            /*uint32_t nReadIndex = m_nRead.load(std::memory_order_relaxed);
             do{
                 ArrayNode * pNode = &(m_pPool[GetDataIndex(nReadIndex)]);
                 if(!pNode->m_bReadAlready.load(std::memory_order_acquire)){
@@ -117,14 +117,14 @@ public:
                 }
                 break;
             } while(true);
-            return false;
+            return false;*/
         }
         uint32_t GetAllocCount(){ return m_nMaxCount; }
     public:
-        std::atomic<uint32_t>    m_nRead;
-        std::atomic<uint32_t>    m_nPreWrite;
-        uint32_t                m_nMaxCount;
-        ArrayNode*                m_pPool;
+        std::atomic<uint32_t>       m_nRead;
+        std::atomic<uint32_t>       m_nPreWrite;
+        uint32_t                    m_nMaxCount;
+        ArrayNode*                  m_pPool;
     };
 public:
     inline uint32_t GetQueueArrayIndex(uint32_t nIndex){
@@ -163,9 +163,9 @@ public:
             return Push(value, ++nDeep);
         }
         //spin lock
-        while(m_lock.exchange(1, std::memory_order_relaxed)){};
+        while(m_lock.exchange(1, std::memory_order_acq_rel)){};
         if(m_pMaxAllocTimes[nWriteIndex]){
-            m_lock.exchange(0, std::memory_order_relaxed);
+            m_lock.exchange(0, std::memory_order_acq_rel);
             return Push(value, nDeep);
         }
         //first find cache
@@ -179,7 +179,7 @@ public:
             m_nNextQueueSize *= Traits::BASICQUEUE_ALLOCMULTYTIMES;
             Traits::Trace("expand_queue:%d\n", m_nNextQueueSize / Traits::BASICQUEUE_ALLOCMULTYTIMES * sizeof(ArrayNode));
         }
-        m_lock.exchange(0, std::memory_order_relaxed);
+        m_lock.exchange(0, std::memory_order_acq_rel);
         return Push(value, nDeep);
     }
     bool Pop(T& value){
@@ -204,7 +204,7 @@ public:
         //next circle
         if(m_cReadIndex.compare_exchange_weak(nGetReadIndex, nGetReadIndex + 1, std::memory_order_release, std::memory_order_relaxed)){
             AllocateIndexData* pDelete = nullptr;
-            while(m_lock.exchange(1, std::memory_order_relaxed)){};
+            while(m_lock.exchange(1, std::memory_order_acq_rel)){};
             if(m_pQueuePoolRevert){
                 if(m_pQueuePoolRevert->GetAllocCount() < pAllocData->GetAllocCount()){
                     pDelete = m_pQueuePoolRevert;
@@ -218,7 +218,7 @@ public:
                 m_pQueuePoolRevert = pAllocData;
             }
             m_pMaxAllocTimes[nReadIndex] = nullptr;
-            m_lock.exchange(0, std::memory_order_relaxed);
+            m_lock.exchange(0, std::memory_order_acq_rel);
             if(pDelete){
                 delete pDelete;
             }
@@ -246,10 +246,10 @@ public:
 protected:
     uint32_t                                                    m_nNextQueueSize;
 
-    std::atomic<uint32_t>                                        m_cReadIndex;
-    std::atomic<uint32_t>                                        m_cWriteIndex;
+    std::atomic<uint32_t>                                       m_cReadIndex;
+    std::atomic<uint32_t>                                       m_cWriteIndex;
 
-    std::atomic<char>                                            m_lock;
-    AllocateIndexData*                                           m_pMaxAllocTimes[Traits::BASICQUEUE_MAX_ALLOCTIMES];
-    AllocateIndexData*                                           m_pQueuePoolRevert;
+    std::atomic<char>                                           m_lock;
+    AllocateIndexData*                                          m_pMaxAllocTimes[Traits::BASICQUEUE_MAX_ALLOCTIMES];
+    AllocateIndexData*                                          m_pQueuePoolRevert;
 };

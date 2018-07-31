@@ -4,15 +4,11 @@
 #include <atomic>
 #include <assert.h>
 
-struct CCLockfreeQueueMgrFunc{
+struct CCLockfreeQueueFunc{
     //! (2的指数幂)最大分配次数, 这个值越大对象占用内存越大 sizeof（指针） * BASICQUEUE_MAX_ALLOCTIMES
-    static const uint32_t CCLOCKFREEQYEYE_MAX_ALLOCTIMES = 16;
+    static const uint32_t BASICQUEUE_MAX_ALLOCTIMES = 16;
     //! (2的指数幂)每次分配增大的倍数
-    static const uint32_t CCLOCKFREEQYEYE_ALLOCMULTYTIMES = 2;
-
-
-    //! 每个block的size
-    static const uint32_t CCLockfreeQueue_Block_Size = 64;
+    static const uint32_t BASICQUEUE_ALLOCMULTYTIMES = 4;
 
 #if defined(malloc) || defined(free)
     static inline void* malloc(size_t size){ return ::malloc(size); }
@@ -29,12 +25,12 @@ struct CCLockfreeQueueMgrFunc{
     }
 };
 
-template<class Traits = CCLockfreeQueueMgrFunc>
-class CCLockfreeQueueObject{
+template<class Traits = CCLockfreeQueueFunc>
+class CCLockfreeObject{
 public:
-    CCLockfreeQueueObject(){
+    CCLockfreeObject(){
     }
-    virtual ~CCLockfreeQueueObject(){
+    virtual ~CCLockfreeObject(){
     }
 
     // Diagnostic allocations
@@ -47,29 +43,16 @@ public:
 };
 
 
-template<class T, class Traits = BasicQueueArrayMgrFunc, class ObjectBaseClass = CCLockfreeQueueObject<Traits>>
+template<class T, class Traits = CCLockfreeQueueFunc, class ObjectBaseClass = CCLockfreeObject<Traits>>
 class CCLockfreeQueue : public ObjectBaseClass{
 public:
     struct ArrayNode{
         T                                        m_data;
-        std::atomic<bool>                        m_bReadAlready;
+        std::atomic<uint64_t>                    m_i64SignPosition;
     };
-    struct Block {
-    public:
-        void reInit(uint32_t nIndex, Block* pPre){
-            m_nIndex = nIndex;
-            pPre->m_pNextBlock = this;
-            this->m_pPreBlock = pPre;
-        }
-    protected:
-        uint32_t        m_nIndex;
-        ArrayNode       m_pool[Traits::CCLockfreeQueue_Block_Size];
-        Block*          m_pNextBlock;
-        Block*          m_pPreBlock;
-    };
-    struct MemoryAlloc{
-        MemoryAlloc*    m_pPre;
-    };
+#define CCLockfreeQueueArrayNodeSign_Mask       0xffffffff00000000
+#define CCLockfreeQueueArrayNodeSign_OperAdd    0x0000000100000000
+
     class AllocateIndexData : public ObjectBaseClass{
     public:
         inline uint32_t GetDataIndex(uint32_t uValue){
@@ -77,8 +60,6 @@ public:
         }
         AllocateIndexData(int nCount){
             m_nMaxCount = nCount;
-            m_nRead = 0;
-            m_nPreWrite = 0;
             m_pPool = (ArrayNode*)Traits::malloc(sizeof(ArrayNode) * nCount);
             memset(m_pPool, 0, sizeof(ArrayNode) * nCount);
         }
@@ -87,20 +68,26 @@ public:
                 Traits::free(m_pPool);
             }
         }
-        void Reset(){
-            m_nPreWrite = 0;
-            m_nRead = 0;
-        }
-        bool Push(const T& value){
-            uint32_t nWriteIndex = m_nPreWrite.fetch_add(1, std::memory_order_relaxed);
-            ArrayNode& node = m_pPool[GetDataIndex(nWriteIndex)];
-            if(node.m_bReadAlready.load(std::memory_order_relaxed)){
+        bool PushByPosition(const T& value, uint32_t& nWritePosition){
+            ArrayNode& node = m_pPool[GetDataIndex(nWritePosition)];
+            uint64_t nSignLastWritePos = node.m_i64SignPosition.fetch_add(CCLockfreeQueueArrayNodeSign_OperAdd, std::memory_order_relaxed);
+            if(nSignLastWritePos & CCLockfreeQueueArrayNodeSign_Mask != CCLockfreeQueueArrayNodeSign_OperAdd){
+                uint32_t nLastWritePos = nSignLastWritePos & 0xffffffff;
+                if(nLastWritePos == 0){
+                    return PushByPosition(value, nWritePosition);
+                }
+                if(nWritePosition < nLastWritePos){
+                    if(!node.m_nWritePosition.compare_exchange_strong(nLastWritePos, nWritePosition, std::memory_order_acquire, std::memory_order_relaxed)){
+                        return PushByPosition(value, nWritePosition);
+                    }
+                    nWritePosition = nLastWritePos;
+                }
                 //nWriteIndex overflow need reset
                 //full
                 return false;
             }
             node.m_data = value;
-            node.m_bReadAlready.store(true, std::memory_order_release);
+            node.m_nWritePosition.fetch_add(nWritePosition, std::memory_order_release);
             return true;
         }
         bool Pop(T& value){
@@ -124,60 +111,50 @@ public:
             return true;
         }
         bool IsEmpty(){
-            uint32_t nReadIndex = m_nRead.load(std::memory_order_relaxed);
+            /*uint32_t nReadIndex = m_nRead.load(std::memory_order_relaxed);
             do{
-                ArrayNode * pNode = &(m_pPool[GetDataIndex(nReadIndex)]);
-                if(!pNode->m_bReadAlready.load(std::memory_order_acquire)){
-                    //empty
-                    if(m_nRead.compare_exchange_weak(nReadIndex, nReadIndex, std::memory_order_release, std::memory_order_relaxed)){
-                        return true;
-                    }
-                    continue;
-                }
-                break;
+            ArrayNode * pNode = &(m_pPool[GetDataIndex(nReadIndex)]);
+            if(!pNode->m_bReadAlready.load(std::memory_order_acquire)){
+            //empty
+            if(m_nRead.compare_exchange_weak(nReadIndex, nReadIndex, std::memory_order_release, std::memory_order_relaxed)){
+            return true;
+            }
+            continue;
+            }
+            break;
             } while(true);
-            return false;
+            return false;*/
         }
         uint32_t GetAllocCount(){ return m_nMaxCount; }
     public:
-        std::atomic<uint32_t>    m_nRead;
-        std::atomic<uint32_t>    m_nPreWrite;
-        uint32_t                m_nMaxCount;
-        ArrayNode*                m_pPool;
+        uint32_t                    m_nMaxCount;
+        ArrayNode*                  m_pPool;
     };
-protected:
-    //add to memoryalloc
-    inline Block* create_block(size_t count){
-        MemoryAlloc* pAlloc = static_cast<MemoryAlloc*>((Traits::malloc)(sizeof(Block) * count + sizeof(MemoryAlloc)));
-        pAlloc->m_pPre = m_pMemoryAlloc;
-        m_pMemoryAlloc = pAlloc;
-        auto p = static_cast<U*>(pAlloc + 1);
-        if(p == nullptr)
-            return nullptr;
-        for(size_t i = 0; i != count; ++i){
-            new (p + i) U();
-        }
-        return p;
-    }
 public:
-    inline uint32_t GetQueueArrayIndex(uint32_t nIndex){
+    inline uint8_t GetQueueArrayIndex(uint8_t nIndex){
         return nIndex % Traits::BASICQUEUE_MAX_ALLOCTIMES;
     }
-    CCLockfreeQueue(uint16_t nDefaultBlockSize = 4){
-        if(nDefaultBlockSize < 4)
-            nDefaultBlockSize = 4;
-        m_nPreReadIndex = 0;
-        m_nReadIndex = 0;
-        m_nWriteIndex = 0;
-        m_nNextBlockSize = nDefaultBlockSize;
+    CCLockfreeQueue(int nDefaultQueuePowerSize = 4){
+        if(Traits::BASICQUEUE_MAX_ALLOCTIMES < 4){
+            printf("Traits::BASICQUEUE_MAX_ALLOCTIMES mustbe more than 4");
+            exit(0);
+        }
+        else if(UINT8_MAX % Traits::BASICQUEUE_MAX_ALLOCTIMES != 0){
+            printf("Traits::BASICQUEUE_MAX_ALLOCTIMES mustbe more than pow of 2");
+            exit(0);
+        }
+        m_cReadIndex = 0;
+        m_cWriteIndex = 0;
+        //must be begin with 1, 0 index is empty sign
+        m_nPreReadPosition = 1;
+        m_nReadPosition = 1;
+        m_nWritePosition = 1;
         m_lock = 0;
-        Block* pBlock = create_block(m_nNextBlockSize);
-        m_pHead = pBlock;
-        m_pTail = pBlock;
-        
+        m_nNextQueueSize = (uint32_t)pow(2, nDefaultQueuePowerSize);
 
-        m_pMaxAllocTimes[0] = new AllocateIndexData(m_nNextBlockSize);
-        m_nNextBlockSize *= Traits::BASICQUEUE_ALLOCMULTYTIMES;
+        memset(m_pMaxAllocTimes, 0, Traits::BASICQUEUE_MAX_ALLOCTIMES * sizeof(AllocateIndexData*));
+        m_pMaxAllocTimes[0] = new AllocateIndexData(m_nNextQueueSize);
+        m_nNextQueueSize *= Traits::BASICQUEUE_ALLOCMULTYTIMES;
         m_pQueuePoolRevert = nullptr;
     }
     virtual ~CCLockfreeQueue(){
@@ -186,49 +163,48 @@ public:
                 delete m_pMaxAllocTimes[i];
         }
     }
-    bool Push(const T& value){
-        uint32_t nWriteIndex = m_nWriteIndex.fetch_add(1, std::memory_order_relaxed);
-        //get block num and index
-        uint32_t nBlockIndex = nWriteIndex / Traits::CCLockfreeQueue_Block_Size; 
-        uint32_t nBlockPos = nWriteIndex % Traits::CCLockfreeQueue_Block_Size;
-        //get real block index
-
-
-
-        uint32_t nGetWriteIndex = m_cWriteIndex.load(std::memory_order_relaxed);
-        uint32_t nWriteIndex = GetQueueArrayIndex(nGetWriteIndex);
-
-        AllocateIndexData* pAllocData = m_pMaxAllocTimes[nWriteIndex];
+    bool PushByWriteIndex(const T& value, uint8_t cGetWriteIndex, uint32_t nWritePosition){
+        uint8_t cWriteIndex = GetQueueArrayIndex(cGetWriteIndex);
+        AllocateIndexData* pAllocData = m_pMaxAllocTimes[cWriteIndex];
         if(pAllocData){
-            if(pAllocData->Push(value))
+            if(pAllocData->PushByPosition(value, nWritePosition))
                 return true;
-            m_cWriteIndex.compare_exchange_weak(nGetWriteIndex, nGetWriteIndex + 1, std::memory_order_release, std::memory_order_relaxed);
-            return Push(value, ++nDeep);
+            return PushByWriteIndex(value, cGetWriteIndex + 1, nWritePosition);
         }
         //spin lock
-        while(m_lock.exchange(1, std::memory_order_relaxed)){};
-        if(m_pMaxAllocTimes[nWriteIndex]){
-            m_lock.exchange(0, std::memory_order_relaxed);
-            return Push(value, nDeep);
+        while(m_lock.exchange(1, std::memory_order_acq_rel)){};
+        if(m_pMaxAllocTimes[cWriteIndex]){
+            m_lock.exchange(0, std::memory_order_acq_rel);
+            return PushByWriteIndex(value, cGetWriteIndex, nWritePosition);
         }
         //first find cache
         if(m_pQueuePoolRevert){
-            m_pMaxAllocTimes[nWriteIndex] = m_pQueuePoolRevert;
-            m_pMaxAllocTimes[nWriteIndex]->Reset();
+            m_pMaxAllocTimes[cWriteIndex] = m_pQueuePoolRevert;
             m_pQueuePoolRevert = nullptr;
         }
         else{
-            m_pMaxAllocTimes[nWriteIndex] = new AllocateIndexData(m_nNextBlockSize);
-            m_nNextBlockSize *= Traits::BASICQUEUE_ALLOCMULTYTIMES;
-            Traits::Trace("expand_queue:%d\n", m_nNextBlockSize / Traits::BASICQUEUE_ALLOCMULTYTIMES * sizeof(ArrayNode));
+            m_pMaxAllocTimes[cWriteIndex] = new AllocateIndexData(m_nNextQueueSize);
+            m_nNextQueueSize *= Traits::BASICQUEUE_ALLOCMULTYTIMES;
+            Traits::Trace("expand_queue:%d\n", m_nNextQueueSize / Traits::BASICQUEUE_ALLOCMULTYTIMES * sizeof(ArrayNode));
         }
-        m_lock.exchange(0, std::memory_order_relaxed);
-        return Push(value, nDeep);
+        m_lock.exchange(0, std::memory_order_acq_rel);
+        return PushByWriteIndex(value, cGetWriteIndex, nWritePosition);
+    }
+
+    bool Push(const T& value){
+        return PushByWriteIndex(value, m_cWriteIndex.load(std::memory_order_relaxed), m_nWritePosition.fetch_add(1, std::memory_order_relaxed));
     }
     bool Pop(T& value){
-        uint32_t nGetReadIndex = m_cReadIndex.load(std::memory_order_relaxed);
-        uint32_t nReadIndex = GetQueueArrayIndex(nGetReadIndex);
-        AllocateIndexData* pAllocData = m_pMaxAllocTimes[nReadIndex];
+        uint8_t cGetReadIndex = m_cReadIndex.load(std::memory_order_relaxed);
+        uint32_t nPreReadPosition = m_nPreReadPosition.fetch_add(1, std::memory_order_relaxed);
+        uint32_t nWritePosition = m_nWritePosition.load(std::memory_order_relaxed);
+        if(nPreReadPosition == nWritePosition){
+            //empty
+            return false;
+        }
+        uint32_t nReadPosition = m_nReadPosition.fetch_add(1, std::memory_order_relaxed);
+        uint8_t cReadIndex = GetQueueArrayIndex(cGetReadIndex);
+        AllocateIndexData* pAllocData = m_pMaxAllocTimes[cReadIndex];
         if(!pAllocData){
             //speical case.
             return false;
@@ -247,41 +223,49 @@ public:
         //next circle
         if(m_cReadIndex.compare_exchange_weak(nGetReadIndex, nGetReadIndex + 1, std::memory_order_release, std::memory_order_relaxed)){
             AllocateIndexData* pDelete = nullptr;
-            while(m_lock.exchange(1, std::memory_order_relaxed)){};
+            while(m_lock.exchange(1, std::memory_order_acq_rel)){};
             if(m_pQueuePoolRevert){
-                if(m_pQueuePoolRevert->GetAllocCount() < pAllocData->GetAllocCount()){
-                    pDelete = m_pQueuePoolRevert;
-                    m_pQueuePoolRevert = pAllocData;
-                }
-                else{
-                    pDelete = pAllocData;
-                }
+                pDelete = m_pQueuePoolRevert;
             }
-            else{
-                m_pQueuePoolRevert = pAllocData;
-            }
+            m_pQueuePoolRevert = pAllocData;
             m_pMaxAllocTimes[nReadIndex] = nullptr;
-            m_lock.exchange(0, std::memory_order_relaxed);
+            m_lock.exchange(0, std::memory_order_acq_rel);
             if(pDelete){
                 delete pDelete;
             }
         }
         return Pop(value);
     }
-protected:
-    uint32_t                                                    m_nNextBlockSize;
+    bool IsEmpty(){
+        /*uint32_t nReadIndex = GetQueueArrayIndex(m_cReadIndex.load(std::memory_order_relaxed));
+        AllocateIndexData* pAllocData = m_pMaxAllocTimes[nReadIndex];
+        if(!pAllocData){
+            //speical case.
+            return true;
+        }
+        if(!pAllocData->IsEmpty())
+            return false;
 
-    std::atomic<uint32_t>                                       m_nPreReadIndex;
-    std::atomic<uint32_t>                                       m_nReadIndex;
-    std::atomic<uint32_t>                                       m_nWriteIndex;
+        //empty read write same circle
+        uint32_t nWriteIndex = GetQueueArrayIndex(m_cWriteIndex.load(std::memory_order_relaxed));
+        if(nWriteIndex == nReadIndex){
+            //empty
+            return true;
+        }
+        return false;*/
+    }
+protected:
+    uint32_t                                                    m_nNextQueueSize;
+
+    std::atomic<uint8_t>                                        m_cReadIndex;
+    std::atomic<uint8_t>                                        m_cWriteIndex;
+
+    std::atomic<uint32_t>                                       m_nPreReadPosition;
+    std::atomic<uint32_t>                                       m_nReadPosition;
+    std::atomic<uint32_t>                                       m_nWritePosition;
+
 
     std::atomic<char>                                           m_lock;
-
-    std::atomic<Block*>                                         m_pHead;
-    std::atomic<Block*>                                         m_pTail;
-
-    MemoryAlloc*                                                m_pMemoryAlloc;
-
-    AllocateIndexData*                                           m_pMaxAllocTimes[Traits::BASICQUEUE_MAX_ALLOCTIMES];
-    AllocateIndexData*                                           m_pQueuePoolRevert;
+    AllocateIndexData*                                          m_pMaxAllocTimes[Traits::BASICQUEUE_MAX_ALLOCTIMES];
+    AllocateIndexData*                                          m_pQueuePoolRevert;
 };
