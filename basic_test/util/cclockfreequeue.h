@@ -70,14 +70,17 @@ public:
         }
         bool PushByPosition(const T& value, uint32_t& nWritePosition){
             ArrayNode& node = m_pPool[GetDataIndex(nWritePosition)];
-            uint64_t nSignLastWritePos = node.m_i64SignPosition.fetch_add(CCLockfreeQueueArrayNodeSign_OperAdd, std::memory_order_relaxed);
-            if(nSignLastWritePos & CCLockfreeQueueArrayNodeSign_Mask != CCLockfreeQueueArrayNodeSign_OperAdd){
-                uint32_t nLastWritePos = nSignLastWritePos & 0xffffffff;
+            uint64_t i64SignLastWritePos = node.m_i64SignPosition.fetch_add(CCLockfreeQueueArrayNodeSign_OperAdd, std::memory_order_relaxed);
+            if((i64SignLastWritePos & CCLockfreeQueueArrayNodeSign_Mask) != CCLockfreeQueueArrayNodeSign_OperAdd){
+                uint32_t nLastWritePos = i64SignLastWritePos & 0xffffffff;
                 if(nLastWritePos == 0){
+                    //wait to write finish
                     return PushByPosition(value, nWritePosition);
                 }
                 if(nWritePosition < nLastWritePos){
-                    if(!node.m_nWritePosition.compare_exchange_strong(nLastWritePos, nWritePosition, std::memory_order_acquire, std::memory_order_relaxed)){
+                    uint64_t i64SetPosition = CCLockfreeQueueArrayNodeSign_OperAdd;
+                    i64SetPosition += nWritePosition;
+                    if(!node.m_i64SignPosition.compare_exchange_strong(i64SignLastWritePos, i64SetPosition, std::memory_order_acquire, std::memory_order_relaxed)){
                         return PushByPosition(value, nWritePosition);
                     }
                     nWritePosition = nLastWritePos;
@@ -87,43 +90,28 @@ public:
                 return false;
             }
             node.m_data = value;
-            node.m_nWritePosition.fetch_add(nWritePosition, std::memory_order_release);
+            node.m_i64SignPosition.fetch_add(nWritePosition, std::memory_order_release);
             return true;
         }
-        bool Pop(T& value){
-            uint32_t nReadIndex = m_nRead.load(std::memory_order_relaxed);
-            ArrayNode* pNode = nullptr;
-            do{
-                pNode = &(m_pPool[GetDataIndex(nReadIndex)]);
-                if(!pNode->m_bReadAlready.load(std::memory_order_acquire)){
-                    //empty
-                    if(m_nRead.compare_exchange_weak(nReadIndex, nReadIndex, std::memory_order_release, std::memory_order_relaxed)){
-                        return false;
-                    }
-                    //continue must be true, if no continue to compare_exchange_weak pNode is error.
-                    continue;
+        bool PopByPosition(T& value, uint32_t nReadPosition){
+            ArrayNode& node = m_pPool[GetDataIndex(nReadPosition)];
+            uint64_t i64SignLastWritePos = node.m_i64SignPosition.load(std::memory_order_acquire);
+            uint32_t nLastWritePosition = i64SignLastWritePos & 0xffffffff;
+            if(nLastWritePosition == nReadPosition){
+                value = node.m_data;
+                node.m_i64SignPosition.store(0, std::memory_order_relaxed);
+                return true;
+            }
+            else if(nReadPosition < nLastWritePosition){
+                return PopByPosition(value, nReadPosition);
+            }
+            else if(nLastWritePosition == 0){
+                if(){
+                    
                 }
-                if(m_nRead.compare_exchange_weak(nReadIndex, nReadIndex + 1, std::memory_order_release, std::memory_order_relaxed))
-                    break;
-            } while(true);
-            value = pNode->m_data;
-            pNode->m_bReadAlready.store(false, std::memory_order_relaxed);
-            return true;
-        }
-        bool IsEmpty(){
-            /*uint32_t nReadIndex = m_nRead.load(std::memory_order_relaxed);
-            do{
-            ArrayNode * pNode = &(m_pPool[GetDataIndex(nReadIndex)]);
-            if(!pNode->m_bReadAlready.load(std::memory_order_acquire)){
-            //empty
-            if(m_nRead.compare_exchange_weak(nReadIndex, nReadIndex, std::memory_order_release, std::memory_order_relaxed)){
-            return true;
             }
-            continue;
-            }
-            break;
-            } while(true);
-            return false;*/
+            //nReadPosition > nLastWritePosition
+            return false;
         }
         uint32_t GetAllocCount(){ return m_nMaxCount; }
     public:
@@ -148,6 +136,7 @@ public:
         //must be begin with 1, 0 index is empty sign
         m_nPreReadPosition = 1;
         m_nReadPosition = 1;
+        m_nPreWritePosition = 1;
         m_nWritePosition = 1;
         m_lock = 0;
         m_nNextQueueSize = (uint32_t)pow(2, nDefaultQueuePowerSize);
@@ -167,8 +156,10 @@ public:
         uint8_t cWriteIndex = GetQueueArrayIndex(cGetWriteIndex);
         AllocateIndexData* pAllocData = m_pMaxAllocTimes[cWriteIndex];
         if(pAllocData){
-            if(pAllocData->PushByPosition(value, nWritePosition))
+            if(pAllocData->PushByPosition(value, nWritePosition)){
+                m_nWritePosition.fetch_add(1, std::memory_order_relaxed);
                 return true;
+            }
             return PushByWriteIndex(value, cGetWriteIndex + 1, nWritePosition);
         }
         //spin lock
@@ -192,7 +183,7 @@ public:
     }
 
     bool Push(const T& value){
-        return PushByWriteIndex(value, m_cWriteIndex.load(std::memory_order_relaxed), m_nWritePosition.fetch_add(1, std::memory_order_relaxed));
+        return PushByWriteIndex(value, m_cWriteIndex.load(std::memory_order_relaxed), m_nPreWritePosition.fetch_add(1, std::memory_order_relaxed));
     }
     bool Pop(T& value){
         uint8_t cGetReadIndex = m_cReadIndex.load(std::memory_order_relaxed);
@@ -209,9 +200,11 @@ public:
             //speical case.
             return false;
         }
-        if(pAllocData->Pop(value)){
+        if(pAllocData->PopByPosition(value, nReadPosition)){
             return true;
         }
+        //if exist next index,
+        
 
         //empty read write same circle
         uint32_t nWriteIndex = GetQueueArrayIndex(m_cWriteIndex.load(std::memory_order_relaxed));
@@ -262,6 +255,7 @@ protected:
 
     std::atomic<uint32_t>                                       m_nPreReadPosition;
     std::atomic<uint32_t>                                       m_nReadPosition;
+    std::atomic<uint32_t>                                       m_nPreWritePosition;
     std::atomic<uint32_t>                                       m_nWritePosition;
 
 
