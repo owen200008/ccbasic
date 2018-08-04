@@ -6,6 +6,7 @@
 //#include "misc/fastdelegatetest.h"
 //#include "exception/stackwalkcheck.h"
 #include "util/containerexttest.h"
+#include "util/cclockfreestacktest.hpp"
 #include "thread/threadtest.h"
 #include "coroutine/coroutinetest.h"
 #include "scbasic/encode/rsatest.h"
@@ -27,10 +28,10 @@ int main(int argc, char* argv[]){
 	//TestStackWalk();
 	//TestFastDelegate();
     for(int i = 0;i < 10;i++)
-        PrintSuccessOrFail(TestContainExt);
+        PrintSuccessOrFail(CCLockfreeStackTest);
 	//NetServerTest();
 	//TestFunctionXiaolvTest();
-    PrintSuccessOrFail(TestRSA);
+    //PrintSuccessOrFail(TestRSA);
 
 	getchar();
 	return 0;

@@ -1,4 +1,4 @@
-﻿/***********************************************************************************************
+/***********************************************************************************************
 // 文件名:     basic.h
 // 创建者:     蔡振球
 // Email:      zqcai@w.cn
@@ -80,6 +80,8 @@
 // 容器
 #include "../util/container.h"
 #include "../util/containerext.h"
+//lockfree
+#include "../util/cclockfreestack.h"
 
 //屏蔽字库实现
 #include "../datastruct/pbzk.h"
@@ -153,6 +155,7 @@
 //net
 #include "../net/net_client.h"
 #include "../net/net_server.h"
+
 
 //获取版本号
 _BASIC_DLL_API basiclib::CBasicString& GetBasicLibVersion();

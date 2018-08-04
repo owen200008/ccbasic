@@ -213,6 +213,7 @@ set(basiclib_SOURCES
     ${BasicLibSrcPath}/types/basicobj.h
     ${BasicLibSrcPath}/types/linux.h
     ${BasicLibSrcPath}/types/types.h
+    ${BasicLibSrcPath}/util/cclockfreestack.h
     ${BasicLibSrcPath}/util/auto_cast.h
 	${BasicLibSrcPath}/util/skiplist.h
     ${BasicLibSrcPath}/util/concurrentqueue/blockingconcurrentqueue.h

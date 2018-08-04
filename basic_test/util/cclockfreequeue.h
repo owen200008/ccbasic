@@ -4,7 +4,7 @@
 #include <atomic>
 #include <assert.h>
 
-struct CCLockfreeQueueFunc{
+struct CCLockfreeQueueFunc2{
     //! (2的指数幂)最大分配次数, 这个值越大对象占用内存越大 sizeof（指针） * BASICQUEUE_MAX_ALLOCTIMES
     static const uint32_t BASICQUEUE_MAX_ALLOCTIMES = 16;
     //! (2的指数幂)每次分配增大的倍数
@@ -25,7 +25,7 @@ struct CCLockfreeQueueFunc{
     }
 };
 
-template<class Traits = CCLockfreeQueueFunc>
+template<class Traits = CCLockfreeQueueFunc2>
 class CCLockfreeObject{
 public:
     CCLockfreeObject(){
@@ -43,8 +43,8 @@ public:
 };
 
 
-template<class T, class Traits = CCLockfreeQueueFunc, class ObjectBaseClass = CCLockfreeObject<Traits>>
-class CCLockfreeQueue : public ObjectBaseClass{
+template<class T, class Traits = CCLockfreeQueueFunc2, class ObjectBaseClass = CCLockfreeObject<Traits>>
+class CCLockfreeQueue2 : public ObjectBaseClass{
 public:
     struct ArrayNode{
         T                                        m_data;
@@ -106,9 +106,7 @@ public:
                 return PopByPosition(value, nReadPosition);
             }
             else if(nLastWritePosition == 0){
-                if(){
-                    
-                }
+
             }
             //nReadPosition > nLastWritePosition
             return false;
@@ -122,7 +120,7 @@ public:
     inline uint8_t GetQueueArrayIndex(uint8_t nIndex){
         return nIndex % Traits::BASICQUEUE_MAX_ALLOCTIMES;
     }
-    CCLockfreeQueue(int nDefaultQueuePowerSize = 4){
+    CCLockfreeQueue2(int nDefaultQueuePowerSize = 4){
         if(Traits::BASICQUEUE_MAX_ALLOCTIMES < 4){
             printf("Traits::BASICQUEUE_MAX_ALLOCTIMES mustbe more than 4");
             exit(0);
@@ -146,7 +144,7 @@ public:
         m_nNextQueueSize *= Traits::BASICQUEUE_ALLOCMULTYTIMES;
         m_pQueuePoolRevert = nullptr;
     }
-    virtual ~CCLockfreeQueue(){
+    virtual ~CCLockfreeQueue2(){
         for(int i = 0; i < Traits::BASICQUEUE_MAX_ALLOCTIMES; i++){
             if(m_pMaxAllocTimes[i])
                 delete m_pMaxAllocTimes[i];
@@ -207,21 +205,21 @@ public:
         
 
         //empty read write same circle
-        uint32_t nWriteIndex = GetQueueArrayIndex(m_cWriteIndex.load(std::memory_order_relaxed));
-        if(nWriteIndex == nReadIndex){
+        uint8_t cWriteIndex = GetQueueArrayIndex(m_cWriteIndex.load(std::memory_order_relaxed));
+        if(cWriteIndex == cReadIndex){
             //empty
             return false;
         }
 
         //next circle
-        if(m_cReadIndex.compare_exchange_weak(nGetReadIndex, nGetReadIndex + 1, std::memory_order_release, std::memory_order_relaxed)){
+        if(m_cReadIndex.compare_exchange_weak(cGetReadIndex, cGetReadIndex + 1, std::memory_order_release, std::memory_order_relaxed)){
             AllocateIndexData* pDelete = nullptr;
             while(m_lock.exchange(1, std::memory_order_acq_rel)){};
             if(m_pQueuePoolRevert){
                 pDelete = m_pQueuePoolRevert;
             }
             m_pQueuePoolRevert = pAllocData;
-            m_pMaxAllocTimes[nReadIndex] = nullptr;
+            m_pMaxAllocTimes[cReadIndex] = nullptr;
             m_lock.exchange(0, std::memory_order_acq_rel);
             if(pDelete){
                 delete pDelete;

@@ -1,11 +1,20 @@
+/***********************************************************************************************
+ // 文件名:     cclockfreestack.h
+ // 创建者:     蔡振球
+ // Email:     zqcai@w.cn
+ // 创建时间:   2018/8/1 20:23:31
+ // 内容描述:   无锁stack
+ // 版本信息:   1.0V
+ ************************************************************************************************/
 #pragma once
 
-#define CCLockfreeListBaseObject basiclib::CBasicObject
+__NS_BASIC_START
 
 class CCLockfreeStackNode{
 public:
-    CCLockfreeStackNode() : m_freeListNext(nullptr), m_freeListRefs(0){
-
+    CCLockfreeStackNode(){
+        m_freeListNext = nullptr;
+        m_freeListRefs = 0;
     }
 private:
     std::atomic<std::uint32_t>          m_freeListRefs;
@@ -14,15 +23,14 @@ private:
     friend class CCLockfreeStack;
 };
 
-
-class CCLockfreeStack : public CCLockfreeListBaseObject{
+class CCLockfreeStack : public basiclib::CBasicObject{
     static const std::uint32_t REFS_MASK = 0x7FFFFFFF;
     static const std::uint32_t SHOULD_BE_ON_FREE = 0x80000000;
 public:
     CCLockfreeStack(){
         m_pHead = nullptr;
     }
-    ~CCLockfreeStack(){
+    virtual ~CCLockfreeStack(){
 
     }
     inline void Push(CCLockfreeStackNode* pNode){
@@ -69,5 +77,6 @@ protected:
     }
 protected:
     std::atomic<CCLockfreeStackNode*> m_pHead;
-
 };
+
+__NS_BASIC_END

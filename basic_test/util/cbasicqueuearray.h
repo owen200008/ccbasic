@@ -26,11 +26,11 @@ struct CCLockfreeQueueFunc{
 };
 
 template<class Traits = CCLockfreeQueueFunc>
-class CCLockfreeObject{
+class CCLockfreeQueueObject{
 public:
-    CCLockfreeObject(){
+    CCLockfreeQueueObject(){
     }
-    virtual ~CCLockfreeObject(){
+    virtual ~CCLockfreeQueueObject(){
     }
 
     // Diagnostic allocations
@@ -43,8 +43,8 @@ public:
 };
 
 
-template<class T, class Traits = CCLockfreeQueueFunc, class ObjectBaseClass = CCLockfreeObject<Traits>>
-class CCLockfreeQueue : public ObjectBaseClass{
+template<class T, class Traits = CCLockfreeQueueFunc, class ObjectBaseClass = CCLockfreeQueueObject<Traits>>
+class CBasicQueueArray : public ObjectBaseClass{
 public:
     struct ArrayNode{
         T                                        m_data;

@@ -128,7 +128,7 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //self define queue
-CCLockfreeQueue<ctx_message> basicQueue;
+CBasicQueueArray<ctx_message> basicQueue;
 THREAD_RETURN CBasicQueueThreadPush(void* arg){
     ctx_message msg;
     CBasicQueryArrayTest* pTest = (CBasicQueryArrayTest*)arg;

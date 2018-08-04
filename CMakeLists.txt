@@ -74,6 +74,8 @@ set(RunProject_SOURCES
         ${PROJECT_SOURCE_DIR}/basic_test/scbasic/encode/rsatest.h
         ${PROJECT_SOURCE_DIR}/basic_test/sys/systemperformance.cpp
         ${PROJECT_SOURCE_DIR}/basic_test/sys/systemperformance.h
+        ${PROJECT_SOURCE_DIR}/basic_test/util/cclockfreestacktest.hpp
+        ${PROJECT_SOURCE_DIR}/basic_test/util/cclockfreestacktest.cpp
 			)
 set(TotalSourceData ${RunProject_SOURCES})
 source_group_by_dir(TotalSourceData)
