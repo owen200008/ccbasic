@@ -214,6 +214,7 @@ set(basiclib_SOURCES
     ${BasicLibSrcPath}/types/linux.h
     ${BasicLibSrcPath}/types/types.h
     ${BasicLibSrcPath}/util/cclockfreestack.h
+    ${BasicLibSrcPath}/util/cclockfreefixqueue.h
     ${BasicLibSrcPath}/util/auto_cast.h
 	${BasicLibSrcPath}/util/skiplist.h
     ${BasicLibSrcPath}/util/concurrentqueue/blockingconcurrentqueue.h
@@ -310,8 +311,6 @@ set(basiclib_SOURCES
     ${BasicLibSrcPath}/util/strutil/maa.cpp
     ${BasicLibSrcPath}/util/strutil/strmisc.cpp
     ${BasicLibSrcPath}/util/strutil/strutil.cpp
-    ${BasicLibSrcPath}/util/cclockfreelist.h
-    ${BasicLibSrcPath}/util/cclockfreelist.cpp
     ${BasicLibSrcPath}/net/net.cpp
     ${BasicLibSrcPath}/net/net.h
     ${BasicLibSrcPath}/net/net_client.cpp

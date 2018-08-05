@@ -165,8 +165,11 @@ public:
         for(uint32_t i = 0; i < m_nRepeatTimes; i++){
             auto p = createUnitThread();
             p->Init(m_pContain, nThreadCount, maxPushTimes);
-            if(!func(p, nReceiveThreadCount))
+            if(!func(p, nReceiveThreadCount)){
+                delete p;
                 return false;
+            }
+            delete p;
         }
         return true;
     }
