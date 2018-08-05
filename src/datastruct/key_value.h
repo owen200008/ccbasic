@@ -1,73 +1,69 @@
-ï»¿/***********************************************************************************************
-// æ–‡ä»¶å:     key_valye.h
-// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
+/***********************************************************************************************
+// ÎÄ¼şÃû:     key_valye.h
+// ´´½¨Õß:     ²ÌÕñÇò
 // Email:      zqcai@w.cn
-// åˆ›å»ºæ—¶é—´:   2012/2/17 8:18:40
-// å†…å®¹æè¿°:   å®šä¹‰ç±»ä¼¼å­—ç¬¦ä¸²key=valueçš„è§£æå’Œç”Ÿæˆã€‚ç”¨åœ¨urlç­‰è¯·æ±‚å­—ç¬¦ä¸²
-// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
+// ´´½¨Ê±¼ä:   2012/2/17 8:18:40
+// ÄÚÈİÃèÊö:   ¶¨ÒåÀàËÆ×Ö·û´®key=valueµÄ½âÎöºÍÉú³É¡£ÓÃÔÚurlµÈÇëÇó×Ö·û´®
+// °æ±¾ĞÅÏ¢:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_KEY_VALUE_H
 #define BASIC_KEY_VALUE_H
 #pragma once
 /////////////////////////////////////////////////////////////////////////////////////////////
-//å£°æ˜
+//ÉùÃ÷
 /////////////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_START
 #pragma warning (push)
 #pragma warning (disable: 4251)
 
-class _BASIC_DLL_API CBasicKey2Value : public basiclib::CBasicObject
-{
+class _BASIC_DLL_API CBasicKey2Value : public basiclib::CBasicObject{
 public:
-	CBasicKey2Value();
+    CBasicKey2Value();
 
-	bool HasValue(const char* lpszKey, CBasicString& strValue);
-	CBasicString GetValue(const char* lpszKey) const;
-	const char* GetValueRef(const char* lpszKey) const;
+    bool HasValue(const char* lpszKey, CBasicString& strValue);
+    CBasicString GetValue(const char* lpszKey) const;
+    const char* GetValueRef(const char* lpszKey) const;
 
-	void SetValue(const char* lpszKey, const char* lpszValue);
-	void SetValue(const char* lpszKey, long lValue);
+    void SetValue(const char* lpszKey, const char* lpszValue);
+    void SetValue(const char* lpszKey, long lValue);
 
-	bool RemoveKey(const char* lpszKey);
+    bool RemoveKey(const char* lpszKey);
 
-	void RemoveAll(){
-		m_map.clear();
-	}
+    void RemoveAll(){
+        m_map.clear();
+    }
 
-	CBasicString& operator [](CBasicString& strKey)
-	{
-		strKey.MakeLower();
-		return m_map[strKey];
-	}
+    CBasicString& operator [](CBasicString& strKey){
+        strKey.MakeLower();
+        return m_map[strKey];
+    }
 
-	bool IsEmpty()
-	{
+    bool IsEmpty(){
         return m_map.empty();
-	}
+    }
 public:
-	//é»˜è®¤åˆ†éš”ç¬¦ =&
-	void ParseTextURL(const char* pszBuffer, int nLen = -1);
-	//é»˜è®¤åˆ†éš”ç¬¦ =\n
-	void ParseTextLine(const char* pszBuffer, int nLen = -1);
-	//å¤–éƒ¨æŒ‡å®šåˆ†éš”ç¬¦
-	void ParseText(const char* pszBuffer, const char* lpszTok, int nLen = -1);
+    //Ä¬ÈÏ·Ö¸ô·û =&
+    void ParseTextURL(const char* pszBuffer, int nLen = -1);
+    //Ä¬ÈÏ·Ö¸ô·û =\n
+    void ParseTextLine(const char* pszBuffer, int nLen = -1);
+    //Íâ²¿Ö¸¶¨·Ö¸ô·û
+    void ParseText(const char* pszBuffer, const char* lpszTok, int nLen = -1);
 
-	//åˆå¹¶æˆå­—ç¬¦ä¸²
-	//è¿”å›çš„æŒ‡é’ˆä¸º sbBuf é‡Œé¢çš„å†…å®¹
-	const char* CombineToString(CBasicSmartBuffer& sbBuf, const char* lpszTok = NULL);
+    //ºÏ²¢³É×Ö·û´®
+    //·µ»ØµÄÖ¸ÕëÎª sbBuf ÀïÃæµÄÄÚÈİ
+    const char* CombineToString(CBasicSmartBuffer& sbBuf, const char* lpszTok = NULL);
 public:
-	template<class Function>
-	void ForEach(Function  func)
-	{
+    template<class Function>
+    void ForEach(Function  func){
         for(auto& iter : m_map){
             func(iter.first.c_str(), iter.second.c_str());
         }
-	}
+    }
 protected:
-	void _ParseText(const char* pszBuffer, const char* lpszTok, int nLen = -1);
+    void _ParseText(const char* pszBuffer, const char* lpszTok, int nLen = -1);
 protected:
-	void SetRawValue(const char* lpszKey, const char* lpszValue);
-	virtual void SetValueAt(CBasicString& strKey, const char* lpszValue);
+    void SetRawValue(const char* lpszKey, const char* lpszValue);
+    virtual void SetValueAt(CBasicString& strKey, const char* lpszValue);
 protected:
     basiclib::basic_map<basiclib::CBasicString, basiclib::CBasicString>	m_map;
 };

@@ -1,10 +1,10 @@
-ï»¿/***********************************************************************************************
-// æ–‡ä»¶å:     tlzipfile.h
-// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
+/***********************************************************************************************
+// ÎÄ¼şÃû:     tlzipfile.h
+// ´´½¨Õß:     ²ÌÕñÇò
 // Email:      zqcai@w.cn
-// åˆ›å»ºæ—¶é—´:   2012-2-22 23:02:48
-// å†…å®¹æè¿°:   æ”¯æŒzipæ ¼å¼æ•°æ®çš„è¯»å†™
-// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
+// ´´½¨Ê±¼ä:   2012-2-22 23:02:48
+// ÄÚÈİÃèÊö:   Ö§³Özip¸ñÊ½Êı¾İµÄ¶ÁĞ´
+// °æ±¾ĞÅÏ¢:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_TLZIPFILE_H
 #define BASIC_TLZIPFILE_H
@@ -16,205 +16,186 @@ __NS_BASIC_START
 typedef unsigned int	uint32;
 typedef unsigned short	uint16;
 
-const uint32 LOCALHEADERMAGIC    = 0x04034b50;
-const uint32 CENTRALHEADERMAGIC  = 0x02014b50;
-const uint32 ENDHEADERMAGIC      = 0x06054b50;
+const uint32 LOCALHEADERMAGIC = 0x04034b50;
+const uint32 CENTRALHEADERMAGIC = 0x02014b50;
+const uint32 ENDHEADERMAGIC = 0x06054b50;
 
-// zipç»“æ„çš„å®šä¹‰
+// zip½á¹¹µÄ¶¨Òå
 #pragma pack(1)
-struct	zip_file_data_block
-{
-	uint32		header_magic;	// LOCALHEADERMAGIC
-	uint16		version_unzip;	// è§£å‹æ‰€éœ€çš„pkwareç‰ˆæœ¬
-	uint16		bit_flag;		// å…¨å±€æ–¹å¼ä½æ ‡è®° ?
-	uint16		zip_type;		// å‹ç¼©æ–¹å¼
-	uint16		modify_time;	// dosæ ¼å¼çš„æœ€åä¿®æ”¹æ—¶é—´
-	uint16		modify_date;	// dosæ ¼å¼çš„æœ€åä¿®æ”¹æ—¥æœŸ
-	uint32		crc;			// crc32æ ¡éªŒ
-	uint32		size_zipped;	// å‹ç¼©åå°ºå¯¸
-	uint32		size_unzipped;	// æœªå‹ç¼©å°ºå¯¸
-	uint16		size_filename;	// æ–‡ä»¶åé•¿åº¦
-	uint16		size_extend;	// æ‰©å±•è®°å½•é•¿åº¦
-	// æ–‡ä»¶å
-	// æ‰©å±•
-	// å†…å®¹
+struct	zip_file_data_block{
+    uint32		header_magic;	// LOCALHEADERMAGIC
+    uint16		version_unzip;	// ½âÑ¹ËùĞèµÄpkware°æ±¾
+    uint16		bit_flag;		// È«¾Ö·½Ê½Î»±ê¼Ç ?
+    uint16		zip_type;		// Ñ¹Ëõ·½Ê½
+    uint16		modify_time;	// dos¸ñÊ½µÄ×îºóĞŞ¸ÄÊ±¼ä
+    uint16		modify_date;	// dos¸ñÊ½µÄ×îºóĞŞ¸ÄÈÕÆÚ
+    uint32		crc;			// crc32Ğ£Ñé
+    uint32		size_zipped;	// Ñ¹Ëõºó³ß´ç
+    uint32		size_unzipped;	// Î´Ñ¹Ëõ³ß´ç
+    uint16		size_filename;	// ÎÄ¼şÃû³¤¶È
+    uint16		size_extend;	// À©Õ¹¼ÇÂ¼³¤¶È
+                                // ÎÄ¼şÃû
+                                // À©Õ¹
+                                // ÄÚÈİ
 
-	zip_file_data_block()
-	{
-		memset(this, 0, sizeof(zip_file_data_block));
-		header_magic = LOCALHEADERMAGIC;
-		version_unzip = 0x0A;
-	}
+    zip_file_data_block(){
+        memset(this, 0, sizeof(zip_file_data_block));
+        header_magic = LOCALHEADERMAGIC;
+        version_unzip = 0x0A;
+    }
 };
 
-struct	zip_file_dir_block
-{
-	uint32		header_magic;			// CENTRALHEADERMAGIC
-	uint16		version_zip;			// å‹ç¼©ä½¿ç”¨çš„pkwareç‰ˆæœ¬
-	uint16		version_unzip;			// è§£å‹æ‰€éœ€çš„pkwareç‰ˆæœ¬
-	uint16		bit_flag;				// å…¨å±€æ–¹å¼ä½æ ‡è®°
-	uint16		zip_type;				// å‹ç¼©æ–¹å¼
-	uint16		modify_time;			// dosæ ¼å¼çš„æœ€åä¿®æ”¹æ—¶é—´
-	uint16		modify_date;			// dosæ ¼å¼çš„æœ€åä¿®æ”¹æ—¥æœŸ
-	uint32		crc;					// crc32æ ¡éªŒ
-	uint32		size_zipped;			// å‹ç¼©åå°ºå¯¸
-	uint32		size_unzipped;			// æœªå‹ç¼©å°ºå¯¸
-	uint16		size_filename;			// æ–‡ä»¶åé•¿åº¦
-	uint16		size_extend;			// æ‰©å±•è®°å½•é•¿åº¦
-	uint16		size_comment;			// æ–‡ä»¶æ³¨é‡Šé•¿åº¦
-	uint16		disk_num_start;			// ç£ç›˜å¼€å§‹å·
-	uint16		property_internal_file;	// å†…éƒ¨æ–‡ä»¶å±æ€§
-	uint32		property_outer_file;	// å¤–éƒ¨æ–‡ä»¶å±æ€§
-	uint32		local_header_offset;	// å±€éƒ¨å¤´éƒ¨åç§»é‡
-	// æ–‡ä»¶å
-	// æ‰©å±•å­—æ®µ
-	// æ–‡ä»¶æ³¨é‡Š
-	zip_file_dir_block()
-	{
-		memset(this, 0, sizeof(zip_file_dir_block));
-		header_magic = CENTRALHEADERMAGIC;
-		version_zip		= 0x14;
-		version_unzip	= 0x0A;;
-	}
+struct	zip_file_dir_block{
+    uint32		header_magic;			// CENTRALHEADERMAGIC
+    uint16		version_zip;			// Ñ¹ËõÊ¹ÓÃµÄpkware°æ±¾
+    uint16		version_unzip;			// ½âÑ¹ËùĞèµÄpkware°æ±¾
+    uint16		bit_flag;				// È«¾Ö·½Ê½Î»±ê¼Ç
+    uint16		zip_type;				// Ñ¹Ëõ·½Ê½
+    uint16		modify_time;			// dos¸ñÊ½µÄ×îºóĞŞ¸ÄÊ±¼ä
+    uint16		modify_date;			// dos¸ñÊ½µÄ×îºóĞŞ¸ÄÈÕÆÚ
+    uint32		crc;					// crc32Ğ£Ñé
+    uint32		size_zipped;			// Ñ¹Ëõºó³ß´ç
+    uint32		size_unzipped;			// Î´Ñ¹Ëõ³ß´ç
+    uint16		size_filename;			// ÎÄ¼şÃû³¤¶È
+    uint16		size_extend;			// À©Õ¹¼ÇÂ¼³¤¶È
+    uint16		size_comment;			// ÎÄ¼ş×¢ÊÍ³¤¶È
+    uint16		disk_num_start;			// ´ÅÅÌ¿ªÊ¼ºÅ
+    uint16		property_internal_file;	// ÄÚ²¿ÎÄ¼şÊôĞÔ
+    uint32		property_outer_file;	// Íâ²¿ÎÄ¼şÊôĞÔ
+    uint32		local_header_offset;	// ¾Ö²¿Í·²¿Æ«ÒÆÁ¿
+                                        // ÎÄ¼şÃû
+                                        // À©Õ¹×Ö¶Î
+                                        // ÎÄ¼ş×¢ÊÍ
+    zip_file_dir_block(){
+        memset(this, 0, sizeof(zip_file_dir_block));
+        header_magic = CENTRALHEADERMAGIC;
+        version_zip = 0x14;
+        version_unzip = 0x0A;;
+    }
 };
 
-struct _BASIC_DLL_API zip_file_end
-{
-	uint32		header_magic;				// ENDHEADERMAGIC
-	uint16		disk_num_cur;				// å½“å‰ç£ç›˜ç¼–å·
-	uint16		disk_num_dir_block_start;	// ç›®å½•åŒºå¼€å§‹ç£ç›˜ç¼–å·
-	uint16		file_num_cur_disk;			// æœ¬ç£ç›˜ä¸Šè®°å½•æ€»æ•°
-	uint16		file_num_total;				// ç›®å½•åŒºä¸­è®°å½•æ€»æ•°
-	uint32		size_dir;					// ç›®å½•åŒºå°ºå¯¸å¤§å°
-	uint32		offset_dir_to_first_disk;	// ç›®å½•åŒºå¯¹ç¬¬ä¸€å¼ ç£ç›˜çš„åç§»é‡
-	uint16		size_comment;				// zipæ–‡ä»¶æ³¨é‡Šé•¿åº¦
+struct _BASIC_DLL_API zip_file_end{
+    uint32		header_magic;				// ENDHEADERMAGIC
+    uint16		disk_num_cur;				// µ±Ç°´ÅÅÌ±àºÅ
+    uint16		disk_num_dir_block_start;	// Ä¿Â¼Çø¿ªÊ¼´ÅÅÌ±àºÅ
+    uint16		file_num_cur_disk;			// ±¾´ÅÅÌÉÏ¼ÇÂ¼×ÜÊı
+    uint16		file_num_total;				// Ä¿Â¼ÇøÖĞ¼ÇÂ¼×ÜÊı
+    uint32		size_dir;					// Ä¿Â¼Çø³ß´ç´óĞ¡
+    uint32		offset_dir_to_first_disk;	// Ä¿Â¼Çø¶ÔµÚÒ»ÕÅ´ÅÅÌµÄÆ«ÒÆÁ¿
+    uint16		size_comment;				// zipÎÄ¼ş×¢ÊÍ³¤¶È
 
-	// æ³¨é‡Š
-	zip_file_end()
-	{
-		memset(this, 0, sizeof(zip_file_end));
-		header_magic = ENDHEADERMAGIC;
-	}
+                                            // ×¢ÊÍ
+    zip_file_end(){
+        memset(this, 0, sizeof(zip_file_end));
+        header_magic = ENDHEADERMAGIC;
+    }
 };
 #pragma pack()
 
 
-const uint32	property_outer_file_dir		= 16;
-const uint32	property_outer_file_file	= 32;
+const uint32	property_outer_file_dir = 16;
+const uint32	property_outer_file_file = 32;
 
 //----------------------------------8<---------------------------------
-// ä»¥ä¸‹ç”¨äºæè¿°è¯»å–å†™å…¥å‹ç¼©æ–‡ä»¶åå†…å­˜ä¸­ä¿å­˜çš„æ•°æ®ç»“æ„
+// ÒÔÏÂÓÃÓÚÃèÊö¶ÁÈ¡Ğ´ÈëÑ¹ËõÎÄ¼şºóÄÚ´æÖĞ±£´æµÄÊı¾İ½á¹¹
 
-// åŸºæœ¬ç»“æ„
-struct zip_base_file_info
-{
-	char_string	file_name;		// zipæ–‡ä»¶ä¸­çš„æ–‡ä»¶å
-	char_string	comment;		// æ³¨é‡Š
-	time_t	time_lastmodify;	// æœ€åä¿®æ”¹æ—¶é—´
-	uint16	zip_type;			// å‹ç¼©æ–¹å¼
+// »ù±¾½á¹¹
+struct zip_base_file_info{
+    char_string	file_name;		// zipÎÄ¼şÖĞµÄÎÄ¼şÃû
+    char_string	comment;		// ×¢ÊÍ
+    time_t	time_lastmodify;	// ×îºóĞŞ¸ÄÊ±¼ä
+    uint16	zip_type;			// Ñ¹Ëõ·½Ê½
 
-	zip_base_file_info()
-	{
-		time_lastmodify = zip_type = 0;
-	}
+    zip_base_file_info(){
+        time_lastmodify = zip_type = 0;
+    }
 
-	virtual ~zip_base_file_info(){}
-	virtual bool add_file(zip_base_file_info* file)
-	{
-		return false;
-	}
-	struct is_equal_filename
-	{
-		is_equal_filename(const char* filename, uint16 len) : __filename(filename), __len(len){}
-		bool operator()(zip_base_file_info* info)
-		{
-			const char* nakename = strrchr(info->file_name.c_str(), '/');
-			if (nakename)
-				++ nakename;
-			else
-				nakename = info->file_name.c_str();
-			return strncmp(nakename, __filename, __len) == 0 ;
-		}
-		const char* __filename;
-		uint16		__len;
-	};
+    virtual ~zip_base_file_info(){}
+    virtual bool add_file(zip_base_file_info* file){
+        return false;
+    }
+    struct is_equal_filename{
+        is_equal_filename(const char* filename, uint16 len) : __filename(filename), __len(len){}
+        bool operator()(zip_base_file_info* info){
+            const char* nakename = strrchr(info->file_name.c_str(), '/');
+            if(nakename)
+                ++nakename;
+            else
+                nakename = info->file_name.c_str();
+            return strncmp(nakename, __filename, __len) == 0;
+        }
+        const char* __filename;
+        uint16		__len;
+    };
 
 };
 
 //typedef list<zip_base_file_info*>	file_container;
 typedef basic_map<char_string, zip_base_file_info*>		file_container;
 
-// ä»zipæ–‡ä»¶ä¸­è¯»å‡ºçš„æ–‡ä»¶ä¿¡æ¯
-struct zip_file_info : public zip_base_file_info
-{
-	uint32	size_zipped;		// å‹ç¼©åæ–‡ä»¶å¤§å°
-	uint32	size_unzipped;		// æœªå‹ç¼©çš„æ–‡ä»¶å¤§å°
-	uint32	offset_data_block;	// æ•°æ®å—åç§»
-	uint32	offset_dir_block;	// ç´¢å¼•å—åç§»
-	uint32	crc;				// crcæ ¡éªŒå’Œ
+// ´ÓzipÎÄ¼şÖĞ¶Á³öµÄÎÄ¼şĞÅÏ¢
+struct zip_file_info : public zip_base_file_info{
+    uint32	size_zipped;		// Ñ¹ËõºóÎÄ¼ş´óĞ¡
+    uint32	size_unzipped;		// Î´Ñ¹ËõµÄÎÄ¼ş´óĞ¡
+    uint32	offset_data_block;	// Êı¾İ¿éÆ«ÒÆ
+    uint32	offset_dir_block;	// Ë÷Òı¿éÆ«ÒÆ
+    uint32	crc;				// crcĞ£ÑéºÍ
 
-	zip_file_info()
-	{
-		size_zipped = size_unzipped = offset_data_block = offset_dir_block = 0;
-	}
-	virtual ~zip_file_info(){}
+    zip_file_info(){
+        size_zipped = size_unzipped = offset_data_block = offset_dir_block = 0;
+    }
+    virtual ~zip_file_info(){}
 };
 
-// ç›®å½•ä¿¡æ¯
-struct zip_dir_info : public zip_base_file_info
-{
-	file_container	sub_files;	// æ–‡ä»¶åˆ—è¡¨
+// Ä¿Â¼ĞÅÏ¢
+struct zip_dir_info : public zip_base_file_info{
+    file_container	sub_files;	// ÎÄ¼şÁĞ±í
 
-	virtual ~zip_dir_info()
-	{
-		for(file_container::iterator iter = sub_files.begin(); iter != sub_files.end(); ++ iter)
-		{
-			BASIC_DeleteObject(iter->second);
-		}
-		sub_files.clear();
-	}
+    virtual ~zip_dir_info(){
+        for(file_container::iterator iter = sub_files.begin(); iter != sub_files.end(); ++iter){
+            BASIC_DeleteObject(iter->second);
+        }
+        sub_files.clear();
+    }
 
-	virtual bool add_file(zip_base_file_info* file)
-	{
-		//sub_files.push_back(file);
-		const char* nakename = strrchr(file->file_name.c_str(), '/');
-		if (NULL == nakename)
-			nakename = file->file_name.c_str();
-		else
-			++ nakename;
+    virtual bool add_file(zip_base_file_info* file){
+        //sub_files.push_back(file);
+        const char* nakename = strrchr(file->file_name.c_str(), '/');
+        if(NULL == nakename)
+            nakename = file->file_name.c_str();
+        else
+            ++nakename;
 
-		sub_files[nakename] = file;
-		return true;
-	}
+        sub_files[nakename] = file;
+        return true;
+    }
 };
 
-class zipfile_exception : public exception
-{
+class zipfile_exception : public exception{
 public:
-	enum zip_error_code
-	{
-		noError,
-		generic,
-		streamEnd,
-		needDict,
-		errNo,
-		streamError,
-		dataError,
-		memError,
-		bufError,
-		versionError,
-		badFuncParam,
-		badZipFile,
-		badCrc,
-	};
-	zipfile_exception(zip_error_code code);
-	virtual ~zipfile_exception() throw();
-	virtual const char* what() const throw();
+    enum zip_error_code{
+        noError,
+        generic,
+        streamEnd,
+        needDict,
+        errNo,
+        streamError,
+        dataError,
+        memError,
+        bufError,
+        versionError,
+        badFuncParam,
+        badZipFile,
+        badCrc,
+    };
+    zipfile_exception(zip_error_code code);
+    virtual ~zipfile_exception() throw();
+    virtual const char* what() const throw();
 
 protected:
-	virtual void _Doraise() const;
-	zip_error_code	__errcode;
-	char_string		__error;
+    virtual void _Doraise() const;
+    zip_error_code	__errcode;
+    char_string		__error;
 };
 
 #define	__ERROR_ZIPFILE		0x00001000
@@ -234,116 +215,113 @@ protected:
 #define BASIC_ZIPFILE_BADCRC		(ZIPFILE_ERROR|0x000C)
 
 
-struct _BASIC_DLL_API TLPackFileStatus
-{
-	time_t			m_mtime;
-	uint32			m_zipped;		/*!< å‹ç¼©åå¤§å° */
-	uint32			m_unzipped;		/*!< å‹ç¼©å‰å¤§å° */
-	BYTE			m_attribute;     /*!< æ–‡ä»¶çš„å±æ€§ã€‚æ˜¯æšä¸¾ TLFileAttribute çš„å€¼ */
-	char_string		m_comment;
-	char_string		m_filename;
-	uint32			m_crc;		    /*!< crcæ ¡éªŒå’Œ */
+struct _BASIC_DLL_API TLPackFileStatus{
+    time_t			m_mtime;
+    uint32			m_zipped;		/*!< Ñ¹Ëõºó´óĞ¡ */
+    uint32			m_unzipped;		/*!< Ñ¹ËõÇ°´óĞ¡ */
+    BYTE			m_attribute;     /*!< ÎÄ¼şµÄÊôĞÔ¡£ÊÇÃ¶¾Ù TLFileAttribute µÄÖµ */
+    char_string		m_comment;
+    char_string		m_filename;
+    uint32			m_crc;		    /*!< crcĞ£ÑéºÍ */
 
-	TLPackFileStatus();
-	bool IsDirectory() const;
-	bool IsFile() const;
+    TLPackFileStatus();
+    bool IsDirectory() const;
+    bool IsFile() const;
 };
 
-class _BASIC_DLL_API CBasicPackFileVisitor
-{
+class _BASIC_DLL_API CBasicPackFileVisitor{
 public:
-	//! breif å¦‚æœè¿”å›false,åˆ™åœæ­¢éå†
-	virtual bool	Visit(const TLPackFileStatus& status) = 0;
+    //! breif Èç¹û·µ»Øfalse,ÔòÍ£Ö¹±éÀú
+    virtual bool	Visit(const TLPackFileStatus& status) = 0;
 };
 
 #pragma warning (push)
 #pragma warning (disable: 4251)
 
-class _BASIC_DLL_API CBasicZipFile : public CBasicFileObj
-{
+class _BASIC_DLL_API CBasicZipFile : public CBasicFileObj{
 public:
-	CBasicZipFile(void);
-	virtual ~CBasicZipFile(void);
+    CBasicZipFile(void);
+    virtual ~CBasicZipFile(void);
 public:
-	// æ–‡ä»¶æ“ä½œ
-	//! \brief æ‰“å¼€ä¸€ä¸ªzipæ–‡ä»¶ã€‚è¿™ä¸ªæ“ä½œè¿‡ç¨‹ä¸­åº”è¯¥å·²ç»è¯»å–æ‰€æœ‰çš„æ–‡ä»¶ç´¢å¼•
-	virtual long	OpenZipFile(const char* lpszFileName, DWORD dwOpenFlags);
-	//! \brief å…³é—­
-	virtual void	Close();
-	//! \breif å†™ç›˜
-	virtual long	Flush();
+    // ÎÄ¼ş²Ù×÷
+    //! \brief ´ò¿ªÒ»¸özipÎÄ¼ş¡£Õâ¸ö²Ù×÷¹ı³ÌÖĞÓ¦¸ÃÒÑ¾­¶ÁÈ¡ËùÓĞµÄÎÄ¼şË÷Òı
+    virtual long	OpenZipFile(const char* lpszFileName, DWORD dwOpenFlags);
+    //! \brief ¹Ø±Õ
+    virtual void	Close();
+    //! \breif Ğ´ÅÌ
+    virtual long	Flush();
 
-	//!å­æ–‡ä»¶çš„æ“ä½œ
-	//! \brief è¿”å›å†…å­˜æ–‡ä»¶æ ¼å¼çš„CWBasicFileObjå¯¹è±¡
-	CBasicFileObj*	GetPackFile(const char* filename);
-	//! \brief å¾—åˆ°æ–‡ä»¶ä¿¡æ¯
-	bool	GetPackFileStatus(const char* filename, TLPackFileStatus& status);
-	//! \brief é‡Šæ”¾CWBasicFileObjå¯¹è±¡,fileobjç”±GetFileå¾—åˆ°
-	void	ReleasePackFile(CBasicFileObj* fileobj);
+    //!×ÓÎÄ¼şµÄ²Ù×÷
+    //! \brief ·µ»ØÄÚ´æÎÄ¼ş¸ñÊ½µÄCWBasicFileObj¶ÔÏó
+    CBasicFileObj*	GetPackFile(const char* filename);
+    //! \brief µÃµ½ÎÄ¼şĞÅÏ¢
+    bool	GetPackFileStatus(const char* filename, TLPackFileStatus& status);
+    //! \brief ÊÍ·ÅCWBasicFileObj¶ÔÏó,fileobjÓÉGetFileµÃµ½
+    void	ReleasePackFile(CBasicFileObj* fileobj);
 
 
-	//! \brief å¢åŠ ä¸€ä¸ªæ–‡ä»¶,å¦‚æœdirä¸ºç©ºï¼Œåˆ™ç›´æ¥å–fileobjçš„æ–‡ä»¶å.
-	// å¦‚æœè¯¥æ–‡ä»¶åå·²ç»å­˜åœ¨åˆ™æ›¿æ¢å·²ç»å­˜åœ¨çš„æ–‡ä»¶ã€‚
-	bool	AddPackFile(CBasicStaticBuffer* buffer, const char* filename , const char* comment = NULL);
+    //! \brief Ôö¼ÓÒ»¸öÎÄ¼ş,Èç¹ûdirÎª¿Õ£¬ÔòÖ±½ÓÈ¡fileobjµÄÎÄ¼şÃû.
+    // Èç¹û¸ÃÎÄ¼şÃûÒÑ¾­´æÔÚÔòÌæ»»ÒÑ¾­´æÔÚµÄÎÄ¼ş¡£
+    bool	AddPackFile(CBasicStaticBuffer* buffer, const char* filename, const char* comment = NULL);
 
-	//! \brief å¢åŠ ä¸€ä¸ªæ–‡ä»¶,å¦‚æœdirä¸ºç©ºï¼Œåˆ™ç›´æ¥å–fileobjçš„æ–‡ä»¶å.
-	// å¦‚æœè¯¥æ–‡ä»¶åå·²ç»å­˜åœ¨åˆ™æ›¿æ¢å·²ç»å­˜åœ¨çš„æ–‡ä»¶ã€‚
-	// ä¸ä½¿ç”¨CWBasicStaticBufferçš„ç‰ˆæœ¬
-	bool	AddPackFile(const void* pBuffer, size_t length, const char* filename , const char* comment = NULL);
+    //! \brief Ôö¼ÓÒ»¸öÎÄ¼ş,Èç¹ûdirÎª¿Õ£¬ÔòÖ±½ÓÈ¡fileobjµÄÎÄ¼şÃû.
+    // Èç¹û¸ÃÎÄ¼şÃûÒÑ¾­´æÔÚÔòÌæ»»ÒÑ¾­´æÔÚµÄÎÄ¼ş¡£
+    // ²»Ê¹ÓÃCWBasicStaticBufferµÄ°æ±¾
+    bool	AddPackFile(const void* pBuffer, size_t length, const char* filename, const char* comment = NULL);
 
-	//! \brief åˆ é™¤ä¸€ä¸ªæ–‡ä»¶
-	bool	DeletePackFile(const char* filepath);
-	//! \brief éå†æ–‡ä»¶å
-	void	VisitPackFile(CBasicPackFileVisitor* pVisitor, const char* filespec, bool bSubdir = true);
+    //! \brief É¾³ıÒ»¸öÎÄ¼ş
+    bool	DeletePackFile(const char* filepath);
+    //! \brief ±éÀúÎÄ¼şÃû
+    void	VisitPackFile(CBasicPackFileVisitor* pVisitor, const char* filespec, bool bSubdir = true);
 
-	//! zipæ“ä½œ
-	// å…¶å®ƒzipæ–‡ä»¶çš„æ“ä½œ
-	//! \brief å¢åŠ æœ¬åœ°ç›®å½•ä¸Šçš„æ–‡ä»¶åˆ°å‹ç¼©åŒ…ã€‚filenameå¦‚æœæ˜¯ç›®å½•åˆ™å°†ç›®å½•ä¸‹çš„æ–‡ä»¶ä¹ŸåŠ å…¥å‹ç¼©åŒ…
-	bool	AddPackFile(const char* filename, const char* path = 0, const char* comment = 0);
-	bool	AddPathToFile(const char* path);
-	//! \breif è§£å‹åˆ°ç›®å½•
-	bool	ExtractTo(const char* path);
-	//! \brief è®¾ç½®æ–‡ä»¶æ³¨é‡Š
-	bool	SetComment(const char* comment);
-	//! \brief è¯»å–æ³¨é‡Š
-	const char*	GetComment() const;
+    //! zip²Ù×÷
+    // ÆäËüzipÎÄ¼şµÄ²Ù×÷
+    //! \brief Ôö¼Ó±¾µØÄ¿Â¼ÉÏµÄÎÄ¼şµ½Ñ¹Ëõ°ü¡£filenameÈç¹ûÊÇÄ¿Â¼Ôò½«Ä¿Â¼ÏÂµÄÎÄ¼şÒ²¼ÓÈëÑ¹Ëõ°ü
+    bool	AddPackFile(const char* filename, const char* path = 0, const char* comment = 0);
+    bool	AddPathToFile(const char* path);
+    //! \breif ½âÑ¹µ½Ä¿Â¼
+    bool	ExtractTo(const char* path);
+    //! \brief ÉèÖÃÎÄ¼ş×¢ÊÍ
+    bool	SetComment(const char* comment);
+    //! \brief ¶ÁÈ¡×¢ÊÍ
+    const char*	GetComment() const;
 
-	//! \brief è®¾ç½®å‹ç¼©çš„level
-	void	SetZipLevel(int level);
+    //! \brief ÉèÖÃÑ¹ËõµÄlevel
+    void	SetZipLevel(int level);
 
-	uint16	GetFileNumTotal() const {return m_end.file_num_total;}
+    uint16	GetFileNumTotal() const{ return m_end.file_num_total; }
 protected:
-	virtual long	buildZipIndex();
-	CBasicFileObj*		getFileObj(const zip_file_info* info);
-	bool			extractToFile(const char* dir, const zip_base_file_info* info);
-	bool			setFileTime(const char* filename, time_t mtime);
-		
-	zip_file_info*	__addfile(CBasicStaticBuffer* dataBuffer, file_container* dir, CBasicSmartBuffer& bufIndex, zip_file_info* fileinfo, const char* filepath);
-	zip_dir_info*	__addpath(file_container* dir, CBasicSmartBuffer& bufIndex, zip_dir_info* dirinfo, const char* filepath);
-	bool			__adddir(const char* dirname, CBasicSmartBuffer& bufIndex, char_string path, file_container* dir);
-	void			removeIndexFromDirBuffer(CBasicSmartBuffer& bufIndex, zip_file_info* fileinfo);
-	bool			repairFile();
+    virtual long	buildZipIndex();
+    CBasicFileObj*		getFileObj(const zip_file_info* info);
+    bool			extractToFile(const char* dir, const zip_base_file_info* info);
+    bool			setFileTime(const char* filename, time_t mtime);
 
-	static	zip_base_file_info*	getFileInfo(const char* filename, file_container* dir);
-	static	zip_base_file_info* deleteFileInfo(const char* file, file_container* dir);
-	static	void		getFileStatus(const zip_base_file_info* info, TLPackFileStatus& status);
-	static	bool		addFile(const char *filename, zip_base_file_info* file, file_container* dir);
-	static  char_string getRootPath(const char* fileame);
-	static  const char* getFileName(const char* filename);
-	static  const char* stepPath(const char* filename);
+    zip_file_info*	__addfile(CBasicStaticBuffer* dataBuffer, file_container* dir, CBasicSmartBuffer& bufIndex, zip_file_info* fileinfo, const char* filepath);
+    zip_dir_info*	__addpath(file_container* dir, CBasicSmartBuffer& bufIndex, zip_dir_info* dirinfo, const char* filepath);
+    bool			__adddir(const char* dirname, CBasicSmartBuffer& bufIndex, char_string path, file_container* dir);
+    void			removeIndexFromDirBuffer(CBasicSmartBuffer& bufIndex, zip_file_info* fileinfo);
+    bool			repairFile();
+
+    static	zip_base_file_info*	getFileInfo(const char* filename, file_container* dir);
+    static	zip_base_file_info* deleteFileInfo(const char* file, file_container* dir);
+    static	void		getFileStatus(const zip_base_file_info* info, TLPackFileStatus& status);
+    static	bool		addFile(const char *filename, zip_base_file_info* file, file_container* dir);
+    static  char_string getRootPath(const char* fileame);
+    static  const char* getFileName(const char* filename);
+    static  const char* stepPath(const char* filename);
 
 
 
-	class VisitorSpecFile;
-	class ZipExtractor;
-	class ShortenOffset;
-	friend class ZipExtractor;
+    class VisitorSpecFile;
+    class ZipExtractor;
+    class ShortenOffset;
+    friend class ZipExtractor;
 protected:
-	file_container	m_Files;
-	char_string		m_strComment;
-	int				m_ziplevel;
-	zip_file_end	m_end;
-	bool			m_bNeedRepair;
+    file_container	m_Files;
+    char_string		m_strComment;
+    int				m_ziplevel;
+    zip_file_end	m_end;
+    bool			m_bNeedRepair;
 };
 
 #pragma warning (pop)

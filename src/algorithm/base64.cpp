@@ -1,4 +1,4 @@
-﻿#include "../inc/basic.h"
+#include "../inc/basic.h"
 
 __NS_BASIC_START
 // Static Member Initializers

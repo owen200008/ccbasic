@@ -1,10 +1,10 @@
-ï»¿/***********************************************************************************************
-// æ–‡ä»¶å:     stringex.h
-// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
+/***********************************************************************************************
+// ÎÄ¼şÃû:     stringex.h
+// ´´½¨Õß:     ²ÌÕñÇò
 // Email:      zqcai@w.cn
-// åˆ›å»ºæ—¶é—´:   2012/2/17 9:17:44
-// å†…å®¹æè¿°:   æ”¯æŒå¤–éƒ¨åŠ è½½å­—ç¬¦ä¸²èµ„æº
-// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
+// ´´½¨Ê±¼ä:   2012/2/17 9:17:44
+// ÄÚÈİÃèÊö:   Ö§³ÖÍâ²¿¼ÓÔØ×Ö·û´®×ÊÔ´
+// °æ±¾ĞÅÏ¢:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_STRINGEX_H
 #define BASIC_STRINGEX_H
@@ -12,21 +12,21 @@
 __NS_BASIC_START
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** 
-*\brief Basic_LoadStringSource åŠ è½½å­—ç¬¦ä¸²èµ„æºæ–‡ä»¶
-* 
-*\param lpszFile å­—ç¬¦ä¸²èµ„æºæ–‡ä»¶å å…¨è·¯å¾„ iniæ ¼å¼ï¼šID=å­—ç¬¦ä¸²
-*\param lpszModuleName æ¨¡å—åç§°ï¼Œå½“å®šä¹‰ä¸åŒèµ„æºæ–‡ä»¶æ—¶å¯ç”¨ï¼Œæ¨¡å—å†…å¿…é¡»ä¿æŒIDå”¯ä¸€
-*\return  
+/**
+*\brief Basic_LoadStringSource ¼ÓÔØ×Ö·û´®×ÊÔ´ÎÄ¼ş
+*
+*\param lpszFile ×Ö·û´®×ÊÔ´ÎÄ¼şÃû È«Â·¾¶ ini¸ñÊ½£ºID=×Ö·û´®
+*\param lpszModuleName Ä£¿éÃû³Æ£¬µ±¶¨Òå²»Í¬×ÊÔ´ÎÄ¼şÊ±¿ÉÓÃ£¬Ä£¿éÄÚ±ØĞë±£³ÖIDÎ¨Ò»
+*\return
 */
 bool BasicLoadStringSource(const char* lpszFile, const char* lpszModuleName);
 
-/** 
-*\brief BASIC_LoadString åŠ è½½å­—ç¬¦ä¸²èµ„æº
-* 
-*\param lpszFormatID 
+/**
+*\brief BASIC_LoadString ¼ÓÔØ×Ö·û´®×ÊÔ´
+*
+*\param lpszFormatID
 *\param lpszModuleName
-*\return  
+*\return
 */
 const char* BasicLoadString(const char* lpszFormatID, const char* lpszModuleName);
 const char* BasicLoadString(unsigned long ulID, const char* lpszModuleName);

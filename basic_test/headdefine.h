@@ -29,11 +29,7 @@
     printf("\n");\
 }
 
-//use time
-#define PrintUseTime(calcName, totalPerformance)\
-[&](DWORD dwUseTime, DWORD dwTotalUseTime){\
-    printf("P:%12.3f/ms Time:%5d/%5d F:%s\n", (double)(totalPerformance)/dwTotalUseTime, dwUseTime, dwTotalUseTime, calcName);\
-}
+
 
 
 #endif

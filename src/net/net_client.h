@@ -1,10 +1,10 @@
-ï»¿/***********************************************************************************************
-// æ–‡ä»¶å:     net_client.h
-// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
+/***********************************************************************************************
+// ÎÄ¼şÃû:     net_client.h
+// ´´½¨Õß:     ²ÌÕñÇò
 // Email:      zqcai@w.cn
-// åˆ›å»ºæ—¶é—´:   2016-9-12 11:50:18
-// å†…å®¹æè¿°:   å®šä¹‰TCPé€šä¿¡çš„åŸºæœ¬ç±»
-// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
+// ´´½¨Ê±¼ä:   2016-9-12 11:50:18
+// ÄÚÈİÃèÊö:   ¶¨ÒåTCPÍ¨ĞÅµÄ»ù±¾Àà
+// °æ±¾ĞÅÏ¢:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_NET_CLIENT_H
 #define BASIC_NET_CLIENT_H
@@ -14,14 +14,14 @@
 
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
-//å£°æ˜
-class CBasicSessionNetClient;		//ä¸»åŠ¨è¿æ¥
-//////////////////////////////////////////////////////////////////////////////
+//ÉùÃ÷
+class CBasicSessionNetClient;		//Ö÷¶¯Á¬½Ó
+                                    //////////////////////////////////////////////////////////////////////////////
 #pragma warning (push)
 #pragma warning (disable: 4251)
 #pragma warning (disable: 4275)
 
-//! è¯·è°ƒç”¨CreateNetClient
+                                    //! Çëµ÷ÓÃCreateNetClient
 _BASIC_DLL_API CBasicSessionNetClient* CreateNetWithClient(size_t nClassSize, uint16_t usRecTimeout, const std::function<CBasicSessionNetClient*(void*)>& func);
 
 #define DefineCreateNetClient(T) \
@@ -35,18 +35,17 @@ protected:\
 	T(){}\
 	virtual ~T(){}
 
-class _BASIC_DLL_API CBasicSessionNetClient : public CBasicSessionNetNotify
-{
-	DefineCreateNetClientDefault(CBasicSessionNetClient);
+class _BASIC_DLL_API CBasicSessionNetClient : public CBasicSessionNetNotify{
+    DefineCreateNetClientDefault(CBasicSessionNetClient);
 public:
-	//! è¿æ¥ formats [IPv6Address]:port || IPv4Address:port
-	virtual int32_t Connect(const char* lpszAddress);
+    //! Á¬½Ó formats [IPv6Address]:port || IPv4Address:port
+    virtual int32_t Connect(const char* lpszAddress);
 
-	//! é‡è¿
-	int32_t DoConnect();
+    //! ÖØÁ¬
+    int32_t DoConnect();
 
-	//! è·å–è¿æ¥åœ°å€
-	basiclib::CBasicString& GetConnectAddr();
+    //! »ñÈ¡Á¬½ÓµØÖ·
+    basiclib::CBasicString& GetConnectAddr();
 };
 #pragma warning (pop)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

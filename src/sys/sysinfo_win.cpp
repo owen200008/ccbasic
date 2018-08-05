@@ -1,6 +1,6 @@
-ï»¿
+
 //
-//å–å¾—ç³»ç»Ÿä¿¡æ¯ç³»åˆ—å‡½æ•°
+//È¡µÃÏµÍ³ĞÅÏ¢ÏµÁĞº¯Êı
 //
 //
 #include "../inc/basic.h"
@@ -21,73 +21,58 @@
 #pragma comment(linker, "/defaultlib:Iphlpapi.lib")
 __NS_BASIC_START
 
-//!è·å–æ˜¯å¦æœ‰é”®ç›˜æ¶ˆæ¯
-int BasicKBHit()
-{
-	return _kbhit();
+//!»ñÈ¡ÊÇ·ñÓĞ¼üÅÌÏûÏ¢
+int BasicKBHit(){
+    return _kbhit();
 }
 //
-//å–å¾—CPUä¸ªæ•°
-int BasicGetCpuNumber()
-{
-	SYSTEM_INFO systemInfo;
-	memset(&systemInfo, 0, sizeof(SYSTEM_INFO));
-	GetSystemInfo(&systemInfo);
-	return systemInfo.dwNumberOfProcessors;
+//È¡µÃCPU¸öÊı
+int BasicGetCpuNumber(){
+    SYSTEM_INFO systemInfo;
+    memset(&systemInfo, 0, sizeof(SYSTEM_INFO));
+    GetSystemInfo(&systemInfo);
+    return systemInfo.dwNumberOfProcessors;
 }
 
 //
-int BasicGetOSystemV(CBasicString& strOSVer)
-{
-	OSVERSIONINFO	osVerInfo;
-	osVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&osVerInfo);
-	if (osVerInfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
-	{
-		if (osVerInfo.dwMajorVersion <= 4)
-		{
-			strOSVer = "Windows NT";				//4.0
-		}
-		else if (osVerInfo.dwMajorVersion == 5)
-		{
-			if (osVerInfo.dwMinorVersion == 2)
-			{
-				strOSVer = "Windows Server 2003";	//5.2
-			}
-			else if (osVerInfo.dwMinorVersion == 1)
-			{
-				strOSVer = "Windows XP";			//5.1
-			}
-			else
-			{
-				strOSVer = "Windows 2000";
-			}
-		}
-		else if (osVerInfo.dwMajorVersion == 6)
-		{
-			if (osVerInfo.dwMinorVersion == 0)
-			{
-				strOSVer = "Windows Vista";			//6.0
-			}
-			else if (osVerInfo.dwMinorVersion == 1)
-			{
-				strOSVer = "Windows 7";				//6.1
-			}
-		}
-		else
-		{
-			strOSVer = "Windows Unknown";
-		}
-	}
-	else if (osVerInfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-	{
-		strOSVer = "Windows 95/98";
-	}
-	else
-	{
-		strOSVer = "Windows 3.1";
-	}
-	return 0;
+int BasicGetOSystemV(CBasicString& strOSVer){
+    OSVERSIONINFO	osVerInfo;
+    osVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    GetVersionEx(&osVerInfo);
+    if(osVerInfo.dwPlatformId == VER_PLATFORM_WIN32_NT){
+        if(osVerInfo.dwMajorVersion <= 4){
+            strOSVer = "Windows NT";				//4.0
+        }
+        else if(osVerInfo.dwMajorVersion == 5){
+            if(osVerInfo.dwMinorVersion == 2){
+                strOSVer = "Windows Server 2003";	//5.2
+            }
+            else if(osVerInfo.dwMinorVersion == 1){
+                strOSVer = "Windows XP";			//5.1
+            }
+            else{
+                strOSVer = "Windows 2000";
+            }
+        }
+        else if(osVerInfo.dwMajorVersion == 6){
+            if(osVerInfo.dwMinorVersion == 0){
+                strOSVer = "Windows Vista";			//6.0
+            }
+            else if(osVerInfo.dwMinorVersion == 1){
+                strOSVer = "Windows 7";				//6.1
+            }
+        }
+        else{
+            strOSVer = "Windows Unknown";
+        }
+    }
+    else if(osVerInfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS){
+        strOSVer = "Windows 95/98";
+    }
+    else{
+        strOSVer = "Windows 3.1";
+    }
+    return 0;
 }
 
 #define SystemBasicInformation       0
@@ -96,799 +81,720 @@ int BasicGetOSystemV(CBasicString& strOSVer)
 
 #define Li2Double(x) ((double)((x).HighPart) * 4.294967296E9 + (double)((x).LowPart))
 
-class CSystemInfo  
-{
+class CSystemInfo{
 public:
-	CSystemInfo();
-	virtual ~CSystemInfo();
+    CSystemInfo();
+    virtual ~CSystemInfo();
 
 public:
-	void GetMemoryInfo(DWORD &dwTotal, DWORD &dwTotalUse, DWORD &dwAvailPhys);
-	bool GetCpuUsage(double& dUsage, DWORD& dwTimes);	//å¾—åˆ°CPUä½¿ç”¨ç‡
+    void GetMemoryInfo(DWORD &dwTotal, DWORD &dwTotalUse, DWORD &dwAvailPhys);
+    bool GetCpuUsage(double& dUsage, DWORD& dwTimes);	//µÃµ½CPUÊ¹ÓÃÂÊ
 
 protected:
-	//å–ç³»ç»Ÿæ€§èƒ½ä¿¡æ¯å’Œç³»ç»Ÿæ—¶é’Ÿä¿¡æ¯æ”¾åˆ° m_SysPerfInfoå’Œm_SysTimeInfoä¸­
-	bool QuerySysAndPerfInfo();
+    //È¡ÏµÍ³ĞÔÄÜĞÅÏ¢ºÍÏµÍ³Ê±ÖÓĞÅÏ¢·Åµ½ m_SysPerfInfoºÍm_SysTimeInfoÖĞ
+    bool QuerySysAndPerfInfo();
 
-	//structs
-	typedef struct
-	{
-		DWORD   dwUnknown1;
-		ULONG   uKeMaximumIncrement;
-		ULONG   uPageSize;
-		ULONG   uMmNumberOfPhysicalPages;
-		ULONG   uMmLowestPhysicalPage;
-		ULONG   uMmHighestPhysicalPage;
-		ULONG   uAllocationGranularity;
-		PVOID   pLowestUserAddress;
-		PVOID   pMmHighestUserAddress;
-		ULONG   uKeActiveProcessors;
-		BYTE    bKeNumberProcessors;
-		BYTE    bUnknown2;
-		WORD    wUnknown3;
-	} SYSTEM_BASIC_INFORMATION;
+    //structs
+    typedef struct{
+        DWORD   dwUnknown1;
+        ULONG   uKeMaximumIncrement;
+        ULONG   uPageSize;
+        ULONG   uMmNumberOfPhysicalPages;
+        ULONG   uMmLowestPhysicalPage;
+        ULONG   uMmHighestPhysicalPage;
+        ULONG   uAllocationGranularity;
+        PVOID   pLowestUserAddress;
+        PVOID   pMmHighestUserAddress;
+        ULONG   uKeActiveProcessors;
+        BYTE    bKeNumberProcessors;
+        BYTE    bUnknown2;
+        WORD    wUnknown3;
+    } SYSTEM_BASIC_INFORMATION;
 
-	typedef struct
-	{
-		LARGE_INTEGER   liIdleTime;
-		DWORD           dwSpare[76];
-	} SYSTEM_PERFORMANCE_INFORMATION;
+    typedef struct{
+        LARGE_INTEGER   liIdleTime;
+        DWORD           dwSpare[76];
+    } SYSTEM_PERFORMANCE_INFORMATION;
 
-	typedef struct
-	{
-		LARGE_INTEGER liKeBootTime;
-		LARGE_INTEGER liKeSystemTime;
-		LARGE_INTEGER liExpTimeZoneBias;
-		ULONG         uCurrentTimeZoneId;
-		DWORD         dwReserved;
-	} SYSTEM_TIME_INFORMATION;
+    typedef struct{
+        LARGE_INTEGER liKeBootTime;
+        LARGE_INTEGER liKeSystemTime;
+        LARGE_INTEGER liExpTimeZoneBias;
+        ULONG         uCurrentTimeZoneId;
+        DWORD         dwReserved;
+    } SYSTEM_TIME_INFORMATION;
 
 protected:
-	typedef LONG (WINAPI *PROCNTQSI)(UINT,PVOID,ULONG,PULONG);
+    typedef LONG(WINAPI *PROCNTQSI)(UINT, PVOID, ULONG, PULONG);
 
-	PROCNTQSI NtQuerySystemInformation;
-	//value
-	SYSTEM_PERFORMANCE_INFORMATION m_SysPerfInfo;	//ç³»ç»Ÿæ€§èƒ½ä¿¡æ¯
-	SYSTEM_TIME_INFORMATION        m_SysTimeInfo;	//ç³»ç»Ÿæ—¶é’Ÿä¿¡æ¯
-	SYSTEM_BASIC_INFORMATION       m_SysBaseInfo;	//ç³»ç»ŸåŸºæœ¬ä¿¡æ¯
-	LONG                           m_lStatus;
-	//ç”¨äºCPUä½¿ç”¨ç‡æµ‹è¯•å˜é‡
-	LARGE_INTEGER	m_liOldIdleTime;
-	LARGE_INTEGER	m_liOldSystemTime;
-	DWORD			m_dwOldTime;
-	DWORD			m_dwUseTimes;
-	//ä»¥åæ‰©å±•ä¸ºè¯»å…·ä½“ä¸€ä¸ªè¿›ç¨‹çš„ä¿¡æ¯æ—¶ç”¨äºæŒ‡å®šè¿›ç¨‹
-	//	CWBasicString			m_strProcName;
-	//	long			m_lProcID;
-	//option;
-	bool	m_bSupport;
+    PROCNTQSI NtQuerySystemInformation;
+    //value
+    SYSTEM_PERFORMANCE_INFORMATION m_SysPerfInfo;	//ÏµÍ³ĞÔÄÜĞÅÏ¢
+    SYSTEM_TIME_INFORMATION        m_SysTimeInfo;	//ÏµÍ³Ê±ÖÓĞÅÏ¢
+    SYSTEM_BASIC_INFORMATION       m_SysBaseInfo;	//ÏµÍ³»ù±¾ĞÅÏ¢
+    LONG                           m_lStatus;
+    //ÓÃÓÚCPUÊ¹ÓÃÂÊ²âÊÔ±äÁ¿
+    LARGE_INTEGER	m_liOldIdleTime;
+    LARGE_INTEGER	m_liOldSystemTime;
+    DWORD			m_dwOldTime;
+    DWORD			m_dwUseTimes;
+    //ÒÔºóÀ©Õ¹Îª¶Á¾ßÌåÒ»¸ö½ø³ÌµÄĞÅÏ¢Ê±ÓÃÓÚÖ¸¶¨½ø³Ì
+    //	CWBasicString			m_strProcName;
+    //	long			m_lProcID;
+    //option;
+    bool	m_bSupport;
 
 };
 
-CSystemInfo::CSystemInfo()
-{
-	m_bSupport = false;
-	NtQuerySystemInformation = (PROCNTQSI)GetProcAddress(
-		GetModuleHandleA("ntdll"),
-		"NtQuerySystemInformation"
-		);
+CSystemInfo::CSystemInfo(){
+    m_bSupport = false;
+    NtQuerySystemInformation = (PROCNTQSI)GetProcAddress(
+        GetModuleHandleA("ntdll"),
+        "NtQuerySystemInformation"
+    );
 
-	if (!NtQuerySystemInformation)
-	{
-		return;
-	}
-	m_lStatus = NtQuerySystemInformation(SystemBasicInformation, 
-		&m_SysBaseInfo, sizeof(m_SysBaseInfo), NULL);
-	if (m_lStatus != NO_ERROR)
-	{
-		return;
-	}
+    if(!NtQuerySystemInformation){
+        return;
+    }
+    m_lStatus = NtQuerySystemInformation(SystemBasicInformation,
+                                         &m_SysBaseInfo, sizeof(m_SysBaseInfo), NULL);
+    if(m_lStatus != NO_ERROR){
+        return;
+    }
 
-	//ç¬¬ä¸€æ¬¡å¾—åˆ°æ­¤æ—¶ç³»ç»Ÿç›¸å…³ä¿¡æ¯
-	if( !QuerySysAndPerfInfo() )
-	{
-		return;
-	}
-	m_liOldIdleTime = m_SysPerfInfo.liIdleTime;
-	m_liOldSystemTime = m_SysTimeInfo.liKeSystemTime; //ç¬¬ä¸€æ¬¡æ—¶é—´;
-	m_bSupport = true;
-	m_dwUseTimes = 0;
+    //µÚÒ»´ÎµÃµ½´ËÊ±ÏµÍ³Ïà¹ØĞÅÏ¢
+    if(!QuerySysAndPerfInfo()){
+        return;
+    }
+    m_liOldIdleTime = m_SysPerfInfo.liIdleTime;
+    m_liOldSystemTime = m_SysTimeInfo.liKeSystemTime; //µÚÒ»´ÎÊ±¼ä;
+    m_bSupport = true;
+    m_dwUseTimes = 0;
 }
 
-CSystemInfo::~CSystemInfo()
-{
+CSystemInfo::~CSystemInfo(){
 
 }
 
-bool CSystemInfo::QuerySysAndPerfInfo()
-{
-	m_lStatus = NtQuerySystemInformation(SystemTimeInformation, &m_SysTimeInfo, sizeof(m_SysTimeInfo), NULL);
-	if (m_lStatus!=NO_ERROR)
-		return false;
+bool CSystemInfo::QuerySysAndPerfInfo(){
+    m_lStatus = NtQuerySystemInformation(SystemTimeInformation, &m_SysTimeInfo, sizeof(m_SysTimeInfo), NULL);
+    if(m_lStatus != NO_ERROR)
+        return false;
 
-	m_lStatus = NtQuerySystemInformation(SystemPerformanceInformation,&m_SysPerfInfo,sizeof(m_SysPerfInfo),NULL);
-	if (m_lStatus != NO_ERROR)
-		return false;
+    m_lStatus = NtQuerySystemInformation(SystemPerformanceInformation, &m_SysPerfInfo, sizeof(m_SysPerfInfo), NULL);
+    if(m_lStatus != NO_ERROR)
+        return false;
 
-	DWORD dwCurTime = GetTickCount();
-	m_dwUseTimes = dwCurTime- m_dwOldTime;
-	m_dwOldTime = dwCurTime;
-	return true;
+    DWORD dwCurTime = GetTickCount();
+    m_dwUseTimes = dwCurTime - m_dwOldTime;
+    m_dwOldTime = dwCurTime;
+    return true;
 }
 
 
 //
-//å¾—åˆ°CPUä½¿ç”¨ç‡		dUsage,ï¼ˆä½¿ç”¨ç‡ï¼Œç™¾åˆ†æ¯”ï¼‰ï¼Œå¤šé•¿æ—¶é—´ï¼›
+//µÃµ½CPUÊ¹ÓÃÂÊ		dUsage,£¨Ê¹ÓÃÂÊ£¬°Ù·Ö±È£©£¬¶à³¤Ê±¼ä£»
 //
-bool CSystemInfo::GetCpuUsage(double &dUsage, DWORD& dwTimes)
-{
-	if( !m_bSupport )
-	{
-		return false;
-	}
+bool CSystemInfo::GetCpuUsage(double &dUsage, DWORD& dwTimes){
+    if(!m_bSupport){
+        return false;
+    }
 
-	static double	s_dPrevUsage = 0;
-	if ((GetTickCount() - m_dwOldTime) <= 5000)
-	{//ä¸¤æ¬¡å–çš„æ—¶é—´é—´éš”å°äº1sæ—¶ï¼Œç”¨å‰ä¸€æ—¶åˆ»å–çš„å€¼
-		dUsage = s_dPrevUsage;
-		dwTimes = m_dwUseTimes;
-		return true;
-	}
-	if (!QuerySysAndPerfInfo())
-	{
-		return false;
-	}
-	double dIdleTime	= 0;
-	double dSystemTime	= 0;
-	if (m_liOldIdleTime.QuadPart != 0)
-	{
-		dIdleTime = Li2Double(m_SysPerfInfo.liIdleTime) - Li2Double(m_liOldIdleTime);
-		dSystemTime = Li2Double(m_SysTimeInfo.liKeSystemTime) - Li2Double(m_liOldSystemTime);
+    static double	s_dPrevUsage = 0;
+    if((GetTickCount() - m_dwOldTime) <= 5000){//Á½´ÎÈ¡µÄÊ±¼ä¼ä¸ôĞ¡ÓÚ1sÊ±£¬ÓÃÇ°Ò»Ê±¿ÌÈ¡µÄÖµ
+        dUsage = s_dPrevUsage;
+        dwTimes = m_dwUseTimes;
+        return true;
+    }
+    if(!QuerySysAndPerfInfo()){
+        return false;
+    }
+    double dIdleTime = 0;
+    double dSystemTime = 0;
+    if(m_liOldIdleTime.QuadPart != 0){
+        dIdleTime = Li2Double(m_SysPerfInfo.liIdleTime) - Li2Double(m_liOldIdleTime);
+        dSystemTime = Li2Double(m_SysTimeInfo.liKeSystemTime) - Li2Double(m_liOldSystemTime);
 
-		dIdleTime = dIdleTime / dSystemTime;
-		//ä½¿ç”¨ç‡ = ç©ºé—²æ—¶é—´çš„æ€»æ•°ï¼Œå†åŠ ä¸Šä¸åŒçš„ç¨‹åº
-		dUsage = 100.0 - dIdleTime * 100.0 / (double)m_SysBaseInfo.bKeNumberProcessors;
-		if(dUsage < 0.0)
-		{
-			dUsage = 0.0;
-		}
-		s_dPrevUsage = dUsage;
-	}
-	m_liOldIdleTime = m_SysPerfInfo.liIdleTime;
-	m_liOldSystemTime = m_SysTimeInfo.liKeSystemTime;
-	dwTimes = m_dwUseTimes;
-	return true;
+        dIdleTime = dIdleTime / dSystemTime;
+        //Ê¹ÓÃÂÊ = ¿ÕÏĞÊ±¼äµÄ×ÜÊı£¬ÔÙ¼ÓÉÏ²»Í¬µÄ³ÌĞò
+        dUsage = 100.0 - dIdleTime * 100.0 / (double)m_SysBaseInfo.bKeNumberProcessors;
+        if(dUsage < 0.0){
+            dUsage = 0.0;
+        }
+        s_dPrevUsage = dUsage;
+    }
+    m_liOldIdleTime = m_SysPerfInfo.liIdleTime;
+    m_liOldSystemTime = m_SysTimeInfo.liKeSystemTime;
+    dwTimes = m_dwUseTimes;
+    return true;
 }
 
-typedef BOOL (WINAPI* GMS_EX)(LPMEMORYSTATUSEX lpBuffer);
+typedef BOOL(WINAPI* GMS_EX)(LPMEMORYSTATUSEX lpBuffer);
 
-//è¿™é‡Œè¿”å›å•ä½æ˜¯ K
+//ÕâÀï·µ»Øµ¥Î»ÊÇ K
 #define DIV (1024)
 
-void CSystemInfo::GetMemoryInfo(DWORD &dwTotal, DWORD &dwTotalUse, DWORD &dwAvailPhys)
-{//
-	MEMORYSTATUSEX statex = { 0 };
-	statex.dwLength = sizeof (statex);
+void CSystemInfo::GetMemoryInfo(DWORD &dwTotal, DWORD &dwTotalUse, DWORD &dwAvailPhys){//
+    MEMORYSTATUSEX statex = { 0 };
+    statex.dwLength = sizeof(statex);
 
-	HMODULE hKernel32 =	GetModuleHandleA("kernel32.dll");
-	GMS_EX pfuncGlobalMemoryStatusEx = (GMS_EX)GetProcAddress(hKernel32,"GlobalMemoryStatusEx");
-	if(pfuncGlobalMemoryStatusEx != NULL)
-	{
-		(*pfuncGlobalMemoryStatusEx)(&statex);
-	}
-	else
-	{
-		MEMORYSTATUS MemoryStatus = { 0 }; 
-		MemoryStatus.dwLength = sizeof(MEMORYSTATUS); 	
-		::GlobalMemoryStatus(&MemoryStatus);
+    HMODULE hKernel32 = GetModuleHandleA("kernel32.dll");
+    GMS_EX pfuncGlobalMemoryStatusEx = (GMS_EX)GetProcAddress(hKernel32, "GlobalMemoryStatusEx");
+    if(pfuncGlobalMemoryStatusEx != NULL){
+        (*pfuncGlobalMemoryStatusEx)(&statex);
+    }
+    else{
+        MEMORYSTATUS MemoryStatus = { 0 };
+        MemoryStatus.dwLength = sizeof(MEMORYSTATUS);
+        ::GlobalMemoryStatus(&MemoryStatus);
 
-		statex.ullTotalPhys	     = MemoryStatus.dwTotalPhys;
-		statex.ullAvailPhys      = MemoryStatus.dwAvailPhys;
-		statex.ullTotalPageFile	 = MemoryStatus.dwTotalPageFile;
-		statex.ullAvailPageFile  = MemoryStatus.dwAvailPageFile;
-		statex.ullTotalVirtual   = MemoryStatus.dwTotalVirtual; 
-		statex.ullAvailVirtual   = MemoryStatus.dwAvailVirtual; 
-	}
+        statex.ullTotalPhys = MemoryStatus.dwTotalPhys;
+        statex.ullAvailPhys = MemoryStatus.dwAvailPhys;
+        statex.ullTotalPageFile = MemoryStatus.dwTotalPageFile;
+        statex.ullAvailPageFile = MemoryStatus.dwAvailPageFile;
+        statex.ullTotalVirtual = MemoryStatus.dwTotalVirtual;
+        statex.ullAvailVirtual = MemoryStatus.dwAvailVirtual;
+    }
 
-	dwTotal		= (DWORD)(statex.ullTotalPhys / DIV);
-	dwTotalUse	= (DWORD)((statex.ullTotalPageFile - statex.ullAvailPageFile) / DIV);
-	dwAvailPhys = (DWORD)(statex.ullAvailPhys / DIV);
+    dwTotal = (DWORD)(statex.ullTotalPhys / DIV);
+    dwTotalUse = (DWORD)((statex.ullTotalPageFile - statex.ullAvailPageFile) / DIV);
+    dwAvailPhys = (DWORD)(statex.ullAvailPhys / DIV);
 }
 
 CSystemInfo g_sysInfo;
 
 //
-//å–å¾—CPUåˆ©ç”¨ç‡,å•ä½ç™¾åˆ†æ¯”
-int BasicGetCPUUse()
-{
-	double dUsage = 0;
-	DWORD dwTime = 0;
-	if(g_sysInfo.GetCpuUsage(dUsage, dwTime))
-		return int(dUsage*100);
-	return 0;
+//È¡µÃCPUÀûÓÃÂÊ,µ¥Î»°Ù·Ö±È
+int BasicGetCPUUse(){
+    double dUsage = 0;
+    DWORD dwTime = 0;
+    if(g_sysInfo.GetCpuUsage(dUsage, dwTime))
+        return int(dUsage * 100);
+    return 0;
 }
 //
 
-//å–å¾—å†…å­˜ä¿¡æ¯ï¼Œå•ä½K
-//å‚æ•°ï¼š
-//dwPhysicalMemory	ç‰©ç†å†…å­˜ 
-//dwAvailMemory		å¯ç”¨å†…å­˜
-//dwUsedMemory		ä½¿ç”¨å†…å­˜
-//dwVirtualMemory	è™šæ‹Ÿå†…å­˜
-void BasicGetMemoryInfo(DWORD& dwPhysicalMemory, 
-				   DWORD& dwAvailMemory, 
-				   DWORD& dwUsedMemory, 
-				   DWORD& dwVirtualMemory)
-{
-	g_sysInfo.GetMemoryInfo(dwPhysicalMemory, dwUsedMemory, dwAvailMemory);
+//È¡µÃÄÚ´æĞÅÏ¢£¬µ¥Î»K
+//²ÎÊı£º
+//dwPhysicalMemory	ÎïÀíÄÚ´æ 
+//dwAvailMemory		¿ÉÓÃÄÚ´æ
+//dwUsedMemory		Ê¹ÓÃÄÚ´æ
+//dwVirtualMemory	ĞéÄâÄÚ´æ
+void BasicGetMemoryInfo(DWORD& dwPhysicalMemory,
+                        DWORD& dwAvailMemory,
+                        DWORD& dwUsedMemory,
+                        DWORD& dwVirtualMemory){
+    g_sysInfo.GetMemoryInfo(dwPhysicalMemory, dwUsedMemory, dwAvailMemory);
 }
 
-typedef struct _PROCESS_MEMORY_COUNTERS {
-	DWORD cb;
-	DWORD PageFaultCount;
-	DWORD PeakWorkingSetSize;
-	DWORD WorkingSetSize;
-	DWORD QuotaPeakPagedPoolUsage;
-	DWORD QuotaPagedPoolUsage;
-	DWORD QuotaPeakNonPagedPoolUsage;
-	DWORD QuotaNonPagedPoolUsage;
-	DWORD PagefileUsage;
-	DWORD PeakPagefileUsage;
+typedef struct _PROCESS_MEMORY_COUNTERS{
+    DWORD cb;
+    DWORD PageFaultCount;
+    DWORD PeakWorkingSetSize;
+    DWORD WorkingSetSize;
+    DWORD QuotaPeakPagedPoolUsage;
+    DWORD QuotaPagedPoolUsage;
+    DWORD QuotaPeakNonPagedPoolUsage;
+    DWORD QuotaNonPagedPoolUsage;
+    DWORD PagefileUsage;
+    DWORD PeakPagefileUsage;
 } PROCESS_MEMORY_COUNTERS;
 typedef PROCESS_MEMORY_COUNTERS *PPROCESS_MEMORY_COUNTERS;
 
 BOOL
 WINAPI
 GetProcessMemoryInfo(
-					 HANDLE Process,
-					 PPROCESS_MEMORY_COUNTERS ppsmemCounters,
-					 DWORD cb
-					 );
+    HANDLE Process,
+    PPROCESS_MEMORY_COUNTERS ppsmemCounters,
+    DWORD cb
+);
 
-typedef BOOL (WINAPI * GETPROCESSMEMORYINFO_FUNC) (HANDLE process, PPROCESS_MEMORY_COUNTERS counters, DWORD cb);
+typedef BOOL(WINAPI * GETPROCESSMEMORYINFO_FUNC) (HANDLE process, PPROCESS_MEMORY_COUNTERS counters, DWORD cb);
 //
-//å–å¾—è¿›ç¨‹ä½¿ç”¨å†…å­˜ å•ä½K
-DWORD BasicGetProcessMem(HANDLE hProcess, bool bKeepHandle)
-{
-	static GETPROCESSMEMORYINFO_FUNC sGetMemInfo = NULL;
-	static HANDLE sProcess = hProcess;
-	static HMODULE sPSModule = NULL;
-	static BOOL sKeepHandle = FALSE;
-	if(bKeepHandle)
-	{
-		//ä¿ç•™å¥æŸ„
-		sKeepHandle = TRUE;
-	}
-	if(sGetMemInfo == NULL)
-	{
-		sPSModule = LoadLibraryA("psapi.dll");
-		if(sPSModule)
-		{
-			sGetMemInfo = (GETPROCESSMEMORYINFO_FUNC)GetProcAddress(sPSModule, "GetProcessMemoryInfo");
-		}
-	}
-	DWORD dwMem = 0;
-	if(sGetMemInfo)
-	{
-		if(sProcess == NULL)
-		{
-			//å–å½“å‰è¿›ç¨‹
-			sProcess = OpenProcess(PROCESS_QUERY_INFORMATION|PROCESS_VM_READ, FALSE, GetCurrentProcessId());
-		}
-		if(sProcess)
-		{
-			PROCESS_MEMORY_COUNTERS pmc;
-			sGetMemInfo(sProcess, &pmc, sizeof(pmc));
-			dwMem = max((DWORD)pmc.PagefileUsage, (DWORD)pmc.WorkingSetSize);
-		}
-	}
-	if(!sKeepHandle)
-	{
-		if(sProcess && hProcess == NULL)
-		{
-			CloseHandle(sProcess);
-			sProcess = NULL;
-		}
-		if(sPSModule)
-		{
-			FreeLibrary(sPSModule);
-			sPSModule = NULL;
-			sGetMemInfo = NULL;
-		}
-	}
-	return dwMem/1024;
+//È¡µÃ½ø³ÌÊ¹ÓÃÄÚ´æ µ¥Î»K
+DWORD BasicGetProcessMem(HANDLE hProcess, bool bKeepHandle){
+    static GETPROCESSMEMORYINFO_FUNC sGetMemInfo = NULL;
+    static HANDLE sProcess = hProcess;
+    static HMODULE sPSModule = NULL;
+    static BOOL sKeepHandle = FALSE;
+    if(bKeepHandle){
+        //±£Áô¾ä±ú
+        sKeepHandle = TRUE;
+    }
+    if(sGetMemInfo == NULL){
+        sPSModule = LoadLibraryA("psapi.dll");
+        if(sPSModule){
+            sGetMemInfo = (GETPROCESSMEMORYINFO_FUNC)GetProcAddress(sPSModule, "GetProcessMemoryInfo");
+        }
+    }
+    DWORD dwMem = 0;
+    if(sGetMemInfo){
+        if(sProcess == NULL){
+            //È¡µ±Ç°½ø³Ì
+            sProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
+        }
+        if(sProcess){
+            PROCESS_MEMORY_COUNTERS pmc;
+            sGetMemInfo(sProcess, &pmc, sizeof(pmc));
+            dwMem = max((DWORD)pmc.PagefileUsage, (DWORD)pmc.WorkingSetSize);
+        }
+    }
+    if(!sKeepHandle){
+        if(sProcess && hProcess == NULL){
+            CloseHandle(sProcess);
+            sProcess = NULL;
+        }
+        if(sPSModule){
+            FreeLibrary(sPSModule);
+            sPSModule = NULL;
+            sGetMemInfo = NULL;
+        }
+    }
+    return dwMem / 1024;
 }
 //
 
 //
-//å–å¾—ç¡¬ç›˜ä¿¡æ¯
-DWORD BasicGetDiskInfo(char* pszDiskBuffer, int nBufferLen)
-{
-	if(pszDiskBuffer == NULL || nBufferLen == 0)
-		return 0;
+//È¡µÃÓ²ÅÌĞÅÏ¢
+DWORD BasicGetDiskInfo(char* pszDiskBuffer, int nBufferLen){
+    if(pszDiskBuffer == NULL || nBufferLen == 0)
+        return 0;
 
-	CBasicString strDiskInfo;
-	char szTemp[64];
+    CBasicString strDiskInfo;
+    char szTemp[64];
 
-	char szAllPath[1024];
-	GetLogicalDriveStringsA(_countof(szAllPath), szAllPath);
+    char szAllPath[1024];
+    GetLogicalDriveStringsA(_countof(szAllPath), szAllPath);
 
-	const char* lpszPath = szAllPath;
-	while(lpszPath[0] != '\0')
-	{
-		UINT uDrive = GetDriveTypeA(lpszPath);
-		if(uDrive == DRIVE_FIXED || uDrive == DRIVE_RAMDISK)	//åªå¤„ç†ç¡¬ç›˜å’ŒRAMç›˜
-		{
-			DWORD dwSectorsPerCluster = 0;
-			DWORD dwBytesPerSector = 0;
-			DWORD dwFreeClusters = 0;
-			DWORD dwTotalClusters = 0;
-			if(GetDiskFreeSpaceA(lpszPath, &dwSectorsPerCluster,
-				&dwBytesPerSector, &dwFreeClusters, &dwTotalClusters))
-			{
-				long lFreeSpace  = (long)(((double)dwFreeClusters * dwSectorsPerCluster * dwBytesPerSector) / (1024 * 1024));
-				long lTotalSpace = (long)(((double)dwTotalClusters * dwSectorsPerCluster * dwBytesPerSector) / (1024 * 1024));
+    const char* lpszPath = szAllPath;
+    while(lpszPath[0] != '\0'){
+        UINT uDrive = GetDriveTypeA(lpszPath);
+        if(uDrive == DRIVE_FIXED || uDrive == DRIVE_RAMDISK)	//Ö»´¦ÀíÓ²ÅÌºÍRAMÅÌ
+        {
+            DWORD dwSectorsPerCluster = 0;
+            DWORD dwBytesPerSector = 0;
+            DWORD dwFreeClusters = 0;
+            DWORD dwTotalClusters = 0;
+            if(GetDiskFreeSpaceA(lpszPath, &dwSectorsPerCluster,
+                                 &dwBytesPerSector, &dwFreeClusters, &dwTotalClusters)){
+                long lFreeSpace = (long)(((double)dwFreeClusters * dwSectorsPerCluster * dwBytesPerSector) / (1024 * 1024));
+                long lTotalSpace = (long)(((double)dwTotalClusters * dwSectorsPerCluster * dwBytesPerSector) / (1024 * 1024));
 
-				sprintf(szTemp, "%s %d/%d | ", lpszPath, lFreeSpace, lTotalSpace);
-				strDiskInfo += szTemp;
-			}
-		}
-		lpszPath += __tcslen(lpszPath) + 1;
-	}
+                sprintf(szTemp, "%s %d/%d | ", lpszPath, lFreeSpace, lTotalSpace);
+                strDiskInfo += szTemp;
+            }
+        }
+        lpszPath += __tcslen(lpszPath) + 1;
+    }
 
-	int nInfoLen = strDiskInfo.GetLength();
-	if(nBufferLen > nInfoLen)
-	{
-		__tcscpy(pszDiskBuffer, strDiskInfo.c_str());
-		return nInfoLen;
-	}
-	return 0;
+    int nInfoLen = strDiskInfo.GetLength();
+    if(nBufferLen > nInfoLen){
+        __tcscpy(pszDiskBuffer, strDiskInfo.c_str());
+        return nInfoLen;
+    }
+    return 0;
 }
 //
 
-//å–è·¯å¾„æ‰€åœ¨ç£ç›˜çš„å‰©ä½™ç©ºé—´ å•ä½M
-long BasicGetDiskFreeinfo(const char* lpszPath)
-{
-	DWORD dwSectorsPerCluster = 0;
-	DWORD dwBytesPerSector = 0;
-	DWORD dwFreeClusters = 0;
-	DWORD dwTotalClusters = 0;
-	if(GetDiskFreeSpaceA(lpszPath, &dwSectorsPerCluster,
-		&dwBytesPerSector, &dwFreeClusters, &dwTotalClusters))
-	{
-		long lFreeSpace  = (long)(((double)dwFreeClusters * dwSectorsPerCluster * dwBytesPerSector) / (1024 * 1024));
-		return lFreeSpace;
-	}
-	return 999999;
+//È¡Â·¾¶ËùÔÚ´ÅÅÌµÄÊ£Óà¿Õ¼ä µ¥Î»M
+long BasicGetDiskFreeinfo(const char* lpszPath){
+    DWORD dwSectorsPerCluster = 0;
+    DWORD dwBytesPerSector = 0;
+    DWORD dwFreeClusters = 0;
+    DWORD dwTotalClusters = 0;
+    if(GetDiskFreeSpaceA(lpszPath, &dwSectorsPerCluster,
+                         &dwBytesPerSector, &dwFreeClusters, &dwTotalClusters)){
+        long lFreeSpace = (long)(((double)dwFreeClusters * dwSectorsPerCluster * dwBytesPerSector) / (1024 * 1024));
+        return lFreeSpace;
+    }
+    return 999999;
 }
 
 
-//å–å¾—ç³»ç»Ÿå¯åŠ¨æ—¶é—´ï¼Œå•ä½ï¼šæ¯«ç§’
-DWORD BasicGetTickTime()
-{
-	//return ::GetTickCount();
-	LARGE_INTEGER lFreq, lCounter;
-	QueryPerformanceFrequency(&lFreq);
-	QueryPerformanceCounter(&lCounter);
-	return DWORD((((double)lCounter.QuadPart)/lFreq.QuadPart)*1000);
-}
-
-double BasicGetTickTimeCount()
-{
+//È¡µÃÏµÍ³Æô¶¯Ê±¼ä£¬µ¥Î»£ººÁÃë
+DWORD BasicGetTickTime(){
+    //return ::GetTickCount();
     LARGE_INTEGER lFreq, lCounter;
     QueryPerformanceFrequency(&lFreq);
     QueryPerformanceCounter(&lCounter);
-    return (((double)lCounter.QuadPart)/lFreq.QuadPart)*1000;
+    return DWORD((((double)lCounter.QuadPart) / lFreq.QuadPart) * 1000);
 }
 
-//å–å¾—æ¨¡å—å
-//å¦‚hModule==NULLï¼Œåˆ™å–å½“å‰ä¸»ç¨‹åºå
-CBasicString BasicGetModuleName(HANDLE hModule)
-{
-	char szPath[_MAX_PATH];
-	szPath[0] = '\0';
-	GetModuleFileNameA((HMODULE)hModule, szPath, sizeof(szPath));
-	return szPath;
+double BasicGetTickTimeCount(){
+    LARGE_INTEGER lFreq, lCounter;
+    QueryPerformanceFrequency(&lFreq);
+    QueryPerformanceCounter(&lCounter);
+    return (((double)lCounter.QuadPart) / lFreq.QuadPart) * 1000;
 }
 
-//å–å¾—æ¨¡å—å
-//å¦‚hModule==NULLï¼Œåˆ™å–å½“å‰ä¸»ç¨‹åºå
-CWBasicString WBasicGetModuleName(HANDLE hModule)
-{
-	TCHAR szPath[_MAX_PATH];
-	szPath[0] = '\0';
-	GetModuleFileName((HMODULE)hModule, szPath, sizeof(szPath));
-	return szPath;
+//È¡µÃÄ£¿éÃû
+//ÈçhModule==NULL£¬ÔòÈ¡µ±Ç°Ö÷³ÌĞòÃû
+CBasicString BasicGetModuleName(HANDLE hModule){
+    char szPath[_MAX_PATH];
+    szPath[0] = '\0';
+    GetModuleFileNameA((HMODULE)hModule, szPath, sizeof(szPath));
+    return szPath;
 }
 
-long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBufLen)
-{
-	return GetModuleFileNameA((HMODULE)hModule, pszBuffer, nBufLen);
+//È¡µÃÄ£¿éÃû
+//ÈçhModule==NULL£¬ÔòÈ¡µ±Ç°Ö÷³ÌĞòÃû
+CWBasicString WBasicGetModuleName(HANDLE hModule){
+    TCHAR szPath[_MAX_PATH];
+    szPath[0] = '\0';
+    GetModuleFileName((HMODULE)hModule, szPath, sizeof(szPath));
+    return szPath;
+}
+
+long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBufLen){
+    return GetModuleFileNameA((HMODULE)hModule, pszBuffer, nBufLen);
 }
 
 CBasicString BasicGetModuleTitle(HANDLE hModule, bool bExt){
-	CBasicString strModule = BasicGetModuleName(hModule);
-	int nPos = strModule.ReverseFind(PATHSPLIT_S);
-	if (nPos >= 0)
-		strModule = strModule.Mid(nPos + 1);
-	if (!bExt){
-		//å»æ‰åç¼€å
-		nPos = strModule.ReverseFind('.');
-		if (nPos >= 0)
-			strModule = strModule.Left(nPos);
-	}
-	return strModule;
+    CBasicString strModule = BasicGetModuleName(hModule);
+    int nPos = strModule.ReverseFind(PATHSPLIT_S);
+    if(nPos >= 0)
+        strModule = strModule.Mid(nPos + 1);
+    if(!bExt){
+        //È¥µôºó×ºÃû
+        nPos = strModule.ReverseFind('.');
+        if(nPos >= 0)
+            strModule = strModule.Left(nPos);
+    }
+    return strModule;
 }
 
-//å–å¾—æ¨¡å—åï¼Œä¸åŒ…æ‹¬å…¨è·¯å¾„
+//È¡µÃÄ£¿éÃû£¬²»°üÀ¨È«Â·¾¶
 CWBasicString WBasicGetModuleTitle(HANDLE hModule, bool bExt){
-	CWBasicString strModule = WBasicGetModuleName(hModule);
-	int nPos = strModule.ReverseFind(WIDEPATHSPLIT);
-	if (nPos >= 0)
-		strModule = strModule.Mid(nPos + 1);
-	if (!bExt){
-		//å»æ‰åç¼€å
-		nPos = strModule.ReverseFind('.');
-		if (nPos >= 0)
-			strModule = strModule.Left(nPos);
-	}
-	return strModule;
+    CWBasicString strModule = WBasicGetModuleName(hModule);
+    int nPos = strModule.ReverseFind(WIDEPATHSPLIT);
+    if(nPos >= 0)
+        strModule = strModule.Mid(nPos + 1);
+    if(!bExt){
+        //È¥µôºó×ºÃû
+        nPos = strModule.ReverseFind('.');
+        if(nPos >= 0)
+            strModule = strModule.Left(nPos);
+    }
+    return strModule;
 }
 
-//å–å¾—è·¯å¾„
-CBasicString BasicGetModulePath(HANDLE hModule)
-{
-	char szPath[_MAX_PATH];
-	szPath[0] = '\0';
-	GetModuleFileNameA((HMODULE)hModule, szPath, sizeof(szPath));
-	int i = 0;
-	for (i = strlen(szPath) - 1; i >= 0 && szPath[i] != PATHSPLIT_S; i--);
-	i++;
-	szPath[i] = '\0';
-	return szPath;
+//È¡µÃÂ·¾¶
+CBasicString BasicGetModulePath(HANDLE hModule){
+    char szPath[_MAX_PATH];
+    szPath[0] = '\0';
+    GetModuleFileNameA((HMODULE)hModule, szPath, sizeof(szPath));
+    int i = 0;
+    for(i = strlen(szPath) - 1; i >= 0 && szPath[i] != PATHSPLIT_S; i--);
+    i++;
+    szPath[i] = '\0';
+    return szPath;
 }
 
-//å–å¾—è·¯å¾„
-CWBasicString WBasicGetModulePath(HANDLE hModule)
-{
-	TCHAR szPath[_MAX_PATH];
-	szPath[0] = '\0';
-	GetModuleFileName((HMODULE)hModule, szPath, sizeof(szPath));
-	int i = 0;
-	for (i = _tcslen(szPath) - 1; i >= 0 && szPath[i] != WIDEPATHSPLIT; i--);
-	i++;
-	szPath[i] = '\0';
-	return szPath;
+//È¡µÃÂ·¾¶
+CWBasicString WBasicGetModulePath(HANDLE hModule){
+    TCHAR szPath[_MAX_PATH];
+    szPath[0] = '\0';
+    GetModuleFileName((HMODULE)hModule, szPath, sizeof(szPath));
+    int i = 0;
+    for(i = _tcslen(szPath) - 1; i >= 0 && szPath[i] != WIDEPATHSPLIT; i--);
+    i++;
+    szPath[i] = '\0';
+    return szPath;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-//å–æœ¬æœºIPåœ°å€å’Œå­ç½‘æ©ç 
-int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer)
-{
-	HINSTANCE hDll = (HINSTANCE)BasicLoadLibrary("Iphlpapi.dll");
-	if (hDll == NULL)
-	{
-		return 0;
-	}
- 
-	char   pTabBuffer[10000];   
-	memset(pTabBuffer, 0, sizeof(pTabBuffer));   
-	PMIB_IPADDRTABLE   pTable   =   (PMIB_IPADDRTABLE)pTabBuffer;   
-	DWORD   dwSize   =   sizeof(pTabBuffer);
-	int nRet = 0;
-	if(GetIpAddrTable(pTable,&dwSize,FALSE)   ==   NO_ERROR)   
-	{   
-		for(DWORD i = 0; i< pTable->dwNumEntries && nRet < cbBuffer; i++)   
-		{  
-			DWORD   addr   =   pTable->table[i].dwAddr;   
-			DWORD   subnet   =   pTable->table[i].dwMask;     
-			//   Filter   127.0.0.1   
-			if   (addr   !=   0x0100007f)   
-			{   
-				sprintf(pBuffer[nRet].m_szIP,"%d.%d.%d.%d",(addr & 0xFF),((addr>>8) & 0xFF),((addr>>16)& 0xFF),((addr>>24) & 0xFF));  
-				sprintf(pBuffer[nRet].m_szMask, "%d.%d.%d.%d", (subnet & 0xFF), ((subnet >> 8) & 0xFF), ((subnet >> 16) & 0xFF), ((subnet >> 24) & 0xFF));
-				nRet++;
-			}   
-		}   
-	}   
-	BasicFreeLibrary(hDll);
-	return   nRet;   
+//È¡±¾»úIPµØÖ·ºÍ×ÓÍøÑÚÂë
+int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer){
+    HINSTANCE hDll = (HINSTANCE)BasicLoadLibrary("Iphlpapi.dll");
+    if(hDll == NULL){
+        return 0;
+    }
+
+    char   pTabBuffer[10000];
+    memset(pTabBuffer, 0, sizeof(pTabBuffer));
+    PMIB_IPADDRTABLE   pTable = (PMIB_IPADDRTABLE)pTabBuffer;
+    DWORD   dwSize = sizeof(pTabBuffer);
+    int nRet = 0;
+    if(GetIpAddrTable(pTable, &dwSize, FALSE) == NO_ERROR){
+        for(DWORD i = 0; i< pTable->dwNumEntries && nRet < cbBuffer; i++){
+            DWORD   addr = pTable->table[i].dwAddr;
+            DWORD   subnet = pTable->table[i].dwMask;
+            //   Filter   127.0.0.1   
+            if(addr != 0x0100007f){
+                sprintf(pBuffer[nRet].m_szIP, "%d.%d.%d.%d", (addr & 0xFF), ((addr >> 8) & 0xFF), ((addr >> 16) & 0xFF), ((addr >> 24) & 0xFF));
+                sprintf(pBuffer[nRet].m_szMask, "%d.%d.%d.%d", (subnet & 0xFF), ((subnet >> 8) & 0xFF), ((subnet >> 16) & 0xFF), ((subnet >> 24) & 0xFF));
+                nRet++;
+            }
+        }
+    }
+    BasicFreeLibrary(hDll);
+    return   nRet;
 }
 
-long BasicCheckProcess(DWORD dwProcessID)
-{
-	typedef DWORD (WINAPI *PGetProcessId)(HANDLE Process);
-	static PGetProcessId pfnGetProcessId = (PGetProcessId)-1;
-	if(pfnGetProcessId == (PGetProcessId)-1)
-	{
-		pfnGetProcessId = NULL;
-		HMODULE hDllLib = GetModuleHandleA("Kernel32.dll");
-		if(hDllLib)
-		{
-			pfnGetProcessId = (PGetProcessId)::GetProcAddress(hDllLib, "GetProcessId");
-		}
-	}
+long BasicCheckProcess(DWORD dwProcessID){
+    typedef DWORD(WINAPI *PGetProcessId)(HANDLE Process);
+    static PGetProcessId pfnGetProcessId = (PGetProcessId)-1;
+    if(pfnGetProcessId == (PGetProcessId)-1){
+        pfnGetProcessId = NULL;
+        HMODULE hDllLib = GetModuleHandleA("Kernel32.dll");
+        if(hDllLib){
+            pfnGetProcessId = (PGetProcessId)::GetProcAddress(hDllLib, "GetProcessId");
+        }
+    }
 
-	if(pfnGetProcessId == NULL)
-	{
-		return BASIC_PSL_RET_ERROR;
-	}
+    if(pfnGetProcessId == NULL){
+        return BASIC_PSL_RET_ERROR;
+    }
 
-	HANDLE hProcess = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, dwProcessID);
-	if(hProcess == NULL)
-	{
-		DWORD dwLastError = ::GetLastError();
-		switch(dwLastError)
-		{
-		case ERROR_ACCESS_DENIED:
-			{
-				return BASIC_PSL_RET_NO_RIGHT;
-				break;
-			}
-		default:
-			{
-				return BASIC_PSL_RET_NOT_EXIST;
-				break;
-			}
-		}
-	}	
+    HANDLE hProcess = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, dwProcessID);
+    if(hProcess == NULL){
+        DWORD dwLastError = ::GetLastError();
+        switch(dwLastError){
+        case ERROR_ACCESS_DENIED:
+        {
+            return BASIC_PSL_RET_NO_RIGHT;
+            break;
+        }
+        default:
+        {
+            return BASIC_PSL_RET_NOT_EXIST;
+            break;
+        }
+        }
+    }
 
-	DWORD dwCheckPid = pfnGetProcessId(hProcess);
-	long lRet = (dwCheckPid == dwProcessID) ? BASIC_PSL_RET_STILL_LIVE : BASIC_PSL_RET_NOT_EXIST;
-	::CloseHandle(hProcess);
+    DWORD dwCheckPid = pfnGetProcessId(hProcess);
+    long lRet = (dwCheckPid == dwProcessID) ? BASIC_PSL_RET_STILL_LIVE : BASIC_PSL_RET_NOT_EXIST;
+    ::CloseHandle(hProcess);
 
-	return lRet;
+    return lRet;
 }
 
 //************************************************************************
 // Author:    Mini.J @2009/3/13
-// Method:    BasicProcessIsTerminated => è¿›ç¨‹æ˜¯å¦é€€å‡º
-//			æŸ¥çœ‹è¿›ç¨‹åˆ—è¡¨ä¸­æ˜¯å¦æœ‰ä¼ å…¥çš„è¿›ç¨‹IDã€‚å¦‚æœå­˜åœ¨è¯´æ˜æœªé€€å‡º
+// Method:    BasicProcessIsTerminated => ½ø³ÌÊÇ·ñÍË³ö
+//			²é¿´½ø³ÌÁĞ±íÖĞÊÇ·ñÓĞ´«ÈëµÄ½ø³ÌID¡£Èç¹û´æÔÚËµÃ÷Î´ÍË³ö
 // Returns:   bool => 
-// Parameter: DWORD dwProcessID => è¿›ç¨‹ID
+// Parameter: DWORD dwProcessID => ½ø³ÌID
 //************************************************************************
 bool BasicProcessIsTerminated(DWORD dwProcessID){
-	long lCheck = BasicCheckProcess(dwProcessID);
-	return lCheck == BASIC_PSL_RET_NOT_EXIST ? true : false;
+    long lCheck = BasicCheckProcess(dwProcessID);
+    return lCheck == BASIC_PSL_RET_NOT_EXIST ? true : false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-void* BasicLoadLibrary(const char* lpszLibFileName)
-{
-	return LoadLibraryA(lpszLibFileName);
+void* BasicLoadLibrary(const char* lpszLibFileName){
+    return LoadLibraryA(lpszLibFileName);
 }
-long BasicFreeLibrary(void* hModule)
-{
-	if(FreeLibrary((HMODULE)hModule))
-	{
-		return 0;
-	}
-	return -1;
+long BasicFreeLibrary(void* hModule){
+    if(FreeLibrary((HMODULE)hModule)){
+        return 0;
+    }
+    return -1;
 }
-void*	BasicGetProcAddress(void* hModule, const char* lpszProcName)
-{
-	return GetProcAddress((HMODULE)hModule, lpszProcName);
+void*	BasicGetProcAddress(void* hModule, const char* lpszProcName){
+    return GetProcAddress((HMODULE)hModule, lpszProcName);
 }
 
 bool BasicSetSysTime(time_t tTime){
-	CTime tm(tTime);
-	SYSTEMTIME st;
-	GetLocalTime(&st);
-	st.wYear = tm.GetYear();
-	st.wMonth = tm.GetMonth();
-	st.wDay = tm.GetDay();
-	st.wHour = tm.GetHour();
-	st.wMinute = tm.GetMinute();
-	st.wSecond = tm.GetSecond();
-	return SetLocalTime(&st);
+    CTime tm(tTime);
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    st.wYear = tm.GetYear();
+    st.wMonth = tm.GetMonth();
+    st.wDay = tm.GetDay();
+    st.wHour = tm.GetHour();
+    st.wMinute = tm.GetMinute();
+    st.wSecond = tm.GetSecond();
+    return SetLocalTime(&st);
 }
 
 /*
- * \brief æ—¶é—´è½¬æ¢å‡½æ•°
- */
-ULONGLONG file_time_2_utc(const FILETIME* ftime)
-{
-	ULARGE_INTEGER li;
-	li.LowPart = ftime->dwLowDateTime;
-	li.HighPart = ftime->dwHighDateTime;
-	return li.QuadPart;
+* \brief Ê±¼ä×ª»»º¯Êı
+*/
+ULONGLONG file_time_2_utc(const FILETIME* ftime){
+    ULARGE_INTEGER li;
+    li.LowPart = ftime->dwLowDateTime;
+    li.HighPart = ftime->dwHighDateTime;
+    return li.QuadPart;
 }
 
 /*
- * \brief CProcessInfoæ„é€ å‡½æ•°
- */
-CProcessInfo::CProcessInfo(DWORD nProcessId)
-{
-	m_nProcessId = nProcessId;
-	FILETIME now;
-	FILETIME creation_time;
-	FILETIME exit_time;
-	FILETIME kernel_time;
-	FILETIME user_time;
+* \brief CProcessInfo¹¹Ôìº¯Êı
+*/
+CProcessInfo::CProcessInfo(DWORD nProcessId){
+    m_nProcessId = nProcessId;
+    FILETIME now;
+    FILETIME creation_time;
+    FILETIME exit_time;
+    FILETIME kernel_time;
+    FILETIME user_time;
 
-	LONGLONG nSystem_time;
-	LONGLONG nTime;
+    LONGLONG nSystem_time;
+    LONGLONG nTime;
 
-	m_nCpuCount = BasicGetCpuNumber();
-	GetSystemTimeAsFileTime(&now);
+    m_nCpuCount = BasicGetCpuNumber();
+    GetSystemTimeAsFileTime(&now);
 
-	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, nProcessId);
-	if (!GetProcessTimes(hProcess, &creation_time, &exit_time, &kernel_time, &user_time))
-	{
-		return ;
-	}
+    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, nProcessId);
+    if(!GetProcessTimes(hProcess, &creation_time, &exit_time, &kernel_time, &user_time)){
+        return;
+    }
 
-	nSystem_time = (file_time_2_utc(&kernel_time) + file_time_2_utc(&user_time)) / m_nCpuCount;
-	nTime = file_time_2_utc(&now);
+    nSystem_time = (file_time_2_utc(&kernel_time) + file_time_2_utc(&user_time)) / m_nCpuCount;
+    nTime = file_time_2_utc(&now);
 
-	m_nLastSystemTime = nSystem_time;
-	m_nLastTime = nTime;
-	
+    m_nLastSystemTime = nSystem_time;
+    m_nLastTime = nTime;
+
 }
 
 
 
 //
-//å–å¾—æŒ‡å®šè¿›ç¨‹çš„CPUåˆ©ç”¨ç‡ï¼Œå•ä½ç™¾åˆ†æ¯”
-int CProcessInfo::GetProcessCpu()
-{
-	FILETIME now;
-	FILETIME creation_time;
-	FILETIME exit_time;
-	FILETIME kernel_time;
-	FILETIME user_time;
+//È¡µÃÖ¸¶¨½ø³ÌµÄCPUÀûÓÃÂÊ£¬µ¥Î»°Ù·Ö±È
+int CProcessInfo::GetProcessCpu(){
+    FILETIME now;
+    FILETIME creation_time;
+    FILETIME exit_time;
+    FILETIME kernel_time;
+    FILETIME user_time;
 
-	LONGLONG nSystem_time;
-	LONGLONG nTime;
-	LONGLONG nSystem_time_delta;
-	LONGLONG nTime_delta;
+    LONGLONG nSystem_time;
+    LONGLONG nTime;
+    LONGLONG nSystem_time_delta;
+    LONGLONG nTime_delta;
 
-	int nCpu = -1;
-	GetSystemTimeAsFileTime(&now);
+    int nCpu = -1;
+    GetSystemTimeAsFileTime(&now);
 
-	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, m_nProcessId);
-	if (!GetProcessTimes(hProcess, &creation_time, &exit_time, &kernel_time, &user_time))
-	{
-		return -1;
-	}
+    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, m_nProcessId);
+    if(!GetProcessTimes(hProcess, &creation_time, &exit_time, &kernel_time, &user_time)){
+        return -1;
+    }
 
-	nSystem_time = (file_time_2_utc(&kernel_time) + file_time_2_utc(&user_time)) / m_nCpuCount;
-	nTime = file_time_2_utc(&now);
+    nSystem_time = (file_time_2_utc(&kernel_time) + file_time_2_utc(&user_time)) / m_nCpuCount;
+    nTime = file_time_2_utc(&now);
 
-	nSystem_time_delta = nSystem_time - m_nLastSystemTime;
-	nTime_delta = nTime - m_nLastTime;
-	if (nTime_delta == 0)
-	{
-		return -1;
-	}
-	nCpu = (int)(((nSystem_time_delta)*100 + nTime_delta/2)/nTime_delta);
-	m_nLastSystemTime = nSystem_time;
-	m_nLastTime = nTime;
-	return nCpu;
+    nSystem_time_delta = nSystem_time - m_nLastSystemTime;
+    nTime_delta = nTime - m_nLastTime;
+    if(nTime_delta == 0){
+        return -1;
+    }
+    nCpu = (int)(((nSystem_time_delta) * 100 + nTime_delta / 2) / nTime_delta);
+    m_nLastSystemTime = nSystem_time;
+    m_nLastTime = nTime;
+    return nCpu;
 }
 
-CProcessInfo::~CProcessInfo()
-{
+CProcessInfo::~CProcessInfo(){
 
 }
 
 
-double BasicGetHighPerformanceCounter()
-{
-        LARGE_INTEGER time;
-        ::QueryPerformanceCounter(&time);
+double BasicGetHighPerformanceCounter(){
+    LARGE_INTEGER time;
+    ::QueryPerformanceCounter(&time);
 
-        static double fFreq = 0.0;
-        if(fFreq == 0.0)
-        {
-                LARGE_INTEGER nFreq;
-                QueryPerformanceFrequency(&nFreq);
-                fFreq = nFreq.QuadPart / 1000000.0;
-        }
-        return (time.QuadPart / fFreq);
+    static double fFreq = 0.0;
+    if(fFreq == 0.0){
+        LARGE_INTEGER nFreq;
+        QueryPerformanceFrequency(&nFreq);
+        fFreq = nFreq.QuadPart / 1000000.0;
+    }
+    return (time.QuadPart / fFreq);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////
 
-// Windowsç‰ˆæœ¬
-// æ”¯æŒwin95/98/ME/2000/xp/2003/vista
-// ä¸æ”¯æŒwinnt4.0åŠ2000/xp/2003/vistaä¸‹16ä½è¿›ç¨‹
+// Windows°æ±¾
+// Ö§³Öwin95/98/ME/2000/xp/2003/vista
+// ²»Ö§³Öwinnt4.0¼°2000/xp/2003/vistaÏÂ16Î»½ø³Ì
 //************************************************************************
 // Author:    Mini.J @2009/3/13
-// Method:    BasicCreateProcessEntry => å»ºç«‹è¿›ç¨‹ä¿¡æ¯é“¾è¡¨(ä½¿ç”¨ToolHelp32åº“)
-// Returns:   PROCESSLIST* => è¿”å›é“¾è¡¨å¤´
+// Method:    BasicCreateProcessEntry => ½¨Á¢½ø³ÌĞÅÏ¢Á´±í(Ê¹ÓÃToolHelp32¿â)
+// Returns:   PROCESSLIST* => ·µ»ØÁ´±íÍ·
 //************************************************************************
-PROCESSLIST* BasicCreateProcessEntry()
-{
-	PROCESSLIST* pHead = NULL;
-	PROCESSLIST* pNode = NULL;
-	PROCESSLIST* pNext = NULL;
-	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-	if (hSnapshot != INVALID_HANDLE_VALUE)
-	{
-		TCHAR szPath[MAX_PATH] = { 0 };
-		PROCESSENTRY32 entry;
-		entry.dwSize = sizeof(PROCESSENTRY32);
-		BOOL bWork = Process32First(hSnapshot, &entry);
-		while (bWork)
-		{
-			pNext = Basic_NewObject<PROCESSLIST>();
-			ASSERT(pNext != NULL);
-			if (pNode != NULL)
-			{
-				pNode->m_pNext = pNext;
-			}
-			pNode = pNext;
-			if (pHead == NULL)
-			{
-				pHead = pNode;
-			}
-			pNode->m_dwProcessID = entry.th32ProcessID;
-			pNode->m_dwParentProcessID = entry.th32ParentProcessID;
-			pNode->m_dwModuleID = entry.th32ModuleID;
-			pNode->m_dwThreadCnt = entry.cntThreads;
-			HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pNode->m_dwProcessID);
-			BOOL bFlag = FALSE;
-			if (hProcess != NULL)
-			{
-				memset(szPath, 0, MAX_PATH);
-				DWORD dwTmp = GetModuleFileNameEx(hProcess, NULL, szPath, MAX_PATH);
-				if (dwTmp > 0)
-				{
-					CWBasicString strPath(szPath), strPathTmp;
-					int nPos = strPath.ReverseFind(_T('\\'));
-					if (nPos > 0)
-					{
-						strPathTmp = strPath.Mid(0, nPos + 1);
-						strPath = strPath.Mid(nPos + 1);
-					}
-					__tcscpyn(pNode->m_szExeFile, MAX_PATH, (LPCTSTR)strPath, strPath.GetLength());
-					__tcscpyn(pNode->m_szExePath, MAX_PATH, (LPCTSTR)strPathTmp, strPathTmp.GetLength());
-					bFlag = TRUE;
-				}
-				CloseHandle(hProcess);
-			}
-			if (!bFlag)
-			{
-				__tcscpyn(pNode->m_szExeFile, MAX_PATH, entry.szExeFile, __tcslen(entry.szExeFile));
-			}
-			bWork = Process32Next(hSnapshot, &entry);
-		}
-		CloseHandle(hSnapshot);
-	}
-	return pHead;
+PROCESSLIST* BasicCreateProcessEntry(){
+    PROCESSLIST* pHead = NULL;
+    PROCESSLIST* pNode = NULL;
+    PROCESSLIST* pNext = NULL;
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if(hSnapshot != INVALID_HANDLE_VALUE){
+        TCHAR szPath[MAX_PATH] = { 0 };
+        PROCESSENTRY32 entry;
+        entry.dwSize = sizeof(PROCESSENTRY32);
+        BOOL bWork = Process32First(hSnapshot, &entry);
+        while(bWork){
+            pNext = Basic_NewObject<PROCESSLIST>();
+            ASSERT(pNext != NULL);
+            if(pNode != NULL){
+                pNode->m_pNext = pNext;
+            }
+            pNode = pNext;
+            if(pHead == NULL){
+                pHead = pNode;
+            }
+            pNode->m_dwProcessID = entry.th32ProcessID;
+            pNode->m_dwParentProcessID = entry.th32ParentProcessID;
+            pNode->m_dwModuleID = entry.th32ModuleID;
+            pNode->m_dwThreadCnt = entry.cntThreads;
+            HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pNode->m_dwProcessID);
+            BOOL bFlag = FALSE;
+            if(hProcess != NULL){
+                memset(szPath, 0, MAX_PATH);
+                DWORD dwTmp = GetModuleFileNameEx(hProcess, NULL, szPath, MAX_PATH);
+                if(dwTmp > 0){
+                    CWBasicString strPath(szPath), strPathTmp;
+                    int nPos = strPath.ReverseFind(_T('\\'));
+                    if(nPos > 0){
+                        strPathTmp = strPath.Mid(0, nPos + 1);
+                        strPath = strPath.Mid(nPos + 1);
+                    }
+                    __tcscpyn(pNode->m_szExeFile, MAX_PATH, (LPCTSTR)strPath, strPath.GetLength());
+                    __tcscpyn(pNode->m_szExePath, MAX_PATH, (LPCTSTR)strPathTmp, strPathTmp.GetLength());
+                    bFlag = TRUE;
+                }
+                CloseHandle(hProcess);
+            }
+            if(!bFlag){
+                __tcscpyn(pNode->m_szExeFile, MAX_PATH, entry.szExeFile, __tcslen(entry.szExeFile));
+            }
+            bWork = Process32Next(hSnapshot, &entry);
+        }
+        CloseHandle(hSnapshot);
+    }
+    return pHead;
 }
 
 //************************************************************************
-// Method:    BasicReleaseProcessEntry => é‡Šæ”¾è¿›ç¨‹é“¾æ¥é˜Ÿåˆ—
+// Method:    BasicReleaseProcessEntry => ÊÍ·Å½ø³ÌÁ´½Ó¶ÓÁĞ
 // Returns:   void => 
-// Parameter: PROCESSLIST * pList => é“¾è¡¨å¤´
+// Parameter: PROCESSLIST * pList => Á´±íÍ·
 //************************************************************************
-void BasicReleaseProcessEntry(PROCESSLIST* pList)
-{
-	while (pList != NULL)
-	{
-		PROCESSLIST* pTmp = pList;
-		pList = pList->m_pNext;
-		BASIC_DeleteObject<PROCESSLIST>(pTmp);
-	}
+void BasicReleaseProcessEntry(PROCESSLIST* pList){
+    while(pList != NULL){
+        PROCESSLIST* pTmp = pList;
+        pList = pList->m_pNext;
+        BASIC_DeleteObject<PROCESSLIST>(pTmp);
+    }
 }
 
 
 BOOL GetCpuByCmd(char *lpszCpu, int len/*=128*/){
-    const long MAX_COMMAND_SIZE = 10000; // å‘½ä»¤è¡Œè¾“å‡ºç¼“å†²å¤§å°     
-    WCHAR szFetCmd[] = L"wmic cpu get processorid"; // è·å–CPUåºåˆ—å·å‘½ä»¤è¡Œ    
-    const string strEnSearch = "ProcessorId"; // CPUåºåˆ—å·çš„å‰å¯¼ä¿¡æ¯  
+    const long MAX_COMMAND_SIZE = 10000; // ÃüÁîĞĞÊä³ö»º³å´óĞ¡     
+    WCHAR szFetCmd[] = L"wmic cpu get processorid"; // »ñÈ¡CPUĞòÁĞºÅÃüÁîĞĞ    
+    const string strEnSearch = "ProcessorId"; // CPUĞòÁĞºÅµÄÇ°µ¼ĞÅÏ¢  
 
     BOOL   bret = FALSE;
-    HANDLE hReadPipe = NULL; //è¯»å–ç®¡é“  
-    HANDLE hWritePipe = NULL; //å†™å…¥ç®¡é“      
-    PROCESS_INFORMATION pi;   //è¿›ç¨‹ä¿¡æ¯      
-    STARTUPINFO         si;   //æ§åˆ¶å‘½ä»¤è¡Œçª—å£ä¿¡æ¯  
-    SECURITY_ATTRIBUTES sa;   //å®‰å…¨å±æ€§  
+    HANDLE hReadPipe = NULL; //¶ÁÈ¡¹ÜµÀ  
+    HANDLE hWritePipe = NULL; //Ğ´Èë¹ÜµÀ      
+    PROCESS_INFORMATION pi;   //½ø³ÌĞÅÏ¢      
+    STARTUPINFO         si;   //¿ØÖÆÃüÁîĞĞ´°¿ÚĞÅÏ¢  
+    SECURITY_ATTRIBUTES sa;   //°²È«ÊôĞÔ  
 
-    char            szBuffer[MAX_COMMAND_SIZE + 1] = { 0 }; // æ”¾ç½®å‘½ä»¤è¡Œç»“æœçš„è¾“å‡ºç¼“å†²åŒº  
+    char            szBuffer[MAX_COMMAND_SIZE + 1] = { 0 }; // ·ÅÖÃÃüÁîĞĞ½á¹ûµÄÊä³ö»º³åÇø  
     string          strBuffer;
     unsigned long   count = 0;
     long            ipos = 0;
@@ -904,38 +810,38 @@ BOOL GetCpuByCmd(char *lpszCpu, int len/*=128*/){
     sa.lpSecurityDescriptor = NULL;
     sa.bInheritHandle = TRUE;
 
-    //1.0 åˆ›å»ºç®¡é“  
+    //1.0 ´´½¨¹ÜµÀ  
     bret = CreatePipe(&hReadPipe, &hWritePipe, &sa, 0);
     if(!bret){
         goto END;
     }
 
-    //2.0 è®¾ç½®å‘½ä»¤è¡Œçª—å£çš„ä¿¡æ¯ä¸ºæŒ‡å®šçš„è¯»å†™ç®¡é“  
+    //2.0 ÉèÖÃÃüÁîĞĞ´°¿ÚµÄĞÅÏ¢ÎªÖ¸¶¨µÄ¶ÁĞ´¹ÜµÀ  
     GetStartupInfo(&si);
     si.hStdError = hWritePipe;
     si.hStdOutput = hWritePipe;
-    si.wShowWindow = SW_HIDE; //éšè—å‘½ä»¤è¡Œçª—å£  
+    si.wShowWindow = SW_HIDE; //Òş²ØÃüÁîĞĞ´°¿Ú  
     si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
 
-    //3.0 åˆ›å»ºè·å–å‘½ä»¤è¡Œçš„è¿›ç¨‹  
+    //3.0 ´´½¨»ñÈ¡ÃüÁîĞĞµÄ½ø³Ì  
     bret = CreateProcess(NULL, szFetCmd, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi);
     if(!bret){
         goto END;
     }
 
-    //4.0 è¯»å–è¿”å›çš„æ•°æ®  
+    //4.0 ¶ÁÈ¡·µ»ØµÄÊı¾İ  
     WaitForSingleObject(pi.hProcess, 500/*INFINITE*/);
     bret = ReadFile(hReadPipe, szBuffer, MAX_COMMAND_SIZE, &count, 0);
     if(!bret){
         goto END;
     }
 
-    //5.0 æŸ¥æ‰¾CPUåºåˆ—å·  
+    //5.0 ²éÕÒCPUĞòÁĞºÅ  
     bret = FALSE;
     strBuffer = szBuffer;
     ipos = strBuffer.find(strEnSearch);
 
-    if(ipos < 0) // æ²¡æœ‰æ‰¾åˆ°  
+    if(ipos < 0) // Ã»ÓĞÕÒµ½  
     {
         goto END;
     }
@@ -946,7 +852,7 @@ BOOL GetCpuByCmd(char *lpszCpu, int len/*=128*/){
     memset(szBuffer, 0x00, sizeof(szBuffer));
     strcpy_s(szBuffer, strBuffer.c_str());
 
-    //å»æ‰ä¸­é—´çš„ç©ºæ ¼ \r \n  
+    //È¥µôÖĞ¼äµÄ¿Õ¸ñ \r \n  
     int j = 0;
     for(int i = 0; i < strlen(szBuffer); i++){
         if(szBuffer[i] != ' ' && szBuffer[i] != '\n' && szBuffer[i] != '\r'){
@@ -958,7 +864,7 @@ BOOL GetCpuByCmd(char *lpszCpu, int len/*=128*/){
     bret = TRUE;
 
 END:
-    //å…³é—­æ‰€æœ‰çš„å¥æŸ„  
+    //¹Ø±ÕËùÓĞµÄ¾ä±ú  
     CloseHandle(hWritePipe);
     CloseHandle(hReadPipe);
     CloseHandle(pi.hProcess);
@@ -968,18 +874,18 @@ END:
 }
 
 BOOL GetBaseBoardByCmd(char *lpszBaseBoard, int len/*=128*/){
-    const long MAX_COMMAND_SIZE = 10000; // å‘½ä»¤è¡Œè¾“å‡ºç¼“å†²å¤§å°     
-    WCHAR szFetCmd[] = L"wmic BaseBoard get SerialNumber"; // è·å–ä¸»æ¿åºåˆ—å·å‘½ä»¤è¡Œ   
-    const string strEnSearch = "SerialNumber"; // ä¸»æ¿åºåˆ—å·çš„å‰å¯¼ä¿¡æ¯  
+    const long MAX_COMMAND_SIZE = 10000; // ÃüÁîĞĞÊä³ö»º³å´óĞ¡     
+    WCHAR szFetCmd[] = L"wmic BaseBoard get SerialNumber"; // »ñÈ¡Ö÷°åĞòÁĞºÅÃüÁîĞĞ   
+    const string strEnSearch = "SerialNumber"; // Ö÷°åĞòÁĞºÅµÄÇ°µ¼ĞÅÏ¢  
 
     BOOL   bret = FALSE;
-    HANDLE hReadPipe = NULL; //è¯»å–ç®¡é“  
-    HANDLE hWritePipe = NULL; //å†™å…¥ç®¡é“      
-    PROCESS_INFORMATION pi;   //è¿›ç¨‹ä¿¡æ¯      
-    STARTUPINFO         si;   //æ§åˆ¶å‘½ä»¤è¡Œçª—å£ä¿¡æ¯  
-    SECURITY_ATTRIBUTES sa;   //å®‰å…¨å±æ€§  
+    HANDLE hReadPipe = NULL; //¶ÁÈ¡¹ÜµÀ  
+    HANDLE hWritePipe = NULL; //Ğ´Èë¹ÜµÀ      
+    PROCESS_INFORMATION pi;   //½ø³ÌĞÅÏ¢      
+    STARTUPINFO         si;   //¿ØÖÆÃüÁîĞĞ´°¿ÚĞÅÏ¢  
+    SECURITY_ATTRIBUTES sa;   //°²È«ÊôĞÔ  
 
-    char            szBuffer[MAX_COMMAND_SIZE + 1] = { 0 }; // æ”¾ç½®å‘½ä»¤è¡Œç»“æœçš„è¾“å‡ºç¼“å†²åŒº  
+    char            szBuffer[MAX_COMMAND_SIZE + 1] = { 0 }; // ·ÅÖÃÃüÁîĞĞ½á¹ûµÄÊä³ö»º³åÇø  
     string          strBuffer;
     unsigned long   count = 0;
     long            ipos = 0;
@@ -995,38 +901,38 @@ BOOL GetBaseBoardByCmd(char *lpszBaseBoard, int len/*=128*/){
     sa.lpSecurityDescriptor = NULL;
     sa.bInheritHandle = TRUE;
 
-    //1.0 åˆ›å»ºç®¡é“  
+    //1.0 ´´½¨¹ÜµÀ  
     bret = CreatePipe(&hReadPipe, &hWritePipe, &sa, 0);
     if(!bret){
         goto END;
     }
 
-    //2.0 è®¾ç½®å‘½ä»¤è¡Œçª—å£çš„ä¿¡æ¯ä¸ºæŒ‡å®šçš„è¯»å†™ç®¡é“  
+    //2.0 ÉèÖÃÃüÁîĞĞ´°¿ÚµÄĞÅÏ¢ÎªÖ¸¶¨µÄ¶ÁĞ´¹ÜµÀ  
     GetStartupInfo(&si);
     si.hStdError = hWritePipe;
     si.hStdOutput = hWritePipe;
-    si.wShowWindow = SW_HIDE; //éšè—å‘½ä»¤è¡Œçª—å£  
+    si.wShowWindow = SW_HIDE; //Òş²ØÃüÁîĞĞ´°¿Ú  
     si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
 
-    //3.0 åˆ›å»ºè·å–å‘½ä»¤è¡Œçš„è¿›ç¨‹  
+    //3.0 ´´½¨»ñÈ¡ÃüÁîĞĞµÄ½ø³Ì  
     bret = CreateProcess(NULL, szFetCmd, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi);
     if(!bret){
         goto END;
     }
 
-    //4.0 è¯»å–è¿”å›çš„æ•°æ®  
+    //4.0 ¶ÁÈ¡·µ»ØµÄÊı¾İ  
     WaitForSingleObject(pi.hProcess, 500/*INFINITE*/);
     bret = ReadFile(hReadPipe, szBuffer, MAX_COMMAND_SIZE, &count, 0);
     if(!bret){
         goto END;
     }
 
-    //5.0 æŸ¥æ‰¾ä¸»æ¿åºåˆ—å·  
+    //5.0 ²éÕÒÖ÷°åĞòÁĞºÅ  
     bret = FALSE;
     strBuffer = szBuffer;
     ipos = strBuffer.find(strEnSearch);
 
-    if(ipos < 0) // æ²¡æœ‰æ‰¾åˆ°  
+    if(ipos < 0) // Ã»ÓĞÕÒµ½  
     {
         goto END;
     }
@@ -1037,7 +943,7 @@ BOOL GetBaseBoardByCmd(char *lpszBaseBoard, int len/*=128*/){
     memset(szBuffer, 0x00, sizeof(szBuffer));
     strcpy_s(szBuffer, strBuffer.c_str());
 
-    //å»æ‰ä¸­é—´çš„ç©ºæ ¼ \r \n  
+    //È¥µôÖĞ¼äµÄ¿Õ¸ñ \r \n  
     int j = 0;
     for(int i = 0; i < strlen(szBuffer); i++){
         if(szBuffer[i] != ' ' && szBuffer[i] != '\n' && szBuffer[i] != '\r'){
@@ -1049,7 +955,7 @@ BOOL GetBaseBoardByCmd(char *lpszBaseBoard, int len/*=128*/){
     bret = TRUE;
 
 END:
-    //å…³é—­æ‰€æœ‰çš„å¥æŸ„  
+    //¹Ø±ÕËùÓĞµÄ¾ä±ú  
     CloseHandle(hWritePipe);
     CloseHandle(hReadPipe);
     CloseHandle(pi.hProcess);
@@ -1058,7 +964,7 @@ END:
     return(bret);
 }
 
-//! è·å–å–æœºå™¨çš„ç‰¹å¾ç 
+//! »ñÈ¡È¡»úÆ÷µÄÌØÕ÷Âë
 /*!
 */
 bool BasicGetMachineSerial(CBasicString& str){

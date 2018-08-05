@@ -251,6 +251,7 @@ set(basiclib_SOURCES
     ${BasicLibSrcPath}/debug/debug_linux.cpp
     ${BasicLibSrcPath}/debug/debug_mac.cpp
     ${BasicLibSrcPath}/debug/debug_win.cpp
+    ${BasicLibSrcPath}/debug/cccontainuinttemplate.h
     ${BasicLibSrcPath}/dll/loaddll.cpp
     ${BasicLibSrcPath}/exception/call_stack_gcc.cpp
     ${BasicLibSrcPath}/exception/exception.cpp

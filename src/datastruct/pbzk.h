@@ -1,4 +1,4 @@
-ï»¿#ifndef BASIC_PBZK_H
+#ifndef BASIC_PBZK_H
 #define BASIC_PBZK_H
 
 #define PBZK_END_STRING 0xFFFF
@@ -6,26 +6,25 @@
 #pragma warning (push)
 #pragma warning (disable: 4251)
 #pragma warning (disable: 4275)
-class _BASIC_DLL_API CPBZK
-{
+class _BASIC_DLL_API CPBZK{
 public:
-	CPBZK();
-	virtual ~CPBZK();
+    CPBZK();
+    virtual ~CPBZK();
 
-	void ReadPBZKFileBuffer(const char* pBuffer, int nLength);
-	void AddPBZKToMap(basiclib::CBasicStringArray& ayItems);
-	//åˆ¤æ–­æ˜¯å¦å­˜åœ¨æ•æ„Ÿè¯
-	bool IsContainPBZK(const char* txt, int nLength, bool bDeep = false, bool bCheckSpecialZF = false);
-	//å‘ç°ç›´æ¥æ›¿æ¢
-	void ReplacePBZK(char* txt, int nLength, char cReplace = '*', bool bDeep = true, bool bCheckSpecialZF = false);
+    void ReadPBZKFileBuffer(const char* pBuffer, int nLength);
+    void AddPBZKToMap(basiclib::CBasicStringArray& ayItems);
+    //ÅĞ¶ÏÊÇ·ñ´æÔÚÃô¸Ğ´Ê
+    bool IsContainPBZK(const char* txt, int nLength, bool bDeep = false, bool bCheckSpecialZF = false);
+    //·¢ÏÖÖ±½ÓÌæ»»
+    void ReplacePBZK(char* txt, int nLength, char cReplace = '*', bool bDeep = true, bool bCheckSpecialZF = false);
 protected:
-	//! åˆ¤æ–­æ˜¯å¦æœ‰éæ³•å­—ç¬¦
-	int CheckPBZKExist(const char* txt, int nLength, int nBeginIndex, bool bDeep = false, bool bCheckSpecialZF = false);
-	
+    //! ÅĞ¶ÏÊÇ·ñÓĞ·Ç·¨×Ö·û
+    int CheckPBZKExist(const char* txt, int nLength, int nBeginIndex, bool bDeep = false, bool bCheckSpecialZF = false);
+
 protected:
-	typedef basiclib::basic_map<uint16_t, void*>											HashMapPBZK;
-	typedef HashMapPBZK::iterator															HashMapPBZKIterator;
-	HashMapPBZK m_mapPBZK;
+    typedef basiclib::basic_map<uint16_t, void*>											HashMapPBZK;
+    typedef HashMapPBZK::iterator															HashMapPBZKIterator;
+    HashMapPBZK m_mapPBZK;
 };
 #pragma warning (pop)
 

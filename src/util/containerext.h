@@ -91,24 +91,20 @@ public:
 	void SetOverLoadCallbackFunc(OverLoadLengthCallback& func){ m_overloadCallback = func; }
 	void SetDefaultStructReleaseFunc(DefaultReleaseFunc& func){ m_defaultReleaseFunc = func; }
 	//插入包
-	virtual void MQPush(StructData* message){
-		m_queue[m_tail] = *message;
-		if (++m_tail >= m_cap)
-		{
+	virtual void Push(StructData& message){
+		m_queue[m_tail] = message;
+		if (++m_tail >= m_cap){
 			m_tail = 0;
 		}
-		if (m_head == m_tail)
-		{
+		if (m_head == m_tail){
 			expand_queue();
 		}
 	}
-	//获取包,0代表成功，1代表没有
-	virtual int MQPop(StructData* message){
-		int ret = 1;
-		if (m_head != m_tail)
-		{
-			*message = m_queue[m_head++];
-			ret = 0;
+	virtual bool Pop(StructData& message){
+		bool ret = false;
+		if (m_head != m_tail){
+			message = m_queue[m_head++];
+			ret = true;
 
 			if (m_head >= m_cap)
 			{
@@ -126,8 +122,7 @@ public:
 				m_overload_threshold *= 2;
 			}
 		}
-		else
-		{
+		else{
 			// reset overload_threshold when queue is empty
 			m_overload_threshold = m_defaultoverload;
 		}
@@ -158,8 +153,7 @@ public:
 	//清空队列，依次回调
 	void Drop_Queue(const std::function<void(StructData *)>& func){
 		StructData msg;
-		while (!MQPop(&msg))
-		{
+		while (!Pop(msg)){
 			func(&msg);
 		}
 	}
@@ -234,13 +228,13 @@ public:
 	virtual ~CMessageQueueLock(){
 
 	}
-	virtual void MQPush(StructData* message){
+	virtual void Push(StructData& message){
 		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
-		CMessageQueue<StructData>::MQPush(message);
+		CMessageQueue<StructData>::Push(message);
 	}
-	virtual int MQPop(StructData* message){
+	virtual bool Pop(StructData& message){
 		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
-		return CMessageQueue<StructData>::MQPop(message);
+		return CMessageQueue<StructData>::Pop(message);
 	}
 	virtual int GetMQLength(){
 		basiclib::CSpinLockFuncNoSameThreadSafe lock(&m_lock, true);
@@ -261,11 +255,11 @@ public:
         func();
     }
     //必须在lock情况下调用
-    void SafeMQPush(StructData* message){
-        CMessageQueue<StructData>::MQPush(message);
+    void SafeMQPush(StructData& message){
+        CMessageQueue<StructData>::Push(message);
     }
-    int SafeMQPop(StructData* message){
-        return CMessageQueue<StructData>::MQPop(message);
+    int SafeMQPop(StructData& message){
+        return CMessageQueue<StructData>::Pop(message);
     }
 protected:
 	basiclib::SpinLock		m_lock;

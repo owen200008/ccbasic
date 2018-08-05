@@ -1,10 +1,10 @@
-ï»¿/***********************************************************************************************
-// æ–‡ä»¶å:     array.h
-// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
+/***********************************************************************************************
+// ÎÄ¼şÃû:     array.h
+// ´´½¨Õß:     ²ÌÕñÇò
 // Email:      zqcai@w.cn
-// åˆ›å»ºæ—¶é—´:   2012/2/17 9:14:11
-// å†…å®¹æè¿°:   ä½¿ç”¨stlçš„vectorå®ç°MFC CArrayçš„æ¥å£
-// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
+// ´´½¨Ê±¼ä:   2012/2/17 9:14:11
+// ÄÚÈİÃèÊö:   Ê¹ÓÃstlµÄvectorÊµÏÖMFC CArrayµÄ½Ó¿Ú
+// °æ±¾ĞÅÏ¢:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_ARRAY_H
 #define BASIC_ARRAY_H
@@ -22,189 +22,170 @@ __NS_BASIC_START
 #pragma warning (disable: 4275)
 
 template<class TYPE, class ARG_TYPE = const TYPE&>
-class CArray : public vector<TYPE, DEFAULT_ALLOCATOR<TYPE> >
-{
+class CArray : public vector<TYPE, DEFAULT_ALLOCATOR<TYPE> >{
 public:
-	typedef typename vector<TYPE, DEFAULT_ALLOCATOR<TYPE> >::const_pointer const_pointer;
-	typedef typename vector<TYPE, DEFAULT_ALLOCATOR<TYPE> >::pointer pointer;
-	typedef CArray<TYPE, ARG_TYPE> _Self;
-// Construction
-	CArray();
+    typedef typename vector<TYPE, DEFAULT_ALLOCATOR<TYPE> >::const_pointer const_pointer;
+    typedef typename vector<TYPE, DEFAULT_ALLOCATOR<TYPE> >::pointer pointer;
+    typedef CArray<TYPE, ARG_TYPE> _Self;
+    // Construction
+    CArray();
 
-// Attributes
-	//! å–å¾—Arrayå¤§å°
-	int GetSize() const;
-	//! å–å¾—Arrayæœ€å¤§çš„å¯ç”¨ä¸‹æ ‡
-	int GetUpperBound() const;
-	//! è®¾ç½®æ•°ç»„å¤§å°
-	void SetSize(int nNewSize);
+    // Attributes
+    //! È¡µÃArray´óĞ¡
+    int GetSize() const;
+    //! È¡µÃArray×î´óµÄ¿ÉÓÃÏÂ±ê
+    int GetUpperBound() const;
+    //! ÉèÖÃÊı×é´óĞ¡
+    void SetSize(int nNewSize);
 
-// Operations
-	// Clean up
-	//! ä¸ºäº†å…¼å®¹MFC CArrayä¿ç•™ï¼Œå®é™…ä»€ä¹ˆéƒ½ä¸åšã€‚
-	void FreeExtra();
-	//! æ¸…ç©ºæ•°ç»„
-	void RemoveAll();
+    // Operations
+    // Clean up
+    //! ÎªÁË¼æÈİMFC CArray±£Áô£¬Êµ¼ÊÊ²Ã´¶¼²»×ö¡£
+    void FreeExtra();
+    //! Çå¿ÕÊı×é
+    void RemoveAll();
 
-	// Accessing elements
-	//!å–å¾—nIndexä½ç½®çš„å¯¹è±¡å€¼
-	TYPE GetAt(int nIndex) const;
-	//!è®¾ç½®nIndexä½ç½®çš„å€¼
-	void SetAt(int nIndex, ARG_TYPE newElement);
-	//! å–å¾—nIndexä½ç½®å¯¹è±¡çš„å€¼
-	TYPE& ElementAt(int nIndex);
+    // Accessing elements
+    //!È¡µÃnIndexÎ»ÖÃµÄ¶ÔÏóÖµ
+    TYPE GetAt(int nIndex) const;
+    //!ÉèÖÃnIndexÎ»ÖÃµÄÖµ
+    void SetAt(int nIndex, ARG_TYPE newElement);
+    //! È¡µÃnIndexÎ»ÖÃ¶ÔÏóµÄÖµ
+    TYPE& ElementAt(int nIndex);
 
-	// Direct Access to the element data(may return NULL)
-	//! è½¬åŒ–ä¸ºæŒ‡é’ˆåˆ—è¡¨
-	const TYPE* GetData() const;
-	//! è½¬åŒ–ä¸ºæŒ‡é’ˆåˆ—è¡¨
-	TYPE* GetData();
+    // Direct Access to the element data(may return NULL)
+    //! ×ª»¯ÎªÖ¸ÕëÁĞ±í
+    const TYPE* GetData() const;
+    //! ×ª»¯ÎªÖ¸ÕëÁĞ±í
+    TYPE* GetData();
 
-	// Potentially growing the array
-	//! è®¾ç½®nIndexä½ç½®çš„å€¼ï¼Œå¦‚æœè¯¥åœ°å€è¶…å‡ºæ•°ç»„å¤§å°ï¼Œåˆ™æ‰©å±•è¯¥æ•°ç»„
-	void SetAtGrow(int nIndex, ARG_TYPE newElement);
-	//! å°¾éƒ¨è¿½åŠ ä¸€ä¸ªå¯¹è±¡
-	int Add(ARG_TYPE newElement);
-	//! å°¾éƒ¨è¿½åŠ srcä¸­çš„å¯¹è±¡
-	int Append(const CArray& src);
-	//! ä»srcèµ‹å€¼
-	void Copy(const CArray& src);
+    // Potentially growing the array
+    //! ÉèÖÃnIndexÎ»ÖÃµÄÖµ£¬Èç¹û¸ÃµØÖ·³¬³öÊı×é´óĞ¡£¬ÔòÀ©Õ¹¸ÃÊı×é
+    void SetAtGrow(int nIndex, ARG_TYPE newElement);
+    //! Î²²¿×·¼ÓÒ»¸ö¶ÔÏó
+    int Add(ARG_TYPE newElement);
+    //! Î²²¿×·¼ÓsrcÖĞµÄ¶ÔÏó
+    int Append(const CArray& src);
+    //! ´Ósrc¸³Öµ
+    void Copy(const CArray& src);
 
-	// Operations that move elements arround
-	//! åœ¨nIndexä½ç½®æ’å…¥å¯¹è±¡
-	void InsertAt(int nIndex, ARG_TYPE newElement, int nCount = 1);
-	//! ä»æ•°ç»„ä¸­ç§»é™¤nIndexä½ç½®çš„å¯¹è±¡
-	void RemoveAt(int nIndex, int nCount = 1);
-	//! åœ¨nIndexä½ç½®æ’å…¥å¯¹è±¡pNewArrayä¸­çš„å€¼ã€‚
-	void InsertAt(int nStartIndex, CArray* pNewArray);
+    // Operations that move elements arround
+    //! ÔÚnIndexÎ»ÖÃ²åÈë¶ÔÏó
+    void InsertAt(int nIndex, ARG_TYPE newElement, int nCount = 1);
+    //! ´ÓÊı×éÖĞÒÆ³ınIndexÎ»ÖÃµÄ¶ÔÏó
+    void RemoveAt(int nIndex, int nCount = 1);
+    //! ÔÚnIndexÎ»ÖÃ²åÈë¶ÔÏópNewArrayÖĞµÄÖµ¡£
+    void InsertAt(int nStartIndex, CArray* pNewArray);
 public:
-	~CArray();	
+    ~CArray();
 };
 #pragma warning (pop)
 /////////////////////////////////////////////////////////////////////
 // CArray<TYPE>	inline functions
 template<class TYPE, class ARG_TYPE>
-inline int CArray<TYPE, ARG_TYPE>::GetSize() const
-{
-	return _Self::size();
+inline int CArray<TYPE, ARG_TYPE>::GetSize() const{
+    return _Self::size();
 }
 
 template<class TYPE, class ARG_TYPE>
-inline int CArray<TYPE, ARG_TYPE>::GetUpperBound() const
-{
-	return _Self::size() - 1;
+inline int CArray<TYPE, ARG_TYPE>::GetUpperBound() const{
+    return _Self::size() - 1;
 }
 
 template<class TYPE, class ARG_TYPE>
-inline void CArray<TYPE, ARG_TYPE>::RemoveAll()
-{
-	_Self::clear();
+inline void CArray<TYPE, ARG_TYPE>::RemoveAll(){
+    _Self::clear();
 }
 
 template<class TYPE, class ARG_TYPE>
-inline TYPE CArray<TYPE, ARG_TYPE>::GetAt(int nIndex) const
-{
-	ASSERT(nIndex >=0 && nIndex < (int)_Self::size());
-	return _Self::at(nIndex);
+inline TYPE CArray<TYPE, ARG_TYPE>::GetAt(int nIndex) const{
+    ASSERT(nIndex >= 0 && nIndex < (int)_Self::size());
+    return _Self::at(nIndex);
 }
 
 template<class TYPE, class ARG_TYPE>
-inline void CArray<TYPE, ARG_TYPE>::SetAt(int nIndex, ARG_TYPE newElement)
-{
-	ASSERT(nIndex >= 0 && nIndex < (int)_Self::size());
-	_Self::at(nIndex) = newElement;
+inline void CArray<TYPE, ARG_TYPE>::SetAt(int nIndex, ARG_TYPE newElement){
+    ASSERT(nIndex >= 0 && nIndex < (int)_Self::size());
+    _Self::at(nIndex) = newElement;
 }
 
 template<class TYPE, class ARG_TYPE>
-inline TYPE& CArray<TYPE, ARG_TYPE>::ElementAt(int nIndex)
-{
-	ASSERT(nIndex >= 0 && nIndex < (int)_Self::size());
-	return _Self::at(nIndex);
+inline TYPE& CArray<TYPE, ARG_TYPE>::ElementAt(int nIndex){
+    ASSERT(nIndex >= 0 && nIndex < (int)_Self::size());
+    return _Self::at(nIndex);
 }
 
 template<class TYPE, class ARG_TYPE>
-inline const TYPE* CArray<TYPE, ARG_TYPE>::GetData() const
-{
-	const_pointer ptr = &_Self::at(0);
-	return ptr;
+inline const TYPE* CArray<TYPE, ARG_TYPE>::GetData() const{
+    const_pointer ptr = &_Self::at(0);
+    return ptr;
 }
 
 template<class TYPE, class ARG_TYPE>
-inline TYPE* CArray<TYPE, ARG_TYPE>::GetData()
-{
-	pointer ptr = &_Self::at(0);
-	return ptr;
+inline TYPE* CArray<TYPE, ARG_TYPE>::GetData(){
+    pointer ptr = &_Self::at(0);
+    return ptr;
 }
 
 template<class TYPE, class ARG_TYPE>
-inline int CArray<TYPE, ARG_TYPE>::Add(ARG_TYPE newElement)
-{
-	int nIndex = _Self::size();
-	_Self::push_back(newElement);
-	return nIndex;
+inline int CArray<TYPE, ARG_TYPE>::Add(ARG_TYPE newElement){
+    int nIndex = _Self::size();
+    _Self::push_back(newElement);
+    return nIndex;
 }
 
 ////////////////////////////////////////////////////////
 // CArray<TYPE> out-of-line functions
 template<class TYPE, class ARG_TYPE>
-CArray<TYPE, ARG_TYPE>::CArray()
-{}
-
-template<class TYPE, class ARG_TYPE>
-CArray<TYPE, ARG_TYPE>::~CArray()
-{
+CArray<TYPE, ARG_TYPE>::CArray(){
 }
 
 template<class TYPE, class ARG_TYPE>
-void CArray<TYPE, ARG_TYPE>::SetSize(int nNewSize)
-{
-	_Self::resize(nNewSize);
+CArray<TYPE, ARG_TYPE>::~CArray(){
 }
 
 template<class TYPE, class ARG_TYPE>
-int CArray<TYPE, ARG_TYPE>::Append(const CArray& src)
-{
-	int nIndex = GetSize();
-	_Self::insert(_Self::end(), src.begin(), src.end());
-	return nIndex;
+void CArray<TYPE, ARG_TYPE>::SetSize(int nNewSize){
+    _Self::resize(nNewSize);
 }
 
 template<class TYPE, class ARG_TYPE>
-void CArray<TYPE, ARG_TYPE>::Copy(const CArray& src)
-{
-	_Self::assign(src.begin(), src.end());
+int CArray<TYPE, ARG_TYPE>::Append(const CArray& src){
+    int nIndex = GetSize();
+    _Self::insert(_Self::end(), src.begin(), src.end());
+    return nIndex;
 }
 
 template<class TYPE, class ARG_TYPE>
-void CArray<TYPE, ARG_TYPE>::FreeExtra()
-{
-	// not support
+void CArray<TYPE, ARG_TYPE>::Copy(const CArray& src){
+    _Self::assign(src.begin(), src.end());
 }
 
 template<class TYPE, class ARG_TYPE>
-void CArray<TYPE, ARG_TYPE>::SetAtGrow(int nIndex, ARG_TYPE newElement)
-{
-	if (nIndex >= GetSize())
-		_Self::resize(nIndex + 1);
-	_Self::at(nIndex) = newElement;
+void CArray<TYPE, ARG_TYPE>::FreeExtra(){
+    // not support
 }
 
 template<class TYPE, class ARG_TYPE>
-void CArray<TYPE, ARG_TYPE>::InsertAt(int nIndex, ARG_TYPE newElement, int nCount /*=1*/)
-{
-	_Self::insert(_Self::begin() + nIndex, nCount, newElement);
+void CArray<TYPE, ARG_TYPE>::SetAtGrow(int nIndex, ARG_TYPE newElement){
+    if(nIndex >= GetSize())
+        _Self::resize(nIndex + 1);
+    _Self::at(nIndex) = newElement;
 }
 
 template<class TYPE, class ARG_TYPE>
-void CArray<TYPE, ARG_TYPE>::RemoveAt(int nIndex, int nCount /*= 1*/)
-{
-	_Self::erase(_Self::begin() + nIndex, _Self::begin() + nIndex + nCount);
+void CArray<TYPE, ARG_TYPE>::InsertAt(int nIndex, ARG_TYPE newElement, int nCount /*=1*/){
+    _Self::insert(_Self::begin() + nIndex, nCount, newElement);
 }
 
 template<class TYPE, class ARG_TYPE>
-void CArray<TYPE, ARG_TYPE>::InsertAt(int nStartIndex, CArray* pNewArray)
-{
-	_Self::insert(_Self::begin() + nStartIndex, pNewArray->begin(), pNewArray->end());
+void CArray<TYPE, ARG_TYPE>::RemoveAt(int nIndex, int nCount /*= 1*/){
+    _Self::erase(_Self::begin() + nIndex, _Self::begin() + nIndex + nCount);
+}
+
+template<class TYPE, class ARG_TYPE>
+void CArray<TYPE, ARG_TYPE>::InsertAt(int nStartIndex, CArray* pNewArray){
+    _Self::insert(_Self::begin() + nStartIndex, pNewArray->begin(), pNewArray->end());
 }
 
 __NS_BASIC_END

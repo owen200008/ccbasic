@@ -2,12 +2,11 @@
 #define INC_COROUTINEPLUS_H
 
 typedef void(*coctx_pfn_t)(const char* s);
-struct coctx_t
-{
+struct coctx_t{
 #if defined(__x86_64__)
     void *regs[13];
 #else
-	void *regs[8];
+    void *regs[8];
 #endif
 
     char *ss_sp;
@@ -16,86 +15,84 @@ struct coctx_t
     }
 };
 
-enum CoroutineState
-{
-    CoroutineState_Death    = 0,
-	CoroutineState_Ready 	= 1,
-	CoroutineState_Running	= 2,
-	CoroutineState_Suspend	= 3,
+enum CoroutineState{
+    CoroutineState_Death = 0,
+    CoroutineState_Ready = 1,
+    CoroutineState_Running = 2,
+    CoroutineState_Suspend = 3,
 };
 
 #define STACK_SIZE 			(256*1024)
 #define DEFAULT_COROUTINE 	16
 class CCorutinePlusBase;
 class CCorutinePlusPoolBase;
-typedef void (*coroutine_func)(CCorutinePlusBase* pCorutinePlus);
+typedef void(*coroutine_func)(CCorutinePlusBase* pCorutinePlus);
 
 #pragma warning (push)
 #pragma warning (disable: 4251)
 #pragma warning (disable: 4275)
 //! 修改过一个版本使用tuple实现参数传递，不过必须C++14，另外效率上和当前版本效率差距比较大，因此参数采用赋值的形式
-class _BASIC_DLL_API CCorutinePlusBase : public basiclib::CBasicObject
-{
+class _BASIC_DLL_API CCorutinePlusBase : public basiclib::CBasicObject{
 public:
-	CCorutinePlusBase();
-	virtual ~CCorutinePlusBase();
+    CCorutinePlusBase();
+    virtual ~CCorutinePlusBase();
 
-	//! 初始化 coroutine_func
-	void Create(coroutine_func pFunc);
+    //! 初始化 coroutine_func
+    void Create(coroutine_func pFunc);
 
-	//! 唤醒
-	template<class...T>
-	CoroutineState Resume(CCorutinePlusPoolBase* pPool, T...args){
-		void* pResumeParam[sizeof...(args)] = { args... };
-		m_pResumeParam = &pResumeParam;
-		return Resume(pPool);
-	}
+    //! 唤醒
+    template<class...T>
+    CoroutineState Resume(CCorutinePlusPoolBase* pPool, T...args){
+        void* pResumeParam[sizeof...(args)] = { args... };
+        m_pResumeParam = &pResumeParam;
+        return Resume(pPool);
+    }
 
-	//! 睡觉
-	template<class...T>
-	void YieldCorutine(T...args){
-		void* pResumeParam[sizeof...(args)] = { args... };
-		m_pResumeParam = &pResumeParam;
-		YieldCorutine();
-	}
+    //! 睡觉
+    template<class...T>
+    void YieldCorutine(T...args){
+        void* pResumeParam[sizeof...(args)] = { args... };
+        m_pResumeParam = &pResumeParam;
+        YieldCorutine();
+    }
 
-	template<class T>
-	T GetParam(int nParam){
-		void* pPTR = ((void**)m_pResumeParam)[nParam];
-		return *((T*)pPTR);
-	}
-	template<class T>
-	T* GetParamPoint(int nParam){
-		void* pPTR = ((void**)m_pResumeParam)[nParam];
-		return (T*)pPTR;
-	}
-	///////////////////////////////////////////////////////////////////////////////////
-	//! 唤醒
-	CoroutineState Resume(CCorutinePlusPoolBase* pPool);
+    template<class T>
+    T GetParam(int nParam){
+        void* pPTR = ((void**)m_pResumeParam)[nParam];
+        return *((T*)pPTR);
+    }
+    template<class T>
+    T* GetParamPoint(int nParam){
+        void* pPTR = ((void**)m_pResumeParam)[nParam];
+        return (T*)pPTR;
+    }
+    ///////////////////////////////////////////////////////////////////////////////////
+    //! 唤醒
+    CoroutineState Resume(CCorutinePlusPoolBase* pPool);
 
-	//! 睡觉
-	void YieldCorutine();
-	///////////////////////////////////////////////////////////////////////////////////
-	
-	CCorutinePlusPoolBase* GetRunPool(){return m_pRunPool;}
-	CoroutineState GetCoroutineState(){ return m_state; }
-	//no call self
-	virtual void StartFuncLibco();
+    //! 睡觉
+    void YieldCorutine();
+    ///////////////////////////////////////////////////////////////////////////////////
+
+    CCorutinePlusPoolBase* GetRunPool(){ return m_pRunPool; }
+    CoroutineState GetCoroutineState(){ return m_state; }
+    //no call self
+    virtual void StartFuncLibco();
 
     //! 判断是否是死循环或者没有唤醒
     bool IsCoroutineError(time_t tmNow);
 protected:
     void InitStackAndPool(CCorutinePlusPoolBase* pPool, char* pStack);
 protected:
-	CoroutineState							m_state;
-	coroutine_func 							m_func;
-	coctx_t									m_ctx;
+    CoroutineState							m_state;
+    coroutine_func 							m_func;
+    coctx_t									m_ctx;
     time_t                                  m_tmResumeTime;
 
-	//resume param
-	CCorutinePlusPoolBase*					m_pRunPool;
-	void*									m_pResumeParam;
-	CCorutinePlusPoolBase*                  m_pCreatePool;
+    //resume param
+    CCorutinePlusPoolBase*					m_pRunPool;
+    void*									m_pResumeParam;
+    CCorutinePlusPoolBase*                  m_pCreatePool;
 
     friend class CCorutinePlusPoolBase;
     friend class CCorutinePlusPoolMgr;
@@ -103,8 +100,7 @@ protected:
 
 
 //动态平衡
-class CCorutinePlusPoolBalance : public basiclib::CBasicObject
-{
+class CCorutinePlusPoolBalance : public basiclib::CBasicObject{
 protected:
     CCorutinePlusPoolBalance();
     virtual ~CCorutinePlusPoolBalance();
@@ -121,18 +117,17 @@ protected:
     int GetExtraCorutineCount();
     int GetExtraShareStackCount();
 
-	//! 获取创建的堆栈
-	char* GetNewCreateStack(int nTimes, int& nCreateSize);
+    //! 获取创建的堆栈
+    char* GetNewCreateStack(int nTimes, int& nCreateSize);
 protected:
     basiclib::CMessageQueueLock<char*>              m_queueExtraStack;
     basiclib::CMessageQueueLock<CCorutinePlusBase*>     m_queueExtraCorutine;
-	basiclib::CMessageQueueLock<char*>              m_queueCreateStack;
+    basiclib::CMessageQueueLock<char*>              m_queueCreateStack;
     friend class CCorutinePlusPoolBase;
 };
 
 //协程超时管理
-class CCorutinePlusPoolMgr : public basiclib::CMessageQueueLock<CCorutinePlusBase*>
-{
+class CCorutinePlusPoolMgr : public basiclib::CMessageQueueLock<CCorutinePlusBase*>{
 protected:
     CCorutinePlusPoolMgr();
     virtual ~CCorutinePlusPoolMgr();
@@ -147,15 +142,14 @@ protected:
 
 //thread not safe
 #define CorutinePlus_Max_Stack	32
-class _BASIC_DLL_API CCorutinePlusPoolBase : public basiclib::CBasicObject
-{
+class _BASIC_DLL_API CCorutinePlusPoolBase : public basiclib::CBasicObject{
 public:
-	CCorutinePlusPoolBase();
-	virtual ~CCorutinePlusPoolBase();
+    CCorutinePlusPoolBase();
+    virtual ~CCorutinePlusPoolBase();
 
     bool InitCorutine(int nDefaultSize = DEFAULT_COROUTINE, int nLimitCorutineCount = 1024 * 2, uint16_t nShareStackSize = 10, uint16_t nMaxCreateShareStackSize = 1024);
-	
-	CCorutinePlusBase* GetCorutine(bool bGlobal = true);
+
+    CCorutinePlusBase* GetCorutine(bool bGlobal = true);
 
     uint32_t GetVTCorutineSize(){ return m_nCorutineSize; }
     uint32_t GetCreateCorutineTimes(){ return m_nCreateTimes; }
@@ -173,10 +167,10 @@ protected:
     char* GetShareStack(bool bGlobal = true);
     void ReleaseShareStack(char* pStack);
 protected:
-	CCorutinePlusBase*  CreateCorutine();
+    CCorutinePlusBase * CreateCorutine();
     char*				CreateShareStack();
 
-	virtual CCorutinePlusBase* ConstructCorutine(){ return new CCorutinePlusBase(); }
+    virtual CCorutinePlusBase* ConstructCorutine(){ return new CCorutinePlusBase(); }
 private:
     bool                                m_bInit;
     typedef basiclib::basic_vector<char*>	VTSTACKS;
@@ -187,16 +181,16 @@ private:
     uint32_t                            m_nCreateTimesShareStack;
     uint16_t                            m_usMaxCreateShareStackSize;
 
-	typedef basiclib::basic_vector<CCorutinePlusBase*>	VTCorutinePlus;
-	VTCorutinePlus						m_vtCorutinePlus;
-	uint32_t						    m_nCreateTimes;
+    typedef basiclib::basic_vector<CCorutinePlusBase*>	VTCorutinePlus;
+    VTCorutinePlus						m_vtCorutinePlus;
+    uint32_t						    m_nCreateTimes;
     uint32_t                            m_nCorutineSize;
     uint32_t                            m_nRealVTCorutineSize;
     uint32_t                            m_nLimitSize;           //如果超过这个数字，协程会放到公共里面去
 
-	CCorutinePlusBase*					m_pStackRunCorutine[CorutinePlus_Max_Stack];
-	unsigned short						m_usRunCorutineStack;
-	CCorutinePlusBase					m_selfPlus;
+    CCorutinePlusBase*					m_pStackRunCorutine[CorutinePlus_Max_Stack];
+    unsigned short						m_usRunCorutineStack;
+    CCorutinePlusBase					m_selfPlus;
 
     static CCorutinePlusPoolBalance     m_balance;
     static CCorutinePlusPoolMgr         m_poolMgr;
@@ -205,21 +199,20 @@ private:
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-class _BASIC_DLL_API CCorutinePlusThreadDataBase : public basiclib::CBasicObject
-{
+class _BASIC_DLL_API CCorutinePlusThreadDataBase : public basiclib::CBasicObject{
 public:
     //初始化在callback里面做,返回param，必须是new出来的
-	CCorutinePlusThreadDataBase();
+    CCorutinePlusThreadDataBase();
     virtual ~CCorutinePlusThreadDataBase();
 
-	void Init();
+    void Init();
 
     DWORD GetThreadID(){ return m_dwThreadID; }
-	CCorutinePlusPoolBase* GetCorutinePlusPool(){ return m_pPool; }
+    CCorutinePlusPoolBase* GetCorutinePlusPool(){ return m_pPool; }
 protected:
-	virtual CCorutinePlusPoolBase* CreatePool(){ return new CCorutinePlusPoolBase(); }
+    virtual CCorutinePlusPoolBase* CreatePool(){ return new CCorutinePlusPoolBase(); }
 protected:
-    CCorutinePlusPoolBase*									m_pPool;
+    CCorutinePlusPoolBase * m_pPool;
     DWORD												    m_dwThreadID;
 };
 

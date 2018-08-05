@@ -1,10 +1,10 @@
-ï»¿/***********************************************************************************************
-// æ–‡ä»¶å:     net.h
-// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
+/***********************************************************************************************
+// ÎÄ¼şÃû:     net.h
+// ´´½¨Õß:     ²ÌÕñÇò
 // Email:      zqcai@w.cn
-// åˆ›å»ºæ—¶é—´:   2016-9-12 11:50:18
-// å†…å®¹æè¿°:   å®šä¹‰TCPé€šä¿¡çš„åŸºæœ¬ç±»
-// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
+// ´´½¨Ê±¼ä:   2016-9-12 11:50:18
+// ÄÚÈİÃèÊö:   ¶¨ÒåTCPÍ¨ĞÅµÄ»ù±¾Àà
+// °æ±¾ĞÅÏ¢:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_NET_H
 #define BASIC_NET_H
@@ -14,128 +14,127 @@
 
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
-//å£°æ˜
+//ÉùÃ÷
 //class CBasicObject;
-class CBasicSessionNet;				//åŸºç±»
-class CBasicSessionNetNotify;		//ä¸»åŠ¨è¿æ¥
+class CBasicSessionNet;				//»ùÀà
+class CBasicSessionNetNotify;		//Ö÷¶¯Á¬½Ó
 
-struct BasicNetStat;		//å‘é€æ¥æ”¶çš„ç»Ÿè®¡ä¿¡æ¯
-/////////////////////////////////////////////////////////////////////////////////////////////
-//è¿”å›é”™è¯¯å®šä¹‰
-#define NET_ERROR								(0xE0000000 | _ERROR_NET)	    //ç½‘ç»œé”™è¯¯
+struct BasicNetStat;		//·¢ËÍ½ÓÊÕµÄÍ³¼ÆĞÅÏ¢
+                            /////////////////////////////////////////////////////////////////////////////////////////////
+                            //·µ»Ø´íÎó¶¨Òå
+#define NET_ERROR								(0xE0000000 | _ERROR_NET)	    //ÍøÂç´íÎó
 
-#define BASIC_NET_OK							0								//æˆåŠŸï¼Œæ²¡æœ‰é”™è¯¯
+#define BASIC_NET_OK							0								//³É¹¦£¬Ã»ÓĞ´íÎó
 
-#define BASIC_NET_GENERIC_ERROR					(NET_ERROR | 0x0001)			//ä¸€èˆ¬æ€§é”™è¯¯ï¼Œå³æœªçŸ¥çš„é”™è¯¯
-#define BASIC_NET_OUTOF_MAXPACKET				(NET_ERROR | 0x0002)			//è¶…å‡ºæœ€å¤§æ•°æ®åŒ…çš„é™åˆ¶
-#define BASIC_NET_NO_MEMORY						(NET_ERROR | 0x0003)			//å†…å­˜ä¸è¶³
-#define BASIC_NET_ADDRESS_ERROR					(NET_ERROR | 0x0004)			//åœ°å€é”™è¯¯
-#define BASIC_NET_BIND_ERROR					(NET_ERROR | 0x0005)			//bind å‡½æ•°è°ƒç”¨é”™è¯¯
-#define BASIC_NET_LISTEN_ERROR					(NET_ERROR | 0x0006)			//listen å‡½æ•°è°ƒç”¨é”™è¯¯
-#define BASIC_NET_TOCLOSE_ERROR					(NET_ERROR | 0x0007)			//æ­£åœ¨å…³é—­
-#define BASIC_NET_CONNECTING_ERROR				(NET_ERROR | 0x0008)			//æ­£åœ¨è¿æ¥
-#define BASIC_NET_ALREADY_LISTEN				(NET_ERROR | 0x0009)			//å·²ç»ç›‘å¬
-#define BASIC_NET_NO_CONNECT					(NET_ERROR | 0x000a)			//æ²¡æœ‰è¿æ¥
-#define BASIC_NET_ALREADY_CONNECT				(NET_ERROR | 0x000b)			//å·²ç»è¿æ¥
-#define BASIC_NET_INVALID_ADDRESS				(NET_ERROR | 0x000c)			//åœ°å€éæ³•
-#define BASIC_NET_FILTER_WRITE_FAIL				(NET_ERROR | 0x000d)			//è¿‡æ»¤å™¨å¤„ç† OnWriteData å¤±è´¥
-#define BASIC_NET_FILTER_READ_FAIL				(NET_ERROR | 0x000e)			//è¿‡æ»¤å™¨å¤„ç† OnReadData  å¤±è´¥
-#define BASIC_NET_SOCKET_ERROR					(NET_ERROR | 0x000f)			//socket å‡½æ•°è°ƒç”¨é”™è¯¯
-#define BASIC_NET_RELEASE_ERROR					(NET_ERROR | 0x0010)			//RELEASEé”™è¯¯
+#define BASIC_NET_GENERIC_ERROR					(NET_ERROR | 0x0001)			//Ò»°ãĞÔ´íÎó£¬¼´Î´ÖªµÄ´íÎó
+#define BASIC_NET_OUTOF_MAXPACKET				(NET_ERROR | 0x0002)			//³¬³ö×î´óÊı¾İ°üµÄÏŞÖÆ
+#define BASIC_NET_NO_MEMORY						(NET_ERROR | 0x0003)			//ÄÚ´æ²»×ã
+#define BASIC_NET_ADDRESS_ERROR					(NET_ERROR | 0x0004)			//µØÖ·´íÎó
+#define BASIC_NET_BIND_ERROR					(NET_ERROR | 0x0005)			//bind º¯Êıµ÷ÓÃ´íÎó
+#define BASIC_NET_LISTEN_ERROR					(NET_ERROR | 0x0006)			//listen º¯Êıµ÷ÓÃ´íÎó
+#define BASIC_NET_TOCLOSE_ERROR					(NET_ERROR | 0x0007)			//ÕıÔÚ¹Ø±Õ
+#define BASIC_NET_CONNECTING_ERROR				(NET_ERROR | 0x0008)			//ÕıÔÚÁ¬½Ó
+#define BASIC_NET_ALREADY_LISTEN				(NET_ERROR | 0x0009)			//ÒÑ¾­¼àÌı
+#define BASIC_NET_NO_CONNECT					(NET_ERROR | 0x000a)			//Ã»ÓĞÁ¬½Ó
+#define BASIC_NET_ALREADY_CONNECT				(NET_ERROR | 0x000b)			//ÒÑ¾­Á¬½Ó
+#define BASIC_NET_INVALID_ADDRESS				(NET_ERROR | 0x000c)			//µØÖ··Ç·¨
+#define BASIC_NET_FILTER_WRITE_FAIL				(NET_ERROR | 0x000d)			//¹ıÂËÆ÷´¦Àí OnWriteData Ê§°Ü
+#define BASIC_NET_FILTER_READ_FAIL				(NET_ERROR | 0x000e)			//¹ıÂËÆ÷´¦Àí OnReadData  Ê§°Ü
+#define BASIC_NET_SOCKET_ERROR					(NET_ERROR | 0x000f)			//socket º¯Êıµ÷ÓÃ´íÎó
+#define BASIC_NET_RELEASE_ERROR					(NET_ERROR | 0x0010)			//RELEASE´íÎó
 
-//è¿”å›çš„çŠ¶æ€ä»£ç 
-#define BASIC_NETCODE_SUCC					0x00000001				//æˆåŠŸ
-#define BASIC_NETCODE_CLOSE_REMOTE			0x00000002				//æœåŠ¡ç«¯ä¸»åŠ¨å…³é—­
-#define BASIC_NETCODE_FILTER_HANDLE			0x00000004				//è¿‡æ»¤å™¨å¤„ç†è¿‡
-#define BASIC_NETCODE_FILTER_ERROR			0x00000008				//è¿‡æ»¤å™¨å¤„ç†é”™è¯¯
+                            //·µ»ØµÄ×´Ì¬´úÂë
+#define BASIC_NETCODE_SUCC					0x00000001				//³É¹¦
+#define BASIC_NETCODE_CLOSE_REMOTE			0x00000002				//·şÎñ¶ËÖ÷¶¯¹Ø±Õ
+#define BASIC_NETCODE_FILTER_HANDLE			0x00000004				//¹ıÂËÆ÷´¦Àí¹ı
+#define BASIC_NETCODE_FILTER_ERROR			0x00000008				//¹ıÂËÆ÷´¦Àí´íÎó
 
-#define BASIC_NETCODE_CONNET_FAIL			0x00000040				//è¿æ¥å¤±è´¥
+#define BASIC_NETCODE_CONNET_FAIL			0x00000040				//Á¬½ÓÊ§°Ü
 
-//ç»‘å®šå‡½æ•° HandleConnect è¿”å›å€¼
-#define BASIC_NET_HC_RET_HANDSHAKE			0x00000001		//è¿æ¥éœ€è¦æ¡æ‰‹è¿‡ç¨‹
+                            //°ó¶¨º¯Êı HandleConnect ·µ»ØÖµ
+#define BASIC_NET_HC_RET_HANDSHAKE			0x00000001		//Á¬½ÓĞèÒªÎÕÊÖ¹ı³Ì
 
-//ç»‘å®šå‡½æ•° HandleReceive è¿”å›å€¼
-#define BASIC_NET_HR_RET_HANDSHAKE			0x00000001		//æ¡æ‰‹è¿‡ç¨‹æˆåŠŸ
+                            //°ó¶¨º¯Êı HandleReceive ·µ»ØÖµ
+#define BASIC_NET_HR_RET_HANDSHAKE			0x00000001		//ÎÕÊÖ¹ı³Ì³É¹¦
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//! è¿‡æ»¤å™¨è¿”å›å€¼
-#define PACK_FILTER_FAIL		-1		/*!<å¤±è´¥*/
-#define PACK_FILTER_SKIP		0		/*!<æˆåŠŸï¼Œæ•°æ®æœªæ”¹åŠ¨*/
-#define PACK_FILTER_NEXT		1		/*!<æˆåŠŸï¼Œè¿˜æœ‰æ•°æ®éœ€è¦ç»§ç»­å¤„ç†*/
-#define PACK_FILTER_HANDLED		2		/*!<æˆåŠŸï¼Œä¿ç•™æ•°æ®*/
-#define PACK_FILTER_SEARCH		3		/*!<æˆåŠŸï¼Œä¼ é€’ç»™ä¸‹ä¸€ä¸ª*/
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*!
-* åˆå§‹åŒ–é€šä¿¡æ‰€éœ€çš„å‚æ•°ã€‚
-* \return è¿”å› BASIC_NET_*
-* \remarks åœ¨ä½¿ç”¨é€šä¿¡ç±»ä»¥å‰å¿…é¡»è°ƒç”¨è¯¥å‡½æ•°
-*/
+                            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            //! ¹ıÂËÆ÷·µ»ØÖµ
+#define PACK_FILTER_FAIL		-1		/*!<Ê§°Ü*/
+#define PACK_FILTER_SKIP		0		/*!<³É¹¦£¬Êı¾İÎ´¸Ä¶¯*/
+#define PACK_FILTER_NEXT		1		/*!<³É¹¦£¬»¹ÓĞÊı¾İĞèÒª¼ÌĞø´¦Àí*/
+#define PACK_FILTER_HANDLED		2		/*!<³É¹¦£¬±£ÁôÊı¾İ*/
+#define PACK_FILTER_SEARCH		3		/*!<³É¹¦£¬´«µİ¸øÏÂÒ»¸ö*/
+                            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            /*!
+                            * ³õÊ¼»¯Í¨ĞÅËùĞèµÄ²ÎÊı¡£
+                            * \return ·µ»Ø BASIC_NET_*
+                            * \remarks ÔÚÊ¹ÓÃÍ¨ĞÅÀàÒÔÇ°±ØĞëµ÷ÓÃ¸Ãº¯Êı
+                            */
 typedef basiclib::CBasicString(*pGetConfFunc)(const char* pParam);
 _BASIC_DLL_API void SetNetInitializeGetParamFunc(pGetConfFunc func);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class _BASIC_DLL_API CBasicPreSend : public CBasicObject
-{
+class _BASIC_DLL_API CBasicPreSend : public CBasicObject{
 public:
-	CBasicPreSend() {}
+    CBasicPreSend(){}
 
 public:
-	/*\brief è¿‡æ»¤æ”¶åˆ°çš„æ•°æ® */
-	// è¿‡æ»¤ç”Ÿæˆçš„æ•°æ®æ”¾å…¥buf
-	virtual int32_t OnPreReceive(const char *pszData, int32_t cbData, CBasicBitstream& buf, CBasicSessionNetNotify* pNetSession) = 0;
+    /*\brief ¹ıÂËÊÕµ½µÄÊı¾İ */
+    // ¹ıÂËÉú³ÉµÄÊı¾İ·ÅÈëbuf
+    virtual int32_t OnPreReceive(const char *pszData, int32_t cbData, CBasicBitstream& buf, CBasicSessionNetNotify* pNetSession) = 0;
 
-	/*\brief è¿‡æ»¤å‘é€çš„æ•°æ® */
-	// è¿‡æ»¤ç”Ÿæˆçš„æ•°æ®æ”¾å…¥buf
-	virtual int32_t OnPreSend(const char *pszData, int32_t cbData, uint32_t dwFlag, SendBufferCacheMgr& sendBuf) = 0;
+    /*\brief ¹ıÂË·¢ËÍµÄÊı¾İ */
+    // ¹ıÂËÉú³ÉµÄÊı¾İ·ÅÈëbuf
+    virtual int32_t OnPreSend(const char *pszData, int32_t cbData, uint32_t dwFlag, SendBufferCacheMgr& sendBuf) = 0;
 
-	/*\brief æ„é€ æ–°çš„å®ä¾‹ */
-	// ç”¨äºAccept
-	virtual CBasicPreSend* Construct() = 0;
+    /*\brief ¹¹ÔìĞÂµÄÊµÀı */
+    // ÓÃÓÚAccept
+    virtual CBasicPreSend* Construct() = 0;
 
-	/*\brief é‡ç½®è¿‡æ»¤å™¨çŠ¶æ€ */
-	virtual void ResetPreSend() = 0;
+    /*\brief ÖØÖÃ¹ıÂËÆ÷×´Ì¬ */
+    virtual void ResetPreSend() = 0;
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//! å‘é€æ¥æ”¶çš„ç»Ÿè®¡ä¿¡æ¯
+//! ·¢ËÍ½ÓÊÕµÄÍ³¼ÆĞÅÏ¢
 /*!
-*  ç”¨åœ¨ç»Ÿè®¡å‘é€æ¥æ”¶çš„å­—èŠ‚æ•°å’Œæ¬¡æ•°ã€‚æº¢å‡ºåä»é›¶å¼€å§‹ã€‚
+*  ÓÃÔÚÍ³¼Æ·¢ËÍ½ÓÊÕµÄ×Ö½ÚÊıºÍ´ÎÊı¡£Òç³öºó´ÓÁã¿ªÊ¼¡£
 */
 struct _BASIC_DLL_API  BasicNetStat{
-	uint32_t	m_dwSendBytes;		/*!< å‘é€çš„å­—èŠ‚æ•° */
-	uint32_t	m_dwSendTimes;		/*!< å‘é€çš„æ¬¡æ•° */
-	uint32_t	m_dwReceBytes;		/*!< æ¥æ”¶çš„å­—èŠ‚æ•° */
-	uint32_t	m_dwReceTimes;		/*!< æ¥æ”¶çš„æ¬¡æ•° */
-	time_t		m_tmLastRecTime;	//è®°å½•æœ€åæ”¶åˆ°æ•°æ®çš„æ—¶é—´
-	double		m_fLastSendRate;
-	double		m_fLastRecvRate;
-	time_t		m_tLastStat;
-	BasicNetStat();
-	void Empty();
-	void OnSendData(int nSend);
-	void OnReceiveData(int nRece);
-	void GetTransRate(BasicNetStat& lastData, double& dSend, double& dRecv);
+    uint32_t	m_dwSendBytes;		/*!< ·¢ËÍµÄ×Ö½ÚÊı */
+    uint32_t	m_dwSendTimes;		/*!< ·¢ËÍµÄ´ÎÊı */
+    uint32_t	m_dwReceBytes;		/*!< ½ÓÊÕµÄ×Ö½ÚÊı */
+    uint32_t	m_dwReceTimes;		/*!< ½ÓÊÕµÄ´ÎÊı */
+    time_t		m_tmLastRecTime;	//¼ÇÂ¼×îºóÊÕµ½Êı¾İµÄÊ±¼ä
+    double		m_fLastSendRate;
+    double		m_fLastRecvRate;
+    time_t		m_tLastStat;
+    BasicNetStat();
+    void Empty();
+    void OnSendData(int nSend);
+    void OnReceiveData(int nRece);
+    void GetTransRate(BasicNetStat& lastData, double& dSend, double& dRecv);
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define TIL_RESET_MASK					0xFF000000		//é‡ç½®çŠ¶æ€
+#define TIL_RESET_MASK					0xFF000000		//ÖØÖÃ×´Ì¬
 
-#define TIL_SS_LINK						0x0000000F		//è¿æ¥çš„çŠ¶æ€
-#define TIL_SS_IDLE						0x00000000		//ç©ºé—²
-#define TIL_SS_CONNECTING				0x00000001		//æ­£åœ¨è¿æ¥
-#define TIL_SS_CONNECTED				0x00000002		//å·²è¿æ¥
-#define TIL_SS_LISTENING				0x00000003		//æ­£åœ¨ç›‘å¬
+#define TIL_SS_LINK						0x0000000F		//Á¬½ÓµÄ×´Ì¬
+#define TIL_SS_IDLE						0x00000000		//¿ÕÏĞ
+#define TIL_SS_CONNECTING				0x00000001		//ÕıÔÚÁ¬½Ó
+#define TIL_SS_CONNECTED				0x00000002		//ÒÑÁ¬½Ó
+#define TIL_SS_LISTENING				0x00000003		//ÕıÔÚ¼àÌı
 
-#define TIL_SS_CLOSE					0x000000F0		//å…³é—­çš„çŠ¶æ€
-#define TIL_SS_NORMAL					0x00000000		//æ­£å¸¸çŠ¶æ€
-#define TIL_SS_TOCLOSE					0x00000010		//æ­£åœ¨å…³é—­
+#define TIL_SS_CLOSE					0x000000F0		//¹Ø±ÕµÄ×´Ì¬
+#define TIL_SS_NORMAL					0x00000000		//Õı³£×´Ì¬
+#define TIL_SS_TOCLOSE					0x00000010		//ÕıÔÚ¹Ø±Õ
 
-#define TIL_SS_SHAKEHANDLE_MASK			0x00000F00		//è®¤è¯
+#define TIL_SS_SHAKEHANDLE_MASK			0x00000F00		//ÈÏÖ¤
 #define TIL_SS_SHAKEHANDLE_TRANSMIT		0x00000100		//
 
-//ä¸ä¼šéšç€close é‡ç½®
-#define TIL_SS_RELEASE_MASK				0xF0000000		//åˆ é™¤ç›¸å…³çŠ¶æ€æ ‡ç¤º
-#define TIL_SS_TOSAFEDELETE				0x10000000		//å®‰å…¨åˆ é™¤æ ‡ç¤º
+//²»»áËæ×Åclose ÖØÖÃ
+#define TIL_SS_RELEASE_MASK				0xF0000000		//É¾³ıÏà¹Ø×´Ì¬±êÊ¾
+#define TIL_SS_TOSAFEDELETE				0x10000000		//°²È«É¾³ı±êÊ¾
 
 #define ADDRESS_MAX_LENGTH		64
 //////////////////////////////////////////////////////////////////////////////
@@ -145,117 +144,115 @@ struct _BASIC_DLL_API  BasicNetStat{
 
 class CBasicSessionNetNotify;
 class CBasicNet_Socket;
-class _BASIC_DLL_API CBasicSessionNet : public basiclib::EnableRefPtr<CBasicSessionNet>
-{
+class _BASIC_DLL_API CBasicSessionNet : public basiclib::EnableRefPtr<CBasicSessionNet>{
 public:
-	typedef basiclib::CBasicRefPtr<CBasicSessionNet>														CRefBasicSessionNet;		//æ™ºèƒ½æŒ‡é’ˆ
-	typedef fastdelegate::FastDelegate4<CBasicSessionNetNotify*, uint32_t, int32_t, const char *, int32_t>	HandleReceive;
-	typedef fastdelegate::FastDelegate2<CBasicSessionNetNotify*, uint32_t, int32_t>							HandleConnect;				//å¤„ç†è¿æ¥
-	typedef fastdelegate::FastDelegate2<CBasicSessionNetNotify*, uint32_t, int32_t>							HandleDisConnect;			//æ–­å¼€çš„æ¶ˆæ¯
-	typedef fastdelegate::FastDelegate2<CBasicSessionNetNotify*, uint32_t, int32_t>							HandleIdle;					//ç©ºé—²æ¶ˆæ¯
-	typedef fastdelegate::FastDelegate3<CBasicSessionNetNotify*, uint32_t, int32_t, int32_t>				HandleError;				//é”™è¯¯æ¶ˆæ¯
+    typedef basiclib::CBasicRefPtr<CBasicSessionNet>														CRefBasicSessionNet;		//ÖÇÄÜÖ¸Õë
+    typedef fastdelegate::FastDelegate4<CBasicSessionNetNotify*, uint32_t, int32_t, const char *, int32_t>	HandleReceive;
+    typedef fastdelegate::FastDelegate2<CBasicSessionNetNotify*, uint32_t, int32_t>							HandleConnect;				//´¦ÀíÁ¬½Ó
+    typedef fastdelegate::FastDelegate2<CBasicSessionNetNotify*, uint32_t, int32_t>							HandleDisConnect;			//¶Ï¿ªµÄÏûÏ¢
+    typedef fastdelegate::FastDelegate2<CBasicSessionNetNotify*, uint32_t, int32_t>							HandleIdle;					//¿ÕÏĞÏûÏ¢
+    typedef fastdelegate::FastDelegate3<CBasicSessionNetNotify*, uint32_t, int32_t, int32_t>				HandleError;				//´íÎóÏûÏ¢
 
-	void bind_rece(const HandleReceive& func) { m_funcReceive = func; }
-	void bind_connect(const HandleConnect& func) { m_funcConnect = func; }
-	void bind_disconnect(const HandleDisConnect& func) { m_funcDisconnect = func; }
-	void bind_idle(const HandleIdle& func) { m_funcIdle = func; }
-	void bind_error(const HandleError& func) { m_funcError = func; }
-	const HandleReceive GetBindRece(){ return m_funcReceive; }
-	const HandleConnect GetBindConnect(){ return m_funcConnect; }
-	const HandleDisConnect GetBindDisconnect(){ return m_funcDisconnect; }
-	const HandleIdle GetBindIdle(){ return m_funcIdle; }
-	const HandleError GetBindError(){ return m_funcError; }
+    void bind_rece(const HandleReceive& func){ m_funcReceive = func; }
+    void bind_connect(const HandleConnect& func){ m_funcConnect = func; }
+    void bind_disconnect(const HandleDisConnect& func){ m_funcDisconnect = func; }
+    void bind_idle(const HandleIdle& func){ m_funcIdle = func; }
+    void bind_error(const HandleError& func){ m_funcError = func; }
+    const HandleReceive GetBindRece(){ return m_funcReceive; }
+    const HandleConnect GetBindConnect(){ return m_funcConnect; }
+    const HandleDisConnect GetBindDisconnect(){ return m_funcDisconnect; }
+    const HandleIdle GetBindIdle(){ return m_funcIdle; }
+    const HandleError GetBindError(){ return m_funcError; }
 
-	//æ³¨å†Œè¿‡æ»¤å™¨
-	int RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptions = 0);
+    //×¢²á¹ıÂËÆ÷
+    int RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptions = 0);
 
-	//ä¸»åŠ¨å…³é—­
-	void Close(bool bNoWaitMustClose = false);
+    //Ö÷¶¯¹Ø±Õ
+    void Close(bool bNoWaitMustClose = false);
 
-	//æä¾›å®‰å…¨åˆ é™¤çš„å›è°ƒæ¥å£
-	virtual void SafeDelete();
+    //Ìá¹©°²È«É¾³ıµÄ»Øµ÷½Ó¿Ú
+    virtual void SafeDelete();
 
-	//! è·å–æ³¨å†Œçš„è¿‡æ»¤å™¨
-	CBasicPreSend* GetPreSend();
+    //! »ñÈ¡×¢²áµÄ¹ıÂËÆ÷
+    CBasicPreSend* GetPreSend();
 
-	//! ç»‘å®šsocket
-	void InitSocket(CBasicNet_Socket* pSocket);
+    //! °ó¶¨socket
+    void InitSocket(CBasicNet_Socket* pSocket);
 protected:
-	CBasicSessionNet();
-	virtual ~CBasicSessionNet();
+    CBasicSessionNet();
+    virtual ~CBasicSessionNet();
 
-	//! æ™ºèƒ½æŒ‡é’ˆåˆ é™¤çš„æ–¹å¼
-	virtual void DeleteRetPtrObject();
+    //! ÖÇÄÜÖ¸ÕëÉ¾³ıµÄ·½Ê½
+    virtual void DeleteRetPtrObject();
 
-	//! è·å–socket
-	CBasicNet_Socket* GetBasicNet_Socket(){ return m_pSocket; }
+    //! »ñÈ¡socket
+    CBasicNet_Socket* GetBasicNet_Socket(){ return m_pSocket; }
 protected:
-	CRefBasicSessionNet				m_self;
-	CBasicNet_Socket*				m_pSocket;
-	HandleReceive					m_funcReceive;
-	HandleConnect					m_funcConnect;
-	HandleDisConnect				m_funcDisconnect;
-	HandleIdle						m_funcIdle;
-	HandleError						m_funcError;
+    CRefBasicSessionNet				m_self;
+    CBasicNet_Socket*				m_pSocket;
+    HandleReceive					m_funcReceive;
+    HandleConnect					m_funcConnect;
+    HandleDisConnect				m_funcDisconnect;
+    HandleIdle						m_funcIdle;
+    HandleError						m_funcError;
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class _BASIC_DLL_API CBasicSessionNetNotify : public basiclib::CBasicSessionNet
-{
+class _BASIC_DLL_API CBasicSessionNetNotify : public basiclib::CBasicSessionNet{
 public:
-	//! æ˜¯å¦è¿æ¥
-	bool IsConnected();
+    //! ÊÇ·ñÁ¬½Ó
+    bool IsConnected();
 
-	//! æ˜¯å¦è®¤è¯æˆåŠŸ
-	bool IsTransmit();
+    //! ÊÇ·ñÈÏÖ¤³É¹¦
+    bool IsTransmit();
 
-	//! å‘é€
-	virtual int32_t Send(void *pData, int32_t cbData, uint32_t dwFlag = 0);
-	virtual int32_t Send(basiclib::CBasicSmartBuffer& smBuf, uint32_t dwFlag = 0);
+    //! ·¢ËÍ
+    virtual int32_t Send(void *pData, int32_t cbData, uint32_t dwFlag = 0);
+    virtual int32_t Send(basiclib::CBasicSmartBuffer& smBuf, uint32_t dwFlag = 0);
 
-	//! è·å–ç½‘ç»œçŠ¶æ€
-	void GetNetStatInfo(BasicNetStat& netState);
+    //! »ñÈ¡ÍøÂç×´Ì¬
+    void GetNetStatInfo(BasicNetStat& netState);
 
-	//! è·å–ç½‘ç»œçŠ¶æ€
-	virtual void GetNetStatus(CBasicString& strStatus);
+    //! »ñÈ¡ÍøÂç×´Ì¬
+    virtual void GetNetStatus(CBasicString& strStatus);
 protected:
-	CBasicSessionNetNotify();
-	virtual ~CBasicSessionNetNotify();
+    CBasicSessionNetNotify();
+    virtual ~CBasicSessionNetNotify();
 protected:
-	//! å›è°ƒconnect
-	virtual uint32_t OnConnect(uint32_t dwNetCode) {
-		if (m_funcConnect)
-			return m_funcConnect(this, dwNetCode);
-		return BASIC_NET_OK;
-	}
-	//! å›è°ƒreceive
-	virtual int32_t OnReceive(uint32_t dwNetCode, const char *pszData, int32_t cbData) {
-		if (m_funcReceive)
-			return m_funcReceive(this, dwNetCode, cbData, pszData);
-		return BASIC_NET_OK;
-	}
-	//! å›è°ƒdisconnect
-	virtual uint32_t OnDisconnect(uint32_t dwNetCode) {
-		if (m_funcDisconnect)
-			return m_funcDisconnect(this, dwNetCode);
-		return BASIC_NET_OK;
-	}
-	//! å›è°ƒé”™è¯¯
-	virtual uint32_t OnError(uint32_t dwNetCode, int32_t lRetCode) {
-		if (m_funcError)
-			return m_funcError(this, dwNetCode, lRetCode);
-		return BASIC_NET_OK;
-	}
-	virtual int32_t OnIdle(uint32_t dwIdleCount) {
-		if (m_funcIdle)
-			return m_funcIdle(this, dwIdleCount);
-		return BASIC_NET_OK;
-	}
+    //! »Øµ÷connect
+    virtual uint32_t OnConnect(uint32_t dwNetCode){
+        if(m_funcConnect)
+            return m_funcConnect(this, dwNetCode);
+        return BASIC_NET_OK;
+    }
+    //! »Øµ÷receive
+    virtual int32_t OnReceive(uint32_t dwNetCode, const char *pszData, int32_t cbData){
+        if(m_funcReceive)
+            return m_funcReceive(this, dwNetCode, cbData, pszData);
+        return BASIC_NET_OK;
+    }
+    //! »Øµ÷disconnect
+    virtual uint32_t OnDisconnect(uint32_t dwNetCode){
+        if(m_funcDisconnect)
+            return m_funcDisconnect(this, dwNetCode);
+        return BASIC_NET_OK;
+    }
+    //! »Øµ÷´íÎó
+    virtual uint32_t OnError(uint32_t dwNetCode, int32_t lRetCode){
+        if(m_funcError)
+            return m_funcError(this, dwNetCode, lRetCode);
+        return BASIC_NET_OK;
+    }
+    virtual int32_t OnIdle(uint32_t dwIdleCount){
+        if(m_funcIdle)
+            return m_funcIdle(this, dwIdleCount);
+        return BASIC_NET_OK;
+    }
 protected:
-	//å®šæ—¶å™¨,ontimerçº¿ç¨‹
-	virtual void OnTimer(unsigned int nTick){}
+    //¶¨Ê±Æ÷,ontimerÏß³Ì
+    virtual void OnTimer(unsigned int nTick){}
 protected:
 
-	friend class CBasicNet_SocketTransfer;
+    friend class CBasicNet_SocketTransfer;
 };
 
 #pragma warning (pop)

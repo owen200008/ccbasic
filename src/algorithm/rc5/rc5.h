@@ -1,10 +1,10 @@
-ï»¿/***********************************************************************************************
-// æ–‡ä»¶å:     rc5.h
-// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
+/***********************************************************************************************
+// ÎÄ¼þÃû:     rc5.h
+// ´´½¨Õß:     ²ÌÕñÇò
 // Email:      zqcai@w.cn
-// åˆ›å»ºæ—¶é—´:   2012-2-22 23:55:10
-// å†…å®¹æè¿°:   å®šä¹‰ RC5 çš„åŠ è§£å¯†ç®—æ³•å‡½æ•°
-// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
+// ´´½¨Ê±¼ä:   2012-2-22 23:55:10
+// ÄÚÈÝÃèÊö:   ¶¨Òå RC5 µÄ¼Ó½âÃÜËã·¨º¯Êý
+// °æ±¾ÐÅÏ¢:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_RC5_H
 #define BASIC_RC5_H
@@ -13,26 +13,25 @@
 #pragma	pack(1)
 __NS_BASIC_START
 /////////////////////////////////////////////////////////////////////////////////////////////
-//å£°æ˜Ž
+//ÉùÃ÷
 
-//! ä½¿ç”¨RC5ç®—æ³•åŠ è§£å¯†æ•°æ®
-/*! 
-*\param pOutData è¾“å‡ºæ•°æ®çš„ç¼“å†²åŒºxml
-*\param pInData  è¾“å…¥æ•°æ®çš„ç¼“å†²åŒºï¼Œå¯ä»¥å’Œ pOutData æ˜¯ç›¸åŒçš„
-*\param lDatalen æ•°æ®çš„é•¿åº¦ã€‚å¿…é¡»æ˜¯8çš„æ•´æ•°å€ã€‚
-*\param pKey     åŠ å¯†çš„å¯†é’¥ã€‚
-*\param iKeylen  å¯†é’¥çš„é•¿åº¦ã€‚å¯ä»¥æ˜¯ 8 16
-*\param iEncrypt = 1 åŠ å¯†  = 0 è§£å¯†
-*\param nRounds  åŠ å¯†çš„è½®æ•°ã€‚å¯ä»¥é€‰æ‹© 8 12 16 ã€‚ è½®æ•°è¶Šå¤šï¼ŒåŠ å¯†å¼ºåº¦è¶Šå¤§ã€‚åŠ å¯†é€Ÿåº¦å°±è¶Šæ…¢ã€‚
-*\return æˆåŠŸ: è¿”å›ž 0  ä¸æˆåŠŸè¿”å›ž  < 0
-*\remarks æœ¬åŠ å¯†ç®—æ³•å¼ºåº¦æ¯”DESä½Žï¼Œä½†æ˜¯é€Ÿåº¦æ˜¯DESçš„3å€å·¦å³ã€‚
-*\warning å¦‚æžœæ•°æ®é•¿åº¦ä¸æ˜¯8çš„æ•´æ•°å€ï¼Œè¿”å›žé”™è¯¯ã€‚
+//! Ê¹ÓÃRC5Ëã·¨¼Ó½âÃÜÊý¾Ý
+/*!
+*\param pOutData Êä³öÊý¾ÝµÄ»º³åÇøxml
+*\param pInData  ÊäÈëÊý¾ÝµÄ»º³åÇø£¬¿ÉÒÔºÍ pOutData ÊÇÏàÍ¬µÄ
+*\param lDatalen Êý¾ÝµÄ³¤¶È¡£±ØÐëÊÇ8µÄÕûÊý±¶¡£
+*\param pKey     ¼ÓÃÜµÄÃÜÔ¿¡£
+*\param iKeylen  ÃÜÔ¿µÄ³¤¶È¡£¿ÉÒÔÊÇ 8 16
+*\param iEncrypt = 1 ¼ÓÃÜ  = 0 ½âÃÜ
+*\param nRounds  ¼ÓÃÜµÄÂÖÊý¡£¿ÉÒÔÑ¡Ôñ 8 12 16 ¡£ ÂÖÊýÔ½¶à£¬¼ÓÃÜÇ¿¶ÈÔ½´ó¡£¼ÓÃÜËÙ¶È¾ÍÔ½Âý¡£
+*\return ³É¹¦: ·µ»Ø 0  ²»³É¹¦·µ»Ø  < 0
+*\remarks ±¾¼ÓÃÜËã·¨Ç¿¶È±ÈDESµÍ£¬µ«ÊÇËÙ¶ÈÊÇDESµÄ3±¶×óÓÒ¡£
+*\warning Èç¹ûÊý¾Ý³¤¶È²»ÊÇ8µÄÕûÊý±¶£¬·µ»Ø´íÎó¡£
 */
 
-class IBasicSecurity
-{
+class IBasicSecurity{
 public:
-	virtual void Check() = 0;
+    virtual void Check() = 0;
 };
 
 _BASIC_DLL_API int Basic_RC5_ecb_encrypt(basiclib::IBasicSecurity* pSecurity, char *pOutData, char *pInData, long lDatalen, const char *pKey, int iKeylen, int iEncrypt, int nRounds = 8);

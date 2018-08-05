@@ -1,10 +1,10 @@
-ï»¿/***********************************************************************************************
-// æ–‡ä»¶å:     net_socket.h
-// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
+/***********************************************************************************************
+// ÎÄ¼şÃû:     net_socket.h
+// ´´½¨Õß:     ²ÌÕñÇò
 // Email:      zqcai@w.cn
-// åˆ›å»ºæ—¶é—´:   2016-9-12 11:50:18
-// å†…å®¹æè¿°:   å®šä¹‰TCPé€šä¿¡çš„åŸºæœ¬ç±»
-// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
+// ´´½¨Ê±¼ä:   2016-9-12 11:50:18
+// ÄÚÈİÃèÊö:   ¶¨ÒåTCPÍ¨ĞÅµÄ»ù±¾Àà
+// °æ±¾ĞÅÏ¢:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_NET_SOCKET_H
 #define BASIC_NET_SOCKET_H
@@ -39,220 +39,220 @@ typedef void (WINAPI *GetAcceptExSockaddrsPtr)(PVOID, DWORD, DWORD, DWORD, LPSOC
 Windows provide.
 */
 struct IOCPExt_Func{
-	AcceptExPtr AcceptEx;
-	ConnectExPtr ConnectEx;
-	GetAcceptExSockaddrsPtr GetAcceptExSockaddrs;
+    AcceptExPtr AcceptEx;
+    ConnectExPtr ConnectEx;
+    GetAcceptExSockaddrsPtr GetAcceptExSockaddrs;
 };
 
 enum IOType{
-	IORead,
-	IOWrite,
-	IOFunc,
-	IOAccept,
-	IOConnect,
+    IORead,
+    IOWrite,
+    IOFunc,
+    IOAccept,
+    IOConnect,
 };
 
 struct OVERLAPPEDPLUS{		//internal class  no derived from ctlobject
-	OVERLAPPED		m_ol;
-	IOType			m_ioType;
-	OVERLAPPEDPLUS(){
-		ZeroMemory(this, sizeof(OVERLAPPEDPLUS));
-	}
+    OVERLAPPED		m_ol;
+    IOType			m_ioType;
+    OVERLAPPEDPLUS(){
+        ZeroMemory(this, sizeof(OVERLAPPEDPLUS));
+    }
 };
 #endif
 
 class CBasicNet_Socket{
 public:
-	typedef void(*pCallSameRefNetSessionFunc)(CBasicNet_Socket* pRefNetSession, intptr_t lRevert);
-	static uint32_t GetDefaultCreateSessionID(){ return m_defaultCreateSession.fetch_add(1, memory_order_relaxed); }
+    typedef void(*pCallSameRefNetSessionFunc)(CBasicNet_Socket* pRefNetSession, intptr_t lRevert);
+    static uint32_t GetDefaultCreateSessionID(){ return m_defaultCreateSession.fetch_add(1, memory_order_relaxed); }
 public:
-	CBasicNet_Socket(uint32_t nSessionID);
-	virtual ~CBasicNet_Socket();
+    CBasicNet_Socket(uint32_t nSessionID);
+    virtual ~CBasicNet_Socket();
 public:
-	//! è·å–socketid
-	evutil_socket_t& GetSocketID(){ return m_socketfd; }
+    //! »ñÈ¡socketid
+    evutil_socket_t & GetSocketID(){ return m_socketfd; }
 
-	//! å…³é—­
-	void Close(bool bRemote = false, bool bMustClose = false);
+    //! ¹Ø±Õ
+    void Close(bool bRemote = false, bool bMustClose = false);
 
-	//! å›è°ƒä¸­å¯ä»¥å®‰å…¨åˆ é™¤
-	virtual void SafeDelete();
+    //! »Øµ÷ÖĞ¿ÉÒÔ°²È«É¾³ı
+    virtual void SafeDelete();
 
-	//! æ³¨å†Œè¿‡æ»¤å™¨
-	int RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptions = 0);
+    //! ×¢²á¹ıÂËÆ÷
+    int RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptions = 0);
 
-	//! è·å–æ³¨å†Œçš„è¿‡æ»¤å™¨
-	CBasicPreSend* GetPreSend(){ return m_pPreSend; }
+    //! »ñÈ¡×¢²áµÄ¹ıÂËÆ÷
+    CBasicPreSend* GetPreSend(){ return m_pPreSend; }
 
-	//! è·å–çœŸå®çš„session
-	virtual CBasicSessionNet* GetRealSessionNet() = 0;
+    //! »ñÈ¡ÕæÊµµÄsession
+    virtual CBasicSessionNet* GetRealSessionNet() = 0;
 
-	//! åŠ å…¥é˜Ÿåˆ—
-	void AddSocketCallFunc(CEventQueueItem* pItem);
+    //! ¼ÓÈë¶ÓÁĞ
+    void AddSocketCallFunc(CEventQueueItem* pItem);
 
-	//! æ‰§è¡Œé˜Ÿåˆ—
-	void RunSocketCallFunc();
+    //! Ö´ĞĞ¶ÓÁĞ
+    void RunSocketCallFunc();
 
-	//! è·å–netthread
-	CNetThread* GetSelfNetThread(){ return m_pThread; }
+    //! »ñÈ¡netthread
+    CNetThread* GetSelfNetThread(){ return m_pThread; }
 #ifdef BASICWINDOWS_USE_IOCP
-	//! serverç›‘å¬å¼‚æ­¥acceptä½¿ç”¨
-	virtual void ServerAcceptEx(OVERLAPPEDPLUS* pOverlapPlus){}
+    //! server¼àÌıÒì²½acceptÊ¹ÓÃ
+    virtual void ServerAcceptEx(OVERLAPPEDPLUS* pOverlapPlus){}
 
-	//! clientè¿æ¥ä½¿ç”¨
-	virtual void ClientConnectEx(){}
+    //! clientÁ¬½ÓÊ¹ÓÃ
+    virtual void ClientConnectEx(){}
 #endif
 public:
-	//! æ˜¯å¦è¿æ¥
-	bool IsConnected();
-	//! æ˜¯å¦è®¤è¯æˆåŠŸ
-	bool IsTransmit();
-	//! åˆ¤æ–­æ˜¯å¦å‡†å¤‡close
-	bool IsToClose();
+    //! ÊÇ·ñÁ¬½Ó
+    bool IsConnected();
+    //! ÊÇ·ñÈÏÖ¤³É¹¦
+    bool IsTransmit();
+    //! ÅĞ¶ÏÊÇ·ñ×¼±¸close
+    bool IsToClose();
 
-	//! è®¾ç½®å‡†å¤‡å…³é—­
-	void SetToClose();
-	//! è®¾ç½®å®‰å…¨åˆ é™¤æ ‡å¿—
-	void SetToSafeDelete();
+    //! ÉèÖÃ×¼±¸¹Ø±Õ
+    void SetToClose();
+    //! ÉèÖÃ°²È«É¾³ı±êÖ¾
+    void SetToSafeDelete();
 
-	//! åˆ¤æ–­æ˜¯å¦å¯ä»¥å…³é—­
-	virtual bool CanClose();
+    //! ÅĞ¶ÏÊÇ·ñ¿ÉÒÔ¹Ø±Õ
+    virtual bool CanClose();
 
-	//! è·å–å’Œè®¾ç½®çŠ¶æ€
-	uint32_t GetSessionStatus(uint32_t dwMask){ return m_unSessionStatus & dwMask; }
-	void SetSessionStatus(uint32_t dwValue, uint32_t dwMask){ m_unSessionStatus &= ~dwMask; m_unSessionStatus |= (dwValue & dwMask); }
+    //! »ñÈ¡ºÍÉèÖÃ×´Ì¬
+    uint32_t GetSessionStatus(uint32_t dwMask){ return m_unSessionStatus & dwMask; }
+    void SetSessionStatus(uint32_t dwValue, uint32_t dwMask){ m_unSessionStatus &= ~dwMask; m_unSessionStatus |= (dwValue & dwMask); }
 public:
-	//! ontimerçº¿ç¨‹
-	virtual bool OnTimer(unsigned int nTick);
+    //! ontimerÏß³Ì
+    virtual bool OnTimer(unsigned int nTick);
 protected:
-	//! å‘é€å¯¹åº”çº¿ç¨‹æ¶ˆæ¯
-	void SetLibEvent(pCallSameRefNetSessionFunc pCallback, intptr_t lRevert = 0);
+    //! ·¢ËÍ¶ÔÓ¦Ïß³ÌÏûÏ¢
+    void SetLibEvent(pCallSameRefNetSessionFunc pCallback, intptr_t lRevert = 0);
 
-	//! é‡æ–°åˆå§‹åŒ–æˆå‘˜
-	virtual void InitMember();
+    //! ÖØĞÂ³õÊ¼»¯³ÉÔ±
+    virtual void InitMember();
 
-	//! çº¿ç¨‹å†…æ‰§è¡Œå‡½æ•°
-	virtual void CloseCallback(bool bRemote, DWORD dwNetCode = 0);
+    //! Ïß³ÌÄÚÖ´ĞĞº¯Êı
+    virtual void CloseCallback(bool bRemote, DWORD dwNetCode = 0);
 protected:
-	static std::atomic<uint32_t>	m_defaultCreateSession;
-	CNetThread*						m_pThread;
+    static std::atomic<uint32_t>	m_defaultCreateSession;
+    CNetThread*						m_pThread;
 #ifndef BASICWINDOWS_USE_IOCP
-	event							m_revent;
+    event							m_revent;
 #endif
-	evutil_socket_t					m_socketfd;
+    evutil_socket_t					m_socketfd;
 
-	CBasicPreSend*					m_pPreSend;
+    CBasicPreSend*					m_pPreSend;
 
-	uint32_t						m_unSessionStatus;				//çŠ¶æ€  TIL_SS_*
+    uint32_t						m_unSessionStatus;				//×´Ì¬  TIL_SS_*
 
-	//æ¶ˆæ¯é˜Ÿåˆ—
-	basiclib::SpinLock				m_lockMsg;
-	basiclib::CBasicSmartBuffer		m_smBuf;
-	basiclib::CBasicSmartBuffer		m_smIOCPBuf;
+                                                                    //ÏûÏ¢¶ÓÁĞ
+    basiclib::SpinLock				m_lockMsg;
+    basiclib::CBasicSmartBuffer		m_smBuf;
+    basiclib::CBasicSmartBuffer		m_smIOCPBuf;
 
-	friend class CNetThread;
+    friend class CNetThread;
 };
 
 #define MAX_BUFFER_SEND_BUF				4096
 
 class CBasicNet_SocketTransfer : public CBasicNet_Socket{
 public:
-	CBasicNet_SocketTransfer(CBasicSessionNetNotify* pFather, uint32_t nSessionID, uint16_t usRecTimeout = 0);
-	virtual ~CBasicNet_SocketTransfer();
+    CBasicNet_SocketTransfer(CBasicSessionNetNotify* pFather, uint32_t nSessionID, uint16_t usRecTimeout = 0);
+    virtual ~CBasicNet_SocketTransfer();
 
-	//! å‘é€æ•°æ®
-	virtual int32_t Send(void *pData, int32_t cbData, uint32_t dwFlag = 0);
+    //! ·¢ËÍÊı¾İ
+    virtual int32_t Send(void *pData, int32_t cbData, uint32_t dwFlag = 0);
 
-	//å†…éƒ¨é‡Šæ”¾
-	int32_t SendData(SendBufferCacheMgr& sendData);
+    //ÄÚ²¿ÊÍ·Å
+    int32_t SendData(SendBufferCacheMgr& sendData);
 
-	//! åˆ¤æ–­æ˜¯å¦å¯ä»¥å…³é—­
-	virtual bool CanClose();
+    //! ÅĞ¶ÏÊÇ·ñ¿ÉÒÔ¹Ø±Õ
+    virtual bool CanClose();
 
-	//! åˆ¤æ–­æ˜¯å¦è¶…æ—¶æ²¡æ”¶åˆ°æ•°æ®
-	bool IsRecTimeout(time_t tmNow, uint16_t nTimeoutSecond);
+    //! ÅĞ¶ÏÊÇ·ñ³¬Ê±Ã»ÊÕµ½Êı¾İ
+    bool IsRecTimeout(time_t tmNow, uint16_t nTimeoutSecond);
 
-	//! è·å–netstate
-	void GetNetStatInfo(BasicNetStat& netState){ netState = m_stNet; }
+    //! »ñÈ¡netstate
+    void GetNetStatInfo(BasicNetStat& netState){ netState = m_stNet; }
 
-	//! è·å–çŠ¶æ€
-	virtual void GetNetStatus(CBasicString& strStatus) = 0;
+    //! »ñÈ¡×´Ì¬
+    virtual void GetNetStatus(CBasicString& strStatus) = 0;
 public:
-	//! ontimerçº¿ç¨‹
-	virtual bool OnTimer(unsigned int nTick);
+    //! ontimerÏß³Ì
+    virtual bool OnTimer(unsigned int nTick);
 
-	//! onidle
-	void OnIdle();
+    //! onidle
+    void OnIdle();
 
-    //! è¯»äº‹ä»¶
+    //! ¶ÁÊÂ¼ş
     void OnReadEvent();
 
-    //! å†™äº‹ä»¶
+    //! Ğ´ÊÂ¼ş
     void OnWriteEvent();
 protected:
-	//! é‡æ–°åˆå§‹åŒ–æˆå‘˜
-	virtual void InitMember();
+    //! ÖØĞÂ³õÊ¼»¯³ÉÔ±
+    virtual void InitMember();
 
-	//! çº¿ç¨‹å†…æ‰§è¡Œå‡½æ•°
-	virtual void CloseCallback(bool bRemote, DWORD dwNetCode = 0);
+    //! Ïß³ÌÄÚÖ´ĞĞº¯Êı
+    virtual void CloseCallback(bool bRemote, DWORD dwNetCode = 0);
 
-	//! åªåœ¨libeventçº¿ç¨‹ä½¿ç”¨
-	void SendDataFromQueue();
+    //! Ö»ÔÚlibeventÏß³ÌÊ¹ÓÃ
+    void SendDataFromQueue();
 #ifdef BASICWINDOWS_USE_IOCP
-	//! IOCPå›è°ƒå‘é€æˆåŠŸå­—èŠ‚
-	void SendDataSuccessAndCheckSend(DWORD dwIoSize);
+    //! IOCP»Øµ÷·¢ËÍ³É¹¦×Ö½Ú
+    void SendDataSuccessAndCheckSend(DWORD dwIoSize);
 #endif
 
-	//! åŠ å…¥å‘é€é˜Ÿåˆ—
-	void AddSendQueue(SendBufferCache* pSendCache);
+    //! ¼ÓÈë·¢ËÍ¶ÓÁĞ
+    void AddSendQueue(SendBufferCache* pSendCache);
 
-	//! æ”¶åˆ°æ•°æ®
-	void OnReceiveData(const char* pszData, uint32_t dwIoSize);
+    //! ÊÕµ½Êı¾İ
+    void OnReceiveData(const char* pszData, uint32_t dwIoSize);
 
-	//! é‡ç½®è¿‡æ»¤å™¨çŠ¶æ€
-	void ResetPreSend();
+    //! ÖØÖÃ¹ıÂËÆ÷×´Ì¬
+    void ResetPreSend();
 
-	//! æ–­å¼€æ¶ˆæ¯
-	void OnDisconnect(uint32_t dwNetCode);
-	void OnSendData(uint32_t dwIoSize);
-	void OnConnect(uint32_t dwNetCode);
-	uint32_t OnReceive(uint32_t dwNetCode, const char *pszData, int32_t cbData);
-	void OnError(uint32_t dwNetCode, int32_t lRetCode);
-	//! è¿‡æ»¤å™¨æ¥å—æ•°æ®
-	void PreReceiveData(uint32_t dwNetCode, const char *pszData, int32_t cbData);
+    //! ¶Ï¿ªÏûÏ¢
+    void OnDisconnect(uint32_t dwNetCode);
+    void OnSendData(uint32_t dwIoSize);
+    void OnConnect(uint32_t dwNetCode);
+    uint32_t OnReceive(uint32_t dwNetCode, const char *pszData, int32_t cbData);
+    void OnError(uint32_t dwNetCode, int32_t lRetCode);
+    //! ¹ıÂËÆ÷½ÓÊÜÊı¾İ
+    void PreReceiveData(uint32_t dwNetCode, const char *pszData, int32_t cbData);
 protected:
-	virtual CBasicSessionNet* GetRealSessionNet(){ return m_pFather; }
+    virtual CBasicSessionNet* GetRealSessionNet(){ return m_pFather; }
 protected:
-	static unsigned short	m_usTimeoutShakeHandle;		//default shakehandle timeout time
-	CBasicSessionNetNotify*	m_pFather;
-	uint16_t				m_usRecTimeout;				//è¶…æ—¶æ—¶é—´ï¼Œ0ä»£è¡¨ä¸è¶…æ—¶
-	uint32_t				m_unIdleCount;				//è¿›å…¥ç©ºé—²çš„æ¬¡æ•°
+    static unsigned short	m_usTimeoutShakeHandle;		//default shakehandle timeout time
+    CBasicSessionNetNotify*	m_pFather;
+    uint16_t				m_usRecTimeout;				//³¬Ê±Ê±¼ä£¬0´ú±í²»³¬Ê±
+    uint32_t				m_unIdleCount;				//½øÈë¿ÕÏĞµÄ´ÎÊı
 
-	BasicNetStat			m_stNet;
-	BasicNetStat			m_lastNet;
+    BasicNetStat			m_stNet;
+    BasicNetStat			m_lastNet;
 
-	//çº¿ç¨‹å†…ä½¿ç”¨
-	CBasicBitstream			m_bufCacheTmp;
+    //Ïß³ÌÄÚÊ¹ÓÃ
+    CBasicBitstream			m_bufCacheTmp;
 #ifdef BASICWINDOWS_USE_IOCP
-	bool					m_bSend;
-	OVERLAPPEDPLUS			m_olRead;
-	OVERLAPPEDPLUS			m_olWrite;
-	WSABUF					m_wsaInBuffer;
-	char					m_byInBuffer[MAX_BUFFER_SEND_BUF];		//é¢„åˆ†é…çš„æ¥æ”¶æ•°æ®ç¼“å†²åŒº
-	WSABUF					m_wsaOutBuffer;
-	char					m_byOutBuffer[MAX_BUFFER_SEND_BUF];		//é¢„åˆ†é…çš„å‘é€æ•°æ®ç¼“å†²åŒº
+    bool					m_bSend;
+    OVERLAPPEDPLUS			m_olRead;
+    OVERLAPPEDPLUS			m_olWrite;
+    WSABUF					m_wsaInBuffer;
+    char					m_byInBuffer[MAX_BUFFER_SEND_BUF];		//Ô¤·ÖÅäµÄ½ÓÊÕÊı¾İ»º³åÇø
+    WSABUF					m_wsaOutBuffer;
+    char					m_byOutBuffer[MAX_BUFFER_SEND_BUF];		//Ô¤·ÖÅäµÄ·¢ËÍÊı¾İ»º³åÇø
 #else
-	event					m_wevent;
+    event					m_wevent;
 #endif
 
 private:
-	//å‘é€çš„ç¼“å­˜åŒº
-	CMsgSendBuffer			m_msgQueue;
+    //·¢ËÍµÄ»º´æÇø
+    CMsgSendBuffer			m_msgQueue;
 
-	friend class CNetThread;
+    friend class CNetThread;
 };
-    void OnLinkRead(evutil_socket_t fd, short event, void *arg);
-    void OnLinkWrite(evutil_socket_t fd, short event, void *arg);
+void OnLinkRead(evutil_socket_t fd, short event, void *arg);
+void OnLinkWrite(evutil_socket_t fd, short event, void *arg);
 
 __NS_BASIC_END
 //////////////////////////////////////////////////////////////////////////////////////////////////

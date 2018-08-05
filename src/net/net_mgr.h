@@ -1,10 +1,10 @@
-ï»¿/***********************************************************************************************
-// æ–‡ä»¶å:     net_mgr.h
-// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
+/***********************************************************************************************
+// ÎÄ¼şÃû:     net_mgr.h
+// ´´½¨Õß:     ²ÌÕñÇò
 // Email:      zqcai@w.cn
-// åˆ›å»ºæ—¶é—´:   2016-9-12 11:50:18
-// å†…å®¹æè¿°:   å®šä¹‰TCPé€šä¿¡çš„åŸºæœ¬ç±»
-// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
+// ´´½¨Ê±¼ä:   2016-9-12 11:50:18
+// ÄÚÈİÃèÊö:   ¶¨ÒåTCPÍ¨ĞÅµÄ»ù±¾Àà
+// °æ±¾ĞÅÏ¢:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_NET_MGR_H
 #define BASIC_NET_MGR_H
@@ -15,111 +15,111 @@
 __NS_BASIC_START
 ///////////////////////////////////////////////////////////////////////////////
 struct CEventQueueItem{
-	CBasicNet_Socket*								m_pRefNetSession;
-	CBasicNet_Socket::pCallSameRefNetSessionFunc	m_pCallFunc;
-	intptr_t										m_lRevert;
+    CBasicNet_Socket*								m_pRefNetSession;
+    CBasicNet_Socket::pCallSameRefNetSessionFunc	m_pCallFunc;
+    intptr_t										m_lRevert;
 };
 
 class CNetThread : public basiclib::CBasicObject{
 public:
-	CNetThread();
-	virtual ~CNetThread();
+    CNetThread();
+    virtual ~CNetThread();
 
-	//! å‘é€äº‹ä»¶
-	void SetEvent(CBasicNet_Socket* pSession, CBasicNet_Socket::pCallSameRefNetSessionFunc pCallFunc, intptr_t lRevert);
+    //! ·¢ËÍÊÂ¼ş
+    void SetEvent(CBasicNet_Socket* pSession, CBasicNet_Socket::pCallSameRefNetSessionFunc pCallFunc, intptr_t lRevert);
 
-	//! å‡†å¤‡å…³é—­
-	void ReadyToClose();
+    //! ×¼±¸¹Ø±Õ
+    void ReadyToClose();
 
-	//! åŠ å…¥åˆ°å…¨å±€æ¶ˆæ¯é˜Ÿåˆ—
-	void AddMessageQueue(CBasicNet_Socket* pSocket);
+    //! ¼ÓÈëµ½È«¾ÖÏûÏ¢¶ÓÁĞ
+    void AddMessageQueue(CBasicNet_Socket* pSocket);
 
-	//! å¤„ç†æ¶ˆæ¯é˜Ÿåˆ—
-	void RunMessageQueue();
+    //! ´¦ÀíÏûÏ¢¶ÓÁĞ
+    void RunMessageQueue();
 #ifdef BASICWINDOWS_USE_IOCP
-	//! IOCPçº¿ç¨‹
-	static unsigned __stdcall ThreadIOCPFunc(void* lpWorkContext);
+    //! IOCPÏß³Ì
+    static unsigned __stdcall ThreadIOCPFunc(void* lpWorkContext);
 
-	//! å¼€å§‹æ¥æ”¶æ•°æ®
-	bool StartRecvData(CBasicNet_SocketTransfer* pSocket);
+    //! ¿ªÊ¼½ÓÊÕÊı¾İ
+    bool StartRecvData(CBasicNet_SocketTransfer* pSocket);
 
-	//! è·å–æ‰©å±•func
-	static IOCPExt_Func& GetExtFunc(){ return m_funcExt; }
+    //! »ñÈ¡À©Õ¹func
+    static IOCPExt_Func& GetExtFunc(){ return m_funcExt; }
 #else
-	//! å¼‚æ­¥dnsè§£æ
-	bool DNSParse(const char* pName, evdns_getaddrinfo_cb pCallback, CBasicNet_Socket* pSession);
+    //! Òì²½dns½âÎö
+    bool DNSParse(const char* pName, evdns_getaddrinfo_cb pCallback, CBasicNet_Socket* pSession);
 #endif
 
 #ifdef BASICWINDOWS_USE_IOCP
 protected:
-	static IOCPExt_Func			m_funcExt;
-	static bool					m_bExtInit;
+    static IOCPExt_Func			m_funcExt;
+    static bool					m_bExtInit;
 public:
-	DWORD						m_dwThreadID;
-	HANDLE						m_hCompletionPort;
-	OVERLAPPEDPLUS				m_olFunc;
-	DWORD						m_dwIoSize;
-	ULONG						m_ulFlags;
+    DWORD						m_dwThreadID;
+    HANDLE						m_hCompletionPort;
+    OVERLAPPEDPLUS				m_olFunc;
+    DWORD						m_dwIoSize;
+    ULONG						m_ulFlags;
 #else
 public:
-	DWORD						m_dwThreadID;
-	evutil_socket_t				m_pair[2];
-	struct event_base*			m_base;
-	struct evdns_base*			m_dnsbase;
-	struct event				notify_event;
+    DWORD						m_dwThreadID;
+    evutil_socket_t				m_pair[2];
+    struct event_base*			m_base;
+    struct evdns_base*			m_dnsbase;
+    struct event				notify_event;
 #endif
 
-	//å…¨å±€çš„æ¶ˆæ¯é€šçŸ¥
-	basiclib::SpinLock				m_lockMsg;
-	basiclib::CBasicSmartBuffer		m_smBuf;
-	basiclib::CBasicSmartBuffer		m_smRunBuf;
+    //È«¾ÖµÄÏûÏ¢Í¨Öª
+    basiclib::SpinLock				m_lockMsg;
+    basiclib::CBasicSmartBuffer		m_smBuf;
+    basiclib::CBasicSmartBuffer		m_smRunBuf;
 };
 /////////////////////////////////////////////////////////////////////////////
 //net mgr
-class CBasicNetMgv : public CBasicObject {
+class CBasicNetMgv : public CBasicObject{
 public:
-	typedef basic_vector<CBasicNet_Socket*>						VTOnTimerSessionList;
-	typedef VTOnTimerSessionList::iterator						VTOnTimerSessionListIterator;
+    typedef basic_vector<CBasicNet_Socket*>						VTOnTimerSessionList;
+    typedef VTOnTimerSessionList::iterator						VTOnTimerSessionListIterator;
 public:
-	CBasicNetMgv();
-	virtual ~CBasicNetMgv();
+    CBasicNetMgv();
+    virtual ~CBasicNetMgv();
 
-	//! ontimerçº¿ç¨‹
-	static THREAD_RETURN ThreadCheckFunc(void* lpWorkContext);
+    //! ontimerÏß³Ì
+    static THREAD_RETURN ThreadCheckFunc(void* lpWorkContext);
 
-	//! åˆå§‹åŒ–çº¿ç¨‹
-	void Initialize(pGetConfFunc func);
+    //! ³õÊ¼»¯Ïß³Ì
+    void Initialize(pGetConfFunc func);
 
-	//! é€€å‡º
-	void CloseNetSocket();
+    //! ÍË³ö
+    void CloseNetSocket();
 
-	//! åŠ å…¥timer
-	void AddToTimer(CBasicNet_Socket* pSocket);
+    //! ¼ÓÈëtimer
+    void AddToTimer(CBasicNet_Socket* pSocket);
 
-	//! åˆ é™¤timer
-	void DelToTimer(CBasicNet_Socket* pSocket);
+    //! É¾³ıtimer
+    void DelToTimer(CBasicNet_Socket* pSocket);
 
-	//! ontimerçº¿ç¨‹
-	void OnTimer();
+    //! ontimerÏß³Ì
+    void OnTimer();
 public:
-	bool					m_bTimeToKill;
-	bool					m_bTimerStop;
+    bool					m_bTimeToKill;
+    bool					m_bTimerStop;
 
-	VTOnTimerSessionList	m_vtOnTimerList;
+    VTOnTimerSessionList	m_vtOnTimerList;
 
-	SpinLock				m_spinLockAdd;
-	VTOnTimerSessionList	m_vtAddList;
-	VTOnTimerSessionList	m_vtAddListDeal;
+    SpinLock				m_spinLockAdd;
+    VTOnTimerSessionList	m_vtAddList;
+    VTOnTimerSessionList	m_vtAddListDeal;
 
-	VTOnTimerSessionList	m_vtDelList;
-	VTOnTimerSessionList	m_vtDelListDeal;
+    VTOnTimerSessionList	m_vtDelList;
+    VTOnTimerSessionList	m_vtDelListDeal;
 
-	typedef basic_vector<CBasicSessionNet::CRefBasicSessionNet>	VTDeathSessionList;
-	VTDeathSessionList		m_vtDeathSession;
-	VTDeathSessionList		m_vtDeathSessionDeal;
+    typedef basic_vector<CBasicSessionNet::CRefBasicSessionNet>	VTDeathSessionList;
+    VTDeathSessionList		m_vtDeathSession;
+    VTDeathSessionList		m_vtDeathSessionDeal;
 };
 
-//å®šä¹‰å•æ€
+//¶¨Òåµ¥Ì¬
 typedef CBasicSingleton<CBasicNetMgv>	CBasicSingletonNetMgv;
 
 __NS_BASIC_END

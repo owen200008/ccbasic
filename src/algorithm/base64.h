@@ -1,96 +1,100 @@
-ï»¿/***********************************************************************************************
-// æ–‡ä»¶å:     base64.h
-// åˆ›å»ºè€…:     è”¡æŒ¯çƒ
+/***********************************************************************************************
+// ÎÄ¼þÃû:     base64.h
+// ´´½¨Õß:     ²ÌÕñÇò
 // Email:      zqcai@w.cn
-// åˆ›å»ºæ—¶é—´:   2012/2/17 11:19:23
-// å†…å®¹æè¿°:   base64æ ‡å‡†ç¼–ç ã€è§£ç ç±»
-base64Ex æ‰©å±•base64ç¼–ç ã€è§£ç ç±»ï¼ˆå®žçŽ°ç®€å•åŠ å¯†ï¼‰
-// ç‰ˆæœ¬ä¿¡æ¯:   1.0V
+// ´´½¨Ê±¼ä:   2012/2/17 11:19:23
+// ÄÚÈÝÃèÊö:   base64±ê×¼±àÂë¡¢½âÂëÀà
+base64Ex À©Õ¹base64±àÂë¡¢½âÂëÀà£¨ÊµÏÖ¼òµ¥¼ÓÃÜ£©
+// °æ±¾ÐÅÏ¢:   1.0V
 ************************************************************************************************/
 #ifndef BASIC_BASE64_H
 #define BASIC_BASE64_H
 
 
 __NS_BASIC_START
-class CBasicBase64;		///æ ‡å¿—Base64ç¼–ç å¤„ç†ç±»
-     class CBasicBaseEx;	///æˆ‘ä»¬è‡ªå·±çš„ç‰¹æ®ŠBase64ç¼–ç å¤„ç†ç±»
+class CBasicBase64;		///±êÖ¾Base64±àÂë´¦ÀíÀà
+class CBasicBaseEx;	///ÎÒÃÇ×Ô¼ºµÄÌØÊâBase64±àÂë´¦ÀíÀà
 
-//! æ ‡å‡†base64ç¼–ç ã€è§£ç å¤„ç†ç±»
-class _BASIC_DLL_API CBasicBase64 : public basiclib::CBasicObject
-{
+                    //! ±ê×¼base64±àÂë¡¢½âÂë´¦ÀíÀà
+class _BASIC_DLL_API CBasicBase64 : public basiclib::CBasicObject{
 public:
-	CBasicBase64();
-	virtual ~CBasicBase64();
+    CBasicBase64();
+    virtual ~CBasicBase64();
 
-	//! Base64è§£ç å‡½æ•°
-	/*! 
-	 *\param szDecoding éœ€è¦è§£ç çš„æ•°æ®æŒ‡é’ˆ
-	 *\param nSize      æ•°æ®æ”¯æŒé•¿åº¦
-	 *\param buf        è§£ç æ•°æ®ä¿å­˜,æˆåŠŸçš„æ—¶å€™ï¼Œå°†è§£ç æ•°æ®è¿½åŠ åœ¨bufæ•°æ®å°¾éƒ¨
-	 *\return           >0 æˆåŠŸç¼–ç ä¹‹åŽçš„é•¿åº¦ <0 é”™è¯¯
-	*/
-	virtual long Decode(BYTE* szDecoding, int nSize, CBasicSmartBuffer& buf);
-	//! Base64è§£ç å‡½æ•°
-	/*! 
-	 *\param szDecoding éœ€è¦è§£ç çš„æ•°æ®æŒ‡é’ˆ
-	 *\param nSize      æ•°æ®æ”¯æŒé•¿åº¦
-	 *\param pOut       è§£ç æ•°æ®è¾“å‡º
-	 *\param nMaxSize   pOutçš„æœ€å¤§é•¿åº¦ï¼Œè¿”å›žæ—¶æŒ‡æ˜Žè§£ç çš„æ•°æ®é•¿åº¦ï¼Œ
-	 *\return           >0 æˆåŠŸç¼–ç ä¹‹åŽçš„é•¿åº¦ <0 é”™è¯¯,pOut=NULLæ—¶ï¼Œè¿”å›žéœ€è¦çš„æ•°æ®é•¿åº¦
-	*/
-	virtual long Decode( BYTE* szDecoding, int nSize, BYTE* pOut, int nMaxSize);
+    //! Base64½âÂëº¯Êý
+    /*!
+    *\param szDecoding ÐèÒª½âÂëµÄÊý¾ÝÖ¸Õë
+    *\param nSize      Êý¾ÝÖ§³Ö³¤¶È
+    *\param buf        ½âÂëÊý¾Ý±£´æ,³É¹¦µÄÊ±ºò£¬½«½âÂëÊý¾Ý×·¼ÓÔÚbufÊý¾ÝÎ²²¿
+    *\return           >0 ³É¹¦±àÂëÖ®ºóµÄ³¤¶È <0 ´íÎó
+    */
+    virtual long Decode(BYTE* szDecoding, int nSize, CBasicSmartBuffer& buf);
+    //! Base64½âÂëº¯Êý
+    /*!
+    *\param szDecoding ÐèÒª½âÂëµÄÊý¾ÝÖ¸Õë
+    *\param nSize      Êý¾ÝÖ§³Ö³¤¶È
+    *\param pOut       ½âÂëÊý¾ÝÊä³ö
+    *\param nMaxSize   pOutµÄ×î´ó³¤¶È£¬·µ»ØÊ±Ö¸Ã÷½âÂëµÄÊý¾Ý³¤¶È£¬
+    *\return           >0 ³É¹¦±àÂëÖ®ºóµÄ³¤¶È <0 ´íÎó,pOut=NULLÊ±£¬·µ»ØÐèÒªµÄÊý¾Ý³¤¶È
+    */
+    virtual long Decode(BYTE* szDecoding, int nSize, BYTE* pOut, int nMaxSize);
 
-	//! Base64ç¼–ç å‡½æ•°
-	/*! 
-	 *\param szDecoding éœ€è¦ç¼–ç çš„æ•°æ®æŒ‡é’ˆ
-	 *\param nSize      æ•°æ®æ”¯æŒé•¿åº¦
-	 *\param buf        ç¼–ç æ•°æ®ä¿å­˜,æˆåŠŸçš„æ—¶å€™ï¼Œå°†ç¼–ç ç æ•°æ®è¿½åŠ åœ¨bufæ•°æ®å°¾éƒ¨
-	 *\return           >0 æˆåŠŸç¼–ç ä¹‹åŽçš„é•¿åº¦ <0 é”™è¯¯
-	*/
-	virtual long Encode(BYTE* szEncoding, int nSize, CBasicSmartBuffer& buf);
-	//! Base64ç¼–ç å‡½æ•°
-	/*! 
-	 *\param szDecoding éœ€è¦ç¼–ç çš„æ•°æ®æŒ‡é’ˆ
-	 *\param nSize      æ•°æ®æ”¯æŒé•¿åº¦
-	 *\param pOut       ç¼–ç æ•°æ®è¾“å‡º
-	 *\param nMaxSize   pOutçš„æœ€å¤§é•¿åº¦ï¼Œè¿”å›žæ—¶æŒ‡æ˜Žç¼–ç çš„æ•°æ®é•¿åº¦ï¼Œ
-	 *\return           >0 æˆåŠŸç¼–ç ä¹‹åŽçš„é•¿åº¦ <0 é”™è¯¯,pOut=NULLæ—¶ï¼Œ è¿”å›žéœ€è¦çš„æ•°æ®é•¿åº¦
-	*/
-	virtual long Encode( BYTE* szEncoding, int nSize, BYTE* pOut, int nMaxSize);
-
-protected:
-	virtual BYTE GetEncodeAlphabet(int nIndex)
-		{ return m_sBase64Alphabet[nIndex]; }
-	virtual BYTE GetDecodeAlphabet(int nIndex)
-		{ return m_sBase64Decode[nIndex]; }
-	virtual char GetPadding()
-		{ return base64_pad; }
+    //! Base64±àÂëº¯Êý
+    /*!
+    *\param szDecoding ÐèÒª±àÂëµÄÊý¾ÝÖ¸Õë
+    *\param nSize      Êý¾ÝÖ§³Ö³¤¶È
+    *\param buf        ±àÂëÊý¾Ý±£´æ,³É¹¦µÄÊ±ºò£¬½«±àÂëÂëÊý¾Ý×·¼ÓÔÚbufÊý¾ÝÎ²²¿
+    *\return           >0 ³É¹¦±àÂëÖ®ºóµÄ³¤¶È <0 ´íÎó
+    */
+    virtual long Encode(BYTE* szEncoding, int nSize, CBasicSmartBuffer& buf);
+    //! Base64±àÂëº¯Êý
+    /*!
+    *\param szDecoding ÐèÒª±àÂëµÄÊý¾ÝÖ¸Õë
+    *\param nSize      Êý¾ÝÖ§³Ö³¤¶È
+    *\param pOut       ±àÂëÊý¾ÝÊä³ö
+    *\param nMaxSize   pOutµÄ×î´ó³¤¶È£¬·µ»ØÊ±Ö¸Ã÷±àÂëµÄÊý¾Ý³¤¶È£¬
+    *\return           >0 ³É¹¦±àÂëÖ®ºóµÄ³¤¶È <0 ´íÎó,pOut=NULLÊ±£¬ ·µ»ØÐèÒªµÄÊý¾Ý³¤¶È
+    */
+    virtual long Encode(BYTE* szEncoding, int nSize, BYTE* pOut, int nMaxSize);
 
 protected:
-	static BYTE m_sBase64Alphabet[];
-	static unsigned char m_sBase64Decode[];
-	static char base64_pad;	
+    virtual BYTE GetEncodeAlphabet(int nIndex){
+        return m_sBase64Alphabet[nIndex];
+    }
+    virtual BYTE GetDecodeAlphabet(int nIndex){
+        return m_sBase64Decode[nIndex];
+    }
+    virtual char GetPadding(){
+        return base64_pad;
+    }
+
+protected:
+    static BYTE m_sBase64Alphabet[];
+    static unsigned char m_sBase64Decode[];
+    static char base64_pad;
 };
 
-//! ç»è¿‡æ”¹é€ çš„base64ç¼–ç ã€è§£ç å¤„ç†ç±»ï¼Œè°ƒç”¨æŽ¥å£å’ŒCBasicBase64ç›¸åŒ
-class _BASIC_DLL_API CBasicBase64Ex : public CBasicBase64
-{
+//! ¾­¹ý¸ÄÔìµÄbase64±àÂë¡¢½âÂë´¦ÀíÀà£¬µ÷ÓÃ½Ó¿ÚºÍCBasicBase64ÏàÍ¬
+class _BASIC_DLL_API CBasicBase64Ex : public CBasicBase64{
 public:
-	CBasicBase64Ex();
-	virtual ~CBasicBase64Ex();
+    CBasicBase64Ex();
+    virtual ~CBasicBase64Ex();
 
 protected:
-	virtual BYTE GetEncodeAlphabet(int nIndex)
-		{ return m_sBase64Alphabet[nIndex]; }
-	virtual BYTE GetDecodeAlphabet(int nIndex)
-		{ return m_sBase64Decode[nIndex]; }
-	virtual char GetPadding()
-		{ return base64_pad; }
+    virtual BYTE GetEncodeAlphabet(int nIndex){
+        return m_sBase64Alphabet[nIndex];
+    }
+    virtual BYTE GetDecodeAlphabet(int nIndex){
+        return m_sBase64Decode[nIndex];
+    }
+    virtual char GetPadding(){
+        return base64_pad;
+    }
 
 protected:
-	static BYTE m_sBase64Alphabet[];
-	static unsigned char m_sBase64Decode[];
-	static char base64_pad;	
+    static BYTE m_sBase64Alphabet[];
+    static unsigned char m_sBase64Decode[];
+    static char base64_pad;
 };
 __NS_BASIC_END
 

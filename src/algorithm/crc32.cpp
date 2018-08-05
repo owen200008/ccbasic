@@ -1,4 +1,4 @@
-﻿#include "../inc/basic.h"
+#include "../inc/basic.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __NS_BASIC_START
@@ -71,14 +71,11 @@ uint32_t Basic_crc32(unsigned char* pszData, unsigned int nDataLength)
 	return 	Basic_crec32_End(crc);
 }
 
-long Basic_crc32_File(const char* lpszFileName, uint32_t &crc)
-{
+long Basic_crc32_File(const char* lpszFileName, uint32_t &crc){
 	basiclib::CBasicFileObj  file;
-	//打开文件
 	long fileResult = file.Open(lpszFileName, PF_DISK_FILE | PF_READ_ONLY);
 
-	if (fileResult != BASIC_FILE_OK)
-	{
+	if (fileResult != BASIC_FILE_OK){
 		return fileResult;
 	}
 	
@@ -88,30 +85,23 @@ long Basic_crc32_File(const char* lpszFileName, uint32_t &crc)
 	long lLeft   = lTotalSize % lReadCount;
 
 	char* pBuffer = (char*)BasicAllocate(lReadCount);
-	if (NULL == pBuffer)
-	{
+	if (NULL == pBuffer){
 		return BASIC_FILE_NO_MEMORY;
 	}
 
-	//crc32初始化
 	crc = Basic_crc32_Init();
 	file.SeekToBegin();
-	//读取文件，进行CRC32计算
-	for(int i = 0; i < lRepeat; i++)
-	{
+	for(int i = 0; i < lRepeat; i++){
 		memset(pBuffer, 0, lReadCount);
 		file.Read(pBuffer, lReadCount);
 		crc = Basic_crc32_Update(crc, (unsigned char*)pBuffer, lReadCount);
 	}
 	
-	if(lLeft != 0)
-	{
+	if(lLeft != 0){
 		memset(pBuffer, 0, lLeft);
 		file.Read(pBuffer, lLeft);
 		crc = Basic_crc32_Update(crc, (unsigned char*)pBuffer, lLeft);
 	}
-
-	//CRC32计算完成
     crc =  Basic_crec32_End(crc);
 	return BASIC_FILE_OK;
 }

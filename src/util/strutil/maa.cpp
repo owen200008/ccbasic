@@ -1,4 +1,4 @@
-﻿#include "../../inc/basic.h"
+#include "../../inc/basic.h"
 #include "maa.h"
 
 #define BIT31 0x80000000L 

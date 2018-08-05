@@ -1,6 +1,6 @@
 
 //
-//å–å¾—ç³»ç»Ÿä¿¡æ¯ç³»åˆ—å‡½æ•°
+//È¡µÃÏµÍ³ĞÅÏ¢ÏµÁĞº¯Êı
 //
 //
 #include "../inc/basic.h"
@@ -17,7 +17,7 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <arpa/inet.h>
- 
+
 #include <mach/mach.h>
 #include <mach/mach_error.h>
 
@@ -31,522 +31,474 @@
 
 
 __NS_BASIC_START
- 
-//!è·å–æ˜¯å¦æœ‰é”®ç›˜æ¶ˆæ¯
-int BasicKBHit()
-{
+
+//!»ñÈ¡ÊÇ·ñÓĞ¼üÅÌÏûÏ¢
+int BasicKBHit(){
     return 0;
 }
 
-//!å–å¾—æ“ä½œç³»ç»Ÿç‰ˆæœ¬
-/*! 
-*\param strOSVer	è¿”å›æ“ä½œç³»ç»Ÿç‰ˆæœ¬ä¿¡æ¯
-*\return æˆåŠŸè¿”å›0ï¼Œå¤±è´¥è¿”å›é0
+//!È¡µÃ²Ù×÷ÏµÍ³°æ±¾
+/*!
+*\param strOSVer	·µ»Ø²Ù×÷ÏµÍ³°æ±¾ĞÅÏ¢
+*\return ³É¹¦·µ»Ø0£¬Ê§°Ü·µ»Ø·Ç0
 */
-_BASIC_DLL_API int BasicGetOSystemV(CBasicString& strOSVer)
-{	
-	struct utsname osbuf;
-    	uname(&osbuf);
- 	strOSVer.Format("%s %s", osbuf.sysname, osbuf.release);
-	return 0;
+_BASIC_DLL_API int BasicGetOSystemV(CBasicString& strOSVer){
+    struct utsname osbuf;
+    uname(&osbuf);
+    strOSVer.Format("%s %s", osbuf.sysname, osbuf.release);
+    return 0;
 }
 //
 
 //
-//!å–å¾—CPUå†…æ ¸ä¸ªæ•°
+//!È¡µÃCPUÄÚºË¸öÊı
 /*!
- *\return è¿”å›CPUå†…æ ¸ä¸ªæ•°
- */
-_BASIC_DLL_API int BasicGetCpuNumber()
-{
-	int nName[2] = {CTL_HW,HW_NCPU};
-	int nCPU = 0;
-	size_t sSize = sizeof(nCPU);
-	sysctl(nName, 2, &nCPU, &sSize, NULL, 0);
-	return nCPU;
+*\return ·µ»ØCPUÄÚºË¸öÊı
+*/
+_BASIC_DLL_API int BasicGetCpuNumber(){
+    int nName[2] = { CTL_HW,HW_NCPU };
+    int nCPU = 0;
+    size_t sSize = sizeof(nCPU);
+    sysctl(nName, 2, &nCPU, &sSize, NULL, 0);
+    return nCPU;
     //	return sysconf(_SC_NPROCESSORS_ONLN);
 }
 //
 
 //
-//!å–å¾—CPUå†…æ ¸ä¸ªæ•°
-/*! 
-*\return è¿”å›CPUå†…æ ¸ä¸ªæ•°
+//!È¡µÃCPUÄÚºË¸öÊı
+/*!
+*\return ·µ»ØCPUÄÚºË¸öÊı
 */
-_BASIC_DLL_API int BasicGetNumberOfCpu()
-{
-	int nName[2] = {CTL_HW,HW_NCPU};
-	int nCPU = 0;
-	size_t sSize = sizeof(nCPU);
-	sysctl(nName, 2, &nCPU, &sSize, NULL, 0);
-	return nCPU;
-//	return sysconf(_SC_NPROCESSORS_ONLN);
+_BASIC_DLL_API int BasicGetNumberOfCpu(){
+    int nName[2] = { CTL_HW,HW_NCPU };
+    int nCPU = 0;
+    size_t sSize = sizeof(nCPU);
+    sysctl(nName, 2, &nCPU, &sSize, NULL, 0);
+    return nCPU;
+    //	return sysconf(_SC_NPROCESSORS_ONLN);
 }
 //
 
 
 typedef unsigned long long TIC_t;
 typedef          long long SIC_t;
-typedef struct CPU_t {
-	unsigned long new_userTicks, new_NiceTicks, new_SysTicks, new_IdleTicks ;
-	unsigned long old_userTicks, old_NiceTicks, old_SysTicks, old_IdleTicks ;
-	unsigned id;  // the CPU ID number
+typedef struct CPU_t{
+    unsigned long new_userTicks, new_NiceTicks, new_SysTicks, new_IdleTicks;
+    unsigned long old_userTicks, old_NiceTicks, old_SysTicks, old_IdleTicks;
+    unsigned id;  // the CPU ID number
 } CPU_t;
 
 
 static CPU_t *pCpu = NULL;
 static int nCpu_tot;
 
-static CPU_t *cpus_refresh (CPU_t *pCpu)
-{
-	mach_msg_type_number_t numCpuCount;
-	processor_info_array_t ayInfoArray;
-	mach_msg_type_number_t numInfoCount;
-	kern_return_t kr;
-	processor_cpu_load_info_data_t* ayCpuLoadInfo;
-	unsigned long old_ticks,new_ticks,old_totalTicks,new_totalTicks;
-	int cpu,state;
-	
-	kr = host_processor_info(mach_host_self(),PROCESSOR_CPU_LOAD_INFO, &numCpuCount, &ayInfoArray, &numInfoCount);
-	if (kr) 
-		return NULL;
-	
-	nCpu_tot = numCpuCount;
-	if(pCpu == NULL && nCpu_tot > 0)
-	{
-		pCpu = (CPU_t *)malloc((nCpu_tot + 1) * sizeof(CPU_t));
-		memset(pCpu, 0, (nCpu_tot + 1) * sizeof(CPU_t));
-		for (int i = 0; i < nCpu_tot; i++)
-			pCpu[i].id = i;
-		
-	}
-	
-	ayCpuLoadInfo = (processor_cpu_load_info_data_t*) ayInfoArray;
-	if(ayCpuLoadInfo == NULL)
-		return NULL;
+static CPU_t *cpus_refresh(CPU_t *pCpu){
+    mach_msg_type_number_t numCpuCount;
+    processor_info_array_t ayInfoArray;
+    mach_msg_type_number_t numInfoCount;
+    kern_return_t kr;
+    processor_cpu_load_info_data_t* ayCpuLoadInfo;
+    unsigned long old_ticks, new_ticks, old_totalTicks, new_totalTicks;
+    int cpu, state;
 
-	
-	for (int i = 0; i < nCpu_tot; i++)
-	{
-		pCpu[i].new_userTicks	= ayCpuLoadInfo[i].cpu_ticks[CPU_STATE_USER];
-		pCpu[i].new_NiceTicks	= ayCpuLoadInfo[i].cpu_ticks[CPU_STATE_NICE];
-		pCpu[i].new_SysTicks	= ayCpuLoadInfo[i].cpu_ticks[CPU_STATE_SYSTEM];
-		pCpu[i].new_IdleTicks	= ayCpuLoadInfo[i].cpu_ticks[CPU_STATE_IDLE];
-	}
-	return pCpu;
-}
-	
-//
-//!å–å¾—CPUåˆ©ç”¨ç‡,å•ä½ç™¾åˆ†æ¯”
-/*!
-*\return è¿”å›CPUåˆ©ç”¨ç‡ç™¾åˆ†æ¯”*100
- */
-int BasicGetCPUUse()
-{
-	pCpu = cpus_refresh(pCpu);
-	
-	if(pCpu == NULL)
-		return 0;
-	
-	unsigned long nNewTotalTicks = 0;
-	unsigned long nOldTotalTicks = 0;
-	
-	unsigned long nNewTicks = 0;
-	unsigned long nOldTicks = 0;
-	
-	unsigned long nOldTotalSysTicks = 0;
-	for(int i = 0; i< nCpu_tot; i++)
-	{
-		nNewTotalTicks	+= pCpu[i].new_userTicks + pCpu[i].new_NiceTicks + pCpu[i].new_SysTicks + pCpu[i].new_IdleTicks;
-		nOldTotalTicks	+= pCpu[i].old_userTicks + pCpu[i].old_NiceTicks + pCpu[i].old_SysTicks + pCpu[i].old_IdleTicks;
-		nNewTicks		+= pCpu[i].new_userTicks + pCpu[i].new_NiceTicks + pCpu[i].new_SysTicks;
-		nOldTicks		+= pCpu[i].old_userTicks + pCpu[i].old_NiceTicks + pCpu[i].old_SysTicks;
-			
-		pCpu[i].old_userTicks	= pCpu[i].new_userTicks;
-		pCpu[i].old_NiceTicks	= pCpu[i].new_NiceTicks;
-		pCpu[i].old_SysTicks	= pCpu[i].new_SysTicks;
-		pCpu[i].old_IdleTicks	= pCpu[i].new_IdleTicks;
-	}
-	
-	int dUsage = (nNewTotalTicks - nOldTotalTicks > 0) ? (double)(nNewTicks - nOldTicks) / (nNewTotalTicks - nOldTotalTicks) *100 : 0;
-	return dUsage;
+    kr = host_processor_info(mach_host_self(), PROCESSOR_CPU_LOAD_INFO, &numCpuCount, &ayInfoArray, &numInfoCount);
+    if(kr)
+        return NULL;
+
+    nCpu_tot = numCpuCount;
+    if(pCpu == NULL && nCpu_tot > 0){
+        pCpu = (CPU_t *)malloc((nCpu_tot + 1) * sizeof(CPU_t));
+        memset(pCpu, 0, (nCpu_tot + 1) * sizeof(CPU_t));
+        for(int i = 0; i < nCpu_tot; i++)
+            pCpu[i].id = i;
+
+    }
+
+    ayCpuLoadInfo = (processor_cpu_load_info_data_t*)ayInfoArray;
+    if(ayCpuLoadInfo == NULL)
+        return NULL;
+
+
+    for(int i = 0; i < nCpu_tot; i++){
+        pCpu[i].new_userTicks = ayCpuLoadInfo[i].cpu_ticks[CPU_STATE_USER];
+        pCpu[i].new_NiceTicks = ayCpuLoadInfo[i].cpu_ticks[CPU_STATE_NICE];
+        pCpu[i].new_SysTicks = ayCpuLoadInfo[i].cpu_ticks[CPU_STATE_SYSTEM];
+        pCpu[i].new_IdleTicks = ayCpuLoadInfo[i].cpu_ticks[CPU_STATE_IDLE];
+    }
+    return pCpu;
 }
 
 //
-//! å–å¾—å†…å­˜ä¿¡æ¯ï¼Œå•ä½K
+//!È¡µÃCPUÀûÓÃÂÊ,µ¥Î»°Ù·Ö±È
 /*!
- *\param dwPhysicalMemory	ç‰©ç†å†…å­˜ 
- *\param dwAvailMemory		å¯ç”¨å†…å­˜
- *\param dwUsedMemory		ä½¿ç”¨å†…å­˜
- *\param dwVirtualMemory	è™šæ‹Ÿå†…å­˜
- */
-_BASIC_DLL_API void BasicGetMemoryInfo(DWORD& dwPhysicalMemory, 
-				   DWORD& dwAvailMemory, 
-				   DWORD& dwUsedMemory, 
-				   DWORD& dwVirtualMemory)
-{
-	int nName[2] = {CTL_HW,HW_PHYSMEM};
-	size_t sSize = sizeof(dwPhysicalMemory);
+*\return ·µ»ØCPUÀûÓÃÂÊ°Ù·Ö±È*100
+*/
+int BasicGetCPUUse(){
+    pCpu = cpus_refresh(pCpu);
 
-	//User HW_MEMSIZE by 64-bit
-	sysctl(nName, 2, &dwPhysicalMemory, &sSize, NULL, 0);
+    if(pCpu == NULL)
+        return 0;
 
-	nName[1] = 
-	sysctl(nName, 2, &dwPhysicalMemory, &sSize, NULL, 0);
+    unsigned long nNewTotalTicks = 0;
+    unsigned long nOldTotalTicks = 0;
+
+    unsigned long nNewTicks = 0;
+    unsigned long nOldTicks = 0;
+
+    unsigned long nOldTotalSysTicks = 0;
+    for(int i = 0; i< nCpu_tot; i++){
+        nNewTotalTicks += pCpu[i].new_userTicks + pCpu[i].new_NiceTicks + pCpu[i].new_SysTicks + pCpu[i].new_IdleTicks;
+        nOldTotalTicks += pCpu[i].old_userTicks + pCpu[i].old_NiceTicks + pCpu[i].old_SysTicks + pCpu[i].old_IdleTicks;
+        nNewTicks += pCpu[i].new_userTicks + pCpu[i].new_NiceTicks + pCpu[i].new_SysTicks;
+        nOldTicks += pCpu[i].old_userTicks + pCpu[i].old_NiceTicks + pCpu[i].old_SysTicks;
+
+        pCpu[i].old_userTicks = pCpu[i].new_userTicks;
+        pCpu[i].old_NiceTicks = pCpu[i].new_NiceTicks;
+        pCpu[i].old_SysTicks = pCpu[i].new_SysTicks;
+        pCpu[i].old_IdleTicks = pCpu[i].new_IdleTicks;
+    }
+
+    int dUsage = (nNewTotalTicks - nOldTotalTicks > 0) ? (double)(nNewTicks - nOldTicks) / (nNewTotalTicks - nOldTotalTicks) * 100 : 0;
+    return dUsage;
 }
 
-//! å–å¾—è¿›ç¨‹ä½¿ç”¨å†…å­˜ å•ä½K
+//
+//! È¡µÃÄÚ´æĞÅÏ¢£¬µ¥Î»K
 /*!
- *\param  hProcessï¼Œè¿›ç¨‹å¥æŸ„ï¼Œå¦‚hProcess==NULL,åˆ™å–å½“å‰è¿›ç¨‹
- *\param  bKeepHandleï¼Œå¦‚æœåº”ç”¨ç¨‹åºéœ€è¦é•¿æœŸå®šæ—¶è°ƒç”¨ï¼Œåˆ™ç½®ä¸ºtrue
- */
-_BASIC_DLL_API DWORD BasicGetProcessMemory(HANDLE hProcess, bool bKeepHandle )
-{
-        struct task_basic_info t_info;
-        mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
-        task_info(current_task(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count);
-        return t_info.resident_size;
+*\param dwPhysicalMemory	ÎïÀíÄÚ´æ
+*\param dwAvailMemory		¿ÉÓÃÄÚ´æ
+*\param dwUsedMemory		Ê¹ÓÃÄÚ´æ
+*\param dwVirtualMemory	ĞéÄâÄÚ´æ
+*/
+_BASIC_DLL_API void BasicGetMemoryInfo(DWORD& dwPhysicalMemory,
+                                       DWORD& dwAvailMemory,
+                                       DWORD& dwUsedMemory,
+                                       DWORD& dwVirtualMemory){
+    int nName[2] = { CTL_HW,HW_PHYSMEM };
+    size_t sSize = sizeof(dwPhysicalMemory);
+
+    //User HW_MEMSIZE by 64-bit
+    sysctl(nName, 2, &dwPhysicalMemory, &sSize, NULL, 0);
+
+    nName[1] =
+        sysctl(nName, 2, &dwPhysicalMemory, &sSize, NULL, 0);
 }
 
-//! å–å¾—ç¡¬ç›˜ä¿¡æ¯
+//! È¡µÃ½ø³ÌÊ¹ÓÃÄÚ´æ µ¥Î»K
 /*!
-*\param  pszDiskBuffer ç¡¬ç›˜ä¿¡æ¯ä¿å­˜ç©ºé—´
-*\param  nBufferLen ç¡¬ç›˜ä¿¡æ¯ä¿å­˜ç©ºé—´é•¿åº¦
- */
-_BASIC_DLL_API DWORD BasicGetDiskInfo(TCHAR* pszDiskBuffer, int nBufferLen)
-{
-    
-	struct  Basic_statfs *s = NULL;
-	int nDiskCount = Basic_getmntinfo(&s, 0);
-	TCHAR* p = pszDiskBuffer;
-	int nLen = nBufferLen;
-	for(int i=0; i<nDiskCount; i++)
-	{
-		int n = _stprintf_s(p, nLen, "%s %d/%d|",
-			s[i].f_mntonname,
-			(s[i].f_bavail * s[i].f_bsize) / (1024 * 1024),
-			(s[i].f_blocks * s[i].f_bsize) / (1024 * 1024)
-			);
-		nLen -= n;
-		p += n;
-	}
-	return nBufferLen - nLen;
+*\param  hProcess£¬½ø³Ì¾ä±ú£¬ÈçhProcess==NULL,ÔòÈ¡µ±Ç°½ø³Ì
+*\param  bKeepHandle£¬Èç¹ûÓ¦ÓÃ³ÌĞòĞèÒª³¤ÆÚ¶¨Ê±µ÷ÓÃ£¬ÔòÖÃÎªtrue
+*/
+_BASIC_DLL_API DWORD BasicGetProcessMemory(HANDLE hProcess, bool bKeepHandle){
+    struct task_basic_info t_info;
+    mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
+    task_info(current_task(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count);
+    return t_info.resident_size;
+}
+
+//! È¡µÃÓ²ÅÌĞÅÏ¢
+/*!
+*\param  pszDiskBuffer Ó²ÅÌĞÅÏ¢±£´æ¿Õ¼ä
+*\param  nBufferLen Ó²ÅÌĞÅÏ¢±£´æ¿Õ¼ä³¤¶È
+*/
+_BASIC_DLL_API DWORD BasicGetDiskInfo(TCHAR* pszDiskBuffer, int nBufferLen){
+
+    struct  Basic_statfs *s = NULL;
+    int nDiskCount = Basic_getmntinfo(&s, 0);
+    TCHAR* p = pszDiskBuffer;
+    int nLen = nBufferLen;
+    for(int i = 0; i<nDiskCount; i++){
+        int n = _stprintf_s(p, nLen, "%s %d/%d|",
+                            s[i].f_mntonname,
+                            (s[i].f_bavail * s[i].f_bsize) / (1024 * 1024),
+                            (s[i].f_blocks * s[i].f_bsize) / (1024 * 1024)
+        );
+        nLen -= n;
+        p += n;
+    }
+    return nBufferLen - nLen;
 }
 //
 
-//! å–è·¯å¾„æ‰€åœ¨ç£ç›˜çš„å‰©ä½™ç©ºé—´
+//! È¡Â·¾¶ËùÔÚ´ÅÅÌµÄÊ£Óà¿Õ¼ä
 /*!
- *\param lpszPath æŒ‡å®šè·¯å¾„
- *\return è¿”å›å‰©ä½™ç£ç›˜ç©ºé—´ï¼Œå•ä½M
- */
-_BASIC_DLL_API long BasicGetDiskFreeinfo(const char* lpszPath)
-{
-	long lRet = -1;
-	struct Basic_statfs s;
-	if(Basic_statfs(lpszPath, &s) < 0)
-	{
-		lRet = 0;
-	}
-	else
-	{
-		lRet = (s.f_bavail * s.f_bsize) / (1024 * 1024);
-	}
-	return lRet;
+*\param lpszPath Ö¸¶¨Â·¾¶
+*\return ·µ»ØÊ£Óà´ÅÅÌ¿Õ¼ä£¬µ¥Î»M
+*/
+_BASIC_DLL_API long BasicGetDiskFreeinfo(const char* lpszPath){
+    long lRet = -1;
+    struct Basic_statfs s;
+    if(Basic_statfs(lpszPath, &s) < 0){
+        lRet = 0;
+    }
+    else{
+        lRet = (s.f_bavail * s.f_bsize) / (1024 * 1024);
+    }
+    return lRet;
 }
 
 
-//! å–å¾—ç³»ç»Ÿå¯åŠ¨æ—¶é—´ 
+//! È¡µÃÏµÍ³Æô¶¯Ê±¼ä 
 /*!
- *\return è¿”å›æ—¶é—´å€¼ï¼Œå•ä½ï¼šæ¯«ç§’
- *\remark ç”¨äºæµ‹é‡è€—æ—¶
- */
-DWORD BasicGetTickTime()
-{
-	struct timeval tp;
-	gettimeofday(&tp, NULL);
-	return tp.tv_sec*1000 + tp.tv_usec/1000;
+*\return ·µ»ØÊ±¼äÖµ£¬µ¥Î»£ººÁÃë
+*\remark ÓÃÓÚ²âÁ¿ºÄÊ±
+*/
+DWORD BasicGetTickTime(){
+    struct timeval tp;
+    gettimeofday(&tp, NULL);
+    return tp.tv_sec * 1000 + tp.tv_usec / 1000;
 }
 
-double  BasicGetTickTimeCount()
-{
-	struct timeval tp;
-	gettimeofday(&tp, NULL);
-	double dRet = tp.tv_sec;
-	dRet *= 1000;
-	return dRet + tp.tv_usec / 1000;
+double  BasicGetTickTimeCount(){
+    struct timeval tp;
+    gettimeofday(&tp, NULL);
+    double dRet = tp.tv_sec;
+    dRet *= 1000;
+    return dRet + tp.tv_usec / 1000;
 }
 
-//! å–å¾—æ¨¡å—åï¼ŒåŒ…æ‹¬å…¨è·¯å¾„
+//! È¡µÃÄ£¿éÃû£¬°üÀ¨È«Â·¾¶
 /*!
- *\param hModule  å¦‚hModule==NULLï¼Œåˆ™å–å½“å‰ä¸»ç¨‹åºåï¼Œ
- *\return æ¨¡å—å
- */
-_BASIC_DLL_API CBasicString BasicGetModuleName(HANDLE hModule)
-{
-	char szPath[_MAX_PATH];
-	BasicGetModuleName(hModule, szPath, _MAX_PATH);
-	return CBasicString(szPath);
+*\param hModule  ÈçhModule==NULL£¬ÔòÈ¡µ±Ç°Ö÷³ÌĞòÃû£¬
+*\return Ä£¿éÃû
+*/
+_BASIC_DLL_API CBasicString BasicGetModuleName(HANDLE hModule){
+    char szPath[_MAX_PATH];
+    BasicGetModuleName(hModule, szPath, _MAX_PATH);
+    return CBasicString(szPath);
 }
 
-//! å–å¾—æ¨¡å—åï¼ŒåŒ…æ‹¬å…¨è·¯å¾„
+//! È¡µÃÄ£¿éÃû£¬°üÀ¨È«Â·¾¶
 /*!
- *\param hModule  å¦‚hModule==NULLï¼Œåˆ™å–å½“å‰ä¸»ç¨‹åºåï¼Œ
- *\param pszBuffer è¿”å›æ•°æ®çš„ç©ºé—´
- *\param nBufLen è¿”å›æ•°æ®çš„ç©ºé—´é•¿åº¦
- *\return  è¿”å›å®é™…é•¿åº¦
- */
-_BASIC_DLL_API long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBufLen)
-{
-	//??unicode
-	unsigned int nPathLen = nBufLen;
-	return _NSGetExecutablePath(pszBuffer, &nPathLen);
+*\param hModule  ÈçhModule==NULL£¬ÔòÈ¡µ±Ç°Ö÷³ÌĞòÃû£¬
+*\param pszBuffer ·µ»ØÊı¾İµÄ¿Õ¼ä
+*\param nBufLen ·µ»ØÊı¾İµÄ¿Õ¼ä³¤¶È
+*\return  ·µ»ØÊµ¼Ê³¤¶È
+*/
+_BASIC_DLL_API long BasicGetModuleName(HANDLE hModule, char* pszBuffer, int nBufLen){
+    //??unicode
+    unsigned int nPathLen = nBufLen;
+    return _NSGetExecutablePath(pszBuffer, &nPathLen);
 }
 
 
-//! å–å¾—æ¨¡å—åï¼Œä¸åŒ…æ‹¬å…¨è·¯å¾„
+//! È¡µÃÄ£¿éÃû£¬²»°üÀ¨È«Â·¾¶
 /*!
- *\param hModule  å¦‚hModule==NULLï¼Œåˆ™å–å½“å‰ä¸»ç¨‹åºåï¼Œ
- *\param bExt æ˜¯å¦åŒ…æ‹¬æ‰©å±•å
- *\return æ¨¡å—å
- */
-_BASIC_DLL_API CBasicString BasicGetModuleTitle(HANDLE hModule, bool bExt)
-{
-	CBasicString strModule = BasicGetModuleName(hModule);
-	int nPos = strModule.ReverseFind(PATHSPLIT);
-	if(nPos >= 0)
-		strModule = strModule.Mid(nPos + 1);
-	return strModule;
+*\param hModule  ÈçhModule==NULL£¬ÔòÈ¡µ±Ç°Ö÷³ÌĞòÃû£¬
+*\param bExt ÊÇ·ñ°üÀ¨À©Õ¹Ãû
+*\return Ä£¿éÃû
+*/
+_BASIC_DLL_API CBasicString BasicGetModuleTitle(HANDLE hModule, bool bExt){
+    CBasicString strModule = BasicGetModuleName(hModule);
+    int nPos = strModule.ReverseFind(PATHSPLIT);
+    if(nPos >= 0)
+        strModule = strModule.Mid(nPos + 1);
+    return strModule;
 }
 
-//! å–å¾—æ¨¡å—è·¯å¾„
+//! È¡µÃÄ£¿éÂ·¾¶
 /*!
- *\param hModule  å¦‚hModule==NULLï¼Œåˆ™å–å½“å‰ä¸»ç¨‹åºè·¯å¾„
- *\return æ¨¡å—è·¯å¾„
- */
-_BASIC_DLL_API CBasicString BasicGetModulePath(HANDLE hModule)
-{
-	char szPath[_MAX_PATH];
-	CBasicString strPath = basiclib::BasicGetModuleName(hModule);
-	__tcscpyn(szPath, _MAX_PATH, strPath.c_str());
-	int i = 0;
-	for (i = strlen(szPath) - 1; i >= 0 && szPath[i] != PATHSPLIT; i--);
-	i++;
-	szPath[i] = '\0';
-	return szPath;
+*\param hModule  ÈçhModule==NULL£¬ÔòÈ¡µ±Ç°Ö÷³ÌĞòÂ·¾¶
+*\return Ä£¿éÂ·¾¶
+*/
+_BASIC_DLL_API CBasicString BasicGetModulePath(HANDLE hModule){
+    char szPath[_MAX_PATH];
+    CBasicString strPath = basiclib::BasicGetModuleName(hModule);
+    __tcscpyn(szPath, _MAX_PATH, strPath.c_str());
+    int i = 0;
+    for(i = strlen(szPath) - 1; i >= 0 && szPath[i] != PATHSPLIT; i--);
+    i++;
+    szPath[i] = '\0';
+    return szPath;
 }
 
-//! åˆ¤æ–­æŸä¸ªè¿›ç¨‹æ˜¯å¦ç»“æŸ
+//! ÅĞ¶ÏÄ³¸ö½ø³ÌÊÇ·ñ½áÊø
 /*!
-*\param dwProcessID	è¿›ç¨‹ID
- */
-_BASIC_DLL_API bool BasicProcessIsTerminated(DWORD dwProcessID)
-{
-	CBasicString strFile;
-	CBasicString strCmd;
-	strCmd.Format("ps -p %d", dwProcessID);
-	FILE* pTmp = popen(strCmd.c_str(), "r");
-	if (pTmp != NULL)
-	{
-		char szBuf[4096];
-		int nReadLen = 0;
-		while ((nReadLen = fread(szBuf, 1, sizeof(szBuf), pTmp)) > 0)
-		{
-			strFile += CBasicString(szBuf, nReadLen);
-		}
-		fclose(pTmp);
-	}
-	if (strFile.GetLength() <= 0)
-	{
-		return true;
-	}
-	CBasicStringArray ayItem;
-	BasicSpliteString(strFile.c_str(), '\n', IntoContainer_s<CBasicStringArray>(ayItem));
-	int nLineCnt = ayItem.GetSize();
-	if (nLineCnt == 2)
-	{
-		return false;
-	}
-	return true;
+*\param dwProcessID	½ø³ÌID
+*/
+_BASIC_DLL_API bool BasicProcessIsTerminated(DWORD dwProcessID){
+    CBasicString strFile;
+    CBasicString strCmd;
+    strCmd.Format("ps -p %d", dwProcessID);
+    FILE* pTmp = popen(strCmd.c_str(), "r");
+    if(pTmp != NULL){
+        char szBuf[4096];
+        int nReadLen = 0;
+        while((nReadLen = fread(szBuf, 1, sizeof(szBuf), pTmp)) > 0){
+            strFile += CBasicString(szBuf, nReadLen);
+        }
+        fclose(pTmp);
+    }
+    if(strFile.GetLength() <= 0){
+        return true;
+    }
+    CBasicStringArray ayItem;
+    BasicSpliteString(strFile.c_str(), '\n', IntoContainer_s<CBasicStringArray>(ayItem));
+    int nLineCnt = ayItem.GetSize();
+    if(nLineCnt == 2){
+        return false;
+    }
+    return true;
 }
 
-//! ä¿®æ”¹ç³»ç»Ÿæ—¶é—´
+//! ĞŞ¸ÄÏµÍ³Ê±¼ä
 /*!
-* \param tTime:éœ€è¦è®¾ç½®çš„æ—¶é—´ï¼Œç²¾ç¡®åˆ°ç§’
-* \return ä¿®æ”¹æˆåŠŸæˆ–è€…å¤±è´¥
- */
-_BASIC_DLL_API bool BasicSetSysTime(time_t tTime)
-{
-	return true;
+* \param tTime:ĞèÒªÉèÖÃµÄÊ±¼ä£¬¾«È·µ½Ãë
+* \return ĞŞ¸Ä³É¹¦»òÕßÊ§°Ü
+*/
+_BASIC_DLL_API bool BasicSetSysTime(time_t tTime){
+    return true;
 }
 
 #define MAC_PROCESS_CMD				"ps -el"		// Linux
 #define PS_CMD_COL_PID				"PID"		// Linux 
 #define PS_CMD_COL_PPID				"PPID"		// Linux 
 #define PS_CMD_COL_CMD				"CMD"		// Linux 
- 
 
-//! å–æœ¬æœºIPåœ°å€å’Œå­ç½‘æ©ç 
+
+//! È¡±¾»úIPµØÖ·ºÍ×ÓÍøÑÚÂë
 /*!
- *\param pBuffer cbBuffer è¾“å…¥IPåœ°å€ä¿¡æ¯ç©ºé—´
- *\return è¿”å›IPåœ°å€æ•°é‡
- */
-_BASIC_DLL_API int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer)
-{
-	int sock = socket(AF_INET, SOCK_DGRAM, 0);
-	if (sock < 0)
-	{
-		return 0;
-	}
-	struct ifreq ifr;
-	bool found = true;
-	int i = 0;
-	int nIndex = 0;
-	while(found && nIndex < cbBuffer)
-	{
-		sprintf(ifr.ifr_name, "en%d", i++);
-		if (ioctl(sock, SIOCGIFADDR, &ifr) < 0)
-		{
-			break;
-		}
-		struct sockaddr_in* pAddrTmp = (struct sockaddr_in*)&ifr.ifr_addr;
-		strncpy(pBuffer[nIndex].m_szIP, inet_ntoa(pAddrTmp->sin_addr), MAX_IP);
-		if (ioctl(sock, SIOCGIFNETMASK, &ifr) < 0)
-		{
-			break;
-		}
-		pAddrTmp= (struct sockaddr_in*)&ifr.ifr_addr;
-		strncpy(pBuffer[nIndex].m_szMask, inet_ntoa(pAddrTmp->sin_addr), MAX_IP);
-		if (strlen(pBuffer[nIndex].m_szIP) <= 0 || strlen(pBuffer[nIndex].m_szMask) <= 0)
-		{
-			found = false;
-		}
-		nIndex++;
-	}
-	close(sock);
-	return nIndex;
+*\param pBuffer cbBuffer ÊäÈëIPµØÖ·ĞÅÏ¢¿Õ¼ä
+*\return ·µ»ØIPµØÖ·ÊıÁ¿
+*/
+_BASIC_DLL_API int BasicGetLocalAddrInfo(PLOCALADDR pBuffer, int cbBuffer){
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if(sock < 0){
+        return 0;
+    }
+    struct ifreq ifr;
+    bool found = true;
+    int i = 0;
+    int nIndex = 0;
+    while(found && nIndex < cbBuffer){
+        sprintf(ifr.ifr_name, "en%d", i++);
+        if(ioctl(sock, SIOCGIFADDR, &ifr) < 0){
+            break;
+        }
+        struct sockaddr_in* pAddrTmp = (struct sockaddr_in*)&ifr.ifr_addr;
+        strncpy(pBuffer[nIndex].m_szIP, inet_ntoa(pAddrTmp->sin_addr), MAX_IP);
+        if(ioctl(sock, SIOCGIFNETMASK, &ifr) < 0){
+            break;
+        }
+        pAddrTmp = (struct sockaddr_in*)&ifr.ifr_addr;
+        strncpy(pBuffer[nIndex].m_szMask, inet_ntoa(pAddrTmp->sin_addr), MAX_IP);
+        if(strlen(pBuffer[nIndex].m_szIP) <= 0 || strlen(pBuffer[nIndex].m_szMask) <= 0){
+            found = false;
+        }
+        nIndex++;
+    }
+    close(sock);
+    return nIndex;
 }
- 
-//å–ç½‘å¡çŠ¶æ€ä¿¡æ¯
-int GetMacInfo(int& nAdapterIndex, char* pMac, int nLength)
-{
-	char szNet[8];
-	memset(szNet, 0, 8);
-	if(nAdapterIndex < 0)
-	{
-		nAdapterIndex = 0;
-	}
-	sprintf(szNet, "en%d", nAdapterIndex);
-	struct ifaddrs *ifas = NULL ;
-    struct ifaddrs *ifasTemp = NULL;
-	if (getifaddrs(&ifas) != 0)
-	{
-		return -1;
-	}
-    
-    ifasTemp = ifas;
-    
-	for (;ifasTemp != NULL; ifasTemp = (*ifasTemp).ifa_next)
-	{
-		if((ifasTemp->ifa_addr)->sa_family == AF_LINK)
-		{
-			struct sockaddr_dl *pAddr = (struct sockaddr_dl*)ifasTemp->ifa_addr;
-			if(strcmp(szNet, ifasTemp->ifa_name) == 0)
-			{
-				char* basemac = &(pAddr->sdl_data[pAddr->sdl_nlen]);
-				memcpy(pMac, basemac, pAddr->sdl_alen > nLength ? nLength : pAddr->sdl_alen);
-				break;		
-			}
-		}
-	}	
 
-	freeifaddrs(ifas);
-	return 0;
+//È¡Íø¿¨×´Ì¬ĞÅÏ¢
+int GetMacInfo(int& nAdapterIndex, char* pMac, int nLength){
+    char szNet[8];
+    memset(szNet, 0, 8);
+    if(nAdapterIndex < 0){
+        nAdapterIndex = 0;
+    }
+    sprintf(szNet, "en%d", nAdapterIndex);
+    struct ifaddrs *ifas = NULL;
+    struct ifaddrs *ifasTemp = NULL;
+    if(getifaddrs(&ifas) != 0){
+        return -1;
+    }
+
+    ifasTemp = ifas;
+
+    for(; ifasTemp != NULL; ifasTemp = (*ifasTemp).ifa_next){
+        if((ifasTemp->ifa_addr)->sa_family == AF_LINK){
+            struct sockaddr_dl *pAddr = (struct sockaddr_dl*)ifasTemp->ifa_addr;
+            if(strcmp(szNet, ifasTemp->ifa_name) == 0){
+                char* basemac = &(pAddr->sdl_data[pAddr->sdl_nlen]);
+                memcpy(pMac, basemac, pAddr->sdl_alen > nLength ? nLength : pAddr->sdl_alen);
+                break;
+            }
+        }
+    }
+
+    freeifaddrs(ifas);
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//!åŠ¨æ€åº“è°ƒç”¨çš„å‡½æ•°
+//!¶¯Ì¬¿âµ÷ÓÃµÄº¯Êı
 
-//! åŠ è½½åŠ¨æ€åº“
+//! ¼ÓÔØ¶¯Ì¬¿â
 /*!
- *\param lpszLibFileName	åŠ¨æ€åº“æ–‡ä»¶å
- *\return æˆåŠŸè¿”å›éé›¶åŠ¨æ€åº“å¥æŸ„ï¼Œå¤±è´¥è¿”å›NULL
- */
-_BASIC_DLL_API void*	BasicLoadLibrary(const char* lpszLibFileName)
-{
-	void* hDll = dlopen(lpszLibFileName, RTLD_NOW|RTLD_GLOBAL);
-    if(hDll == NULL)
-    {
+*\param lpszLibFileName	¶¯Ì¬¿âÎÄ¼şÃû
+*\return ³É¹¦·µ»Ø·ÇÁã¶¯Ì¬¿â¾ä±ú£¬Ê§°Ü·µ»ØNULL
+*/
+_BASIC_DLL_API void*	BasicLoadLibrary(const char* lpszLibFileName){
+    void* hDll = dlopen(lpszLibFileName, RTLD_NOW | RTLD_GLOBAL);
+    if(hDll == NULL){
         char* pError = dlerror();
         if(pError != NULL)
-			basiclib::BasicLogEventErrorV("linking (%s) error occurred: (%s) \n", lpszLibFileName, pError);
+            basiclib::BasicLogEventErrorV("linking (%s) error occurred: (%s) \n", lpszLibFileName, pError);
     }
     return hDll;
 }
 
 
-//! é‡Šæ”¾åŠ¨æ€åº“
+//! ÊÍ·Å¶¯Ì¬¿â
 /*!
- *\param hModule	åŠ¨æ€åº“å¥æŸ„
- *\return æˆåŠŸè¿”å›0ï¼Œå¦åˆ™å¤±è´¥
- */
-_BASIC_DLL_API long	BasicFreeLibrary(void* hModule)
-{
-	return dlclose(hModule);
+*\param hModule	¶¯Ì¬¿â¾ä±ú
+*\return ³É¹¦·µ»Ø0£¬·ñÔòÊ§°Ü
+*/
+_BASIC_DLL_API long	BasicFreeLibrary(void* hModule){
+    return dlclose(hModule);
 }
 
-//!å–åŠ¨æ€åº“å‡½æ•°å…¥å£
+//!È¡¶¯Ì¬¿âº¯ÊıÈë¿Ú
 /*!
- *\param hModule	åŠ¨æ€åº“å¥æŸ„
- *\param lpszProcName å‡½æ•°å
- *\return æˆåŠŸè¿”å›éé›¶å‡½æ•°åœ°å€ï¼Œå¤±è´¥è¿”å›NULL
- */
-_BASIC_DLL_API void*	BasicGetProcAddress(void* hModule, LPCTSTR lpszProcName)
-{
+*\param hModule	¶¯Ì¬¿â¾ä±ú
+*\param lpszProcName º¯ÊıÃû
+*\return ³É¹¦·µ»Ø·ÇÁãº¯ÊıµØÖ·£¬Ê§°Ü·µ»ØNULL
+*/
+_BASIC_DLL_API void*	BasicGetProcAddress(void* hModule, LPCTSTR lpszProcName){
     return dlsym(hModule, lpszProcName);
 }
 
 /*
- * \brief ç”¨æˆ·è®¡ç®—è¿›ç¨‹çš„CPUä½¿ç”¨ç‡
- */
-CProcessInfo::CProcessInfo(DWORD nProcessId)
-{
-	m_nProcessId = nProcessId;
+* \brief ÓÃ»§¼ÆËã½ø³ÌµÄCPUÊ¹ÓÃÂÊ
+*/
+CProcessInfo::CProcessInfo(DWORD nProcessId){
+    m_nProcessId = nProcessId;
 
-	m_nLastUtime = 0;
+    m_nLastUtime = 0;
 
-	m_nLastStime = 0;
+    m_nLastStime = 0;
 
-	m_nCutime = 0;
+    m_nCutime = 0;
 
-	m_nCstime = 0;
+    m_nCstime = 0;
 
-	fpidstat = NULL;
+    fpidstat = NULL;
 
 
 }
- 
-CProcessInfo::~CProcessInfo()
-{
-	
+
+CProcessInfo::~CProcessInfo(){
+
 }
 
-int CProcessInfo::GetProcessCpu()
-{
-	return BasicGetCPUUse();
+int CProcessInfo::GetProcessCpu(){
+    return BasicGetCPUUse();
 }
- 
 
-//! å–é«˜ç²¾åº¦çš„ç³»ç»Ÿè®¡æ•°ï¼Œä»ç³»ç»Ÿå¯åŠ¨å¼€å§‹ã€‚å•ä½ï¼šå¾®ç§’ï¼ˆ10-6 ç§’ï¼‰ã€‚
-/*! 
-*\return  å¦‚æœæˆåŠŸè¿”å› ä»ç³»ç»Ÿå¯åŠ¨åˆ°ç°åœ¨çš„å¾®ç§’æ•°ã€‚
-*\remarks è¿™ä¸ªå‡½æ•°éœ€è¦ç¡¬ä»¶æ”¯æŒï¼ˆHRTï¼‰ï¼Œä¸»è¦ç”¨äºæ€§èƒ½è®°å½•ä¸­çš„æ—¶é—´è®°å½•
+
+//! È¡¸ß¾«¶ÈµÄÏµÍ³¼ÆÊı£¬´ÓÏµÍ³Æô¶¯¿ªÊ¼¡£µ¥Î»£ºÎ¢Ãë£¨10-6 Ãë£©¡£
+/*!
+*\return  Èç¹û³É¹¦·µ»Ø ´ÓÏµÍ³Æô¶¯µ½ÏÖÔÚµÄÎ¢ÃëÊı¡£
+*\remarks Õâ¸öº¯ÊıĞèÒªÓ²¼şÖ§³Ö£¨HRT£©£¬Ö÷ÒªÓÃÓÚĞÔÄÜ¼ÇÂ¼ÖĞµÄÊ±¼ä¼ÇÂ¼
 */
 
-_BASIC_DLL_API  double BasicGetHighPerformanceCounter()
-{
-        struct timeval tp;
-        gettimeofday(&tp, NULL);
-        return ((double)tp.tv_sec*1000000 + tp.tv_usec);
+_BASIC_DLL_API  double BasicGetHighPerformanceCounter(){
+    struct timeval tp;
+    gettimeofday(&tp, NULL);
+    return ((double)tp.tv_sec * 1000000 + tp.tv_usec);
 }
 
 
@@ -568,7 +520,7 @@ bool getcpuid(char *id, size_t max){
     return true;
 }
 
-//! è·å–å–æœºå™¨çš„ç‰¹å¾ç 
+//! »ñÈ¡È¡»úÆ÷µÄÌØÕ÷Âë
 /*!
 */
 bool BasicGetMachineSerial(CBasicString& str){

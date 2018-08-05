@@ -1,4 +1,4 @@
-ï»¿#include "../inc/basic.h"
+#include "../inc/basic.h"
 #include "net.h"
 #include "net_mgr.h"
 #ifdef __BASICWINDOWS
@@ -23,136 +23,136 @@
 __NS_BASIC_START
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern pGetConfFunc g_GetParamFunc;
-void SetNetInitializeGetParamFunc(pGetConfFunc func) {
-	g_GetParamFunc = func;
+void SetNetInitializeGetParamFunc(pGetConfFunc func){
+    g_GetParamFunc = func;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 BasicNetStat::BasicNetStat(){
-	Empty();
+    Empty();
 }
 void BasicNetStat::Empty(){
-	memset(this, 0, sizeof(BasicNetStat));
+    memset(this, 0, sizeof(BasicNetStat));
 }
 void BasicNetStat::OnSendData(int nSend){
-	if(nSend > 0){
-		m_dwSendBytes += nSend;
-		m_dwSendTimes++;
-	}
+    if(nSend > 0){
+        m_dwSendBytes += nSend;
+        m_dwSendTimes++;
+    }
 }
 void BasicNetStat::OnReceiveData(int nRece){
-	if(nRece > 0){
-		m_dwReceBytes += nRece;
-		m_dwReceTimes++;
-	}
-	m_tmLastRecTime = time(NULL);
+    if(nRece > 0){
+        m_dwReceBytes += nRece;
+        m_dwReceTimes++;
+    }
+    m_tmLastRecTime = time(NULL);
 }
 void BasicNetStat::GetTransRate(BasicNetStat& lastData, double& dSend, double& dRecv){
-	DWORD tNow = basiclib::BasicGetTickTime();
-	if(m_tLastStat > 0 && (tNow - m_tLastStat)  < 10000){
-		dSend = m_fLastSendRate;
-		dRecv = m_fLastRecvRate;
-		return;
-	}
+    DWORD tNow = basiclib::BasicGetTickTime();
+    if(m_tLastStat > 0 && (tNow - m_tLastStat)  < 10000){
+        dSend = m_fLastSendRate;
+        dRecv = m_fLastRecvRate;
+        return;
+    }
 
-	if(m_tLastStat == 0){
-		m_tLastStat = tNow;
-		lastData = *this;
-		return;
-	}
+    if(m_tLastStat == 0){
+        m_tLastStat = tNow;
+        lastData = *this;
+        return;
+    }
 
-	DWORD dwTotalBytes0 = lastData.m_dwReceBytes;
-	dwTotalBytes0 += lastData.m_dwSendBytes;
-	DWORD dwTotalBytes1 = m_dwReceBytes;
-	dwTotalBytes1 += m_dwSendBytes;
-	m_fLastSendRate = double(m_dwSendBytes - lastData.m_dwSendBytes) / 1024 / (double(tNow - m_tLastStat) / 1000);
-	m_fLastRecvRate = double(m_dwReceBytes - lastData.m_dwReceBytes) / 1024 / (double(tNow - m_tLastStat) / 1000);
+    DWORD dwTotalBytes0 = lastData.m_dwReceBytes;
+    dwTotalBytes0 += lastData.m_dwSendBytes;
+    DWORD dwTotalBytes1 = m_dwReceBytes;
+    dwTotalBytes1 += m_dwSendBytes;
+    m_fLastSendRate = double(m_dwSendBytes - lastData.m_dwSendBytes) / 1024 / (double(tNow - m_tLastStat) / 1000);
+    m_fLastRecvRate = double(m_dwReceBytes - lastData.m_dwReceBytes) / 1024 / (double(tNow - m_tLastStat) / 1000);
 
-	dSend = m_fLastSendRate;
-	dRecv = m_fLastRecvRate;
+    dSend = m_fLastSendRate;
+    dRecv = m_fLastRecvRate;
 
-	m_tLastStat = tNow;
-	lastData = *this;
+    m_tLastStat = tNow;
+    lastData = *this;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//! æ™ºèƒ½æŒ‡é’ˆåˆ é™¤çš„æ–¹å¼
+//! ÖÇÄÜÖ¸ÕëÉ¾³ýµÄ·½Ê½
 void CBasicSessionNet::DeleteRetPtrObject(){
-	//æžæž„
-	this->~CBasicSessionNet();
-	m_pSocket->~CBasicNet_Socket();
-	basiclib::BasicDeallocate(this);
+    //Îö¹¹
+    this->~CBasicSessionNet();
+    m_pSocket->~CBasicNet_Socket();
+    basiclib::BasicDeallocate(this);
 }
 
 
 CBasicSessionNet::CBasicSessionNet(){
-	m_self = this;
+    m_self = this;
 }
 
 CBasicSessionNet::~CBasicSessionNet(){
 #ifdef _DEBUG
-	if(m_self != nullptr){
-		ASSERT(0);
-	}
+    if(m_self != nullptr){
+        ASSERT(0);
+    }
 #endif
 }
 
-//! ç»‘å®šsocket
+//! °ó¶¨socket
 void CBasicSessionNet::InitSocket(CBasicNet_Socket* pSocket){
-	m_pSocket = pSocket;
+    m_pSocket = pSocket;
 }
 
 void CBasicSessionNet::Close(bool bNoWaitMustClose){
-	m_pSocket->Close(false, bNoWaitMustClose);
+    m_pSocket->Close(false, bNoWaitMustClose);
 }
 
 int CBasicSessionNet::RegistePreSend(CBasicPreSend* pFilter, uint32_t dwRegOptions){
-	return m_pSocket->RegistePreSend(pFilter, dwRegOptions);
+    return m_pSocket->RegistePreSend(pFilter, dwRegOptions);
 }
 
-//! èŽ·å–æ³¨å†Œçš„è¿‡æ»¤å™¨
+//! »ñÈ¡×¢²áµÄ¹ýÂËÆ÷
 CBasicPreSend* CBasicSessionNet::GetPreSend(){
-	return m_pSocket->GetPreSend();
+    return m_pSocket->GetPreSend();
 }
 
-//æä¾›å®‰å…¨åˆ é™¤çš„å›žè°ƒæŽ¥å£
-void CBasicSessionNet::SafeDelete() {
-	if(m_self == nullptr)
-		return;
-	m_pSocket->SafeDelete();
-	m_self = nullptr;
+//Ìá¹©°²È«É¾³ýµÄ»Øµ÷½Ó¿Ú
+void CBasicSessionNet::SafeDelete(){
+    if(m_self == nullptr)
+        return;
+    m_pSocket->SafeDelete();
+    m_self = nullptr;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CBasicSessionNetNotify::CBasicSessionNetNotify(){
 }
-CBasicSessionNetNotify::~CBasicSessionNetNotify() {
+CBasicSessionNetNotify::~CBasicSessionNetNotify(){
 }
 
-//! æ˜¯å¦è¿žæŽ¥
-bool CBasicSessionNetNotify::IsConnected() {
-	return m_pSocket->IsConnected();
+//! ÊÇ·ñÁ¬½Ó
+bool CBasicSessionNetNotify::IsConnected(){
+    return m_pSocket->IsConnected();
 }
-//! æ˜¯å¦è®¤è¯æˆåŠŸ
-bool CBasicSessionNetNotify::IsTransmit() {
-	return m_pSocket->IsTransmit();
-}
-
-int32_t CBasicSessionNetNotify::Send(void *pData, int32_t cbData, uint32_t dwFlag) {
-	if (cbData <= 0)
-		return 0;
-	return ((CBasicNet_SocketTransfer*)m_pSocket)->Send(pData, cbData, dwFlag);
+//! ÊÇ·ñÈÏÖ¤³É¹¦
+bool CBasicSessionNetNotify::IsTransmit(){
+    return m_pSocket->IsTransmit();
 }
 
-int32_t CBasicSessionNetNotify::Send(basiclib::CBasicSmartBuffer& smBuf, uint32_t dwFlag) {
-	return Send(smBuf.GetDataBuffer(), smBuf.GetDataLength(), dwFlag);
+int32_t CBasicSessionNetNotify::Send(void *pData, int32_t cbData, uint32_t dwFlag){
+    if(cbData <= 0)
+        return 0;
+    return ((CBasicNet_SocketTransfer*)m_pSocket)->Send(pData, cbData, dwFlag);
 }
 
-//! èŽ·å–ç½‘ç»œçŠ¶æ€
-void CBasicSessionNetNotify::GetNetStatus(CBasicString& strStatus) {
-	((CBasicNet_SocketTransfer*)m_pSocket)->GetNetStatus(strStatus);
+int32_t CBasicSessionNetNotify::Send(basiclib::CBasicSmartBuffer& smBuf, uint32_t dwFlag){
+    return Send(smBuf.GetDataBuffer(), smBuf.GetDataLength(), dwFlag);
 }
 
-//! èŽ·å–ç½‘ç»œçŠ¶æ€
+//! »ñÈ¡ÍøÂç×´Ì¬
+void CBasicSessionNetNotify::GetNetStatus(CBasicString& strStatus){
+    ((CBasicNet_SocketTransfer*)m_pSocket)->GetNetStatus(strStatus);
+}
+
+//! »ñÈ¡ÍøÂç×´Ì¬
 void CBasicSessionNetNotify::GetNetStatInfo(BasicNetStat& netState){
-	((CBasicNet_SocketTransfer*)m_pSocket)->GetNetStatInfo(netState);
+    ((CBasicNet_SocketTransfer*)m_pSocket)->GetNetStatInfo(netState);
 }
 
 __NS_BASIC_END
