@@ -189,7 +189,7 @@ int Nr;
 /*
 * S-box transformation table
 */
-static char *s_box[100] = {
+static const char *s_box[100] = {
     // 0     1     2     3     4     5     6     7     8     9
     "23", "34", "39", "20", "26", "92", "11", "54", "64", "52", //0
     "13", "63", "17", "60", "94", "32", "33", "89", "93", "00", //1
@@ -205,7 +205,7 @@ static char *s_box[100] = {
                                                                  /*
                                                                  * Inverse S-box transformation table
                                                                  */
-static char *inv_s_box[100] = {
+static const char *inv_s_box[100] = {
     // 0     1     2     3     4     5     6     7     8     9
     "19", "38", "55", "85", "86", "75", "54", "48", "60", "80", //0
     "97", "06", "45", "10", "28", "66", "98", "12", "69", "49", //1
@@ -256,7 +256,7 @@ void sub_bytes(char *state){
     for(uint8_t i = 0; i < 8; i++){
         uint8_t row = state[i * 2] - '0';
         uint8_t col = state[i * 2 + 1] - '0';
-        char *box = s_box[row * 10 + col];
+        const char *box = s_box[row * 10 + col];
         state[i * 2] = box[0];
         state[i * 2 + 1] = box[1];
     }
@@ -266,7 +266,7 @@ void inv_sub_bytes(char *state){
     for(uint8_t i = 0; i < 8; i++){
         uint8_t row = state[i * 2] - '0';
         uint8_t col = state[i * 2 + 1] - '0';
-        char *box = inv_s_box[row * 10 + col];
+        const char *box = inv_s_box[row * 10 + col];
         state[i * 2] = box[0];
         state[i * 2 + 1] = box[1];
     }
@@ -376,7 +376,7 @@ void sub_word(uint8_t *w){
     for(i = 0; i < 2; i++){
         uint8_t row = w[i * 2];
         uint8_t col = w[i * 2 + 1];
-        char *box = s_box[row * 10 + col];
+        const char *box = s_box[row * 10 + col];
         w[i * 2] = box[0] - '0';
         w[i * 2 + 1] = box[1] - '0';
     }

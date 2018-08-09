@@ -1,5 +1,5 @@
 /***********************************************************************************************
-// 文件名：			cclockfreestack.h
+// 文件名：			cclockfreefixqueue.h
 // 创建者：			Owen.Cai
 // 创建时间:		2018/08/01 20:23:01
 // 内容描述:		无锁stack
@@ -9,73 +9,104 @@
 
 __NS_BASIC_START
 
-class CCLockfreeStackNode{
+template<class T, uint32_t defaultfixsize = 32>
+class CCLockfreeFixQueue : public basiclib::CBasicObject{
 public:
-    CCLockfreeStackNode(){
-        m_freeListNext = nullptr;
-        m_freeListRefs = 0;
-    }
-private:
-    std::atomic<std::uint32_t>          m_freeListRefs;
-    std::atomic<CCLockfreeStackNode*>   m_freeListNext;
-
-    friend class CCLockfreeStack;
-};
-
-class CCLockfreeStack : public basiclib::CBasicObject{
-    static const std::uint32_t REFS_MASK = 0x7FFFFFFF;
-    static const std::uint32_t SHOULD_BE_ON_FREE = 0x80000000;
-public:
-    CCLockfreeStack(){
-        m_pHead = nullptr;
-    }
-    virtual ~CCLockfreeStack(){
-
-    }
-    inline void Push(CCLockfreeStackNode* pNode){
-        if(pNode->m_freeListRefs.fetch_add(SHOULD_BE_ON_FREE, std::memory_order_acq_rel) == 0){
-            PushByRefCountZero(pNode);
+    struct StoreLockfreeFixQueue{
+        T                               m_data;
+        std::atomic<uint8_t>            m_cWrite;
+        StoreLockfreeFixQueue() : m_cWrite(0){
         }
+    };
+public:
+    CCLockfreeFixQueue() : m_nWrite(0), m_nPreWrite(0), m_nPreRead(0), m_nRead(0){
+        memset(m_pData, 0, sizeof(T) * defaultfixsize);
     }
-    inline CCLockfreeStackNode* Pop(){
-        auto head = m_pHead.load(std::memory_order_acquire);
-        while(head != nullptr){
-            auto prevHead = head;
-            auto refs = head->m_freeListRefs.load(std::memory_order_relaxed);
-            if((refs & REFS_MASK) == 0 || !head->m_freeListRefs.compare_exchange_strong(refs, refs + 1, std::memory_order_acquire, std::memory_order_relaxed)){
-                head = m_pHead.load(std::memory_order_acquire);
+    virtual ~CCLockfreeFixQueue(){
+
+    }
+    inline bool Push(const T& value){
+        uint32_t nPreWriteCount = m_nPreWrite.fetch_add(1, std::memory_order_relaxed);
+        StoreLockfreeFixQueue& node = m_pData[nPreWriteCount % defaultfixsize];
+        uint8_t cWrite =  node.m_cWrite.fetch_or(0x10, std::memory_order_relaxed);
+        if(cWrite & 0x10){
+            //full
+            return false;
+        }
+        node.m_data = value;
+        node.m_cWrite.fetch_or(0x01, std::memory_order_release);
+        addWritePositionSuccess(nPreWriteCount);
+        return true;
+    }
+    inline bool Pop(T& value){
+        /*uint32_t nWritePosition = m_nWrite.load(std::memory_order_relaxed);
+        uint32_t nReadPosition = m_nRead.load(std::memory_order_relaxed);
+        while(nReadPosition != nWritePosition){
+            if(m_nRead.compare_exchange_strong(nReadPosition, nReadPosition + 1, std::memory_order_acquire, std::memory_order_relaxed)){
+                StoreLockfreeFixQueue& node = m_pData[nReadPosition % defaultfixsize];
+                value = node.m_data;
+                node.m_cWrite.store(0, std::memory_order_relaxed);
+                return true;
+            }
+            nWritePosition = m_nWrite.load(std::memory_order_relaxed);
+        }
+        return false;*/
+
+        uint32_t nPreReadPosition = m_nPreRead.fetch_add(1, std::memory_order_relaxed);
+        uint32_t nWritePosition = m_nWrite.load(std::memory_order_relaxed);
+        if(nPreReadPosition >= nWritePosition){
+            m_nPreRead.fetch_sub(1, std::memory_order_relaxed);
+            //empty
+            return false;
+        }
+        uint32_t nReadPosition = m_nRead.fetch_add(1, std::memory_order_relaxed);
+        StoreLockfreeFixQueue& node = m_pData[nReadPosition % defaultfixsize];
+        do{
+            uint8_t cWrite = node.m_cWrite.load(std::memory_order_acquire);
+            if(cWrite == 0x11){
+                value = node.m_data;
+                node.m_cWrite.store(0, std::memory_order_relaxed);
+                return true;
+            }
+            else if(cWrite == 0x10){
                 continue;
             }
-            auto next = head->m_freeListNext.load(std::memory_order_relaxed);
-            if(m_pHead.compare_exchange_strong(head, next, std::memory_order_acquire, std::memory_order_relaxed)){
-                // Decrease refcount twice, once for our ref, and once for the list's ref
-                head->m_freeListRefs.fetch_sub(2, std::memory_order_release);
-                return head;
-            }
-            refs = prevHead->m_freeListRefs.fetch_sub(1, std::memory_order_acq_rel);
-            if(refs == SHOULD_BE_ON_FREE + 1){
-                PushByRefCountZero(prevHead);
-            }
-        }
-        return nullptr;
+        } while(false);
+        printf("error pop");
+        assert(0);
+        return false;
     }
 protected:
-    inline void PushByRefCountZero(CCLockfreeStackNode* pNode){
-        auto head = m_pHead.load(std::memory_order_relaxed);
-        while(true){
-            pNode->m_freeListNext.store(head, std::memory_order_relaxed);
-            pNode->m_freeListRefs.store(1, std::memory_order_release);
-            if(!m_pHead.compare_exchange_strong(head, pNode, std::memory_order_release, std::memory_order_relaxed)){
-                // Hmm, the add failed, but we can only try again when the refcount goes back to zero
-                if(pNode->m_freeListRefs.fetch_add(SHOULD_BE_ON_FREE - 1, std::memory_order_release) == 1){
-                    continue;
+    inline bool isWritePosition(uint32_t nWritePosition){
+        return (m_pData[nWritePosition % defaultfixsize].m_cWrite.load(std::memory_order_acquire) & 0x01) != 0;
+    }
+    void addWritePositionSuccess(uint32_t nWritePosition){
+        //write success
+        if(m_nWrite.compare_exchange_strong(nWritePosition, nWritePosition + 1, std::memory_order_acquire, std::memory_order_relaxed)){
+            //write seq correct
+            uint32_t nPreWritePosition = m_nPreWrite.load(std::memory_order_relaxed);
+            while(nPreWritePosition != ++nWritePosition){
+                //check nWritePosition + 1 is write finish
+                if(isWritePosition(nWritePosition)){
+                    //write finish
+                    if(!m_nWrite.compare_exchange_strong(nWritePosition, nWritePosition + 1, std::memory_order_acquire, std::memory_order_relaxed)){
+                        //add fail mean it add by self position, no need to continue
+                        break;
+                    }
                 }
+                else{
+                    break;
+                }
+                nPreWritePosition = m_nPreWrite.load(std::memory_order_relaxed);
             }
-            return;
         }
     }
 protected:
-    std::atomic<CCLockfreeStackNode*> m_pHead;
+    std::atomic<uint32_t>       m_nPreWrite;
+    std::atomic<uint32_t>       m_nWrite;
+    std::atomic<uint32_t>       m_nPreRead;
+    std::atomic<uint32_t>       m_nRead;
+    StoreLockfreeFixQueue       m_pData[defaultfixsize];
 };
 
 __NS_BASIC_END

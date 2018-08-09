@@ -82,6 +82,7 @@
 #include "../util/containerext.h"
 //lockfree
 #include "../util/cclockfreestack.h"
+#include "../util/cclockfreefixqueue.h"
 
 //ÆÁ±Î×Ö¿âÊµÏÖ
 #include "../datastruct/pbzk.h"

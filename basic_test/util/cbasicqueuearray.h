@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #include <stdlib.h>
 #include <atomic>
 #include <assert.h>
@@ -105,19 +105,7 @@ public:
             return true;
         }
         bool IsEmpty(){
-            /*uint32_t nReadIndex = m_nRead.load(std::memory_order_relaxed);
-            do{
-                ArrayNode * pNode = &(m_pPool[GetDataIndex(nReadIndex)]);
-                if(!pNode->m_bReadAlready.load(std::memory_order_acquire)){
-                    //empty
-                    if(m_nRead.compare_exchange_weak(nReadIndex, nReadIndex, std::memory_order_release, std::memory_order_relaxed)){
-                        return true;
-                    }
-                    continue;
-                }
-                break;
-            } while(true);
-            return false;*/
+            return false;
         }
         uint32_t GetAllocCount(){ return m_nMaxCount; }
     public:
@@ -252,4 +240,4 @@ protected:
     std::atomic<char>                                           m_lock;
     AllocateIndexData*                                          m_pMaxAllocTimes[Traits::BASICQUEUE_MAX_ALLOCTIMES];
     AllocateIndexData*                                          m_pQueuePoolRevert;
-};
+}; */

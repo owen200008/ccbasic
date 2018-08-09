@@ -7,6 +7,7 @@
 //#include "exception/stackwalkcheck.h"
 #include "util/containerexttest.h"
 #include "util/cclockfreestacktest.hpp"
+#include "util/cclockfreequeuetest.h"
 #include "thread/threadtest.h"
 #include "coroutine/coroutinetest.h"
 #include "scbasic/encode/rsatest.h"
@@ -27,8 +28,8 @@ int main(int argc, char* argv[]){
 	//TestThread();
 	//TestStackWalk();
 	//TestFastDelegate();
-    for(int i = 0;i < 10;i++)
-        PrintSuccessOrFail(CCLockfreeStackTest);
+    //PrintSuccessOrFail(CCLockfreeStackTest);
+    PrintSuccessOrFail(cclockfreequeuetest);
 	//NetServerTest();
 	//TestFunctionXiaolvTest();
     //PrintSuccessOrFail(TestRSA);

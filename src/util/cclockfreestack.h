@@ -33,7 +33,7 @@ public:
 
     }
     inline void Push(CCLockfreeStackNode* pNode){
-        if(pNode->m_freeListRefs.fetch_add(SHOULD_BE_ON_FREE, std::memory_order_acq_rel) == 0){
+        if(pNode->m_freeListRefs.fetch_or(SHOULD_BE_ON_FREE, std::memory_order_acq_rel) == 0){
             PushByRefCountZero(pNode);
         }
     }
