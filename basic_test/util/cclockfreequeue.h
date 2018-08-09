@@ -32,7 +32,11 @@ public:
         }
         else{
             // Pause is so long that we might as well yield CPU to scheduler.
+#ifdef _WIN32
             SwitchToThread();
+#else
+            std::this_thread::yield();
+#endif
         }
     }
 
@@ -154,7 +158,7 @@ public:
                 pWriteBlock = m_pWrite.load(std::memory_order_relaxed);
                 uint32_t nDis = nPreWriteLocation - pWriteBlock->m_nBeginIndex;
                 if(nDis == Traits::BlockSizeCount){
-                    pWriteBlock = pQueue->GetBlock(nPreWriteIndex);
+                    pWriteBlock = m_pQueue->GetBlock(nPreWriteIndex);
                     atomic_backoff bPauseWriteFinish;
                     //wait to preindex write finish
                     do{
@@ -193,7 +197,7 @@ public:
                             Block* pNextBlock = pReadBlock->m_pNext.load(std::memory_order_relaxed);
                             if(pNextBlock){
                                 m_pRead.store(pNextBlock, std::memory_order_relaxed);
-                                pQueue->ReleaseBlock(pReadBlock);
+                                m_pQueue->ReleaseBlock(pReadBlock);
                                 pReadBlock = pNextBlock;
                                 break;
                             }
@@ -245,7 +249,7 @@ public:
             Block* pReadBlock = m_pRead.load(std::memory_order_relaxed);
             uint32_t nDis = nReadLocation - pReadBlock->m_nBeginIndex;
             if(nDis < Traits::BlockSizeCount){
-                return pReadBlock->PopLocation(nPreWriteLocation);
+                return pReadBlock->PopLocation(nReadLocation);
             }
             return false;
         }
@@ -312,8 +316,6 @@ public:
         m_nNextQueueSize *= Traits::BlockCountAddTimesNextTime;
         m_nReadIndex = 0;
         m_nPreWriteIndex = 0;
-        m_nWriteIndex = 0;
-        m_nCount = 0;
     }
     virtual ~CCLockfreeQueue(){
         BlockAlloc* pCheckAlloc = m_pCurrentAllocate.load(std::memory_order_relaxed);
@@ -325,7 +327,7 @@ public:
         } while(pCheckAlloc);
     }
     void Push(const T& value){
-        uint32_t nPreWriteIndex = m_nPreWritePosition.fetch_add(1, std::memory_order_relaxed);
+        uint32_t nPreWriteIndex = m_nPreWriteIndex.fetch_add(1, std::memory_order_relaxed);
         GetMicroQueueByIndex(nPreWriteIndex).PushPosition(value, nPreWriteIndex);
     }
     bool Pop(T& value){
@@ -345,7 +347,7 @@ public:
         return true;
     }
 protected:
-    inline MicroQueue<T>& GetMicroQueueByIndex(uint32_t nIndex){
+    inline MicroQueue& GetMicroQueueByIndex(uint32_t nIndex){
         return m_array[nIndex % Traits::ThreadWriteIndexModeIndex];
     }
     inline Block* GetBlock(uint32_t nWriteIndex){
@@ -378,7 +380,7 @@ protected:
         return pBlock;
     }
 protected:
-    MicroQueue<T>                                               m_array[Traits::ThreadWriteIndexModeIndex];
+    MicroQueue                                                  m_array[Traits::ThreadWriteIndexModeIndex];
     basiclib::CCLockfreeStack                                   m_pStack;
     std::atomic<BlockAlloc*>                                    m_pCurrentAllocate;
     uint32_t                                                    m_nNextQueueSize;

@@ -47,7 +47,7 @@ public:
 protected:
     uint32_t                m_nIndex = 0;
     uint32_t                m_nCount = 0;
-    std::atomic<uint32_t>   m_nPushTime = 0;
+    std::atomic<uint32_t>   m_nPushTime = {0};
     T*                      m_pNode = nullptr;
     bool*                   m_pBoolReceive = nullptr;
     Container*              m_pContainer = nullptr;
