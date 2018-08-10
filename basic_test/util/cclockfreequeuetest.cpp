@@ -1,6 +1,7 @@
 #include <basic.h>
 #include "cclockfreequeuetest.h"
 #include "cbasicqueuearray.h"
+#include "cclockfreequeue.h"
 #include "../headdefine.h"
 
 struct ctx_message{
@@ -58,9 +59,9 @@ public:
     }
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*CBasicQueueArray<ctx_message> basicQueue;
-typedef CCContainUnit<ctx_message, CBasicQueueArray<ctx_message>> CCContainUnitCBasicQueueArray;
-class CCContainUnitThreadCBasicQueueArray : public CCContainUnitThread<ctx_message, CBasicQueueArray<ctx_message>>{
+CCLockfreeQueue<ctx_message> basicQueue;
+typedef CCContainUnit<ctx_message, CCLockfreeQueue<ctx_message>> CCContainUnitCBasicQueueArray;
+class CCContainUnitThreadCBasicQueueArray : public CCContainUnitThread<ctx_message, CCLockfreeQueue<ctx_message>>{
 public:
     // 通过 CCContainUnitThread 继承
     virtual CCContainUnitCBasicQueueArray* createCCContainUnit(uint32_t nCount) override{
@@ -68,15 +69,15 @@ public:
     }
 };
 
-class CContainUnitThreadRunModeCBasicQueueArray : public CContainUnitThreadRunMode<ctx_message, CBasicQueueArray<ctx_message>>{
+class CContainUnitThreadRunModeCBasicQueueArray : public CContainUnitThreadRunMode<ctx_message, CCLockfreeQueue<ctx_message>>{
 public:
-    CContainUnitThreadRunModeCBasicQueueArray(CBasicQueueArray<ctx_message>* p, uint32_t nMaxCountTimeFast, uint32_t nRepeatTimes = 5) : CContainUnitThreadRunMode<ctx_message, CBasicQueueArray<ctx_message>>(p, nMaxCountTimeFast, nRepeatTimes){
+    CContainUnitThreadRunModeCBasicQueueArray(CCLockfreeQueue<ctx_message>* p, uint32_t nMaxCountTimeFast, uint32_t nRepeatTimes = 5) : CContainUnitThreadRunMode<ctx_message, CCLockfreeQueue<ctx_message>>(p, nMaxCountTimeFast, nRepeatTimes){
     }
     // 通过 CContainUnitThreadRunMode 继承
     virtual CCContainUnitThreadCBasicQueueArray* createUnitThread() override{
         return new CCContainUnitThreadCBasicQueueArray();
     }
-};*/
+};
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class CLockFreeMessageQueuePushPop : public basiclib::CLockFreeMessageQueue<ctx_message>{
@@ -129,11 +130,25 @@ public:
 
 bool cclockfreequeuetest(){
     bool bRet = true;
-    CContainUnitThreadRunModeCCLockfreeFixQueue* pFixQueue = new CContainUnitThreadRunModeCCLockfreeFixQueue(&lockfreeFixQueue, TIMES_FAST, 5);
-    pFixQueue->PowerOfTwoThreadCountTest(PushContentFunc<ctx_message, CCLockfreeFixQueuePushPop>, PopContentFunc<ctx_message, CCLockfreeFixQueuePushPop>);
-
-    //CContainUnitThreadRunModeCBasicQueueArray* pCBasicQueueArrayMode = new CContainUnitThreadRunModeCBasicQueueArray(&basicQueue, 5);
-    //pCBasicQueueArrayMode->PowerOfTwoThreadCountTest(PushContentFunc<ctx_message, CBasicQueueArray<ctx_message>>, PopContentFunc<ctx_message, CBasicQueueArray<ctx_message>>);
+    //CContainUnitThreadRunModeCCLockfreeFixQueue* pFixQueue = new CContainUnitThreadRunModeCCLockfreeFixQueue(&lockfreeFixQueue, TIMES_FAST, 5);
+    //bRet &= pFixQueue->PowerOfTwoThreadCountTest(PushContentFunc<ctx_message, CCLockfreeFixQueuePushPop>, PopContentFunc<ctx_message, CCLockfreeFixQueuePushPop>);
+    {
+        CContainUnitThreadRunModeCBasicQueueArray* pCBasicQueueArrayMode = new CContainUnitThreadRunModeCBasicQueueArray(&basicQueue, TIMES_FAST, 5);
+        bRet &= pCBasicQueueArrayMode->PowerOfTwoThreadCountTest(PushContentFunc<ctx_message, CCLockfreeQueue<ctx_message>>, PopContentFunc<ctx_message, CCLockfreeQueue<ctx_message>>, 8, 4);
+        delete pCBasicQueueArrayMode;
+        if(bRet == false)
+            return bRet;
+    }
+    
+    /*{
+        CContainUnitThreadRunModeCLockFreeMessageQueuePushPop* pCBasicQueueArrayMode = new CContainUnitThreadRunModeCLockFreeMessageQueuePushPop(&conMsgQueue, TIMES_FAST, 5);
+        bRet &= pCBasicQueueArrayMode->PowerOfTwoThreadCountTest(PushContentFunc<ctx_message, CLockFreeMessageQueuePushPop>, PopContentFunc<ctx_message, CLockFreeMessageQueuePushPop>, 8, 4);
+        delete pCBasicQueueArrayMode;
+        if(bRet == false)
+            return bRet;
+    }*/
+    
+    
 
 
     //correct check，speed
@@ -155,7 +170,6 @@ bool cclockfreequeuetest(){
     //printf("Test TestType_CountToken ConcurrentQueue\n");
     //bRet &= SpeedTest(ConcurrentQueueThreadPush, ConcurrentQueueThreadPop, TestType_CountToken);
     //printf("/*************************************************************************/\n");
-    //delete pCBasicQueueArrayMode;
-    delete pFixQueue;
+    //delete pFixQueue;
     return bRet;
 }

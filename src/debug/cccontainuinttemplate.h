@@ -213,8 +213,8 @@ public:
         return bRet;
     }
 
-    bool PowerOfTwoThreadCountTest(basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPush, basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPop, uint32_t nMaxThreadCount = 8){
-        for(uint32_t nThreadCount = 1; nThreadCount <= nMaxThreadCount; nThreadCount *= 2){
+    bool PowerOfTwoThreadCountTest(basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPush, basiclib::LPBASIC_THREAD_START_ROUTINE lpStartAddressPop, uint32_t nMaxThreadCount = 8, uint32_t nMinThreadCount = 1){
+        for(uint32_t nThreadCount = nMinThreadCount; nThreadCount <= nMaxThreadCount; nThreadCount *= 2){
             if(!PowerOfTwoThreadCountImpl(nThreadCount, lpStartAddressPush, lpStartAddressPop))
                 return false;
         }

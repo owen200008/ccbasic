@@ -29,7 +29,8 @@ int main(int argc, char* argv[]){
 	//TestStackWalk();
 	//TestFastDelegate();
     //PrintSuccessOrFail(CCLockfreeStackTest);
-    PrintSuccessOrFail(cclockfreequeuetest);
+    for(int i = 0;i < 10;i++)
+        PrintSuccessOrFail(cclockfreequeuetest);
 	//NetServerTest();
 	//TestFunctionXiaolvTest();
     //PrintSuccessOrFail(TestRSA);
