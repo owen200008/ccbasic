@@ -63,7 +63,7 @@ struct CCLockfreeQueueFunc{
     //! 避免冲突队列，不同队列减少冲突, 2的指数
     static const uint8_t ThreadWriteIndexModeIndex = 8;
     //! block size, 2的指数
-    static const uint16_t BlockPerSize = 16;
+    static const uint16_t BlockDefaultPerSize = 16;
     //! 下一次分配的增大的倍数
     static const uint32_t BlockCountAddTimesNextTime = 2;
     //! 分配开始时候的index
@@ -105,24 +105,36 @@ public:
 template<class T, class Traits = CCLockfreeQueueFunc, class ObjectBaseClass = CCLockfreeObject<Traits>>
 class CCLockfreeQueue : public ObjectBaseClass{
 public:
-    class Block : public ObjectBaseClass, public basiclib::CCLockfreeStackNode{
+    struct Block{
     public:
         struct StoreData{
             T                           m_pData;
             std::atomic<uint8_t>        m_bWrite;
         };
+        std::atomic<Block*>     m_pNext;
+        uint32_t                m_nBeginIndex;
+        uint32_t                m_nSize;
+        StoreData               m_pPool[];
     public:
+        static Block* CreateBlock(uint32_t nSize) {
+            Block* pBlock = (Block*)Traits::malloc(sizeof(Block) + nSize * sizeof(StoreData));
+            pBlock->m_nSize = nSize;
+            return pBlock;
+        }
+        static void ReleaseBlock(Block* p) {
+            Traits::free(p);
+        }
         void Init(uint32_t nBeginIndex = 0){
             //初始化 必然会有store writeindex 那边做release保证其他地方拿到的beginidnex正确
             m_nBeginIndex = nBeginIndex;
             m_pNext.store(nullptr, std::memory_order_relaxed);
-            memset(m_pPool, 0, sizeof(StoreData) * Traits::BlockPerSize);
+            memset(m_pPool, 0, sizeof(StoreData) * m_nSize);
         }
         //must can full call
         inline void IsWriteFull(){
             atomic_backoff bPauseWriteFinish;
-            uint16_t i = 0;
-            while(i < Traits::BlockPerSize){
+            uint32_t i = 0;
+            while(i < m_nSize){
                 if(m_pPool[i].m_bWrite.load(std::memory_order_relaxed) & 0x10){
                     i++;
                 }
@@ -138,8 +150,8 @@ public:
         }
         inline void IsReadEmpty(){
             atomic_backoff bPauseWriteFinish;
-            uint16_t i = 0;
-            while (i < Traits::BlockPerSize) {
+            uint32_t i = 0;
+            while (i < m_nSize) {
                 if (m_pPool[i].m_bWrite.load(std::memory_order_relaxed) == 0x10) {
                     i++;
                 }
@@ -160,20 +172,27 @@ public:
         inline bool IsLocationReadSuccess(uint32_t nPreWriteLocation){
             return m_pPool[nPreWriteLocation - m_nBeginIndex].m_bWrite.load(std::memory_order_relaxed) == false;
         }
-    protected:
-        std::atomic<Block*>     m_pNext = nullptr;
-        uint32_t                m_nBeginIndex;
-        StoreData               m_pPool[Traits::BlockPerSize];
-        friend class MicroQueue;
     };
+
     class MicroQueue{
     public:
+        MicroQueue() {
+            
+        }
+        virtual ~MicroQueue() {
+            Block* p = m_pRevertBlock.load();
+            if (p != nullptr) {
+                Block::ReleaseBlock(p);
+            }
+        }
         void Init(CCLockfreeQueue* pQueue){
             m_pQueue = pQueue;
-            uint32_t nSetBeginIndex = (Traits::CCLockfreeQueueStartIndex / Traits::BlockPerSize / Traits::ThreadWriteIndexModeIndex) * Traits::BlockPerSize;
-            Block* pBlock = pQueue->GetBlock(nSetBeginIndex);
+            uint32_t nSetBeginIndex = (Traits::CCLockfreeQueueStartIndex / Traits::BlockDefaultPerSize / Traits::ThreadWriteIndexModeIndex) * Traits::BlockDefaultPerSize;
+            Block* pBlock = Block::CreateBlock(Traits::BlockDefaultPerSize);
+            pBlock->Init(nSetBeginIndex);
             m_pWrite = pBlock;
             m_pRead = pBlock;
+            m_pRevertBlock = nullptr;
         }
         inline void PushPosition(const T& value, uint32_t nPreWriteIndex){
             uint32_t nPreWriteLocation = nPreWriteIndex / Traits::ThreadWriteIndexModeIndex;
@@ -184,8 +203,12 @@ public:
                 pWriteBlock = m_pWrite.load(std::memory_order_acquire);
                 do{
                     uint32_t nDis = nPreWriteLocation - pWriteBlock->m_nBeginIndex;
-                    if(nDis == Traits::BlockPerSize || (nPreWriteLocation == 0 && pWriteBlock->m_nBeginIndex != 0)){
-                        Block* pGetBlock = m_pQueue->GetBlock(nPreWriteLocation);
+                    if(nDis == pWriteBlock->m_nSize || (nPreWriteLocation == 0 && pWriteBlock->m_nBeginIndex != 0)){
+                        Block* pGetBlock = m_pRevertBlock.exchange(nullptr, std::memory_order_relaxed);
+                        if (pGetBlock == nullptr) {
+                            pGetBlock = Block::CreateBlock(pWriteBlock->m_nSize * 2);
+                        }
+                        pGetBlock->Init(nPreWriteLocation);
                         //change write block, 这边需要release，因为读的时候读取到next需要同步next的信息
                         pWriteBlock->m_pNext.store(pGetBlock, std::memory_order_release);
 
@@ -204,7 +227,7 @@ public:
                         }
                         return;
                     }
-                    else if(nDis < Traits::BlockPerSize){
+                    else if(nDis < pWriteBlock->m_nSize){
                         //inside
                         bFindWriteBlock = true;
                         break;
@@ -226,7 +249,7 @@ public:
             atomic_backoff bPauseGetNextFinish;
             do{
                 uint32_t nDis = nReadLocation - pReadBlock->m_nBeginIndex;
-                if (nDis == Traits::BlockPerSize || (nReadLocation == 0 && pReadBlock->m_nBeginIndex != 0)) {
+                if (nDis == pReadBlock->m_nSize || (nReadLocation == 0 && pReadBlock->m_nBeginIndex != 0)) {
                     //read first use cpu time
                     Block* pNextBlock = pReadBlock->m_pNext.load(std::memory_order_acquire);
                     while (pNextBlock == nullptr) {
@@ -247,10 +270,13 @@ public:
                         }
                         bPauseReadFinish.pause();
                     }
-                    m_pQueue->ReleaseBlock(pReadBlock);
+                    Block* pBlock = m_pRevertBlock.exchange(pReadBlock, std::memory_order_relaxed);
+                    if (pBlock != nullptr) {
+                        Block::ReleaseBlock(pBlock);
+                    }
                     return;
                 }
-                else if (nDis < Traits::BlockPerSize) {
+                else if (nDis < pReadBlock->m_nSize) {
                     //inside
                     break;
                 }
@@ -266,41 +292,14 @@ public:
             pReadBlock->PopLocation(value, nReadLocation);
         }
     protected:
+        std::atomic<Block*>     m_pRevertBlock;
         std::atomic<Block*>     m_pRead;
         std::atomic<Block*>     m_pWrite;
         CCLockfreeQueue*        m_pQueue;
     };
-    class BlockAlloc : public ObjectBaseClass{
-    public:
-        BlockAlloc(uint32_t nSize){
-            m_nTotal = nSize;
-            m_pCreate = new Block[m_nTotal];
-            m_nGetSize = 0;
-            m_pPre = nullptr;
-        }
-        virtual ~BlockAlloc(){
-            delete[]m_pCreate;
-        }
-        inline Block* GetBlock(){
-            if(m_nGetSize.load(std::memory_order_relaxed) >= m_nTotal){
-                return nullptr;
-            }
-            auto index = m_nGetSize.fetch_add(1, std::memory_order_relaxed);
-            return index < m_nTotal ? &m_pCreate[index] : nullptr;
-        }
-    protected:
-        Block*                  m_pCreate;
-        std::atomic<uint32_t>   m_nGetSize;
-        uint32_t                m_nTotal;
-        BlockAlloc*             m_pPre;
-        friend class CCLockfreeQueue;
-    };
 public:
-    CCLockfreeQueue(int nPreCreateBlockSize = Traits::ThreadWriteIndexModeIndex * 2){
-        m_nNextQueueSize = nPreCreateBlockSize;
-        m_pCurrentAllocate = new BlockAlloc(m_nNextQueueSize);
-        m_nNextQueueSize *= Traits::BlockCountAddTimesNextTime;
-        uint32_t nSetBeginIndex = (Traits::CCLockfreeQueueStartIndex / Traits::BlockPerSize / Traits::ThreadWriteIndexModeIndex) * Traits::BlockPerSize * Traits::ThreadWriteIndexModeIndex;
+    CCLockfreeQueue(){
+        uint32_t nSetBeginIndex = (Traits::CCLockfreeQueueStartIndex / Traits::BlockDefaultPerSize / Traits::ThreadWriteIndexModeIndex) * Traits::BlockDefaultPerSize * Traits::ThreadWriteIndexModeIndex;
         m_nReadIndex = nSetBeginIndex;
         m_nPreWriteIndex = nSetBeginIndex;
         for(int i = 0; i < Traits::ThreadWriteIndexModeIndex; i++){
@@ -308,13 +307,6 @@ public:
         }
     }
     virtual ~CCLockfreeQueue(){
-        BlockAlloc* pCheckAlloc = m_pCurrentAllocate.load(std::memory_order_relaxed);
-        BlockAlloc* pFreeAlloc = nullptr;
-        do{
-            pFreeAlloc = pCheckAlloc;
-            pCheckAlloc = pCheckAlloc->m_pPre;
-            delete pFreeAlloc;
-        } while(pCheckAlloc);
     }
     void Push(const T& value){
         uint32_t nPreWriteIndex = m_nPreWriteIndex.fetch_add(1, std::memory_order_relaxed);
@@ -322,7 +314,7 @@ public:
     }
     bool Pop(T& value){
         uint32_t nPreWriteIndex;
-        uint32_t nRead = m_nReadIndex.load(std::memory_order_relaxed);;
+        uint32_t nRead = m_nReadIndex.load(std::memory_order_relaxed);
         do{
             nPreWriteIndex = m_nPreWriteIndex.load(std::memory_order_relaxed);
             if(nPreWriteIndex == nRead){
@@ -344,46 +336,7 @@ public:
         return m_nPreWriteIndex.load(std::memory_order_relaxed);
     }
 protected:
-    inline Block* GetBlock(uint32_t nWriteIndex){
-        Block* pBlock = (Block*)m_pStack.Pop();
-        if(pBlock == nullptr){
-            //get from create
-            BlockAlloc* pAlloc = m_pCurrentAllocate.load(std::memory_order_relaxed);
-            do{
-                pBlock = pAlloc->GetBlock();
-                if(pBlock == nullptr){
-                    //need recreate
-                    atomic_backoff bPause;
-                    while(m_lock.exchange(1)){
-                        bPause.pause();
-                    }
-                    BlockAlloc* pNowAlloc = m_pCurrentAllocate.load(std::memory_order_relaxed);
-                    if(pNowAlloc == pAlloc){
-                        BlockAlloc* pCreate = new BlockAlloc(m_nNextQueueSize);
-                        m_nNextQueueSize *= Traits::BlockCountAddTimesNextTime;
-                        pCreate->m_pPre = pAlloc;
-                        m_pCurrentAllocate.store(pCreate, std::memory_order_relaxed);
-                        pNowAlloc = pCreate;
-                    }
-                    m_lock.exchange(0);
-                    pAlloc = pNowAlloc;
-                    continue;
-                }
-            } while(pBlock == nullptr);
-        }
-        pBlock->Init(nWriteIndex);
-        return pBlock;
-    }
-    inline void ReleaseBlock(Block* pBlock){
-        m_pStack.Push(pBlock);
-    }
-protected:
     MicroQueue                                                  m_array[Traits::ThreadWriteIndexModeIndex];
-    basiclib::CCLockfreeStack                                   m_pStack;
-    std::atomic<BlockAlloc*>                                    m_pCurrentAllocate;
-    uint32_t                                                    m_nNextQueueSize;
-    std::atomic<char>                                           m_lock;
-
     std::atomic<uint32_t>                                       m_nReadIndex;
     std::atomic<uint32_t>                                       m_nPreWriteIndex;
 };
