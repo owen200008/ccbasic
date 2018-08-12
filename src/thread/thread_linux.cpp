@@ -135,6 +135,8 @@ CBasicThreadTLS::~CBasicThreadTLS()
 
 bool CBasicThreadTLS::CreateTLS()
 {
+    if (m_bCreate)
+        return true;
 	if(pthread_key_create(&m_key, nullptr))
 		return false;
 	m_bCreate = true;

@@ -99,6 +99,11 @@ public:
     void operator delete(void* p){
         Traits::free(p);
     }
+    basiclib::CBasicThreadTLS& GetTLS() {
+        return m_tls;
+    }
+protected:
+    basiclib::CBasicThreadTLS    m_tls;
 };
 
 
@@ -197,50 +202,45 @@ public:
         inline void PushPosition(const T& value, uint32_t nPreWriteIndex){
             uint32_t nPreWriteLocation = nPreWriteIndex / Traits::ThreadWriteIndexModeIndex;
             atomic_backoff bPause;
-            Block* pWriteBlock = nullptr;
-            bool bFindWriteBlock = false;
-            do{
-                pWriteBlock = m_pWrite.load(std::memory_order_acquire);
-                do{
-                    uint32_t nDis = nPreWriteLocation - pWriteBlock->m_nBeginIndex;
-                    if(nDis == pWriteBlock->m_nSize || (nPreWriteLocation == 0 && pWriteBlock->m_nBeginIndex != 0)){
-                        Block* pGetBlock = m_pRevertBlock.exchange(nullptr, std::memory_order_relaxed);
-                        if (pGetBlock == nullptr) {
-                            pGetBlock = Block::CreateBlock(pWriteBlock->m_nSize * 2);
-                        }
-                        pGetBlock->Init(nPreWriteLocation);
-                        //change write block, 这边需要release，因为读的时候读取到next需要同步next的信息
-                        pWriteBlock->m_pNext.store(pGetBlock, std::memory_order_release);
+            Block* pWriteBlock = m_pWrite.load(std::memory_order_acquire);
+            do {
+                uint32_t nDis = nPreWriteLocation - pWriteBlock->m_nBeginIndex;
+                if (nDis == pWriteBlock->m_nSize || (nPreWriteLocation == 0 && pWriteBlock->m_nBeginIndex != 0)) {
+                    Block* pGetBlock = m_pRevertBlock.exchange(nullptr, std::memory_order_relaxed);
+                    if (pGetBlock == nullptr) {
+                        pGetBlock = Block::CreateBlock(pWriteBlock->m_nSize * 2);
+                    }
+                    pGetBlock->Init(nPreWriteLocation);
+                    //change write block, 这边需要release，因为读的时候读取到next需要同步next的信息
+                    pWriteBlock->m_pNext.store(pGetBlock, std::memory_order_release);
 
-                        pGetBlock->PushLocation(value, nPreWriteLocation);
-                        //wait to preindex write finish
-                        pWriteBlock->IsWriteFull();
-                        atomic_backoff bPauseWriteFinish;
-                        Block* pReadyWrite = nullptr;
-                        for(;;){
-                            pReadyWrite = pWriteBlock;
-                            //if know how to 
-                            if(m_pWrite.compare_exchange_strong(pReadyWrite, pGetBlock, std::memory_order_acquire, std::memory_order_relaxed)){
-                                break;
-                            }
-                            bPauseWriteFinish.pause();
-                        }
-                        return;
-                    }
-                    else if(nDis < pWriteBlock->m_nSize){
-                        //inside
-                        bFindWriteBlock = true;
-                        break;
-                    }
-                    else{
-                        pWriteBlock = pWriteBlock->m_pNext.load(std::memory_order_acquire);
-                        if(pWriteBlock == nullptr){
-                            bPause.pause();
+                    pGetBlock->PushLocation(value, nPreWriteLocation);
+                    //wait to preindex write finish
+                    pWriteBlock->IsWriteFull();
+                    atomic_backoff bPauseWriteFinish;
+                    Block* pReadyWrite = nullptr;
+                    for (;;) {
+                        pReadyWrite = pWriteBlock;
+                        //if know how to 
+                        if (m_pWrite.compare_exchange_strong(pReadyWrite, pGetBlock, std::memory_order_acquire, std::memory_order_relaxed)) {
                             break;
                         }
+                        bPauseWriteFinish.pause();
                     }
-                } while(true);
-            } while(!bFindWriteBlock);
+                    return;
+                }
+                else if (nDis < pWriteBlock->m_nSize) {
+                    break;
+                }
+                else {
+                    Block* pNextBlock = pWriteBlock->m_pNext.load(std::memory_order_acquire);
+                    while (pNextBlock == nullptr) {
+                        bPause.pause();
+                        pNextBlock = pWriteBlock->m_pNext.load(std::memory_order_acquire);
+                    }
+                    pWriteBlock = pNextBlock;
+                }
+            } while (true);
             pWriteBlock->PushLocation(value, nPreWriteLocation);
         }
         inline void PopPosition(T& value, uint32_t nReadIndex){
@@ -299,6 +299,7 @@ public:
     };
 public:
     CCLockfreeQueue(){
+        m_tls.CreateTLS();
         uint32_t nSetBeginIndex = (Traits::CCLockfreeQueueStartIndex / Traits::BlockDefaultPerSize / Traits::ThreadWriteIndexModeIndex) * Traits::BlockDefaultPerSize * Traits::ThreadWriteIndexModeIndex;
         m_nReadIndex = nSetBeginIndex;
         m_nPreWriteIndex = nSetBeginIndex;

@@ -136,6 +136,8 @@ CBasicThreadTLS::~CBasicThreadTLS()
 
 bool CBasicThreadTLS::CreateTLS()
 {
+    if (m_bCreate)
+        return true;
 	m_key = TlsAlloc();
 	m_bCreate = m_key != TLS_OUT_OF_INDEXES;
 	return m_bCreate;
