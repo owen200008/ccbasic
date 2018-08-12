@@ -1,6 +1,7 @@
 #ifndef BASICTEST_HEADDEFINE_H
 #define BASICTEST_HEADDEFINE_H
 
+#define REPEAT_TIMES 5
 #ifdef _DEBUG
 #define TIMES_FAST 500000
 #else

@@ -99,11 +99,6 @@ public:
     void operator delete(void* p){
         Traits::free(p);
     }
-    basiclib::CBasicThreadTLS& GetTLS() {
-        return m_tls;
-    }
-protected:
-    basiclib::CBasicThreadTLS    m_tls;
 };
 
 
@@ -299,7 +294,6 @@ public:
     };
 public:
     CCLockfreeQueue(){
-        m_tls.CreateTLS();
         uint32_t nSetBeginIndex = (Traits::CCLockfreeQueueStartIndex / Traits::BlockDefaultPerSize / Traits::ThreadWriteIndexModeIndex) * Traits::BlockDefaultPerSize * Traits::ThreadWriteIndexModeIndex;
         m_nReadIndex = nSetBeginIndex;
         m_nPreWriteIndex = nSetBeginIndex;
