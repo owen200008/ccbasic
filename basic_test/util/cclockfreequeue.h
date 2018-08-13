@@ -5,6 +5,12 @@
 #include <assert.h>
 #include <basic.h>
 
+#ifdef _WIN32
+#define CCSwitchToThread() SwitchToThread();
+#else
+#define CCSwitchToThread() std::this_thread::yield();
+#endif
+
 class atomic_backoff{
     //! Time delay, in units of "pause" instructions.
     /** Should be equal to approximately the number of "pause" instructions
@@ -32,11 +38,7 @@ public:
         }
         else{
             // Pause is so long that we might as well yield CPU to scheduler.
-#ifdef _WIN32
-            SwitchToThread();
-#else
-            std::this_thread::yield();
-#endif
+            CCSwitchToThread();
         }
     }
 
@@ -61,7 +63,7 @@ public:
 
 struct CCLockfreeQueueFunc{
     //! 避免冲突队列，不同队列减少冲突, 2的指数
-    static const uint8_t ThreadWriteIndexModeIndex = 8;
+    static const uint8_t ThreadWriteIndexModeIndex = 4;
     //! block size, 2的指数
     static const uint16_t BlockDefaultPerSize = 16;
     //! 下一次分配的增大的倍数
@@ -114,7 +116,8 @@ public:
         std::atomic<Block*>     m_pNext;
         uint32_t                m_nBeginIndex;
         uint32_t                m_nSize;
-        StoreData               m_pPool[];
+        std::atomic<bool>       m_bCanRelease;
+        StoreData               m_pPool[0];
     public:
         static Block* CreateBlock(uint32_t nSize) {
             Block* pBlock = (Block*)Traits::malloc(sizeof(Block) + nSize * sizeof(StoreData));
@@ -129,6 +132,7 @@ public:
             m_nBeginIndex = nBeginIndex;
             m_pNext.store(nullptr, std::memory_order_relaxed);
             memset(m_pPool, 0, sizeof(StoreData) * m_nSize);
+            m_bCanRelease.store(false, std::memory_order_relaxed);
         }
         //must can full call
         inline void IsWriteFull(){
@@ -142,6 +146,9 @@ public:
                     bPauseWriteFinish.pause();
                 }
             }
+        }
+        inline void SetCanRelease() {
+            m_bCanRelease.store(true, std::memory_order_release);
         }
         inline void PushLocation(const T& value, uint32_t nPreWriteLocation){
             StoreData& node = m_pPool[nPreWriteLocation - m_nBeginIndex];
@@ -158,6 +165,9 @@ public:
                 else {
                     bPauseWriteFinish.pause();
                 }
+            }
+            if (!m_bCanRelease.load(std::memory_order_acquire)) {
+                bPauseWriteFinish.pause();
             }
         }
         inline void PopLocation(T& value, uint32_t nPreWriteLocation){
@@ -194,40 +204,51 @@ public:
             m_pRead = pBlock;
             m_pRevertBlock = nullptr;
         }
-        inline void PushPosition(const T& value, uint32_t nPreWriteIndex){
-            uint32_t nPreWriteLocation = nPreWriteIndex / Traits::ThreadWriteIndexModeIndex;
-            atomic_backoff bPause;
-            Block* pWriteBlock = m_pWrite.load(std::memory_order_acquire);
-            do {
-                uint32_t nDis = nPreWriteLocation - pWriteBlock->m_nBeginIndex;
-                if (nDis == pWriteBlock->m_nSize || (nPreWriteLocation == 0 && pWriteBlock->m_nBeginIndex != 0)) {
-                    Block* pGetBlock = m_pRevertBlock.exchange(nullptr, std::memory_order_relaxed);
-                    if (pGetBlock == nullptr) {
-                        pGetBlock = Block::CreateBlock(pWriteBlock->m_nSize * 2);
-                    }
-                    pGetBlock->Init(nPreWriteLocation);
-                    //change write block, 这边需要release，因为读的时候读取到next需要同步next的信息
-                    pWriteBlock->m_pNext.store(pGetBlock, std::memory_order_release);
+        inline void CreateNewBlock(const T& value, uint32_t nPreWriteLocation, Block* pWriteBlock) {
+            Block* pGetBlock = m_pRevertBlock.exchange(nullptr, std::memory_order_relaxed);
+            if (pGetBlock == nullptr) {
+                pGetBlock = Block::CreateBlock(pWriteBlock->m_nSize * Traits::BlockCountAddTimesNextTime);
+            }
+            pGetBlock->Init(nPreWriteLocation);
+            //change write block, 这边需要release，因为读的时候读取到next需要同步next的信息
+            pWriteBlock->m_pNext.store(pGetBlock, std::memory_order_release);
 
-                    pGetBlock->PushLocation(value, nPreWriteLocation);
-                    //wait to preindex write finish
-                    pWriteBlock->IsWriteFull();
-                    atomic_backoff bPauseWriteFinish;
-                    Block* pReadyWrite = nullptr;
-                    for (;;) {
-                        pReadyWrite = pWriteBlock;
-                        //if know how to 
-                        if (m_pWrite.compare_exchange_strong(pReadyWrite, pGetBlock, std::memory_order_acquire, std::memory_order_relaxed)) {
-                            break;
-                        }
-                        bPauseWriteFinish.pause();
-                    }
+            pGetBlock->PushLocation(value, nPreWriteLocation);
+            //wait to preindex write finish
+            pWriteBlock->IsWriteFull();
+            atomic_backoff bPauseWriteFinish;
+            Block* pReadyWrite = nullptr;
+            for (;;) {
+                pReadyWrite = pWriteBlock;
+                //if know how to 
+                if (m_pWrite.compare_exchange_strong(pReadyWrite, pGetBlock, std::memory_order_acquire, std::memory_order_relaxed)) {
+                    break;
+                }
+                bPauseWriteFinish.pause();
+            }
+            //set read can go release
+            pWriteBlock->SetCanRelease();
+        }
+        void PushPosition(const T& value, uint32_t nPreWriteIndex){
+            uint32_t nPreWriteLocation = nPreWriteIndex / Traits::ThreadWriteIndexModeIndex;
+            Block* pWriteBlock = m_pWrite.load(std::memory_order_acquire);
+            if (nPreWriteLocation == 0 && pWriteBlock->m_nBeginIndex != 0) {
+                CreateNewBlock(value, nPreWriteLocation, pWriteBlock);
+                return;
+            }
+            do {
+                uint32_t nSize = pWriteBlock->m_nSize;
+                uint32_t nBeginIndex = pWriteBlock->m_nBeginIndex;
+                uint32_t nDis = nPreWriteLocation - nBeginIndex;
+                if (nDis == nSize) {
+                    CreateNewBlock(value, nPreWriteLocation, pWriteBlock);
                     return;
                 }
-                else if (nDis < pWriteBlock->m_nSize) {
+                else if (nDis < nSize) {
                     break;
                 }
                 else {
+                    atomic_backoff bPause;
                     Block* pNextBlock = pWriteBlock->m_pNext.load(std::memory_order_acquire);
                     while (pNextBlock == nullptr) {
                         bPause.pause();
@@ -238,7 +259,7 @@ public:
             } while (true);
             pWriteBlock->PushLocation(value, nPreWriteLocation);
         }
-        inline void PopPosition(T& value, uint32_t nReadIndex){
+        void PopPosition(T& value, uint32_t nReadIndex){
             uint32_t nReadLocation = nReadIndex / Traits::ThreadWriteIndexModeIndex;
             Block* pReadBlock = m_pRead.load(std::memory_order_relaxed);
             atomic_backoff bPauseGetNextFinish;
@@ -296,6 +317,7 @@ public:
     CCLockfreeQueue(){
         uint32_t nSetBeginIndex = (Traits::CCLockfreeQueueStartIndex / Traits::BlockDefaultPerSize / Traits::ThreadWriteIndexModeIndex) * Traits::BlockDefaultPerSize * Traits::ThreadWriteIndexModeIndex;
         m_nReadIndex = nSetBeginIndex;
+        m_nPreReadIndex = nSetBeginIndex;
         m_nPreWriteIndex = nSetBeginIndex;
         for(int i = 0; i < Traits::ThreadWriteIndexModeIndex; i++){
             m_array[i].Init(this);
@@ -308,21 +330,48 @@ public:
         m_array[nPreWriteIndex%Traits::ThreadWriteIndexModeIndex].PushPosition(value, nPreWriteIndex);
     }
     bool Pop(T& value){
-        uint32_t nPreWriteIndex;
-        uint32_t nRead = m_nReadIndex.load(std::memory_order_relaxed);
-        do{
-            nPreWriteIndex = m_nPreWriteIndex.load(std::memory_order_relaxed);
-            if(nPreWriteIndex == nRead){
-                // Queue is empty
+        uint32_t nPreReadIndex = m_nPreReadIndex.fetch_add(1, std::memory_order_relaxed);
+        uint32_t nPreWriteIndex = m_nPreWriteIndex.load(std::memory_order_relaxed);
+        if (nPreReadIndex == nPreWriteIndex) {
+            //Queue is empty
+            m_nPreReadIndex.fetch_sub(1, std::memory_order_relaxed);
+            return false;
+        }
+        //首先判断自己是否溢出, 默认前提是不可能写满max_uint32_t个队列
+        bool bReadMoreUIINT32 = false;
+        bool bWriteMoreUIINT32 = false;
+
+        uint32_t nRead = 0;
+        uint32_t nNowReadIndex = m_nReadIndex.load(std::memory_order_relaxed);
+        if (nPreReadIndex < nNowReadIndex) {
+            bReadMoreUIINT32 = true;
+        }
+        if (nPreWriteIndex < nNowReadIndex) {
+            bWriteMoreUIINT32 = true;
+        }
+        //一共4种情况
+        if(bReadMoreUIINT32 && !bWriteMoreUIINT32){
+            //no more data read
+            m_nPreReadIndex.fetch_sub(1, std::memory_order_relaxed);
+            return false;
+        }
+        else if (!bReadMoreUIINT32 && bWriteMoreUIINT32) {
+            //肯定可读
+            nRead = m_nReadIndex.fetch_add(1, std::memory_order_relaxed);
+        }
+        else {
+            if (nPreReadIndex < nPreWriteIndex) {
+                //肯定可读
+                nRead = m_nReadIndex.fetch_add(1, std::memory_order_relaxed);
+            }
+            else {
+                //no more data read
+                m_nPreReadIndex.fetch_sub(1, std::memory_order_relaxed);
                 return false;
             }
-            if(!m_nReadIndex.compare_exchange_strong(nRead, nRead + 1, std::memory_order_acquire, std::memory_order_relaxed)){
-                continue;
-            }
-            m_array[nRead%Traits::ThreadWriteIndexModeIndex].PopPosition(value, nRead);
-            return true;
-        } while(true);
-        return false;
+        }
+        m_array[nRead%Traits::ThreadWriteIndexModeIndex].PopPosition(value, nRead);
+        return true;
     }
     inline uint32_t GetReadIndex(){
         return m_nReadIndex.load(std::memory_order_relaxed);
@@ -332,6 +381,7 @@ public:
     }
 protected:
     MicroQueue                                                  m_array[Traits::ThreadWriteIndexModeIndex];
+    std::atomic<uint32_t>                                       m_nPreReadIndex;
     std::atomic<uint32_t>                                       m_nReadIndex;
     std::atomic<uint32_t>                                       m_nPreWriteIndex;
 };
